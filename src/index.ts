@@ -6,6 +6,10 @@ import { registerAllResources } from './resources/register.js';
 import { registerAllTools } from './tools/register.js';
 import { VERSION } from './config/version.js';
 
+if (process.env.NODE_ENV !== 'production') {
+  import('mcps-logger/console');
+}
+
 const MCP_SERVER_NAME = '@contentful/mcp-server';
 
 async function initializeServer() {

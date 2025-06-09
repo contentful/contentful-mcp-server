@@ -14,16 +14,19 @@
     "build"
   ],
   "scripts": {
-    "prebuild": "node scripts/generate-version.js",
+    "version": "node scripts/generate-version.js",
     "build": "tsc",
     "dev": "nodemon --ext ts --ignore build/ --watch src/ --exec 'npm run build && npm start'",
     "format": "prettier --write .",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "npm run version && npm run build",
     "start": "node build/index.js",
     "test": "vitest",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "inspect": "node -r dotenv/config ./scripts/inspect.js",
+    "inspect:watch": "node ./scripts/inspect-watch.js",
+    "logs:watch": "npx mcps-logger"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",
@@ -40,8 +43,10 @@
     "@typescript-eslint/eslint-plugin": "^8.29.1",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-unused-imports": "^4.1.4",
+    "mcps-logger": "^1.0.0",
     "nodemon": "^3.1.0",
     "prettier": "^3.5.3",
+    "ts-node": "^10.9.2",
     "typescript": "^5.8.2",
     "vitest": "^3.2.1"
   }
