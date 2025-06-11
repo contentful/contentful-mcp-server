@@ -4,13 +4,42 @@ orbs:
   vault: contentful/vault@1
 
 jobs:
-  build_and_release:
+  build:
+    docker:
+      - image: node:22.16.0
+    steps:
+      - checkout
+      - run: npm ci
+      - run: NODE_ENV=production && npm run build
+
+  release:
     docker:
       - image: node:22.16.0
     steps:
       - checkout
       - run: npm ci
       - vault/get-secrets:
-          template-preset: 'semantic-release-ecosystem'
-      - run: echo "Running in Circle CI"
-      - run: npm run build
+          template-preset: semantic-release-ecosystem
+      - vault/get-secrets:
+          template-preset: packages-read
+      - run: |
+          rm .npmrc
+          echo "//npm.pkg.github.com/:_authToken=${GITHUB_PACKAGES_READ_TOKEN}" > ~/.npmrc
+          echo "@contentful:registry=https://npm.pkg.github.com" >> ~/.npmrc
+      - run: npm run semantic-release
+
+workflows:
+  # Build for all branches, release only for main and semver-packaging branches
+  build_and_release_if_branch_is_main:
+    jobs:
+      - build:
+          context: vault
+      - release:
+          filters:
+            branches:
+              only:
+                - main
+                - semver-packaging
+          context: vault
+          requires:
+            - build
