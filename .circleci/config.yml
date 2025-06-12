@@ -20,10 +20,8 @@ jobs:
       - run: npm ci
       - vault/get-secrets:
           template-preset: semantic-release-ecosystem
-      - vault/get-secrets:
-          template-preset: packages-read
       - run: |
-          rm .npmrc
+          rm -f .npmrc
           echo "//npm.pkg.github.com/:_authToken=${GITHUB_PACKAGES_READ_TOKEN}" > ~/.npmrc
           echo "@contentful:registry=https://npm.pkg.github.com" >> ~/.npmrc
       - run: npm run semantic-release

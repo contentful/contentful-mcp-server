@@ -6,13 +6,16 @@ import {
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
 import { FieldSchema } from '../../types/fieldSchema.js';
 
-
-
 export const CreateContentTypeToolParams = BaseToolSchema.extend({
   name: z.string().describe('The name of the content type'),
   displayField: z.string().describe('The field ID to use as the display field'),
-  description: z.string().optional().describe('Description of the content type'),
-  fields: z.array(FieldSchema).describe('Array of field definitions for the content type'),
+  description: z
+    .string()
+    .optional()
+    .describe('Description of the content type'),
+  fields: z
+    .array(FieldSchema)
+    .describe('Array of field definitions for the content type'),
 });
 
 type Params = z.infer<typeof CreateContentTypeToolParams>;
@@ -33,11 +36,12 @@ async function tool(args: Params) {
     fields: args.fields,
   });
 
-  return createSuccessResponse('Content type created successfully', 
-    { contentType });
+  return createSuccessResponse('Content type created successfully', {
+    contentType,
+  });
 }
 
 export const createContentTypeTool = withErrorHandling(
   tool,
   'Error creating content type',
-); 
+);
