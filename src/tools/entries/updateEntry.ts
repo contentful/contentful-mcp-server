@@ -12,6 +12,19 @@ export const UpdateEntryToolParams = BaseToolSchema.extend({
     .describe(
       'The field values to update. Keys should be field IDs and values should be the field content. Will be merged with existing fields.',
     ),
+  metadata: z
+    .object({
+      tags: z.array(
+        z.object({
+          sys: z.object({
+            type: z.literal('Link'),
+            linkType: z.literal('Tag'),
+            id: z.string(),
+          }),
+        }),
+      ),
+    })
+    .optional(),
 });
 
 type Params = z.infer<typeof UpdateEntryToolParams>;
@@ -34,10 +47,18 @@ async function tool(args: Params) {
     ...args.fields,
   };
 
+  const allTags = [
+    ...(existingEntry.metadata?.tags || []),
+    ...(args.metadata?.tags || []),
+  ];
+
   // Update the entry with merged fields
   const updatedEntry = await contentfulClient.entry.update(params, {
     ...existingEntry,
     fields: mergedFields,
+    metadata: {
+      tags: allTags,
+    },
   });
 
   //return info about the entry that was updated
