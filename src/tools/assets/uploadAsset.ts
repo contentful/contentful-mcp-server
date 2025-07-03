@@ -15,6 +15,19 @@ export const UploadAssetToolParams = BaseToolSchema.extend({
   title: z.string().describe('The title of the asset'),
   description: z.string().optional().describe('The description of the asset'),
   file: FileSchema.describe('The file information for the asset'),
+  metadata: z
+    .object({
+      tags: z.array(
+        z.object({
+          sys: z.object({
+            type: z.literal('Link'),
+            linkType: z.literal('Tag'),
+            id: z.string(),
+          }),
+        }),
+      ),
+    })
+    .optional(),
 });
 
 type Params = z.infer<typeof UploadAssetToolParams>;
@@ -34,6 +47,7 @@ async function tool(args: Params) {
       description: args.description ? { 'en-US': args.description } : undefined,
       file: { 'en-US': args.file },
     },
+    metadata: args.metadata,
   };
 
   // Create the asset
