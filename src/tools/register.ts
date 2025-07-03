@@ -5,6 +5,7 @@ import { registerContentTypesTools } from './types/register.js';
 import { registerEnvironmentTools } from './environments/register.js';
 import { registerAssetTools } from './assets/register.js';
 import { registerSpaceTools } from './spaces/register.js';
+import { registerTagsTools } from './tags/register.js';
 
 export function registerAllTools(server: McpServer) {
   registerContextTools(server);
@@ -13,4 +14,5 @@ export function registerAllTools(server: McpServer) {
   registerEnvironmentTools(server);
   registerAssetTools(server);
   registerSpaceTools(server);
+  registerTagsTools(server);
 }
