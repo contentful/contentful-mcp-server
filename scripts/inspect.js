@@ -8,7 +8,13 @@ const __dirname = dirname(__filename);
 
 const serverPath = resolve(__dirname, '../build/index.js');
 
-const args = ['npx', '@modelcontextprotocol/inspector', 'node', serverPath];
+const args = [
+  'npx',
+  '--latest',
+  '@modelcontextprotocol/inspector',
+  'node',
+  serverPath,
+];
 
 // Add environment variables as CLI arguments if they exist
 if (process.env.CONTENTFUL_MANAGEMENT_ACCESS_TOKEN) {
