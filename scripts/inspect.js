@@ -10,8 +10,7 @@ const serverPath = resolve(__dirname, '../build/index.js');
 
 const args = [
   'npx',
-  '--latest',
-  '@modelcontextprotocol/inspector',
+  '@modelcontextprotocol/inspector@0.15.0',
   'node',
   serverPath,
 ];
