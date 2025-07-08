@@ -8,10 +8,24 @@ import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
 export const CreateAiActionToolParams = BaseToolSchema.extend({
   name: z.string().describe('The name of the AI action'),
   description: z.string().describe('The description of the AI action'),
-  instruction: z.string().describe('The instruction for the AI action'),
+  instruction: z
+    .object({
+      template: z.string().describe('The template for the AI action'),
+      variables: z
+        .array(z.any())
+        .describe('Array of variables for the AI action'),
+      conditions: z
+        .array(z.any())
+        .optional()
+        .describe('Array of conditions for the AI action'),
+    })
+    .describe('The instruction for the AI action'),
   configuration: z
-    .record(z.any())
-    .describe('Configuration object for the AI action'),
+    .object({
+      modelType: z.string().describe('The type of model to use'),
+      modelTemperature: z.number().describe('The temperature for the model'),
+    })
+    .describe('The configuration for the AI action'),
   testCases: z
     .array(z.any())
     .optional()
@@ -23,10 +37,13 @@ type Params = z.infer<typeof CreateAiActionToolParams>;
 async function tool(args: Params) {
   const params = {
     spaceId: args.spaceId,
-    environmentId: args.environmentId,
+    environmentId: args.environmentId || 'master',
   };
 
-  const contentfulClient = createToolClient(args);
+  const contentfulClient = createToolClient({
+    ...args,
+    environmentId: args.environmentId || 'master',
+  });
 
   const aiAction = await contentfulClient.aiAction.create(params, {
     name: args.name,
