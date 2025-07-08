@@ -4,6 +4,7 @@ import {
   withErrorHandling,
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import { VariableType } from '../../utils/ai-actions.js';
 
 export const CreateAiActionToolParams = BaseToolSchema.extend({
   name: z.string().describe('The name of the AI action'),
@@ -12,10 +13,20 @@ export const CreateAiActionToolParams = BaseToolSchema.extend({
     .object({
       template: z.string().describe('The template for the AI action'),
       variables: z
-        .array(z.any())
-        .describe(
-          'Array of variables for the AI action, each variable should contain a name, type and description',
-        ),
+        .array(
+          z.object({
+            id: z.string().describe('The id of the variable'),
+            name: z.string().optional().describe('The name of the variable'),
+            type: z
+              .nativeEnum(VariableType)
+              .describe('The type of the variable'),
+            description: z
+              .string()
+              .optional()
+              .describe('The description of the variable'),
+          }),
+        )
+        .describe('Array of variables for the AI action'),
     })
     .describe('The instruction for the AI action'),
   configuration: z
