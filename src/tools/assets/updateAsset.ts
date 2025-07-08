@@ -12,6 +12,19 @@ export const UpdateAssetToolParams = BaseToolSchema.extend({
     .describe(
       'The field values to update. Keys should be field IDs and values should be the field content. Will be merged with existing fields.',
     ),
+  metadata: z
+    .object({
+      tags: z.array(
+        z.object({
+          sys: z.object({
+            type: z.literal('Link'),
+            linkType: z.literal('Tag'),
+            id: z.string(),
+          }),
+        }),
+      ),
+    })
+    .optional(),
 });
 
 type Params = z.infer<typeof UpdateAssetToolParams>;
@@ -30,6 +43,12 @@ async function tool(args: Params) {
   const updatedAsset = await contentfulClient.asset.update(params, {
     ...existingAsset,
     fields: { ...existingAsset.fields, ...args.fields },
+    metadata: {
+      tags: [
+        ...(existingAsset.metadata?.tags || []),
+        ...(args.metadata?.tags || []),
+      ],
+    },
   });
 
   return createSuccessResponse('Asset updated successfully', { updatedAsset });
