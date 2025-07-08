@@ -1,4 +1,4 @@
-export declare enum VariableType {
+export enum VariableType {
   RESOURCE_LINK = 'ResourceLink',
   TEXT = 'Text',
   STANDARD_INPUT = 'StandardInput',
