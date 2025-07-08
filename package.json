@@ -27,6 +27,7 @@
     "inspect": "node -r dotenv/config ./scripts/inspect.js",
     "inspect:watch": "node ./scripts/inspect-watch.js",
     "logs:watch": "npx mcps-logger",
+    "update-licenses": "node scripts/update-licenses.js",
     "prepare": "husky"
   },
   "dependencies": {
