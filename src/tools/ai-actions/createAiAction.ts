@@ -13,11 +13,9 @@ export const CreateAiActionToolParams = BaseToolSchema.extend({
       template: z.string().describe('The template for the AI action'),
       variables: z
         .array(z.any())
-        .describe('Array of variables for the AI action'),
-      conditions: z
-        .array(z.any())
-        .optional()
-        .describe('Array of conditions for the AI action'),
+        .describe(
+          'Array of variables for the AI action, each variable should contain a name, type and description',
+        ),
     })
     .describe('The instruction for the AI action'),
   configuration: z
