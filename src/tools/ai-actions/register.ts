@@ -10,6 +10,14 @@ import {
 import { getAiActionTool, GetAiActionToolParams } from './getAiAction.js';
 import { listAiActionTool, ListAiActionToolParams } from './listAiActions.js';
 import {
+  publishAiActionTool,
+  PublishAiActionToolParams,
+} from './publishAiAction.js';
+import {
+  unpublishAiActionTool,
+  UnpublishAiActionToolParams,
+} from './unpublishAiAction.js';
+import {
   updateAiActionTool,
   UpdateAiActionToolParams,
 } from './updateAiAction.js';
@@ -41,6 +49,20 @@ export function registerAiActionsTools(server: McpServer) {
     'List AI actions in a space. Returns a maximum of 3 items per request. Use skip parameter to paginate through results.',
     ListAiActionToolParams.shape,
     listAiActionTool,
+  );
+
+  server.tool(
+    'publish_ai_action',
+    'Publish an AI action to make it available for use in the Contentful web app',
+    PublishAiActionToolParams.shape,
+    publishAiActionTool,
+  );
+
+  server.tool(
+    'unpublish_ai_action',
+    'Unpublish an AI action to remove it from use in the Contentful web app',
+    UnpublishAiActionToolParams.shape,
+    unpublishAiActionTool,
   );
 
   server.tool(
