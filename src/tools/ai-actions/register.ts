@@ -18,7 +18,7 @@ export function registerAiActionsTools(server: McpServer) {
 
   server.tool(
     'invoke_ai_action',
-    'Invoke an AI action with variables, multiple fields can be invoked at once by adding multiple items to the items array',
+    "Invoke an AI action with variables, multiple fields can be invoked at once by adding multiple items to the items array. If using locales, use the format 'en-US' or 'de-DE'.",
     InvokeAiActionToolParams.shape,
     invokeAiActionTool,
   );
