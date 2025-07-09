@@ -5,6 +5,10 @@ import {
 } from './createAiAction.js';
 import { getAiActionTool, GetAiActionToolParams } from './getAiAction.js';
 import { listAiActionTool, ListAiActionToolParams } from './listAiActions.js';
+import {
+  updateAiActionTool,
+  UpdateAiActionToolParams,
+} from './updateAiAction.js';
 
 export function registerAiActionsTools(server: McpServer) {
   server.tool(
@@ -26,5 +30,12 @@ export function registerAiActionsTools(server: McpServer) {
     'List AI actions in a space. Returns a maximum of 3 items per request. Use skip parameter to paginate through results.',
     ListAiActionToolParams.shape,
     listAiActionTool,
+  );
+
+  server.tool(
+    'update_ai_action',
+    'Update an existing AI action. Your updates will be merged with the existing AI action data, so you only need to provide the fields you want to change.',
+    UpdateAiActionToolParams.shape,
+    updateAiActionTool,
   );
 }
