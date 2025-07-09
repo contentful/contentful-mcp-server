@@ -4,6 +4,7 @@ import {
   CreateAiActionToolParams,
 } from './createAiAction.js';
 import { getAiActionTool, GetAiActionToolParams } from './getAiAction.js';
+import { listAiActionTool, ListAiActionToolParams } from './listAiActions.js';
 
 export function registerAiActionsTools(server: McpServer) {
   server.tool(
@@ -18,5 +19,12 @@ export function registerAiActionsTools(server: McpServer) {
     'Retrieve details about a specific AI action including its configuration, instructions, and defined variables',
     GetAiActionToolParams.shape,
     getAiActionTool,
+  );
+
+  server.tool(
+    'list_ai_actions',
+    'List AI actions in a space. Returns a maximum of 3 items per request. Use skip parameter to paginate through results.',
+    ListAiActionToolParams.shape,
+    listAiActionTool,
   );
 }
