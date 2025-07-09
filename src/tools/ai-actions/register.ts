@@ -3,6 +3,10 @@ import {
   createAiActionTool,
   CreateAiActionToolParams,
 } from './createAiAction.js';
+import {
+  deleteAiActionTool,
+  DeleteAiActionToolParams,
+} from './deleteAiAction.js';
 import { getAiActionTool, GetAiActionToolParams } from './getAiAction.js';
 import { listAiActionTool, ListAiActionToolParams } from './listAiActions.js';
 import {
@@ -16,6 +20,13 @@ export function registerAiActionsTools(server: McpServer) {
     'Create a new AI action with clear instructions and well-defined variables. Best practices: (1) Use descriptive names that indicate the action\'s purpose, (2) Write specific, actionable instructions in the template, (3) Define meaningful variables with clear names like "sourceContent", "targetLocale", "entryId", or "contentType", (4) Embed variables into the template using the format {{var.{variableId}}}, (5) Consider the content editor\'s workflow and make the action intuitive to use. Example variables: content fields to process, locales for translation, reference entries, formatting preferences, or validation rules.',
     CreateAiActionToolParams.shape,
     createAiActionTool,
+  );
+
+  server.tool(
+    'delete_ai_action',
+    'Delete a specific AI action from your Contentful space',
+    DeleteAiActionToolParams.shape,
+    deleteAiActionTool,
   );
 
   server.tool(
