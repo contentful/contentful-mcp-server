@@ -8,12 +8,16 @@ import { OutputFormat, VariableValue } from '../../utils/ai-actions.js';
 
 export const InvokeAiActionToolParams = BaseToolSchema.extend({
   aiActionId: z.string().describe('The ID of the AI action to invoke'),
-  outputFormat: z
-    .nativeEnum(OutputFormat)
-    .describe('The output format of the AI action'),
-  variables: z
-    .array(VariableValue)
-    .describe('The variable assignments within the AI action invocation'),
+  fields: z.array(
+    z.object({
+      outputFormat: z
+        .nativeEnum(OutputFormat)
+        .describe('The output format of the AI action'),
+      variables: z
+        .array(VariableValue)
+        .describe('The variable assignments within the AI action invocation'),
+    }),
+  ),
 });
 
 type Params = z.infer<typeof InvokeAiActionToolParams>;
@@ -25,18 +29,24 @@ async function tool(args: Params) {
   };
 
   const contentfulClient = createToolClient(args);
+  const aiActions = [];
 
-  const aiAction = await contentfulClient.aiAction.invoke(
-    {
-      ...params,
-      aiActionId: args.aiActionId,
-    },
-    {
-      outputFormat: args.outputFormat,
-      variables: args.variables,
-    },
-  );
-  return createSuccessResponse('AI action invoked successfully', { aiAction });
+  for (const field of args.fields) {
+    const aiAction = await contentfulClient.aiAction.invoke(
+      {
+        ...params,
+        aiActionId: args.aiActionId,
+      },
+      {
+        outputFormat: field.outputFormat,
+        variables: field.variables,
+      },
+    );
+
+    aiActions.push(aiAction);
+  }
+
+  return createSuccessResponse('AI action invoked successfully', { aiActions });
 }
 
 export const invokeAiActionTool = withErrorHandling(
