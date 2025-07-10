@@ -45,3 +45,20 @@ export enum OutputFormat {
   MARKDOWN = 'Markdown',
   PLAIN_TEXT = 'PlainText',
 }
+
+export type InvocationStatus =
+  | 'SCHEDULED'
+  | 'IN_PROGRESS'
+  | 'FAILED'
+  | 'COMPLETED'
+  | 'CANCELLED';
+
+// Define the shape we expect from the invocation status response
+export interface InvocationStatusResponse {
+  sys: {
+    id: string;
+    status: InvocationStatus;
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
+}
