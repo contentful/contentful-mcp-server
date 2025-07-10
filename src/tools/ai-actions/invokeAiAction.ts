@@ -31,8 +31,8 @@ async function pollForCompletion(
   contentfulClient: ReturnType<typeof createToolClient>,
   params: { spaceId: string; environmentId: string; aiActionId: string },
   aiActions: Array<{ sys: { id: string } }>,
-  pollInterval: number = 3000,
-  maxAttempts: number = 20,
+  pollInterval: number = 30000,
+  maxAttempts: number = 10,
 ): Promise<{ actionId: string; content: InvocationResult['content'] }[]> {
   const completedActions: Map<string, InvocationResult['content']> = new Map();
   let attempts = 0;
