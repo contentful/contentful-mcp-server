@@ -43,7 +43,7 @@ eslint-plugin-unused-imports
     License: MIT
     https://www.npmjs.com/package/eslint-plugin-unused-imports [npmjs.com]
 mcps-logger
-    License: MIT (assumed – to be confirmed by license file)
+    License: MIT
     https://www.npmjs.com/package/mcps-logger [npmjs.com]
 nodemon
     License: MIT
@@ -66,4 +66,4 @@ Each component is used in accordance with its open-source license. The
 applicable license texts are included in this repository under the
 licenses/ directory.
 
-For more details, please refer to the LICENSE file for this project. 
+For more details, please refer to the LICENSE file for this project.
