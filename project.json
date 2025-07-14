@@ -1,0 +1,64 @@
+{
+  "name": "contentful-mcp-server",
+  "$schema": "node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "src",
+  "targets": {
+    "build": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "tsc"
+      },
+      "outputs": ["{projectRoot}/build"]
+    },
+    "dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nodemon --ext ts --ignore build/ --watch src/ --exec 'npm run build && npm start'"
+      }
+    },
+    "start": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node build/index.js"
+      }
+    },
+    "format": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prettier --write ."
+      }
+    },
+    "lint": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint ."
+      }
+    },
+    "lint:fix": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "eslint . --fix"
+      }
+    },
+    "test": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest"
+      }
+    },
+    "test:run": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "vitest run"
+      }
+    },
+    "version": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node scripts/generate-version.js"
+      },
+      "outputs": ["{projectRoot}/src/config/version.ts"]
+    }
+  }
+}
