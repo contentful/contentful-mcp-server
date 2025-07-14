@@ -13,6 +13,10 @@
   "files": [
     "build"
   ],
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "nodemon --ext ts --ignore build/ --watch src/ --exec 'npm run build && npm start'",
@@ -42,7 +46,7 @@
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@modelcontextprotocol/inspector": "0.15.0",
-    "@nx/js": "^21.2.3",
+    "@nx/js": "^21.3.2",
     "@types/node": "^22.13.11",
     "@typescript-eslint/eslint-plugin": "^8.29.1",
     "eslint-plugin-simple-import-sort": "^12.1.1",
