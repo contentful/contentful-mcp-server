@@ -34,59 +34,59 @@ async function pollForCompletion(
   pollInterval: number = 30000,
   maxAttempts: number = 10,
 ): Promise<{ actionId: string; content: InvocationResult['content'] }[]> {
-  const completedActions: Map<string, InvocationResult['content']> = new Map();
-  let attempts = 0;
+  const completedActions = new Map<string, InvocationResult['content']>();
 
-  while (completedActions.size < aiActions.length && attempts < maxAttempts) {
+  for (
+    let attempt = 0;
+    attempt < maxAttempts && completedActions.size < aiActions.length;
+    attempt++
+  ) {
     await new Promise((resolve) => setTimeout(resolve, pollInterval));
 
-    for (let i = 0; i < aiActions.length; i++) {
-      const action = aiActions[i];
+    await Promise.allSettled(
+      aiActions
+        .filter((action) => !completedActions.has(action.sys.id)) //filter out actions that have already been completed
+        .map(async (action) => {
+          try {
+            const invocationStatus =
+              await contentfulClient.aiActionInvocation.get({
+                ...params,
+                invocationId: action.sys.id,
+              });
 
-      try {
-        const invocationStatus = await contentfulClient.aiActionInvocation.get({
-          ...params,
-          invocationId: action.sys.id,
-        });
+            const status = (invocationStatus as InvocationStatusResponse).sys
+              .status;
 
-        // Check if the action is in a final state (not pending)
-        const status = (invocationStatus as InvocationStatusResponse).sys
-          .status;
-
-        if (status === 'COMPLETED' && invocationStatus.result) {
-          completedActions.set(action.sys.id, invocationStatus.result.content);
-        } else if (status === 'FAILED' || status === 'CANCELLED') {
-          throw new Error(
-            `AI action ${action.sys.id} failed with status ${status}`,
-          );
-        }
-      } catch (error) {
-        console.warn(
-          `Error checking status for invocation ${action.sys.id}:`,
-          error,
-        );
-      }
-    }
-
-    attempts++;
+            if (status === 'COMPLETED' && invocationStatus.result) {
+              completedActions.set(
+                action.sys.id,
+                invocationStatus.result.content,
+              );
+            } else if (status === 'FAILED' || status === 'CANCELLED') {
+              throw new Error(
+                `AI action ${action.sys.id} failed with status ${status}`,
+              );
+            }
+          } catch (error) {
+            console.warn(
+              `Error checking status for invocation ${action.sys.id}:`,
+              error,
+            );
+          }
+        }),
+    );
   }
 
   if (completedActions.size < aiActions.length) {
     throw new Error(
-      `Polling timeout: ${completedActions.size}/${aiActions.length} actions completed after ${attempts} attempts`,
+      `Polling timeout: ${completedActions.size}/${aiActions.length} actions completed after ${maxAttempts} attempts`,
     );
   }
 
-  const returnedActions = [];
-
-  for (const [actionId, content] of completedActions.entries()) {
-    returnedActions.push({
-      actionId,
-      content,
-    });
-  }
-
-  return returnedActions;
+  return Array.from(completedActions.entries()).map(([actionId, content]) => ({
+    actionId,
+    content,
+  }));
 }
 
 async function tool(args: Params) {
