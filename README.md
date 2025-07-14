@@ -23,6 +23,7 @@ This MCP server provides a comprehensive set of tools for content management, al
 - [🔍 Development](#-development)
   - [Testing with MCP Inspector](#testing-with-mcp-inspector)
   - [Linting](#linting)
+- [📦 Releases](#-releases)
 - [🤝 Contributing](#-contributing)
   - [Development Setup](#development-setup)
 - [📚 Documentation](#-documentation)
@@ -129,6 +130,10 @@ Below is a sample configuration for Cursor:
 ## 🤝 Contributing
 
 We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for local development setup and contribution guidelines.
+
+## 📦 Releases
+
+This project uses [Nx Release](https://nx.dev/features/manage-releases) for automated versioning and publishing. Releases are automatically generated based on [Conventional Commits](https://www.conventionalcommits.org/). See [Contributing Guide](CONTRIBUTING.md) for more information on release process.
 
 ## 📚 Documentation
 

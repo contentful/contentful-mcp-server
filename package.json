@@ -13,6 +13,10 @@
   "files": [
     "build"
   ],
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "nodemon --ext ts --ignore build/ --watch src/ --exec 'npm run build && npm start'",
@@ -26,7 +30,13 @@
     "inspect:watch": "node ./scripts/inspect-watch.js",
     "logs:watch": "npx mcps-logger",
     "update-licenses": "node scripts/update-licenses.js",
-    "prepare": "husky"
+    "prepare": "husky",
+    "release": "nx release",
+    "release:first": "nx release --first-release",
+    "release:dry-run": "nx release --dry-run",
+    "release:first:dry-run": "nx release --first-release --dry-run",
+    "release:version": "nx release version",
+    "release:publish": "nx release publish"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",

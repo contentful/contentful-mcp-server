@@ -1,0 +1,44 @@
+version: 2.1
+
+orbs:
+  vault: contentful/vault@1
+
+jobs:
+  build_and_release:
+    docker:
+      - image: node:22.16.0
+    steps:
+      - checkout
+      - run: npm ci
+      - vault/get-secrets:
+          template-preset: 'semantic-release-ecosystem'
+      # Don't we need to build here?
+      # - run: npm run build
+      - run: |
+          echo "//npm.pkg.github.com/:_authToken=${GITHUB_PACKAGES_WRITE_TOKEN}" > ~/.npmrc
+          echo "@contentful:registry=https://npm.pkg.github.com" >> ~/.npmrc
+      - node/install-packages
+      - run:
+          name: Setting up Git User Credentials
+          command: |
+            git config user.email "${GIT_AUTHOR_EMAIL}"
+            git config user.name "${GIT_AUTHOR_NAME}"
+            git remote set-url origin "https://$GIT_AUTHOR_NAME:$GITHUB_TOKEN@github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"
+      - run:
+          name: Release and Publish
+          command: |
+            npx nx release --yes
+
+workflows:
+  version: 2
+  build-and-release:
+    jobs:
+      - test:
+          context:
+            - vault
+      - release-packages:
+          context:
+            - vault
+          filters:
+            branches:
+              only: main
