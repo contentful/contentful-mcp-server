@@ -6,17 +6,16 @@ Thank you for your interest in contributing to the Contentful MCP Server! We wel
 
 There are many ways to contribute to this project:
 
-- **Report bugs** - Help us identify and fix issues
-- **Suggest features** - Share ideas for new functionality
-- **Improve documentation** - Help make our docs clearer and more comprehensive
-- **Submit code** - Fix bugs, add features, or improve existing code
+- **Report bugs** - Help us identify and fix issues by submitting a [bug report](https://github.com/contentful/contentful-mcp-server/issues/new?template=bug_report.md). Please only submit bugs for issues potentially impacting all users of this project. If you have an issue that might be specific to you, contains sensitive information, or aren't sure where to go, please [visit our support and help center](https://support.contentful.com/hc/en-us) first.
+- **Suggest features** - Share ideas for new functionality by opening a [feature request](https://github.com/contentful/contentful-mcp-server/issues/new?template=bug_report.md)
+- **Submit a pull request** - For docs updates or small improvements, open a [pull request](https://github.com/contentful/contentful-mcp-server/pulls). For larger contributions, please open a [feature request](https://github.com/contentful/contentful-mcp-server/issues/new?template=bug_report.md) first so that we can discuss your idea and contribution with you.
 
 ## 📋 Before You Start
 
 Before contributing, please:
 1. Read through the [README](./README.md) to understand the project
-2. Browse existing [issues](https://github.com/contentful/contentful-mcp-server/issues) and [pull requests](https://github.com/contentful/contentful-mcp-server/pulls)
-3. Check if your idea or bug report already exists
+2. Browse existing [issues](https://github.com/contentful/contentful-mcp-server/issues) and [pull requests](https://github.com/contentful/contentful-mcp-server/pulls) to check if your idea or bug report already exists
+3. Review our [Code of Conduct](./README.md#️-code-of-conduct)
 
 ## 🛠️ Development Setup
 
