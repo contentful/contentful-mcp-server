@@ -120,24 +120,10 @@ async function tool(args: Params) {
     aiActions,
   );
 
-  // Provide specific guidance on next steps
-  const nextStepsGuidance = generateNextStepsGuidance(completedActions);
-
   return createSuccessResponse('AI action invoked and completed successfully', {
     aiActions: completedActions,
-    nextStepsGuidance,
+    nextStepsGuidance: `Required next step: Now that the invocation is complete, you will take the next step to complete the workflow. This will involve a CRUD operation that will take action on each of the action returned in the aiActions variable. You will need to use the appropriate tool to do this, choose a tool depending on the type of entity the action was executed on and the description of the Ai Action.`,
   });
-}
-
-function generateNextStepsGuidance(
-  completedActions: {
-    actionId: string;
-    content: InvocationResult['content'];
-  }[],
-): string {
-  let guidance = `Required next step: Now that the invocation is complete, you will take the next step to complete the workflow. This will involve a CRUD operation that will take action on each of the ${completedActions}. You will need to use the appropriate tool to do this, choose a tool depending on the type of entity the action was executed on and the description of the Ai Action.`;
-
-  return guidance;
 }
 
 export const invokeAiActionTool = withErrorHandling(
