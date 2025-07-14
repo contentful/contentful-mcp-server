@@ -52,53 +52,31 @@ npm run build
 
 ### Environment Variables
 
-| Environment Variable | Required | Default Value | Description |
-|---------------------|----------|---------------|-------------|
-| `CONTENTFUL_MANAGEMENT_ACCESS_TOKEN` | ✅ Yes | - | Your Contentful Management API personal access token |
-| `SPACE_ID` | ✅ Yes | - | Your Contentful Space ID |
-| `ENVIRONMENT_ID` | ❌ No | `master` | Target environment within your space |
-| `CONTENTFUL_HOST` | ❌ No | `api.contentful.com` | Contentful API host |
-| `MAX_TOOL_TOKEN_OUTPUT` | ❌ No | `50000` | Maximum token output limit for tools |
+| Environment Variable                 | Required | Default Value        | Description                                          |
+| ------------------------------------ | -------- | -------------------- | ---------------------------------------------------- |
+| `CONTENTFUL_MANAGEMENT_ACCESS_TOKEN` | ✅ Yes   | -                    | Your Contentful Management API personal access token |
+| `SPACE_ID`                           | ✅ Yes   | -                    | Your Contentful Space ID                             |
+| `ENVIRONMENT_ID`                     | ❌ No    | `master`             | Target environment within your space                 |
+| `CONTENTFUL_HOST`                    | ❌ No    | `api.contentful.com` | Contentful API host                                  |
+| `MAX_TOOL_TOKEN_OUTPUT`              | ❌ No    | `50000`              | Maximum token output limit for tools                 |
 
 ### Configuration
-
-You should run this script:
-
-- After adding new dependencies (`npm install <package>`)
-- After removing dependencies (`npm uninstall <package>`)
-- Before releases to ensure compliance documentation is up to date
-- As part of your CI/CD pipeline (optional)
 
 Refer to the documentation for your AI tool of choice for how to configure MCP servers. For example, see the documentation for [Cursor](https://docs.cursor.com/context/mcp), [VS Code](https://code.visualstudio.com/docs/copilot/chat/mcp-servers), or [Claude Desktop](https://modelcontextprotocol.io/quickstart/user).
 
 Below is a sample configuration for Cursor:
 
-The script will show you:
-
-- Number of runtime vs development dependencies found
-- List of unique license types discovered
-- Actions taken (files created/removed)
-
-Example output:
-
-```
-📦 Found 8 direct runtime dependencies
-🛠️  Found 10 direct development dependencies
-📄 Found 3 unique license types: Apache-2.0, BSD-2-Clause, MIT
 ```json
 {
   "mcpServers": {
     "contentful-mcp": {
       "command": "npx",
-      "args": [
-        "-y",
-        "<your_full_path_to_the_package>/index.js"
-      ],
+      "args": ["-y", "<your_full_path_to_the_package>/index.js"],
       "env": {
-         "CONTENTFUL_MANAGEMENT_ACCESS_TOKEN": "your-CMA-token",
-         "SPACE_ID": "your-space-id",
-         "ENVIRONMENT_ID": "master",
-         "CONTENTFUL_HOST": "api.contentful.com",
+        "CONTENTFUL_MANAGEMENT_ACCESS_TOKEN": "your-CMA-token",
+        "SPACE_ID": "your-space-id",
+        "ENVIRONMENT_ID": "master",
+        "CONTENTFUL_HOST": "api.contentful.com"
       }
     }
   }
@@ -107,38 +85,38 @@ Example output:
 
 ## 🛠️ Available Tools
 
-| Category | Tool Name | Description |
-|----------|-----------|-------------|
-| **Context & Setup** | `get_initial_context` | Initialize connection and get usage instructions |
-| **Content Types** | `list_content_types` | List all content types |
-| | `get_content_type` | Get detailed content type information |
-| | `create_content_type` | Create new content types |
-| | `update_content_type` | Modify existing content types |
-| | `publish_content_type` | Publish content type changes |
-| | `unpublish_content_type` | Unpublish content types |
-| | `delete_content_type` | Remove content types |
-| **Entries** | `search_entries` | Search and filter entries |
-| | `get_entry` | Retrieve specific entries |
-| | `create_entry` | Create new content entries |
-| | `update_entry` | Modify existing entries |
-| | `publish_entry` | Publish entries (single or bulk) |
-| | `unpublish_entry` | Unpublish entries (single or bulk) |
-| | `delete_entry` | Remove entries |
-| **Assets** | `upload_asset` | Upload new assets |
-| | `list_assets` | List and browse assets |
-| | `get_asset` | Retrieve specific assets |
-| | `update_asset` | Modify asset metadata |
-| | `publish_asset` | Publish assets (single or bulk) |
-| | `unpublish_asset` | Unpublish assets (single or bulk) |
-| | `delete_asset` | Remove assets |
-| **Spaces & Environments** | `list_spaces` | List available spaces |
-| | `get_space` | Get space details |
-| | `list_environments` | List environments |
-| | `create_environment` | Create new environments |
-| | `delete_environment` | Remove environments |
-| **Tags** | `list_tags` | List all tags |
-| | `create_tag` | Create new tags |
-| **AI Actions** | `create_ai_action` | Create custom AI-powered workflows |
+| Category                  | Tool Name                | Description                                      |
+| ------------------------- | ------------------------ | ------------------------------------------------ |
+| **Context & Setup**       | `get_initial_context`    | Initialize connection and get usage instructions |
+| **Content Types**         | `list_content_types`     | List all content types                           |
+|                           | `get_content_type`       | Get detailed content type information            |
+|                           | `create_content_type`    | Create new content types                         |
+|                           | `update_content_type`    | Modify existing content types                    |
+|                           | `publish_content_type`   | Publish content type changes                     |
+|                           | `unpublish_content_type` | Unpublish content types                          |
+|                           | `delete_content_type`    | Remove content types                             |
+| **Entries**               | `search_entries`         | Search and filter entries                        |
+|                           | `get_entry`              | Retrieve specific entries                        |
+|                           | `create_entry`           | Create new content entries                       |
+|                           | `update_entry`           | Modify existing entries                          |
+|                           | `publish_entry`          | Publish entries (single or bulk)                 |
+|                           | `unpublish_entry`        | Unpublish entries (single or bulk)               |
+|                           | `delete_entry`           | Remove entries                                   |
+| **Assets**                | `upload_asset`           | Upload new assets                                |
+|                           | `list_assets`            | List and browse assets                           |
+|                           | `get_asset`              | Retrieve specific assets                         |
+|                           | `update_asset`           | Modify asset metadata                            |
+|                           | `publish_asset`          | Publish assets (single or bulk)                  |
+|                           | `unpublish_asset`        | Unpublish assets (single or bulk)                |
+|                           | `delete_asset`           | Remove assets                                    |
+| **Spaces & Environments** | `list_spaces`            | List available spaces                            |
+|                           | `get_space`              | Get space details                                |
+|                           | `list_environments`      | List environments                                |
+|                           | `create_environment`     | Create new environments                          |
+|                           | `delete_environment`     | Remove environments                              |
+| **Tags**                  | `list_tags`              | List all tags                                    |
+|                           | `create_tag`             | Create new tags                                  |
+| **AI Actions**            | `create_ai_action`       | Create custom AI-powered workflows               |
 
 ## 🤝 Contributing
 
