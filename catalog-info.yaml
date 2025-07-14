@@ -1,0 +1,16 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: contentful-mcp-server
+  description: |
+    MCP server that provides AI assistants with comprehensive tools to interact with Contentful APIs.
+  annotations:
+    circleci.com/project-slug: github/contentful/contentful-mcp-server
+    github.com/project-slug: contentful/contentful-mcp-server
+    contentful.com/service-tier: "4"
+  tags:
+    - tier-4
+spec:
+  type: library
+  lifecycle: production
+  owner: group:team-developer-experience
