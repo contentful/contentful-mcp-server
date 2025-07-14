@@ -22,10 +22,30 @@ Before contributing, please:
 
 ### Prerequisites
 
+- NX
 - Node.js
 - npm
 - A Contentful account with a [Space ID](https://www.contentful.com/help/spaces/find-space-id/)
 - [Contentful Management API personal access token](https://www.contentful.com/help/token-management/personal-access-tokens/)
+
+### About NX
+
+This project is managed with the monorepo tool [NX](https://nx.dev/), a powerful build system that provides:
+
+- **Caching**: Fast builds and tests through intelligent caching
+- **Task orchestration**: Efficient task running and dependency management
+
+All npm scripts are integrated with NX, so commands like `npm run build` benefit from NX's caching optimizations.
+
+**Helpful NX commands**
+
+```bash
+# View project dependency graph
+npx nx graph
+
+# View available tasks
+npx nx show project contentful-mcp-server
+```
 
 ### Setup Steps
 
@@ -121,7 +141,8 @@ src/
 │   ├── types/       # Content type tools
 │   └── ...
 ├── utils/           # Utility functions
-└── types/           # TypeScript type definitions
+├── types/           # TypeScript type definitions
+├── scripts/         # Build and utility scripts
 ```
 
 ## 🔄 Pull Request Process
