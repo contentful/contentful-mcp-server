@@ -25,6 +25,7 @@ This script will:
 ## When to Run
 
 You should run this script:
+
 - After adding new dependencies (`npm install <package>`)
 - After removing dependencies (`npm uninstall <package>`)
 - Before releases to ensure compliance documentation is up to date
@@ -33,13 +34,15 @@ You should run this script:
 ## Output
 
 The script will show you:
+
 - Number of runtime vs development dependencies found
 - List of unique license types discovered
 - Actions taken (files created/removed)
 
 Example output:
+
 ```
 📦 Found 8 direct runtime dependencies
-🛠️  Found 10 direct development dependencies  
+🛠️  Found 10 direct development dependencies
 📄 Found 3 unique license types: Apache-2.0, BSD-2-Clause, MIT
 ```

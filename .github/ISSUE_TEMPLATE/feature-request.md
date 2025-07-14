@@ -4,7 +4,6 @@ about: Have ideas for improvements? Suggest a request for this project
 title: "\U0001F4A1 Request -"
 labels: enhancement
 assignees: ''
-
 ---
 
 **Is your feature request related to a problem? Please describe.**
