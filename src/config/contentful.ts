@@ -13,6 +13,7 @@ export function getDefaultClientConfig(): ClientOptions {
     accessToken: env.data.CONTENTFUL_MANAGEMENT_ACCESS_TOKEN,
     host: env.data.CONTENTFUL_HOST,
     space: env.data.SPACE_ID,
+    integration: 'contentful-mcp/0.0.1',
   };
 
   return clientConfig;

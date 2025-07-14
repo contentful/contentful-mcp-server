@@ -14,6 +14,7 @@ There are many ways to contribute to this project:
 ## 📋 Before You Start
 
 Before contributing, please:
+
 1. Read through the [README](./README.md) to understand the project
 2. Browse existing [issues](https://github.com/contentful/contentful-mcp-server/issues) and [pull requests](https://github.com/contentful/contentful-mcp-server/pulls)
 3. Check if your idea or bug report already exists
@@ -30,6 +31,7 @@ Before contributing, please:
 ### Setup Steps
 
 1. **Fork the repository**
+
    ```bash
    # Fork on GitHub, then clone your fork
    git clone https://github.com/yourusername/contentful-mcp-server.git
@@ -37,32 +39,31 @@ Before contributing, please:
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Build the project**
+
    ```bash
    npm run build
    ```
 
 4. **Configure the MCP server in your IDE**
-Below is a sample configuration for Cursor:
+   Below is a sample configuration for Cursor:
 
 ```json
 {
   "mcpServers": {
     "contentful-mcp": {
       "command": "npx",
-      "args": [
-        "-y",
-        "<your_full_path_to_the_package>/index.js"
-      ],
+      "args": ["-y", "<your_full_path_to_the_package>/index.js"],
       "env": {
-         "CONTENTFUL_MANAGEMENT_ACCESS_TOKEN": "your-CMA-token",
-         "SPACE_ID": "your-space-id",
-         "ENVIRONMENT_ID": "master",
-         "CONTENTFUL_HOST": "api.contentful.com",
+        "CONTENTFUL_MANAGEMENT_ACCESS_TOKEN": "your-CMA-token",
+        "SPACE_ID": "your-space-id",
+        "ENVIRONMENT_ID": "master",
+        "CONTENTFUL_HOST": "api.contentful.com"
       }
     }
   }
@@ -74,6 +75,7 @@ Below is a sample configuration for Cursor:
 For local development and testing:
 
 1. **Set up environment variables** - Create a `.env` file in the project root:
+
    ```bash
    # Copy the example environment file
    cp .env.example .env
@@ -84,22 +86,23 @@ For local development and testing:
 
    To run the inspector with logs:
 
-      In one terminal:
-      ```bash
-      npm run logs:watch
-      ```
+   In one terminal:
 
-      In another terminal:
-      ```bash
-      npm run inspect:watch
-      ```
+   ```bash
+   npm run logs:watch
+   ```
+
+   In another terminal:
+
+   ```bash
+   npm run inspect:watch
+   ```
 
    Alternatively, run the inspector without seeing logs:
 
-      ```bash
-      npm run inspect
-      ```
-
+   ```bash
+   npm run inspect
+   ```
 
 ### Linting
 
@@ -127,6 +130,7 @@ src/
 ### Before Submitting
 
 1. **Create a branch** for your changes
+
    ```bash
    git checkout -b feature/your-feature-name
    # or
@@ -136,18 +140,21 @@ src/
 2. **Make your changes** following the coding standards
 
 3. **Test your changes**
+
    ```bash
    npm run lint
    npm run build
    ```
 
 4. **Commit your changes**
+
    ```bash
    git add .
    git commit -m "feat: add new content type validation"
    ```
 
 5. **Push to your fork**
+
    ```bash
    git push origin feature/your-feature-name
    ```
