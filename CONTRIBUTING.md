@@ -80,12 +80,26 @@ For local development and testing:
    # Edit .env with your Contentful credentials
    ```
 
-2. **Run the inspector**:
-   ```bash
-   npm run inspect
-   ```
+2. **Run the inspector** - The MCP Inspector runs in your browser for interactive testing and automatically loads environment variables from your `.env` file.
 
-This will open the MCP Inspector in your browser for interactive testing. The inspector automatically loads environment variables from your `.env` file.
+   To run the inspector with logs:
+
+      In one terminal:
+      ```bash
+      npm run logs:watch
+      ```
+
+      In another terminal:
+      ```bash
+      npm run inspect:watch
+      ```
+
+   Alternatively, run the inspector without seeing logs:
+
+      ```bash
+      npm run inspect
+      ```
+
 
 ### Linting
 
