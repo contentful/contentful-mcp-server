@@ -69,10 +69,30 @@ Below is a sample configuration for Cursor:
 }
 ```
 
-### Development Workflow
+### Testing with MCP Inspector
 
-- **Debugging**: Use `npm run inspect` to open the MCP Inspector
-- **Linting**: Run `npm run lint` to check code style
+For local development and testing:
+
+1. **Set up environment variables** - Create a `.env` file in the project root:
+   ```bash
+   # Copy the example environment file
+   cp .env.example .env
+   # Edit .env with your Contentful credentials
+   ```
+
+2. **Run the inspector**:
+   ```bash
+   npm run inspect
+   ```
+
+This will open the MCP Inspector in your browser for interactive testing. The inspector automatically loads environment variables from your `.env` file.
+
+### Linting
+
+```bash
+npm run lint
+npm run lint:fix
+```
 
 ## 🏗️ Project Structure
 

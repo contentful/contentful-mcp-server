@@ -121,26 +121,9 @@ Below is a sample configuration for Cursor:
 | | `create_tag` | Create new tags |
 | **AI Actions** | `create_ai_action` | Create custom AI-powered workflows |
 
-## 🔍 Development
-
-### Testing with MCP Inspector
-
-```bash
-npm run inspect
-```
-
-This will open the MCP Inspector in your browser for interactive testing.
-
-### Linting
-
-```bash
-npm run lint
-npm run lint:fix
-```
-
 ## 🤝 Contributing
 
-We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details.
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for local development setup and contribution guidelines.
 
 ## 📚 Documentation
 
