@@ -140,7 +140,7 @@ src/
    npm run build
    ```
 
-4. **Commit your changes**
+4. **Commit your changes** using [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/)
    ```bash
    git add .
    git commit -m "feat: add new content type validation"
