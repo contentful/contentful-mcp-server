@@ -13,7 +13,9 @@ export function getDefaultClientConfig(): ClientOptions {
     accessToken: env.data.CONTENTFUL_MANAGEMENT_ACCESS_TOKEN,
     host: env.data.CONTENTFUL_HOST,
     space: env.data.SPACE_ID,
-    integration: 'contentful-mcp/0.0.1',
+    headers: {
+      'X-Contentful-User-Agent': 'contentful-mcp/0.0.1', //Include user agent header for telemetry tracking
+    },
   };
 
   return clientConfig;
