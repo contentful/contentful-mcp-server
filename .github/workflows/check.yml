@@ -25,5 +25,8 @@ jobs:
           path: build/
           key: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
 
+      - name: Run Prettier
+        run: npx pretty-quick --check
+
       - name: Run linting
         run: npm run lint
