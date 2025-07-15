@@ -147,7 +147,7 @@ This project is licensed under the MIT License. See [LICENSE](./LICENSE) for det
 
 It also includes open-source components licensed under MIT, BSD-2-Clause, and Apache-2.0. For details, see the [NOTICE](./NOTICE) file.
 
-This project includes an automated license management system that keeps track of all dependencies and their licenses. See the [LICENSE-AUTOMATION](./LICENSE-AUTOMATION.md) file for more information.
+This project includes an automated license management system that keeps track of all dependencies and their licenses. See the [AUTOMATION-FOR-LICENSES](./AUTOMATION-FOR-LICENSES.md) file for more information.
 
 ## 🛡️ Code of Conduct
 
