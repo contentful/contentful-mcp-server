@@ -85,38 +85,46 @@ Below is a sample configuration for Cursor:
 
 ## 🛠️ Available Tools
 
-| Category                  | Tool Name                | Description                                      |
-| ------------------------- | ------------------------ | ------------------------------------------------ |
-| **Context & Setup**       | `get_initial_context`    | Initialize connection and get usage instructions |
-| **Content Types**         | `list_content_types`     | List all content types                           |
-|                           | `get_content_type`       | Get detailed content type information            |
-|                           | `create_content_type`    | Create new content types                         |
-|                           | `update_content_type`    | Modify existing content types                    |
-|                           | `publish_content_type`   | Publish content type changes                     |
-|                           | `unpublish_content_type` | Unpublish content types                          |
-|                           | `delete_content_type`    | Remove content types                             |
-| **Entries**               | `search_entries`         | Search and filter entries                        |
-|                           | `get_entry`              | Retrieve specific entries                        |
-|                           | `create_entry`           | Create new content entries                       |
-|                           | `update_entry`           | Modify existing entries                          |
-|                           | `publish_entry`          | Publish entries (single or bulk)                 |
-|                           | `unpublish_entry`        | Unpublish entries (single or bulk)               |
-|                           | `delete_entry`           | Remove entries                                   |
-| **Assets**                | `upload_asset`           | Upload new assets                                |
-|                           | `list_assets`            | List and browse assets                           |
-|                           | `get_asset`              | Retrieve specific assets                         |
-|                           | `update_asset`           | Modify asset metadata                            |
-|                           | `publish_asset`          | Publish assets (single or bulk)                  |
-|                           | `unpublish_asset`        | Unpublish assets (single or bulk)                |
-|                           | `delete_asset`           | Remove assets                                    |
-| **Spaces & Environments** | `list_spaces`            | List available spaces                            |
-|                           | `get_space`              | Get space details                                |
-|                           | `list_environments`      | List environments                                |
-|                           | `create_environment`     | Create new environments                          |
-|                           | `delete_environment`     | Remove environments                              |
-| **Tags**                  | `list_tags`              | List all tags                                    |
-|                           | `create_tag`             | Create new tags                                  |
-| **AI Actions**            | `create_ai_action`       | Create custom AI-powered workflows               |
+| Category                  | Tool Name                  | Description                                      |
+| ------------------------- | -------------------------- | ------------------------------------------------ |
+| **Context & Setup**       | `get_initial_context`      | Initialize connection and get usage instructions |
+| **Content Types**         | `list_content_types`       | List all content types                           |
+|                           | `get_content_type`         | Get detailed content type information            |
+|                           | `create_content_type`      | Create new content types                         |
+|                           | `update_content_type`      | Modify existing content types                    |
+|                           | `publish_content_type`     | Publish content type changes                     |
+|                           | `unpublish_content_type`   | Unpublish content types                          |
+|                           | `delete_content_type`      | Remove content types                             |
+| **Entries**               | `search_entries`           | Search and filter entries                        |
+|                           | `get_entry`                | Retrieve specific entries                        |
+|                           | `create_entry`             | Create new content entries                       |
+|                           | `update_entry`             | Modify existing entries                          |
+|                           | `publish_entry`            | Publish entries (single or bulk)                 |
+|                           | `unpublish_entry`          | Unpublish entries (single or bulk)               |
+|                           | `delete_entry`             | Remove entries                                   |
+| **Assets**                | `upload_asset`             | Upload new assets                                |
+|                           | `list_assets`              | List and browse assets                           |
+|                           | `get_asset`                | Retrieve specific assets                         |
+|                           | `update_asset`             | Modify asset metadata                            |
+|                           | `publish_asset`            | Publish assets (single or bulk)                  |
+|                           | `unpublish_asset`          | Unpublish assets (single or bulk)                |
+|                           | `delete_asset`             | Remove assets                                    |
+| **Spaces & Environments** | `list_spaces`              | List available spaces                            |
+|                           | `get_space`                | Get space details                                |
+|                           | `list_environments`        | List environments                                |
+|                           | `create_environment`       | Create new environments                          |
+|                           | `delete_environment`       | Remove environments                              |
+| **Tags**                  | `list_tags`                | List all tags                                    |
+|                           | `create_tag`               | Create new tags                                  |
+| **AI Actions**            | `create_ai_action`         | Create custom AI-powered workflows               |
+|                           | `invoke_ai_action`         | Invoke an AI action with variables               |
+|                           | `get_ai_action_invocation` | Get AI action invocation details                 |
+|                           | `get_ai_action`            | Retrieve AI action details and configuration     |
+|                           | `list_ai_actions`          | List AI actions in a space                       |
+|                           | `update_ai_action`         | Update existing AI actions                       |
+|                           | `publish_ai_action`        | Publish AI actions for use                       |
+|                           | `unpublish_ai_action`      | Unpublish AI actions                             |
+|                           | `delete_ai_action`         | Remove AI actions                                |
 
 ## 🤝 Contributing
 

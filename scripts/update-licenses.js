@@ -11,7 +11,7 @@ const projectRoot = path.resolve(__dirname, '..');
 
 // License template texts
 const LICENSE_TEMPLATES = {
-  'MIT': `Copyright {YEAR} {COPYRIGHT_HOLDER}
+  MIT: `Copyright {YEAR} {COPYRIGHT_HOLDER}
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -96,7 +96,7 @@ Redistribution and use in source and binary forms, with or without modification,
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.`,
 
-  'ISC': `Copyright {YEAR} {COPYRIGHT_HOLDER}
+  ISC: `Copyright {YEAR} {COPYRIGHT_HOLDER}
 
 Permission to use, copy, modify, and/or distribute this software for any purpose with or without fee is hereby granted, provided that the above copyright notice and this permission notice appear in all copies.
 
@@ -118,53 +118,56 @@ THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH RE
 
 7. Nothing in this License Agreement shall be deemed to create any relationship of agency, partnership, or joint venture between PSF and Licensee. This License Agreement does not grant permission to use PSF trademarks or trade name in a trademark sense to endorse or promote products or services of Licensee, or any third party.
 
-8. By copying, installing or otherwise using Python, Licensee agrees to be bound by the terms and conditions of this License Agreement.`
+8. By copying, installing or otherwise using Python, Licensee agrees to be bound by the terms and conditions of this License Agreement.`,
 };
 
 async function main() {
   console.log('🔍 Running license checker...');
-  
+
   try {
     // Run license checker and capture output
-    const licenseOutput = execSync('license-checker-rseidelsohn --json', { 
+    const licenseOutput = execSync('license-checker-rseidelsohn --json', {
       encoding: 'utf8',
-      cwd: projectRoot 
+      cwd: projectRoot,
     });
-    
+
     const licenses = JSON.parse(licenseOutput);
-    
+
     // Read package.json to determine dev vs prod dependencies
-    const packageJson = JSON.parse(fs.readFileSync(path.join(projectRoot, 'package.json'), 'utf8'));
+    const packageJson = JSON.parse(
+      fs.readFileSync(path.join(projectRoot, 'package.json'), 'utf8'),
+    );
     const prodDeps = new Set(Object.keys(packageJson.dependencies || {}));
     const devDeps = new Set(Object.keys(packageJson.devDependencies || {}));
-    
+
     // Categorize packages - ONLY DIRECT DEPENDENCIES
     const runtimePackages = [];
     const devPackages = [];
     const allLicenseTypes = new Set();
-    
+
     for (const [packageName, info] of Object.entries(licenses)) {
       // Extract base package name (handle scoped packages)
       const nameMatch = packageName.match(/^(@?[^@]+)/);
       const basePackageName = nameMatch ? nameMatch[1] : packageName;
-      
+
       // ONLY process direct dependencies (skip transitive dependencies)
       const isDirectProd = prodDeps.has(basePackageName);
       const isDirectDev = devDeps.has(basePackageName);
-      
+
       if (!isDirectProd && !isDirectDev) {
         continue; // Skip transitive dependencies
       }
-      
+
       const packageInfo = {
         name: basePackageName,
         license: info.licenses,
-        repository: info.repository || `https://www.npmjs.com/package/${basePackageName}`
+        repository:
+          info.repository || `https://www.npmjs.com/package/${basePackageName}`,
       };
-      
+
       // Add to license types set
       allLicenseTypes.add(info.licenses);
-      
+
       // Categorize as runtime or dev dependency
       if (isDirectProd) {
         runtimePackages.push(packageInfo);
@@ -172,28 +175,32 @@ async function main() {
         devPackages.push(packageInfo);
       }
     }
-    
+
     // Remove duplicates and sort
     const uniqueRuntime = Array.from(
-      new Map(runtimePackages.map(p => [p.name, p])).values()
+      new Map(runtimePackages.map((p) => [p.name, p])).values(),
     ).sort((a, b) => a.name.localeCompare(b.name));
-    
+
     const uniqueDev = Array.from(
-      new Map(devPackages.map(p => [p.name, p])).values()
+      new Map(devPackages.map((p) => [p.name, p])).values(),
     ).sort((a, b) => a.name.localeCompare(b.name));
-    
+
     console.log(`📦 Found ${uniqueRuntime.length} direct runtime dependencies`);
-    console.log(`🛠️  Found ${uniqueDev.length} direct development dependencies`);
-    console.log(`📄 Found ${allLicenseTypes.size} unique license types:`, Array.from(allLicenseTypes).sort());
-    
+    console.log(
+      `🛠️  Found ${uniqueDev.length} direct development dependencies`,
+    );
+    console.log(
+      `📄 Found ${allLicenseTypes.size} unique license types:`,
+      Array.from(allLicenseTypes).sort(),
+    );
+
     // Generate NOTICE file content
     await updateNoticeFile(uniqueRuntime, uniqueDev);
-    
+
     // Update licenses directory
     await updateLicensesDirectory(allLicenseTypes);
-    
+
     console.log('✅ License information updated successfully!');
-    
   } catch (error) {
     console.error('❌ Error updating licenses:', error.message);
     process.exit(1);
@@ -202,19 +209,21 @@ async function main() {
 
 async function updateNoticeFile(runtimePackages, devPackages) {
   console.log('📝 Updating NOTICE file...');
-  
+
   const formatPackages = (packages) => {
-    return packages.map(pkg => {
-      const url = pkg.repository.includes('npmjs.com') ? 
-        pkg.repository : 
-        `https://www.npmjs.com/package/${pkg.name}`;
-      
-      return `${pkg.name}
+    return packages
+      .map((pkg) => {
+        const url = pkg.repository.includes('npmjs.com')
+          ? pkg.repository
+          : `https://www.npmjs.com/package/${pkg.name}`;
+
+        return `${pkg.name}
     License: ${pkg.license}
     ${url} [npmjs.com]`;
-    }).join('\n');
+      })
+      .join('\n');
   };
-  
+
   const noticeContent = `This project includes the following third-party open-source software components. Each is provided under its respective license.
 
 Runtime Dependencies (Production)
@@ -233,28 +242,29 @@ licenses/ directory.
 
 For more details, please refer to the LICENSE file for this project.
 `;
-  
+
   fs.writeFileSync(path.join(projectRoot, 'NOTICE'), noticeContent);
   console.log('✅ NOTICE file updated');
 }
 
 async function updateLicensesDirectory(licenseTypes) {
   console.log('📁 Updating licenses directory...');
-  
+
   const licensesDir = path.join(projectRoot, 'licenses');
-  
+
   // Ensure licenses directory exists
   if (!fs.existsSync(licensesDir)) {
     fs.mkdirSync(licensesDir);
   }
-  
+
   // Get current license files
-  const currentLicenseFiles = fs.readdirSync(licensesDir)
-    .filter(file => file.endsWith('.txt'))
-    .map(file => file.replace('.txt', ''));
-  
+  const currentLicenseFiles = fs
+    .readdirSync(licensesDir)
+    .filter((file) => file.endsWith('.txt'))
+    .map((file) => file.replace('.txt', ''));
+
   const requiredLicenses = Array.from(licenseTypes);
-  
+
   // Remove unused license files
   for (const currentLicense of currentLicenseFiles) {
     if (!requiredLicenses.includes(currentLicense)) {
@@ -263,31 +273,34 @@ async function updateLicensesDirectory(licenseTypes) {
       console.log(`🗑️  Removed unused license file: ${currentLicense}.txt`);
     }
   }
-  
+
   // Create missing license files
   for (const license of requiredLicenses) {
     const filePath = path.join(licensesDir, `${license}.txt`);
-    
+
     if (!fs.existsSync(filePath)) {
       const template = LICENSE_TEMPLATES[license];
-      
+
       if (template) {
         const content = template
           .replace(/{YEAR}/g, new Date().getFullYear())
           .replace(/{COPYRIGHT_HOLDER}/g, 'Contentful');
-        
+
         fs.writeFileSync(filePath, content);
         console.log(`➕ Created license file: ${license}.txt`);
       } else {
         console.warn(`⚠️  No template available for license: ${license}`);
         // Create a placeholder file
-        fs.writeFileSync(filePath, `License: ${license}\n\nPlease add the appropriate license text for ${license}.`);
+        fs.writeFileSync(
+          filePath,
+          `License: ${license}\n\nPlease add the appropriate license text for ${license}.`,
+        );
         console.log(`➕ Created placeholder file: ${license}.txt`);
       }
     }
   }
-  
+
   console.log('✅ Licenses directory updated');
 }
 
-main().catch(console.error); 
+main().catch(console.error);
