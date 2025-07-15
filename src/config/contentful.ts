@@ -14,7 +14,7 @@ export function getDefaultClientConfig(): ClientOptions {
     host: env.data.CONTENTFUL_HOST,
     space: env.data.SPACE_ID,
     headers: {
-      'X-Contentful-User-Agent-Origin': 'contentful-mcp/0.0.1', //Include user agent header for telemetry tracking
+      'X-Contentful-User-Agent-Tool': 'contentful-mcp/0.0.1', //Include user agent header for telemetry tracking
     },
   };
 
