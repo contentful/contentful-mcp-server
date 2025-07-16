@@ -36,7 +36,7 @@
     "dotenv": "^16.4.7",
     "fast-xml-parser": "^5.2.0",
     "get-it": "^8.3.2",
-    "gpt-tokenizer": "^2.9.0",
+    "gpt-tokenizer": "^3.0.1",
     "outdent": "^0.8.0",
     "zod": "^3.24.2"
   },
