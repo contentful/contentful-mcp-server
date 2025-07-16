@@ -19,12 +19,6 @@ const EnvSchema = z.object({
     .optional()
     .default('master')
     .describe('Contentful environment ID'),
-
-  MAX_TOOL_TOKEN_OUTPUT: z.coerce
-    .number()
-    .optional()
-    .default(50000)
-    .describe('Maximum tool token output'),
 });
 
 export const env = EnvSchema.safeParse(process.env);

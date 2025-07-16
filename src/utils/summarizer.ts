@@ -1,5 +1,3 @@
-import { THIS_IS_FINE } from '../types/any.js';
-
 export interface SummarizeOptions {
   maxItems?: number;
   indent?: number;
@@ -8,9 +6,9 @@ export interface SummarizeOptions {
 }
 
 export const summarizeData = (
-  data: THIS_IS_FINE,
+  data: unknown,
   options: SummarizeOptions = {},
-): THIS_IS_FINE => {
+): Record<string, unknown> | Array<unknown> => {
   const {
     maxItems = 3,
     remainingMessage = 'To see more items, please ask me to retrieve the next page.',
@@ -21,8 +19,13 @@ export const summarizeData = (
     const items = data.items;
     const total = data.total;
 
+    // Type guard to ensure items is an array and total is a number
+    if (!Array.isArray(items) || typeof total !== 'number') {
+      return data as Record<string, unknown>;
+    }
+
     if (items.length <= maxItems) {
-      return data;
+      return data as Record<string, unknown>;
     }
 
     return {
@@ -51,6 +54,6 @@ export const summarizeData = (
     };
   }
 
-  // Return non-array data as-is
-  return data;
+  // Return non-array data as-is (cast to expected return type)
+  return data as Record<string, unknown>;
 };

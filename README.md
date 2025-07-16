@@ -58,7 +58,6 @@ npm run build
 | `SPACE_ID`                           | ✅ Yes   | -                    | Your Contentful Space ID                             |
 | `ENVIRONMENT_ID`                     | ❌ No    | `master`             | Target environment within your space                 |
 | `CONTENTFUL_HOST`                    | ❌ No    | `api.contentful.com` | Contentful API host                                  |
-| `MAX_TOOL_TOKEN_OUTPUT`              | ❌ No    | `50000`              | Maximum token output limit for tools                 |
 
 ### Configuration
 

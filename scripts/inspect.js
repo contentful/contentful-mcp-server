@@ -28,9 +28,6 @@ if (process.env.SPACE_ID) {
 if (process.env.ENVIRONMENT_ID) {
   args.push(`-e ENVIRONMENT_ID=${process.env.ENVIRONMENT_ID}`);
 }
-if (process.env.MAX_TOOL_TOKEN_OUTPUT) {
-  args.push(`-e MAX_TOOL_TOKEN_OUTPUT=${process.env.MAX_TOOL_TOKEN_OUTPUT}`);
-}
 
 // Execute the command
 import { spawn } from 'child_process';

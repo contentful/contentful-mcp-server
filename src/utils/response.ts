@@ -2,12 +2,20 @@ import type {
   ServerNotification,
   ServerRequest,
 } from '@modelcontextprotocol/sdk/types.js';
-import { isWithinTokenLimit } from 'gpt-tokenizer';
 
 import { formatResponse } from './formatters.js';
 import type { RequestHandlerExtra } from '@modelcontextprotocol/sdk/shared/protocol.js';
-import { tokenLimit } from './tokens.js';
-import { THIS_IS_FINE } from '../types/any.js';
+
+/**
+ * Response type for tool handlers
+ */
+export type ToolResponse = {
+  isError?: boolean;
+  content: Array<{
+    type: 'text';
+    text: string;
+  }>;
+};
 
 /**
  * Creates a standardized success response
@@ -15,15 +23,8 @@ import { THIS_IS_FINE } from '../types/any.js';
 export function createSuccessResponse(
   message: string,
   data?: Record<string, unknown>,
-) {
+): ToolResponse {
   const text = data ? formatResponse(message, data) : message;
-  const withinTokenLimit = isWithinTokenLimit(text, tokenLimit);
-
-  if (!withinTokenLimit) {
-    throw new Error(
-      'Response exceeds token limit, consider tweaking your tool arguments to reduce output size!',
-    );
-  }
 
   return {
     content: [
@@ -42,12 +43,12 @@ export function withErrorHandling<T extends Record<string, unknown>>(
   handler: (
     params: T,
     extra?: RequestHandlerExtra<ServerRequest, ServerNotification>,
-  ) => Promise<THIS_IS_FINE>,
+  ) => Promise<ToolResponse>,
   errorPrefix = 'Error',
 ): (
   params: T,
   extra?: RequestHandlerExtra<ServerRequest, ServerNotification>,
-) => Promise<THIS_IS_FINE> {
+) => Promise<ToolResponse> {
   return async (
     params: T,
     extra?: RequestHandlerExtra<ServerRequest, ServerNotification>,
