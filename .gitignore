@@ -20,3 +20,6 @@ out/
 *.swp
 *.swo
 .DS_Store
+
+# ignore NX cache/configuration
+.nx/

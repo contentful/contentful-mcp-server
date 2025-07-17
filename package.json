@@ -14,13 +14,11 @@
     "build"
   ],
   "scripts": {
-    "version": "node scripts/generate-version.js",
     "build": "tsc",
     "dev": "nodemon --ext ts --ignore build/ --watch src/ --exec 'npm run build && npm start'",
     "format": "prettier --write .",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "prepublishOnly": "npm run version && npm run build",
     "start": "node build/index.js",
     "test": "vitest",
     "test:run": "vitest run",
@@ -42,6 +40,7 @@
   },
   "devDependencies": {
     "@modelcontextprotocol/inspector": "0.15.0",
+    "@nx/js": "^21.2.3",
     "@types/node": "^22.13.11",
     "@typescript-eslint/eslint-plugin": "^8.29.1",
     "eslint-plugin-simple-import-sort": "^12.1.1",
@@ -49,6 +48,7 @@
     "husky": "^9.1.7",
     "mcps-logger": "^1.0.0",
     "nodemon": "^3.1.0",
+    "nx": "^21.2.3",
     "prettier": "^3.6.2",
     "pretty-quick": "^4.2.2",
     "ts-node": "^10.9.2",
