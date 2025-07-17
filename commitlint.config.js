@@ -1,3 +1,4 @@
+//validate whether commit messages follow Angular JS Commit Message Conventions
 export default {
   extends: ['@commitlint/config-conventional'],
   rules: {
