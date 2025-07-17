@@ -39,6 +39,8 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
     "@modelcontextprotocol/inspector": "0.15.0",
     "@nx/js": "^21.2.3",
     "@types/node": "^22.13.11",
