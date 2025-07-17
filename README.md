@@ -48,6 +48,7 @@ git clone https://github.com/contentful/contentful-mcp-server.git
 cd contentful-mcp-server
 npm install
 npm run build
+npm run build
 ```
 
 ### Environment Variables
