@@ -29,7 +29,7 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.12.0",
+    "@modelcontextprotocol/sdk": "^1.16.0",
     "contentful-management": "^11.52.2",
     "dotenv": "^16.4.7",
     "fast-xml-parser": "^5.2.0",
