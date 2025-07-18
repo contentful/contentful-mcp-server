@@ -58,18 +58,18 @@ jobs:
 
           AFFECTED=$(npx nx show projects --affected)
           echo "Affected projects: $AFFECTED"
-          npx nx release --first-release --dry-run
+          npx nx release --first-release --dry-run --verbose
 
           git push --follow-tags
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish (main branch only)
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/nx-release-installation-configuration'
         run: |
           set -euox pipefail
           AFFECTED=$(npx nx show projects --affected)
           echo "Affected projects for publishing: $AFFECTED"
-          echo "$AFFECTED" | xargs -I {} npx nx release publish --dry-run --verbose --projects="{}"
+          npx nx release publish --dry-run --verbose
         env:
           GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_PACKAGES_WRITE_TOKEN }}
