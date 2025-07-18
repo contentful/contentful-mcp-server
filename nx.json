@@ -1,14 +1,13 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
   "neverConnectToCloud": true,
-
   "targetDefaults": {
     "build": {
-      "outputs": ["{projectRoot}/build"],
+      "outputs": ["{workspaceRoot}/build"],
       "cache": true
     },
     "update-licenses": {
-      "outputs": ["{projectRoot}/licenses"],
+      "outputs": ["{workspaceRoot}/licenses"],
       "cache": true
     },
     "format": {
@@ -42,5 +41,25 @@
         }
       }
     }
-  ]
+  ],
+  "release": {
+    "projects": ["."],
+    "version": {
+      "conventionalCommits": true
+    },
+    "changelog": {
+      "workspaceChangelog": {
+        "createRelease": "github",
+        "file": "{workspaceRoot}/CHANGELOG.md",
+        "renderOptions": {
+          "authors": false
+        }
+      }
+    },
+    "git": {
+      "commitMessage": "chore(release): publish {version} [skip ci]",
+      "tagMessage": "Release {version}"
+    },
+    "releaseTagPattern": "v{version}"
+  }
 }
