@@ -59,6 +59,6 @@
     "pretty-quick": "^4.2.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.2",
-    "vitest": "^3.2.1"
+    "vitest": "^3.2.4"
   }
 }
