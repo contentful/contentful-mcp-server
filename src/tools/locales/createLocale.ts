@@ -57,7 +57,6 @@ async function tool(args: Params) {
     fallbackCode: args.fallbackCode,
     contentDeliveryApi: args.contentDeliveryApi,
     contentManagementApi: args.contentManagementApi,
-    default: args.default,
     optional: args.optional,
   });
 
