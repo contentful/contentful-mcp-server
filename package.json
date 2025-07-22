@@ -13,6 +13,10 @@
   "files": [
     "build"
   ],
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "nodemon --ext ts --ignore build/ --watch src/ --exec 'npm run build && npm start'",
@@ -29,18 +33,20 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.12.0",
+    "@modelcontextprotocol/sdk": "^1.16.0",
     "contentful-management": "^11.52.2",
     "dotenv": "^16.4.7",
     "fast-xml-parser": "^5.2.0",
-    "get-it": "^8.3.2",
+    "get-it": "^8.6.10",
     "gpt-tokenizer": "^2.9.0",
     "outdent": "^0.8.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
     "@modelcontextprotocol/inspector": "0.15.0",
-    "@nx/js": "^21.2.3",
+    "@nx/js": "^21.3.2",
     "@types/node": "^22.13.11",
     "@typescript-eslint/eslint-plugin": "^8.29.1",
     "eslint-plugin-simple-import-sort": "^12.1.1",
