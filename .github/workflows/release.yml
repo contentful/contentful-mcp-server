@@ -50,7 +50,7 @@ jobs:
       # lint/test/build steps already run in build.yml/check.yml workflows.
       - name: Version and Tag (main branch only)
         # Technically, this is an unnecessary double check since the release job only runs on the main branch, see main.yml
-        if: github.event_name == 'push' && github.ref == 'refs/heads/fix_releases'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/fix_release_ely'
         run: |
           set -euox pipefail
           git config --global user.name "${GIT_AUTHOR_NAME}"
