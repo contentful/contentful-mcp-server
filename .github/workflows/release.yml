@@ -56,31 +56,16 @@ jobs:
 
       - uses: nrwl/nx-set-shas@dbe0650947e5f2c81f59190a38512cf49126fe6b # sets NX_BASE, NX_HEAD env vars
 
-      # lint/test/build steps already run in build.yml/check.yml workflows.
-      - name: Version and Tag (main branch only)
-        # Technically, this is an unnecessary double check since the release job only runs on the main branch, see main.yml
-        if: github.event_name == 'push' && github.ref == 'refs/heads/fix_release_ely'
+      - name: Setup npmrc file
         run: |
-          set -euox pipefail
-          git config --global user.name "${GIT_AUTHOR_NAME}"
-          git config --global user.email "${GIT_AUTHOR_EMAIL}"
-
-          echo "GIT_AUTHOR_NAME: ${GIT_AUTHOR_NAME}"
-          echo "GIT_AUTHOR_EMAIL: ${GIT_AUTHOR_EMAIL}"
-          echo "repoName: ${github.event.repository.name}"
-          echo "my GH token: ${MY_GITHUB_TOKEN}"
-
-          git remote set-url origin "https://${GIT_AUTHOR_NAME}:${MY_GITHUB_TOKEN}@github.com/contentful/contentful-mcp-server.git"
-
           echo "//npm.pkg.github.com/:_authToken=${GITHUB_PACKAGES_WRITE_TOKEN}" >> ~/.npmrc
 
-          AFFECTED=$(npx nx show projects --affected)
-          echo "Affected projects: $AFFECTED"
-          npx nx release --first-release --verbose --dry-run --yes
+      - name: Setting up Git User Credentials
+        run: |
+          git config --global user.name "GitHub CI"
+          git config --global user.email "github-actions@github.com"
 
-          git push --follow-tags
-        env:
-          MY_GITHUB_TOKEN: ${{ steps.vault.outputs.MY_GITHUB_TOKEN }}
-          GIT_AUTHOR_NAME: ${{ secrets.GIT_AUTHOR_NAME }}
-          GIT_AUTHOR_EMAIL: ${{ secrets.GIT_AUTHOR_EMAIL }}
-          GITHUB_PACKAGES_WRITE_TOKEN: ${{ secrets.GITHUB_PACKAGES_WRITE_TOKEN }}
+      - name: NX Release
+        # Technically, this is an unnecessary double check since the release job only runs on the main branch, see main.yml
+        if: github.event_name == 'push' && github.ref == 'refs/heads/fix_release_ely'
+        run: npx nx release --first-release --verbose --dry-run --yes
