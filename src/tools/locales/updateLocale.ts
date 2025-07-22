@@ -49,6 +49,7 @@ async function tool(args: Params) {
   const existingLocale = await contentfulClient.locale.get(params);
 
   // Remove read-only fields (nternal_code cannot be updated)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   delete (existingLocale as any).internal_code;
 
   // Build update data with only provided fields, merging with existing locale
