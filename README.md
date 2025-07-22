@@ -42,6 +42,10 @@ This MCP server provides a comprehensive set of tools for content management, al
 
 ### Installation
 
+#### One-Click install
+
+[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](cursor://anysphere.cursor-deeplink/mcp/install?name=contentful-mcp&config=eyJjb21tYW5kIjoibnB4IC15IDx5b3VyX2Z1bGxfcGF0aF90b190aGVfcGFja2FnZT4vaW5kZXguanMiLCJlbnYiOnsiQ09OVEVOVEZVTF9NQU5BR0VNRU5UX0FDQ0VTU19UT0tFTiI6InlvdXItQ01BLXRva2VuIiwiU1BBQ0VfSUQiOiJ5b3VyLXNwYWNlLWlkIiwiRU5WSVJPTk1FTlRfSUQiOiJtYXN0ZXIiLCJDT05URU5URlVMX0hPU1QiOiJhcGkuY29udGVudGZ1bC5jb20ifX0%3D)
+
 #### Install from source
 
 ```bash
@@ -64,7 +68,7 @@ npm run build
 
 Refer to the documentation for your AI tool of choice for how to configure MCP servers. For example, see the documentation for [Cursor](https://docs.cursor.com/context/mcp), [VS Code](https://code.visualstudio.com/docs/copilot/chat/mcp-servers), or [Claude Desktop](https://modelcontextprotocol.io/quickstart/user).
 
-Below is a sample configuration for Cursor:
+Below is a sample configuration:
 
 ```json
 {
