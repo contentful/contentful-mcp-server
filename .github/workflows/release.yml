@@ -38,12 +38,20 @@ jobs:
             secret/data/github/github_packages_write GITHUB_PACKAGES_WRITE_TOKEN | GITHUB_PACKAGES_WRITE_TOKEN;
             github/token/${{ github.event.repository.name }}-semantic-release token | GITHUB_TOKEN ;
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: '22'
           cache: 'npm'
 
-      - run: npm install
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Restore the build folders
+        uses: actions/cache/restore@v4
+        with:
+          path: build/
+          key: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
 
       - uses: nrwl/nx-set-shas@dbe0650947e5f2c81f59190a38512cf49126fe6b # sets NX_BASE, NX_HEAD env vars
 
