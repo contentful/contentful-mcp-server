@@ -29,7 +29,7 @@ export function registerLocaleTools(server: McpServer) {
 
   server.tool(
     'update_locale',
-    'Update an existing locale in your Contentful environment. You can modify the locale name, fallback behavior, API availability settings, and whether the locale is optional for content editors. Only provide the fields you want to change. IMPORTANT: Name changes must be different from existing name.',
+    'Update an existing locale in your Contentful environment. You can modify the locale name, code, fallback behavior, API availability settings, and whether the locale is optional for content editors. Only provide the fields you want to change. IMPORTANT: internal_code cannot be updated.',
     UpdateLocaleToolParams.shape,
     updateLocaleTool,
   );

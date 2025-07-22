@@ -8,6 +8,8 @@ import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
 export const UpdateLocaleToolParams = BaseToolSchema.extend({
   localeId: z.string().describe('The ID of the locale to update'),
   name: z.string().optional().describe('The name of the locale'),
+  // NOTE: internal_code changes are not allowed
+  code: z.string().optional().describe('The code of the locale'),
   fallbackCode: z
     .string()
     .optional()
@@ -46,10 +48,19 @@ async function tool(args: Params) {
   // First, get the existing locale
   const existingLocale = await contentfulClient.locale.get(params);
 
+  // Remove read-only fields (nternal_code cannot be updated)
+  delete (existingLocale as any).internal_code;
+
   // Build update data with only provided fields, merging with existing locale
   const updateData = { ...existingLocale };
 
   // Only update fields that are explicitly provided (not undefined)
+  if (args.name !== undefined) {
+    updateData.name = args.name;
+  }
+  if (args.code !== undefined) {
+    updateData.code = args.code;
+  }
   if (args.fallbackCode !== undefined) {
     updateData.fallbackCode = args.fallbackCode;
   }
