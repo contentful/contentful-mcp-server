@@ -44,7 +44,7 @@ This MCP server provides a comprehensive set of tools for content management, al
 
 #### One-Click install
 
-[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](cursor://anysphere.cursor-deeplink/mcp/install?name=contentful-mcp&config=eyJjb21tYW5kIjoibnB4IC15IDx5b3VyX2Z1bGxfcGF0aF90b190aGVfcGFja2FnZT4vaW5kZXguanMiLCJlbnYiOnsiQ09OVEVOVEZVTF9NQU5BR0VNRU5UX0FDQ0VTU19UT0tFTiI6InlvdXItQ01BLXRva2VuIiwiU1BBQ0VfSUQiOiJ5b3VyLXNwYWNlLWlkIiwiRU5WSVJPTk1FTlRfSUQiOiJtYXN0ZXIiLCJDT05URU5URlVMX0hPU1QiOiJhcGkuY29udGVudGZ1bC5jb20ifX0%3D)
+[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](cursor://anysphere.cursor-deeplink/mcp/install?name=contentful-mcp&config=eyJjb21tYW5kIjoibnB4IC15IEBjb250ZW50ZnVsL2NvbnRlbnRmdWwtbWNwLXNlcnZlciIsImVudiI6eyJDT05URU5URlVMX01BTkFHRU1FTlRfQUNDRVNTX1RPS0VOIjoieW91ci1DTUEtdG9rZW4iLCJTUEFDRV9JRCI6InlvdXItc3BhY2UtaWQiLCJFTlZJUk9OTUVOVF9JRCI6Im1hc3RlciIsIkNPTlRFTlRGVUxfSE9TVCI6ImFwaS5jb250ZW50ZnVsLmNvbSJ9fQ%3D%3D)
 
 #### Install from source
 
