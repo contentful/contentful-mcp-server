@@ -2,6 +2,8 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { getLocaleTool, GetLocaleToolParams } from './getLocale.js';
 import { createLocaleTool, CreateLocaleToolParams } from './createLocale.js';
 import { listLocaleTool, ListLocaleToolParams } from './listLocales.js';
+import { updateLocaleTool, UpdateLocaleToolParams } from './updateLocale.js';
+import { deleteLocaleTool, DeleteLocaleToolParams } from './deleteLocale.js';
 
 export function registerLocaleTools(server: McpServer) {
   server.tool(
@@ -23,5 +25,19 @@ export function registerLocaleTools(server: McpServer) {
     'List all locales in your Contentful environment. Returns locale information including language codes, fallback settings, and API availability.',
     ListLocaleToolParams.shape,
     listLocaleTool,
+  );
+
+  server.tool(
+    'update_locale',
+    'Update an existing locale in your Contentful environment. You can modify the locale name, fallback behavior, API availability settings, and whether the locale is optional for content editors. Only provide the fields you want to change. IMPORTANT: Name changes must be different from existing name.',
+    UpdateLocaleToolParams.shape,
+    updateLocaleTool,
+  );
+
+  server.tool(
+    'delete_locale',
+    'Delete a specific locale from your Contentful environment. This operation permanently removes the locale and cannot be undone.',
+    DeleteLocaleToolParams.shape,
+    deleteLocaleTool,
   );
 }
