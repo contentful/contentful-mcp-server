@@ -114,6 +114,11 @@ Below is a sample configuration for Cursor:
 |                           | `list_environments`        | List environments                                |
 |                           | `create_environment`       | Create new environments                          |
 |                           | `delete_environment`       | Remove environments                              |
+| **Locales**               | `list_locales`             | List all locales in your environment             |
+|                           | `get_locale`               | Retrieve specific locale information             |
+|                           | `create_locale`            | Create new locales for multi-language content    |
+|                           | `update_locale`            | Modify existing locale settings                  |
+|                           | `delete_locale`            | Remove locales from environment                  |
 | **Tags**                  | `list_tags`                | List all tags                                    |
 |                           | `create_tag`               | Create new tags                                  |
 | **AI Actions**            | `create_ai_action`         | Create custom AI-powered workflows               |

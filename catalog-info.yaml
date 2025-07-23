@@ -7,7 +7,7 @@ metadata:
   annotations:
     circleci.com/project-slug: github/contentful/contentful-mcp-server
     github.com/project-slug: contentful/contentful-mcp-server
-    contentful.com/service-tier: "4"
+    contentful.com/service-tier: '4'
   tags:
     - tier-4
 spec:
