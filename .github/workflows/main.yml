@@ -17,7 +17,7 @@ jobs:
     uses: ./.github/workflows/check.yml
 
   release:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/fix_releases'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: [build, check]
     permissions:
       contents: write
