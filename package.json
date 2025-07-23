@@ -48,7 +48,7 @@
     "@modelcontextprotocol/inspector": "0.15.0",
     "@nx/js": "^21.3.2",
     "@types/node": "^22.13.11",
-    "@typescript-eslint/eslint-plugin": "^8.29.1",
+    "@typescript-eslint/eslint-plugin": "^8.38.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-unused-imports": "^4.1.4",
     "husky": "^9.1.7",
