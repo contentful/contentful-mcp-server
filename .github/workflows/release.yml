@@ -67,5 +67,5 @@ jobs:
 
       - name: NX Release
         # Technically, this is an unnecessary double check since the release job only runs on the main branch, see main.yml
-        if: github.event_name == 'push' && github.ref == 'refs/heads/fix_release_ely'
+        if: github.event_name == 'push' && github.ref == 'refs/heads/fix_releases'
         run: npx nx release --first-release --verbose --dry-run --yes
