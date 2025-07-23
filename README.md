@@ -44,7 +44,7 @@ This MCP server provides a comprehensive set of tools for content management, al
 
 #### One-Click install
 
-[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=contentful-mcp&config=eyJjb21tYW5kIjogIm5weCIsICJhcmdzIjogWyIteSIsICJAY29udGVudGZ1bC9jb250ZW50ZnVsLW1jcC1zZXJ2ZXIiXSwgImVudiI6IHsiQ09OVEVOREZVTF9NQU5BR0VNRU5UX0FDQ0VTU19UT0tFTiI6ICJ5b3VyLUNNQS10b2tlbiIsICJTUEFDRV9JRCI6ICJ5b3VyLXNwYWNlLWlkIiwgIkVOVklST05NRU5UX0lEIjogIm1hc3RlciIsICJDT05URU5URlVMX0hPU1QiOiAiYXBpLmNvbnRlbnRmdWwuY29tIn19Cg%3D%3D)
+[![Install MCP Server](https://cursor.com/deeplink/mcp-install-dark.svg)](https://cursor.com/install-mcp?name=contentful-mcp&config=eyJjb21tYW5kIjogIm5weCIsICJhcmdzIjogWyIteSIsICJAY29udGVudGZ1bC9jb250ZW50ZnVsLW1jcC1zZXJ2ZXIiXSwgImVudiI6IHsiQ09OVEVOVEZVTF9NQU5BR0VNRU5UX0FDQ0VTU19UT0tFTiI6ICJ5b3VyLUNNQS10b2tlbiIsICJTUEFDRV9JRCI6ICJ5b3VyLXNwYWNlLWlkIiwgIkVOVklST05NRU5UX0lEIjogIm1hc3RlciIsICJDT05URU5URlVMX0hPU1QiOiAiYXBpLmNvbnRlbnRmdWwuY29tIn19Cg%3D%3D)
 
 _Note: This requires [Cursor](https://cursor.com/) to be installed. If the link doesn't work, try the manual installation below._
 
