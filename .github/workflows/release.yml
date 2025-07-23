@@ -44,14 +44,19 @@ jobs:
       - uses: nrwl/nx-set-shas@dbe0650947e5f2c81f59190a38512cf49126fe6b # sets NX_BASE, NX_HEAD env vars
 
       # lint/test/build steps already run in build.yml/check.yml workflows.
+      - name: Get User ID
+        id: get-user-id
+        run: echo "user-id=$(gh api "/users/contentful-automation[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+        env:
+          GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_PACKAGES_WRITE_TOKEN }}
 
       - name: Version and Tag (main branch only)
         # Technically, this is an unnecessary double check since the release job only runs on the main branch, see main.yml
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           set -euox pipefail
-          git config --global user.name "GitHub CI"
-          git config --global user.email "github-actions@github.com"
+          git config --global user.name 'contentful-automation[bot]'
+          git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+contentful-automation[bot]@users.noreply.github.com'
 
           AFFECTED=$(npx nx show projects --affected)
           echo "Affected projects: $AFFECTED"
@@ -59,7 +64,7 @@ jobs:
 
           git push --follow-tags
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_PACKAGES_WRITE_TOKEN }}
 
       - name: Publish (main branch only)
         # Technically, this is an unnecessary double check since the release job only runs on the main branch, see main.yml
