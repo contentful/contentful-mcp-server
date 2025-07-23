@@ -1,0 +1,73 @@
+name: release
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  workflow_call:
+
+permissions:
+  contents: write
+  id-token: write
+  actions: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+
+      - name: 'Retrieve Secrets from Vault'
+        id: vault
+        uses: hashicorp/vault-action@v3.3.0
+        with:
+          url: ${{ secrets.VAULT_URL }}
+          role: ${{ github.event.repository.name }}-github-action
+          method: jwt
+          path: github-actions
+          exportEnv: false
+          secrets: |
+            secret/data/github/github_packages_read GITHUB_PACKAGES_READ_TOKEN | GITHUB_PACKAGES_READ_TOKEN ;
+            secret/data/github/github_packages_write GITHUB_PACKAGES_WRITE_TOKEN | GITHUB_PACKAGES_WRITE_TOKEN ;
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - run: npm install
+        env:
+          NPM_TOKEN: ${{ steps.vault.outputs.GITHUB_PACKAGES_READ_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_PACKAGES_READ_TOKEN }}
+
+      - uses: nrwl/nx-set-shas@dbe0650947e5f2c81f59190a38512cf49126fe6b # sets NX_BASE, NX_HEAD env vars
+
+      # lint/test/build steps already run in build.yml/check.yml workflows.
+
+      - name: Version and Tag (main branch only)
+        # Technically, this is an unnecessary double check since the release job only runs on the main branch, see main.yml
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          set -euox pipefail
+          git config --global user.name "GitHub CI"
+          git config --global user.email "github-actions@github.com"
+
+          AFFECTED=$(npx nx show projects --affected)
+          echo "Affected projects: $AFFECTED"
+          npx nx release --first-release --verbose
+
+          git push --follow-tags
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish (main branch only)
+        # Technically, this is an unnecessary double check since the release job only runs on the main branch, see main.yml
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          set -euox pipefail
+          AFFECTED=$(npx nx show projects --affected)
+          echo "Affected projects for publishing: $AFFECTED"
+          npx nx release publish --verbose
+        env:
+          GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_PACKAGES_WRITE_TOKEN }}

@@ -145,7 +145,17 @@ src/
 ├── scripts/         # Build and utility scripts
 ```
 
-## 🔄 Pull Request Process
+## Semantic Release Process
+
+This project uses Github actions [Nx Release](https://nx.dev/features/manage-releases) and [conventional commits](https://www.conventionalcommits.org/) to manage releases/versioning.
+
+- update `CHANGELOG.md`
+- create a new git tag.
+- update the `package.json` version
+- push the new version to github/npm repositories.
+- create a github release
+
+See github action: [release.yml](https://github.com/contentful/contentful-mcp-server/blob/main/.github/workflows/release.yml) for more info.
 
 ### Before Submitting
 

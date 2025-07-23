@@ -1,4 +1,6 @@
 name: CI
+permissions:
+  contents: read
 
 on:
   push:
@@ -13,3 +15,12 @@ jobs:
   check:
     needs: build
     uses: ./.github/workflows/check.yml
+
+  release:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [build, check]
+    permissions:
+      contents: write
+      id-token: write
+      actions: read
+    uses: ./.github/workflows/release.yml
