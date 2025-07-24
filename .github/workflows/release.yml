@@ -87,3 +87,7 @@ jobs:
         # Technically, this is an unnecessary double check since the release job only runs on the main branch, see main.yml
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: npx nx release --first-release --verbose --yes
+        env:
+          GITHUB_PACKAGES_WRITE_TOKEN: ${{ steps.vault.outputs.GITHUB_PACKAGES_WRITE_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_PACKAGES_WRITE_TOKEN }}
+          GITHUB_PACKAGES_READ_TOKEN: ${{ steps.vault.outputs.GITHUB_PACKAGES_READ_TOKEN }}
