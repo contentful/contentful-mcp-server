@@ -65,8 +65,23 @@ jobs:
 
       - name: Setting up Git User Credentials
         run: |
-          git config --global user.name "contentful-automation[bot]"
+          git config --global user.name 'contentful-automation[bot]'
           git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+contentful-automation[bot]@users.noreply.github.com'
+        env:
+          GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_PACKAGES_WRITE_TOKEN }}
+
+      - name: debugging, delete this
+        # run: printenv
+        run: |
+          printenv
+          echo "GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}"
+          echo "GITHUB_PACKAGES_WRITE_TOKEN: ${{ steps.vault.outputs.GITHUB_PACKAGES_WRITE_TOKEN }}"
+          echo "GITHUB_PACKAGES_READ_TOKEN: ${{ steps.vault.outputs.GITHUB_PACKAGES_READ_TOKEN }}"
+          git config --list
+        env:
+          GITHUB_PACKAGES_WRITE_TOKEN: ${{ steps.vault.outputs.GITHUB_PACKAGES_WRITE_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_PACKAGES_WRITE_TOKEN }}
+          GITHUB_PACKAGES_READ_TOKEN: ${{ steps.vault.outputs.GITHUB_PACKAGES_READ_TOKEN }}
 
       - name: NX Release
         # Technically, this is an unnecessary double check since the release job only runs on the main branch, see main.yml
