@@ -57,11 +57,11 @@ jobs:
         run: |
           echo "//npm.pkg.github.com/:_authToken=${GITHUB_PACKAGES_WRITE_TOKEN}" >> ~/.npmrc
 
-      - name: Get Automation Bot User ID
+      - name: Get User ID
         id: get-user-id
         run: echo "user-id=$(gh api "/users/contentful-automation[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
         env:
-          GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_PACKAGES_WRITE_TOKEN }}
 
       - name: Setting up Git User Credentials
         run: |
