@@ -61,14 +61,14 @@ jobs:
         id: get-user-id
         run: echo "user-id=$(gh api "/users/contentful-automation[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
         env:
-          GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_PACKAGES_WRITE_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
 
       - name: Setting up Git User Credentials
         run: |
           git config --global user.name 'contentful-automation[bot]'
           git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+contentful-automation[bot]@users.noreply.github.com'
         env:
-          GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_PACKAGES_WRITE_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
 
       - name: debugging, delete this
         # run: printenv
