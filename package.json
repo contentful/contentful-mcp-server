@@ -47,7 +47,7 @@
     "@commitlint/config-conventional": "^19.8.1",
     "@modelcontextprotocol/inspector": "0.15.0",
     "@nx/js": "^21.3.6",
-    "@types/node": "^22.13.11",
+    "@types/node": "^22.16.5",
     "@typescript-eslint/eslint-plugin": "^8.38.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-unused-imports": "^4.1.4",
