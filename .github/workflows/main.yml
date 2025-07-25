@@ -24,3 +24,5 @@ jobs:
       id-token: write
       actions: read
     uses: ./.github/workflows/release.yml
+    secrets:
+      VAULT_URL: ${{ secrets.VAULT_URL }}

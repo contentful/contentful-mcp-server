@@ -77,7 +77,7 @@ Below is a sample configuration:
   "mcpServers": {
     "contentful-mcp": {
       "command": "npx",
-      "args": ["-y", "<your_full_path_to_the_package>/index.js"],
+      "args": ["-y", "@contentful/mcp-server"],
       "env": {
         "CONTENTFUL_MANAGEMENT_ACCESS_TOKEN": "your-CMA-token",
         "SPACE_ID": "your-space-id",
