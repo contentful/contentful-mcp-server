@@ -56,7 +56,7 @@ jobs:
 
       - name: Setup npmrc file
         run: |
-          echo "//npm.pkg.github.com/:_authToken=${GITHUB_PACKAGES_WRITE_TOKEN}" >> ~/.npmrc
+          echo -e "//npm.pkg.github.com/:_authToken=${{ steps.vault.outputs.GITHUB_PACKAGES_WRITE_TOKEN }}\n@contentful:registry=https://npm.pkg.github.com" > ./.npmrc
 
       - name: Get User ID
         id: get-user-id
