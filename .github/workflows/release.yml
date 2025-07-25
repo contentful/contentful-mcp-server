@@ -71,23 +71,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
 
-      - name: debugging, delete this
-        # run: printenv
-        run: |
-          printenv
-          echo "GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}"
-          echo "GITHUB_PACKAGES_WRITE_TOKEN: ${{ steps.vault.outputs.GITHUB_PACKAGES_WRITE_TOKEN }}"
-          echo "GITHUB_PACKAGES_READ_TOKEN: ${{ steps.vault.outputs.GITHUB_PACKAGES_READ_TOKEN }}"
-          git config --list
-        env:
-          GITHUB_PACKAGES_WRITE_TOKEN: ${{ steps.vault.outputs.GITHUB_PACKAGES_WRITE_TOKEN }}
-          GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_PACKAGES_WRITE_TOKEN }}
-          GITHUB_PACKAGES_READ_TOKEN: ${{ steps.vault.outputs.GITHUB_PACKAGES_READ_TOKEN }}
-
       - name: NX Release
         # Technically, this is an unnecessary double check since the release job only runs on the main branch, see main.yml
-        if: github.event_name == 'push' && github.ref == 'refs/heads/releases_work'
-        run: npx nx release --first-release --verbose --yes
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: npx nx release --yes
         env:
           GITHUB_PACKAGES_WRITE_TOKEN: ${{ steps.vault.outputs.GITHUB_PACKAGES_WRITE_TOKEN }}
           GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_PACKAGES_WRITE_TOKEN }}
