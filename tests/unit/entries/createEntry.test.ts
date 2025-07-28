@@ -15,7 +15,6 @@ describe('createEntry', () => {
   };
 
   beforeEach(() => {
-    vi.clearAllMocks();
     vi.mocked(createToolClient).mockReturnValue(
       mockClient as unknown as ReturnType<typeof createToolClient>,
     );
@@ -83,6 +82,7 @@ describe('createEntry', () => {
     const result = await createEntryTool(mockArgs);
 
     expect(createToolClient).toHaveBeenCalledWith(mockArgs);
+
     const expectedResponse = formatResponse('Entry created successfully', {
       newEntry: mockCreatedEntry,
     });
