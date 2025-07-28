@@ -91,11 +91,19 @@ describe('createEntry', () => {
 
     mockEntryCreate.mockResolvedValue(mockCreatedEntry);
 
-    await createEntryTool(mockArgs);
+    const result = await createEntryTool(mockArgs);
 
     expect(mockEntryCreate).toHaveBeenCalledWith(expect.any(Object), {
       fields: mockArgs.fields,
       metadata: mockArgs.metadata,
+    });
+    expect(result).toEqual({
+      content: [
+        {
+          type: 'text',
+          text: expect.stringContaining('Entry created successfully'),
+        },
+      ],
     });
   });
 });
