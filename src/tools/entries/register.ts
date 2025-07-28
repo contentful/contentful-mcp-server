@@ -34,7 +34,7 @@ export function registerEntriesTools(server: McpServer) {
 
   server.tool(
     'update_entry',
-    "Update an existing entry. The handler will merge your field updates with the existing entry fields, so you only need to provide the fields and locales you want to change. IMPORTANT: All field values MUST include a locale key (e.g., 'en-US') for each value, like: { title: { 'en-US': 'My Updated Title' } }. Every field in Contentful requires a locale even for single-language content. RICH TEXT FIELDS: When updating rich text fields, ALL text nodes MUST include a 'marks' property (can be empty array [] for no formatting). Text nodes with formatting need appropriate marks: { nodeType: 'text', value: 'Bold text', marks: [{ type: 'bold' }], data: {} }.",
+    "Update an existing entry. The handler will merge your field updates with the existing entry fields, so you only need to provide the fields you want to change. However, for multiple-locale fields, all existing locales must be included in the update. IMPORTANT: All field values MUST include a locale key (e.g., 'en-US') for each value, like: { title: { 'en-US': 'My Updated Title' } }. Every field in Contentful requires a locale even for single-language content. When updating entries with multiple locales, always include all existing locales in the update to prevent overwriting with empty values. RICH TEXT FIELDS: When updating rich text fields, ALL text nodes MUST include a 'marks' property (can be empty array [] for no formatting). Text nodes with formatting need appropriate marks: { nodeType: 'text', value: 'Bold text', marks: [{ type: 'bold' }], data: {} }.",
     UpdateEntryToolParams.shape,
     updateEntryTool,
   );
