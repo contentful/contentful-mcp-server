@@ -40,7 +40,7 @@
     "get-it": "^8.6.10",
     "gpt-tokenizer": "^2.9.0",
     "outdent": "^0.8.0",
-    "zod": "^3.24.2"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
