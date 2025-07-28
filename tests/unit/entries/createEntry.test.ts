@@ -143,4 +143,30 @@ describe('createEntry', () => {
       ],
     });
   });
+
+  it('should handle errors when entry creation fails', async () => {
+    const mockArgs = {
+      spaceId: 'test-space-id',
+      environmentId: 'test-environment',
+      contentTypeId: 'invalid-content-type',
+      fields: {
+        title: { 'en-US': 'Test Entry' },
+      },
+    };
+
+    const error = new Error('Content type not found');
+    mockEntryCreate.mockRejectedValue(error);
+
+    const result = await createEntryTool(mockArgs);
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: 'Error creating entry: Content type not found',
+        },
+      ],
+    });
+  });
 });
