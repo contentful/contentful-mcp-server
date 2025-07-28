@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { createEntryTool } from '../../../src/tools/entries/createEntry.js';
 import { createToolClient } from '../../../src/utils/tools.js';
-import { resetAllMocks } from '../../helpers/testUtils.js';
 
 vi.mock('../../../src/utils/tools.js');
 vi.mock('../../../src/config/contentful.js');
@@ -15,7 +14,7 @@ describe('createEntry', () => {
   };
 
   beforeEach(() => {
-    resetAllMocks();
+    vi.clearAllMocks();
     vi.mocked(createToolClient).mockReturnValue(
       mockClient as unknown as ReturnType<typeof createToolClient>,
     );
