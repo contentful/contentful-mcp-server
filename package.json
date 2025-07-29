@@ -33,19 +33,19 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.16.0",
+    "@modelcontextprotocol/sdk": "^1.17.0",
     "contentful-management": "^11.54.3",
     "dotenv": "^16.4.7",
     "fast-xml-parser": "^5.2.5",
     "get-it": "^8.6.10",
     "gpt-tokenizer": "^2.9.0",
     "outdent": "^0.8.0",
-    "zod": "^3.24.2"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
-    "@modelcontextprotocol/inspector": "0.16.1",
+    "@modelcontextprotocol/inspector": "0.16.2",
     "@nx/js": "^21.3.6",
     "@types/node": "^22.16.5",
     "@typescript-eslint/eslint-plugin": "^8.38.0",
