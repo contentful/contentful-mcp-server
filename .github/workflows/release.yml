@@ -74,8 +74,9 @@ jobs:
       - name: NX Release
         # Technically, this is an unnecessary double check since the release job only runs on the main branch, see main.yml
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: npx nx release --yes
+        run: |
+          git config --global user.name 'contentful-automation[bot]'
+          git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+contentful-automation[bot]@users.noreply.github.com'
+          npx nx release --yes
         env:
-          GITHUB_PACKAGES_WRITE_TOKEN: ${{ steps.vault.outputs.GITHUB_PACKAGES_WRITE_TOKEN }}
           GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
-          GITHUB_PACKAGES_READ_TOKEN: ${{ steps.vault.outputs.GITHUB_PACKAGES_READ_TOKEN }}
