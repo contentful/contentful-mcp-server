@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { createEntryTool } from '../../../src/tools/entries/createEntry.js';
-import { createToolClient } from '../../../src/utils/tools.js';
-import { formatResponse } from '../../../src/utils/formatters.js';
+import { createEntryTool } from './createEntry.js';
+import { createToolClient } from '../../utils/tools.js';
+import { formatResponse } from '../../utils/formatters.js';
 
 vi.mock('../../../src/utils/tools.js');
 vi.mock('../../../src/config/contentful.js');
