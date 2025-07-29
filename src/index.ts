@@ -7,7 +7,11 @@ import { registerAllTools } from './tools/register.js';
 import { VERSION } from './config/version.js';
 
 if (process.env.NODE_ENV === 'development') {
-  import('mcps-logger/console');
+  try {
+    await import('mcps-logger/console');
+  } catch {
+    console.warn('mcps-logger not available in production environment');
+  }
 }
 
 const MCP_SERVER_NAME = '@contentful/mcp-server';
