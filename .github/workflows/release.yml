@@ -35,7 +35,9 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v4
-        with: { fetch-depth: 0 }
+        with: 
+          fetch-depth: 0
+          token: ${{ steps.vault.outputs.GITHUB_TOKEN }}
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -58,25 +60,10 @@ jobs:
         run: |
           echo -e "//npm.pkg.github.com/:_authToken=${{ steps.vault.outputs.GITHUB_PACKAGES_WRITE_TOKEN }}\n@contentful:registry=https://npm.pkg.github.com" > ./.npmrc
 
-      - name: Get User ID
-        id: get-user-id
-        run: echo "user-id=$(gh api "/users/contentful-automation[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
-        env:
-          GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
-
-      - name: Setting up Git User Credentials
-        run: |
-          git config --global user.name 'contentful-automation[bot]'
-          git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+contentful-automation[bot]@users.noreply.github.com'
-        env:
-          GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
-
       - name: NX Release
         # Technically, this is an unnecessary double check since the release job only runs on the main branch, see main.yml
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
-          git config --global user.name 'contentful-automation[bot]'
-          git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+contentful-automation[bot]@users.noreply.github.com'
           npx nx release --yes
         env:
           GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
