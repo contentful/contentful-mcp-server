@@ -33,7 +33,17 @@ jobs:
             secret/data/github/github_packages_write GITHUB_PACKAGES_WRITE_TOKEN | GITHUB_PACKAGES_WRITE_TOKEN;
             github/token/${{ github.event.repository.name }}-semantic-release token | GITHUB_TOKEN ;
 
-      
+      - name: Get User ID
+        id: get-user-id
+        run: echo "user-id=$(gh api "/users/contentful-automation[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+        env:
+          GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
+
+      - name: Setting up Git User Credentials
+        run: |
+          git config --global user.name 'contentful-automation[bot]'
+          git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+contentful-automation[bot]@users.noreply.github.com'
+
       - name: "Read identity"
         run: |
           git config --get user.name
