@@ -1,3 +1,12 @@
+## 1.0.1 (2025-07-30)
+
+### 🩹 Fixes
+
+- node_env check to import mcps_logger now opt in [DX-300] ([#65](https://github.com/contentful/contentful-mcp-server/pull/65))
+- update github token for release script [DX-302] ([#67](https://github.com/contentful/contentful-mcp-server/pull/67))
+- add github user config to release step [DX-302] ([#69](https://github.com/contentful/contentful-mcp-server/pull/69))
+- [PDHD-6691] fix release workflow ([#74](https://github.com/contentful/contentful-mcp-server/pull/74))
+
 # 1.0.0 (2025-07-25)
 
 ### 🚀 Features
