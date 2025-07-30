@@ -52,7 +52,7 @@ jobs:
           path: build/
           key: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
 
-      - uses: nrwl/nx-set-shas@dbe0650947e5f2c81f59190a38512cf49126fe6b # sets NX_BASE, NX_HEAD env vars
+      - uses: nrwl/nx-set-shas@826660b82addbef3abff5fa871492ebad618c9e1 # sets NX_BASE, NX_HEAD env vars
 
       - name: Setup npmrc file
         run: |
