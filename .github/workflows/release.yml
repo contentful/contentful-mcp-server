@@ -33,6 +33,11 @@ jobs:
             secret/data/github/github_packages_write GITHUB_PACKAGES_WRITE_TOKEN | GITHUB_PACKAGES_WRITE_TOKEN;
             github/token/${{ github.event.repository.name }}-semantic-release token | GITHUB_TOKEN ;
 
+      
+      - name: "Read identity"
+        run: |
+          git config --get user.name
+          git config --get user.email
       - name: Checkout code
         uses: actions/checkout@v4
         with: 
@@ -59,11 +64,6 @@ jobs:
       - name: Setup npmrc file
         run: |
           echo -e "//npm.pkg.github.com/:_authToken=${{ steps.vault.outputs.GITHUB_PACKAGES_WRITE_TOKEN }}\n@contentful:registry=https://npm.pkg.github.com" > ./.npmrc
-
-      - run: |
-          git config --get user.name
-          git config --get user.email
-
       - name: NX Release
         # Technically, this is an unnecessary double check since the release job only runs on the main branch, see main.yml
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
