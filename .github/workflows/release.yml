@@ -44,10 +44,6 @@ jobs:
           git config --global user.name 'contentful-automation[bot]'
           git config --global user.email '${{ steps.get-user-id.outputs.user-id }}+contentful-automation[bot]@users.noreply.github.com'
 
-      - name: "Read identity"
-        run: |
-          git config --get user.name
-          git config --get user.email
       - name: Checkout code
         uses: actions/checkout@v4
         with: 
