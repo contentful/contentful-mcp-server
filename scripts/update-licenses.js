@@ -213,9 +213,17 @@ async function updateNoticeFile(runtimePackages, devPackages) {
   const formatPackages = (packages) => {
     return packages
       .map((pkg) => {
-        const url = pkg.repository.includes('npmjs.com')
-          ? pkg.repository
-          : `https://www.npmjs.com/package/${pkg.name}`;
+        let url;
+        try {
+          const parsedUrl = new URL(pkg.repository);
+          if (parsedUrl.host === 'npmjs.com' || parsedUrl.host.endsWith('.npmjs.com')) {
+            url = pkg.repository;
+          } else {
+            url = `https://www.npmjs.com/package/${pkg.name}`;
+          }
+        } catch (err) {
+          url = `https://www.npmjs.com/package/${pkg.name}`;
+        }
 
         return `${pkg.name}
     License: ${pkg.license}
