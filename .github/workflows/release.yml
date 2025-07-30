@@ -48,6 +48,7 @@ jobs:
         uses: actions/checkout@v4
         with: 
           fetch-depth: 0
+          ref: main
           token: ${{ steps.vault.outputs.GITHUB_TOKEN }}
 
       - name: Setup Node.js
@@ -73,7 +74,7 @@ jobs:
 
       - name: NX Release
         # Technically, this is an unnecessary double check since the release job only runs on the main branch, see main.yml
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        # if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           npx nx release --yes
         env:
