@@ -46,7 +46,7 @@ jobs:
 
       - name: Checkout code
         uses: actions/checkout@v4
-        with: 
+        with:
           fetch-depth: 0
           token: ${{ steps.vault.outputs.GITHUB_TOKEN }}
 
@@ -62,7 +62,7 @@ jobs:
       - name: Restore the build folders
         uses: actions/cache/restore@v4
         with:
-          path: build/
+          path: build
           key: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
 
       - uses: nrwl/nx-set-shas@dbe0650947e5f2c81f59190a38512cf49126fe6b # sets NX_BASE, NX_HEAD env vars

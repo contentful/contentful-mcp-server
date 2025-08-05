@@ -30,8 +30,7 @@
     "inspect:watch": "node ./scripts/inspect-watch.js",
     "logs:watch": "npx mcps-logger",
     "update-licenses": "node scripts/update-licenses.js",
-    "prepare": "husky",
-    "prepublishOnly": "npm run build"
+    "prepare": "husky"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.0",
