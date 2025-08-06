@@ -31,7 +31,7 @@ This MCP server provides a comprehensive set of tools for content management, al
 - [📄 License and Notices](#-license-and-notices)
 - [🛡️ Code of Conduct](#️-code-of-conduct)
 
-## ⚙️ Getting Started
+## ⚙️ Getting started
 
 ### Prerequisites
 
@@ -65,6 +65,7 @@ npm run build
 | `SPACE_ID`                           | ✅ Yes   | -                    | Your Contentful Space ID                             |
 | `ENVIRONMENT_ID`                     | ❌ No    | `master`             | Target environment within your space                 |
 | `CONTENTFUL_HOST`                    | ❌ No    | `api.contentful.com` | Contentful API host                                  |
+| `NODE_ENV`                           | ❌ No    | `production`         | Node Environment to run in                           |
 
 ### Configuration
 
