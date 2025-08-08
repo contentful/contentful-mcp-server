@@ -75,23 +75,21 @@ jobs:
       #     npx nx release --yes
       #   env:
       #     GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
-
-      - name: Delete existing release if it exists
-        run: |
-          gh release delete v0.2.0 --yes || true
-          git tag -d v0.2.0 || true
-          git push --delete origin v0.2.0 || true
-        env:
-          GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
-
       - name: Create Test Release
         run: gh release create v0.2.0
+        env:
+          GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
+      - name: Get latest release tag
+        id: get-tag
+        run: |
+          TAG=$(gh api repos/${{ github.repository }}/releases/latest --jq .tag_name)
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
         env:
           GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
 
       - name: Upload DXT file to release
         run: |
-          gh release upload v0.2.0 \
+          gh release upload ${{ steps.get-tag.outputs.tag }} \
             ./contentful-mcp-server.dxt
         env:
           GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
