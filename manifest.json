@@ -1,7 +1,7 @@
 {
   "dxt_version": "0.1",
   "name": "@contentful/mcp-server",
-  "version": "0.0.1",
+  "version": "0.1.5",
   "description": "MCP (Model Context Protocol) server for the Contentful Management API",
   "author": {
     "name": "Contentful"

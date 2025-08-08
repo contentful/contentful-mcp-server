@@ -70,15 +70,12 @@ jobs:
         run: |
           echo -e "//npm.pkg.github.com/:_authToken=${{ steps.vault.outputs.GITHUB_PACKAGES_WRITE_TOKEN }}\n@contentful:registry=https://npm.pkg.github.com" > ./.npmrc
 
-      # - name: NX Release
-      #   run: |
-      #     npx nx release --yes
-      #   env:
-      #     GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
-      - name: Create Test Release
-        run: gh release create v0.2.0
+      - name: NX Release
+        run: |
+          npx nx release --yes
         env:
           GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
+
       - name: Get latest release tag
         id: get-tag
         run: |
