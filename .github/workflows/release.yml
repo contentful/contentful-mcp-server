@@ -59,7 +59,9 @@ jobs:
       - name: Restore the build folders
         uses: actions/cache/restore@v4
         with:
-          path: build
+          path: |
+            build
+            contentful-mcp-server.dxt
           key: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
 
       - uses: nrwl/nx-set-shas@dbe0650947e5f2c81f59190a38512cf49126fe6b # sets NX_BASE, NX_HEAD env vars
@@ -69,9 +71,22 @@ jobs:
           echo -e "//npm.pkg.github.com/:_authToken=${{ steps.vault.outputs.GITHUB_PACKAGES_WRITE_TOKEN }}\n@contentful:registry=https://npm.pkg.github.com" > ./.npmrc
 
       - name: NX Release
-        # Technically, this is an unnecessary double check since the release job only runs on the main branch, see main.yml
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         run: |
           npx nx release --yes
+        env:
+          GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
+
+      - name: Get latest release tag
+        id: get-tag
+        run: |
+          TAG=$(gh api repos/${{ github.repository }}/releases/latest --jq .tag_name)
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
+
+      - name: Upload DXT file to release
+        run: |
+          gh release upload ${{ steps.get-tag.outputs.tag }} \
+            ./contentful-mcp-server.dxt
         env:
           GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
