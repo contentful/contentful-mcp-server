@@ -83,10 +83,7 @@ jobs:
 
       - name: Upload DXT file to release
         run: |
-          gh release upload  \
+          gh release upload v0.1.3 \
             ./contentful-mcp-server.dxt
-        # run: |
-        #   gh release upload ${{ github.event.release.tag_name }} \
-        #     ./contentful-mcp-server.dxt
         env:
           GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
