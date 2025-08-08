@@ -76,6 +76,14 @@ jobs:
       #   env:
       #     GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
 
+      - name: Delete existing release if it exists
+        run: |
+          gh release delete v0.2.0 --yes || true
+          git tag -d v0.2.0 || true
+          git push --delete origin v0.2.0 || true
+        env:
+          GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
+
       - name: Create Test Release
         run: gh release create v0.2.0
         env:
