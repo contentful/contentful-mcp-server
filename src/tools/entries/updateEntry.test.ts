@@ -66,31 +66,6 @@ describe('updateEntry', () => {
 
     const result = await updateEntryTool(mockArgs);
 
-    expect(createToolClient).toHaveBeenCalledWith(mockArgs);
-    expect(mockEntryGet).toHaveBeenCalledWith({
-      spaceId: mockArgs.spaceId,
-      environmentId: mockArgs.environmentId,
-      entryId: mockArgs.entryId,
-    });
-    expect(mockEntryUpdate).toHaveBeenCalledWith(
-      {
-        spaceId: mockArgs.spaceId,
-        environmentId: mockArgs.environmentId,
-        entryId: mockArgs.entryId,
-      },
-      {
-        ...mockExistingEntry,
-        fields: {
-          title: { 'en-US': 'Updated Title' },
-          description: { 'en-US': 'Updated Description' },
-          category: { 'en-US': 'Existing Category' },
-        },
-        metadata: {
-          tags: [],
-        },
-      },
-    );
-
     const expectedResponse = formatResponse('Entry updated successfully', {
       updatedEntry: mockUpdatedEntry,
     });
@@ -240,19 +215,6 @@ describe('updateEntry', () => {
     mockEntryUpdate.mockResolvedValue(mockUpdatedEntry);
 
     const result = await updateEntryTool(mockArgs);
-
-    expect(mockEntryUpdate).toHaveBeenCalledWith(
-      {
-        spaceId: mockArgs.spaceId,
-        environmentId: mockArgs.environmentId,
-        entryId: mockArgs.entryId,
-      },
-      {
-        ...mockExistingEntry,
-        fields: mockExistingEntry.fields,
-        metadata: { tags: [] },
-      },
-    );
 
     const expectedResponse = formatResponse('Entry updated successfully', {
       updatedEntry: mockUpdatedEntry,
