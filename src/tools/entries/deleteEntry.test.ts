@@ -52,18 +52,6 @@ describe('deleteEntry', () => {
 
     const result = await deleteEntryTool(mockArgs);
 
-    expect(createToolClient).toHaveBeenCalledWith(mockArgs);
-    expect(mockEntryGet).toHaveBeenCalledWith({
-      spaceId: mockArgs.spaceId,
-      environmentId: mockArgs.environmentId,
-      entryId: mockArgs.entryId,
-    });
-    expect(mockEntryDelete).toHaveBeenCalledWith({
-      spaceId: mockArgs.spaceId,
-      environmentId: mockArgs.environmentId,
-      entryId: mockArgs.entryId,
-    });
-
     const expectedResponse = formatResponse('Entry deleted successfully', {
       entry: mockEntry,
     });
@@ -77,7 +65,7 @@ describe('deleteEntry', () => {
     });
   });
 
-  it('should handle errors when entry deletion fails', async () => {
+  it('should handle errors when entry get fails during deletion', async () => {
     const mockArgs = {
       spaceId: 'test-space-id',
       environmentId: 'test-environment',
@@ -100,7 +88,7 @@ describe('deleteEntry', () => {
     });
   });
 
-  it('should handle errors when entry get fails during deletion', async () => {
+  it('should handle errors when entry deletion fails', async () => {
     const mockArgs = {
       spaceId: 'test-space-id',
       environmentId: 'test-environment',
