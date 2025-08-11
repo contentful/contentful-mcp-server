@@ -32,34 +32,27 @@ async function tool(args: Params) {
   // Normalize input to always be an array
   const entryIds = Array.isArray(args.entryId) ? args.entryId : [args.entryId];
 
-  // For single entry, use individual publish for simplicity
+  // For single entry, use individual unpublish for simplicity
   if (entryIds.length === 1) {
-    try {
-      const entryId = entryIds[0];
-      const params = {
-        ...baseParams,
-        entryId,
-      };
+    const entryId = entryIds[0];
+    const params = {
+      ...baseParams,
+      entryId,
+    };
 
-      // Get the entry first
-      const entry = await contentfulClient.entry.get(params);
+    // Get the entry first
+    const entry = await contentfulClient.entry.get(params);
 
-      // Unpublish the entry
-      const unpublishedEntry = await contentfulClient.entry.unpublish(
-        params,
-        entry,
-      );
+    // Unpublish the entry
+    const unpublishedEntry = await contentfulClient.entry.unpublish(
+      params,
+      entry,
+    );
 
-      return createSuccessResponse('Entry unpublished successfully', {
-        status: unpublishedEntry.sys.status,
-        entryId,
-      });
-    } catch (error) {
-      return createSuccessResponse('Entry unpublish failed', {
-        status: error,
-        entryId: entryIds[0],
-      });
-    }
+    return createSuccessResponse('Entry unpublished successfully', {
+      status: unpublishedEntry.sys.status,
+      entryId,
+    });
   }
 
   // For multiple entries, use bulk action API

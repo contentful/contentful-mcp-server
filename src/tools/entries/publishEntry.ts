@@ -34,32 +34,22 @@ async function tool(args: Params) {
 
   // For single entry, use individual publish for simplicity
   if (entryIds.length === 1) {
-    try {
-      const entryId = entryIds[0];
-      const params = {
-        ...baseParams,
-        entryId,
-      };
+    const entryId = entryIds[0];
+    const params = {
+      ...baseParams,
+      entryId,
+    };
 
-      // Get the entry first
-      const entry = await contentfulClient.entry.get(params);
+    // Get the entry first
+    const entry = await contentfulClient.entry.get(params);
 
-      // Publish the entry
-      const publishedEntry = await contentfulClient.entry.publish(
-        params,
-        entry,
-      );
+    // Publish the entry
+    const publishedEntry = await contentfulClient.entry.publish(params, entry);
 
-      return createSuccessResponse('Entry published successfully', {
-        status: publishedEntry.sys.status,
-        entryId,
-      });
-    } catch (error) {
-      return createSuccessResponse('Entry publish failed', {
-        status: error,
-        entryId: entryIds[0],
-      });
-    }
+    return createSuccessResponse('Entry published successfully', {
+      status: publishedEntry.sys.status,
+      entryId,
+    });
   }
 
   // For multiple entries, use bulk action API
