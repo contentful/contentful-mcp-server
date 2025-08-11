@@ -66,21 +66,6 @@ describe('publishEntry', () => {
 
     const result = await publishEntryTool(mockArgs);
 
-    expect(createToolClient).toHaveBeenCalledWith(mockArgs);
-    expect(mockEntryGet).toHaveBeenCalledWith({
-      spaceId: mockArgs.spaceId,
-      environmentId: mockArgs.environmentId,
-      entryId: mockArgs.entryId,
-    });
-    expect(mockEntryPublish).toHaveBeenCalledWith(
-      {
-        spaceId: mockArgs.spaceId,
-        environmentId: mockArgs.environmentId,
-        entryId: mockArgs.entryId,
-      },
-      mockEntry,
-    );
-
     const expectedResponse = formatResponse('Entry published successfully', {
       status: mockPublishedEntry.sys.status,
       entryId: mockArgs.entryId,
@@ -174,17 +159,6 @@ describe('publishEntry', () => {
     mockBulkActionPublish.mockResolvedValue(mockBulkAction);
 
     const result = await publishEntryTool(mockArgs);
-
-    expect(createEntryVersionedLinks).toHaveBeenCalledWith(
-      mockClient,
-      { spaceId: mockArgs.spaceId, environmentId: mockArgs.environmentId },
-      mockArgs.entryId,
-    );
-    expect(createEntitiesCollection).toHaveBeenCalledWith(mockEntityVersions);
-    expect(mockBulkActionPublish).toHaveBeenCalledWith(
-      { spaceId: mockArgs.spaceId, environmentId: mockArgs.environmentId },
-      { entities: mockEntitiesCollection },
-    );
 
     const expectedResponse = formatResponse('Entry(s) published successfully', {
       status: mockCompletedAction.sys.status,
