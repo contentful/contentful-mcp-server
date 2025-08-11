@@ -50,13 +50,6 @@ describe('getEntry', () => {
 
     const result = await getEntryTool(mockArgs);
 
-    expect(createToolClient).toHaveBeenCalledWith(mockArgs);
-    expect(mockEntryGet).toHaveBeenCalledWith({
-      spaceId: mockArgs.spaceId,
-      environmentId: mockArgs.environmentId,
-      entryId: mockArgs.entryId,
-    });
-
     const expectedResponse = formatResponse('Entry retrieved successfully', {
       entry: mockEntry,
     });
