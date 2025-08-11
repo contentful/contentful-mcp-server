@@ -50,7 +50,7 @@ _Note: This requires [Cursor](https://cursor.com/) to be installed. If the link 
 
 **Claude Desktop:**
 
-Download the .dxt configuration file [here](https://github.com/contentful/contentful-mcp-server/releases/tag/v1.0.4) and import it into Claude Desktop to automatically configure the MCP server with your environment variables.
+Download the .dxt configuration file [here](https://github.com/contentful/contentful-mcp-server/releases) from the latest release and import it into Claude Desktop to automatically configure the MCP server with your environment variables.
 
 #### Install from source
 
