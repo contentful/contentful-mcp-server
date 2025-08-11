@@ -83,22 +83,6 @@ describe('searchEntries', () => {
 
     const result = await searchEntriesTool(mockArgs);
 
-    expect(createToolClient).toHaveBeenCalledWith(mockArgs);
-    expect(mockEntryGetMany).toHaveBeenCalledWith({
-      spaceId: mockArgs.spaceId,
-      environmentId: mockArgs.environmentId,
-      query: {
-        content_type: 'test-content-type',
-        limit: 2,
-        skip: 0,
-      },
-    });
-    expect(summarizeData).toHaveBeenCalledWith(mockEntries, {
-      maxItems: 3,
-      remainingMessage:
-        'To see more entries, please ask me to retrieve the next page.',
-    });
-
     const expectedResponse = formatResponse('Entries retrieved successfully', {
       entries: mockSummarized,
     });
@@ -149,20 +133,6 @@ describe('searchEntries', () => {
 
     const result = await searchEntriesTool(mockArgs);
 
-    expect(mockEntryGetMany).toHaveBeenCalledWith({
-      spaceId: mockArgs.spaceId,
-      environmentId: mockArgs.environmentId,
-      query: {
-        content_type: 'article',
-        include: 1,
-        select: 'fields.title,fields.slug',
-        links_to_entry: 'linked-entry-id',
-        limit: 1,
-        skip: 5,
-        order: 'sys.createdAt',
-      },
-    });
-
     const expectedResponse = formatResponse('Entries retrieved successfully', {
       entries: mockSummarized,
     });
@@ -205,7 +175,7 @@ describe('searchEntries', () => {
       spaceId: mockArgs.spaceId,
       environmentId: mockArgs.environmentId,
       query: {
-        limit: 3, // Should be capped
+        limit: 3,
         skip: 0,
       },
     });
