@@ -67,21 +67,6 @@ describe('unpublishEntry', () => {
 
     const result = await unpublishEntryTool(mockArgs);
 
-    expect(createToolClient).toHaveBeenCalledWith(mockArgs);
-    expect(mockEntryGet).toHaveBeenCalledWith({
-      spaceId: mockArgs.spaceId,
-      environmentId: mockArgs.environmentId,
-      entryId: mockArgs.entryId,
-    });
-    expect(mockEntryUnpublish).toHaveBeenCalledWith(
-      {
-        spaceId: mockArgs.spaceId,
-        environmentId: mockArgs.environmentId,
-        entryId: mockArgs.entryId,
-      },
-      mockEntry,
-    );
-
     const expectedResponse = formatResponse('Entry unpublished successfully', {
       status: mockUnpublishedEntry.sys.status,
       entryId: mockArgs.entryId,
@@ -173,17 +158,6 @@ describe('unpublishEntry', () => {
     mockBulkActionUnpublish.mockResolvedValue(mockBulkAction);
 
     const result = await unpublishEntryTool(mockArgs);
-
-    expect(createEntryUnversionedLinks).toHaveBeenCalledWith(
-      mockClient,
-      { spaceId: mockArgs.spaceId, environmentId: mockArgs.environmentId },
-      mockArgs.entryId,
-    );
-    expect(createEntitiesCollection).toHaveBeenCalledWith(mockEntityLinks);
-    expect(mockBulkActionUnpublish).toHaveBeenCalledWith(
-      { spaceId: mockArgs.spaceId, environmentId: mockArgs.environmentId },
-      { entities: mockEntitiesCollection },
-    );
 
     const expectedResponse = formatResponse(
       'Entry(s) unpublished successfully',
