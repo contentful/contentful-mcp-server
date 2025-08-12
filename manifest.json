@@ -6,6 +6,13 @@
   "author": {
     "name": "Contentful"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/contentful/contentful-mcp-server"
+  },
+  "homepage": "https://github.com/contentful/contentful-mcp-server",
+  "support": "https://github.com/contentful/contentful-mcp-server/issues",
+  "icon": "icon.png",
   "server": {
     "type": "node",
     "entry_point": "build/index.js",
