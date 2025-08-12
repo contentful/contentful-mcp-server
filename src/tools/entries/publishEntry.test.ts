@@ -1,57 +1,26 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { publishEntryTool } from './publishEntry.js';
-import { createToolClient } from '../../utils/tools.js';
 import { formatResponse } from '../../utils/formatters.js';
+import {
+  setupMockClient,
+  mockEntryGet,
+  mockEntryPublish,
+  mockBulkActionPublish,
+  mockEntry,
+  mockArgs,
+  mockBulkArgs,
+} from '../../utils/mockClient.js';
 
 vi.mock('../../../src/utils/tools.js');
 vi.mock('../../../src/config/contentful.js');
 vi.mock('../../../src/utils/bulkOperations.js');
 
 describe('publishEntry', () => {
-  const mockEntryGet = vi.fn();
-  const mockEntryPublish = vi.fn();
-  const mockBulkActionPublish = vi.fn();
-  const mockClient = {
-    entry: {
-      get: mockEntryGet,
-      publish: mockEntryPublish,
-    },
-    bulkAction: {
-      publish: mockBulkActionPublish,
-    },
-  };
-
   beforeEach(() => {
-    vi.mocked(createToolClient).mockReturnValue(
-      mockClient as unknown as ReturnType<typeof createToolClient>,
-    );
+    setupMockClient();
   });
 
   it('should publish a single entry successfully', async () => {
-    const mockArgs = {
-      spaceId: 'test-space-id',
-      environmentId: 'test-environment',
-      entryId: 'test-entry-id',
-    };
-
-    const mockEntry = {
-      sys: {
-        id: 'test-entry-id',
-        type: 'Entry',
-        contentType: {
-          sys: {
-            id: 'test-content-type',
-            type: 'Link',
-            linkType: 'ContentType',
-          },
-        },
-        version: 1,
-      },
-      fields: {
-        title: { 'en-US': 'Test Entry Title' },
-      },
-    };
-
     const mockPublishedEntry = {
       ...mockEntry,
       sys: {
@@ -81,17 +50,6 @@ describe('publishEntry', () => {
   });
 
   it('should handle single entry publish failure', async () => {
-    const mockArgs = {
-      spaceId: 'test-space-id',
-      environmentId: 'test-environment',
-      entryId: 'test-entry-id',
-    };
-
-    const mockEntry = {
-      sys: { id: 'test-entry-id', type: 'Entry' },
-      fields: {},
-    };
-
     const publishError = new Error('Publish failed');
     mockEntryGet.mockResolvedValue(mockEntry);
     mockEntryPublish.mockRejectedValue(publishError);
@@ -110,12 +68,6 @@ describe('publishEntry', () => {
   });
 
   it('should publish multiple entries using bulk action', async () => {
-    const mockArgs = {
-      spaceId: 'test-space-id',
-      environmentId: 'test-environment',
-      entryId: ['entry-1', 'entry-2'],
-    };
-
     // Mock bulk operations
     const {
       createEntryVersionedLinks,
@@ -158,11 +110,11 @@ describe('publishEntry', () => {
     );
     mockBulkActionPublish.mockResolvedValue(mockBulkAction);
 
-    const result = await publishEntryTool(mockArgs);
+    const result = await publishEntryTool(mockBulkArgs);
 
     const expectedResponse = formatResponse('Entry(s) published successfully', {
       status: mockCompletedAction.sys.status,
-      entryIds: mockArgs.entryId,
+      entryIds: mockBulkArgs.entryId,
     });
     expect(result).toEqual({
       content: [
@@ -175,16 +127,15 @@ describe('publishEntry', () => {
   });
 
   it('should handle errors when entry publishing fails', async () => {
-    const mockArgs = {
-      spaceId: 'test-space-id',
-      environmentId: 'test-environment',
+    const testArgs = {
+      ...mockArgs,
       entryId: 'non-existent-entry',
     };
 
     const error = new Error('Entry not found');
     mockEntryGet.mockRejectedValue(error);
 
-    const result = await publishEntryTool(mockArgs);
+    const result = await publishEntryTool(testArgs);
 
     expect(result).toEqual({
       isError: true,

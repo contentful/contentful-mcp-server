@@ -1,41 +1,37 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { createEntryTool } from './createEntry.js';
-import { createToolClient } from '../../utils/tools.js';
 import { formatResponse } from '../../utils/formatters.js';
+import {
+  setupMockClient,
+  mockEntryCreate,
+  mockEntry,
+  mockArgs,
+} from '../../utils/mockClient.js';
+import { createToolClient } from '../../utils/tools.js';
 
 vi.mock('../../../src/utils/tools.js');
 vi.mock('../../../src/config/contentful.js');
 
 describe('createEntry', () => {
-  const mockEntryCreate = vi.fn();
-  const mockClient = {
-    entry: {
-      create: mockEntryCreate,
-    },
-  };
-
   beforeEach(() => {
-    vi.mocked(createToolClient).mockReturnValue(
-      mockClient as unknown as ReturnType<typeof createToolClient>,
-    );
+    setupMockClient();
   });
 
   it('should create entry with empty fields object', async () => {
-    const mockArgs = {
-      spaceId: 'test-space-id',
-      environmentId: 'test-environment',
+    const testArgs = {
+      ...mockArgs,
       contentTypeId: 'test-content-type',
       fields: {},
     };
 
     const mockCreatedEntry = {
-      sys: { id: 'new-entry-id', type: 'Entry' },
+      ...mockEntry,
       fields: {},
     };
 
     mockEntryCreate.mockResolvedValue(mockCreatedEntry);
 
-    const result = await createEntryTool(mockArgs);
+    const result = await createEntryTool(testArgs);
 
     const expectedResponse = formatResponse('Entry created successfully', {
       newEntry: mockCreatedEntry,
@@ -51,9 +47,8 @@ describe('createEntry', () => {
   });
 
   it('should create an entry successfully with fields', async () => {
-    const mockArgs = {
-      spaceId: 'test-space-id',
-      environmentId: 'test-environment',
+    const testArgs = {
+      ...mockArgs,
       contentTypeId: 'test-content-type',
       fields: {
         title: { 'en-US': 'Test Entry Title' },
@@ -61,30 +56,14 @@ describe('createEntry', () => {
       },
     };
 
-    const mockCreatedEntry = {
-      sys: {
-        id: 'new-entry-id',
-        type: 'Entry',
-        contentType: {
-          sys: {
-            id: 'test-content-type',
-            type: 'Link',
-            linkType: 'ContentType',
-          },
-        },
-        version: 1,
-      },
-      fields: mockArgs.fields,
-    };
+    mockEntryCreate.mockResolvedValue(mockEntry);
 
-    mockEntryCreate.mockResolvedValue(mockCreatedEntry);
+    const result = await createEntryTool(testArgs);
 
-    const result = await createEntryTool(mockArgs);
-
-    expect(createToolClient).toHaveBeenCalledWith(mockArgs);
+    expect(createToolClient).toHaveBeenCalledWith(testArgs);
 
     const expectedResponse = formatResponse('Entry created successfully', {
-      newEntry: mockCreatedEntry,
+      newEntry: mockEntry,
     });
     expect(result).toEqual({
       content: [
@@ -97,39 +76,39 @@ describe('createEntry', () => {
   });
 
   it('should create an entry with metadata', async () => {
-    const mockArgs = {
-      spaceId: 'test-space-id',
-      environmentId: 'test-environment',
+    const testMetadata = {
+      tags: [
+        {
+          sys: {
+            type: 'Link' as const,
+            linkType: 'Tag' as const,
+            id: 'test-tag-id',
+          },
+        },
+      ],
+    };
+
+    const testArgs = {
+      ...mockArgs,
       contentTypeId: 'test-content-type',
       fields: {
         title: { 'en-US': 'Test Entry Title' },
       },
-      metadata: {
-        tags: [
-          {
-            sys: {
-              type: 'Link' as const,
-              linkType: 'Tag' as const,
-              id: 'test-tag-id',
-            },
-          },
-        ],
-      },
+      metadata: testMetadata,
     };
 
     const mockCreatedEntry = {
-      sys: { id: 'new-entry-id', type: 'Entry' },
-      fields: mockArgs.fields,
-      metadata: mockArgs.metadata,
+      ...mockEntry,
+      metadata: testMetadata,
     };
 
     mockEntryCreate.mockResolvedValue(mockCreatedEntry);
 
-    const result = await createEntryTool(mockArgs);
+    const result = await createEntryTool(testArgs);
 
     expect(mockEntryCreate).toHaveBeenCalledWith(expect.any(Object), {
-      fields: mockArgs.fields,
-      metadata: mockArgs.metadata,
+      fields: testArgs.fields,
+      metadata: testArgs.metadata,
     });
     const expectedResponse = formatResponse('Entry created successfully', {
       newEntry: mockCreatedEntry,
@@ -145,9 +124,8 @@ describe('createEntry', () => {
   });
 
   it('should handle errors when entry creation fails', async () => {
-    const mockArgs = {
-      spaceId: 'test-space-id',
-      environmentId: 'test-environment',
+    const testArgs = {
+      ...mockArgs,
       contentTypeId: 'invalid-content-type',
       fields: {
         title: { 'en-US': 'Test Entry' },
@@ -157,7 +135,7 @@ describe('createEntry', () => {
     const error = new Error('Content type not found');
     mockEntryCreate.mockRejectedValue(error);
 
-    const result = await createEntryTool(mockArgs);
+    const result = await createEntryTool(testArgs);
 
     expect(result).toEqual({
       isError: true,

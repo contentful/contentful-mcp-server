@@ -1,31 +1,26 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { searchEntriesTool } from './searchEntries.js';
-import { createToolClient } from '../../utils/tools.js';
 import { formatResponse } from '../../utils/formatters.js';
 import { summarizeData } from '../../utils/summarizer.js';
+import {
+  setupMockClient,
+  mockEntryGetMany,
+  mockEntry,
+  mockArgs,
+} from '../../utils/mockClient.js';
 
 vi.mock('../../../src/utils/tools.js');
 vi.mock('../../../src/config/contentful.js');
 vi.mock('../../../src/utils/summarizer.js');
 
 describe('searchEntries', () => {
-  const mockEntryGetMany = vi.fn();
-  const mockClient = {
-    entry: {
-      getMany: mockEntryGetMany,
-    },
-  };
-
   beforeEach(() => {
-    vi.mocked(createToolClient).mockReturnValue(
-      mockClient as unknown as ReturnType<typeof createToolClient>,
-    );
+    setupMockClient();
   });
 
   it('should search entries successfully', async () => {
-    const mockArgs = {
-      spaceId: 'test-space-id',
-      environmentId: 'test-environment',
+    const testArgs = {
+      ...mockArgs,
       query: {
         content_type: 'test-content-type',
         limit: 2,
@@ -35,36 +30,10 @@ describe('searchEntries', () => {
     const mockEntries = {
       items: [
         {
-          sys: {
-            id: 'entry-1',
-            type: 'Entry',
-            contentType: {
-              sys: {
-                id: 'test-content-type',
-                type: 'Link',
-                linkType: 'ContentType',
-              },
-            },
-          },
-          fields: {
-            title: { 'en-US': 'Entry 1' },
-          },
+          mockEntry,
         },
         {
-          sys: {
-            id: 'entry-2',
-            type: 'Entry',
-            contentType: {
-              sys: {
-                id: 'test-content-type',
-                type: 'Link',
-                linkType: 'ContentType',
-              },
-            },
-          },
-          fields: {
-            title: { 'en-US': 'Entry 2' },
-          },
+          mockEntry,
         },
       ],
       total: 2,
@@ -81,7 +50,7 @@ describe('searchEntries', () => {
     mockEntryGetMany.mockResolvedValue(mockEntries);
     vi.mocked(summarizeData).mockReturnValue(mockSummarized);
 
-    const result = await searchEntriesTool(mockArgs);
+    const result = await searchEntriesTool(testArgs);
 
     const expectedResponse = formatResponse('Entries retrieved successfully', {
       entries: mockSummarized,
@@ -97,9 +66,8 @@ describe('searchEntries', () => {
   });
 
   it('should search entries with all query parameters', async () => {
-    const mockArgs = {
-      spaceId: 'test-space-id',
-      environmentId: 'test-environment',
+    const testArgs = {
+      ...mockArgs,
       query: {
         content_type: 'article',
         include: 1,
@@ -114,7 +82,8 @@ describe('searchEntries', () => {
     const mockEntries = {
       items: [
         {
-          sys: { id: 'entry-1', type: 'Entry' },
+          ...mockEntry,
+          sys: { id: 'entry-1', type: 'Entry' as const },
           fields: {
             title: { 'en-US': 'Article Title' },
             slug: { 'en-US': 'article-slug' },
@@ -131,7 +100,7 @@ describe('searchEntries', () => {
     mockEntryGetMany.mockResolvedValue(mockEntries);
     vi.mocked(summarizeData).mockReturnValue(mockSummarized);
 
-    const result = await searchEntriesTool(mockArgs);
+    const result = await searchEntriesTool(testArgs);
 
     const expectedResponse = formatResponse('Entries retrieved successfully', {
       entries: mockSummarized,
@@ -147,9 +116,8 @@ describe('searchEntries', () => {
   });
 
   it('should limit search results to maximum of 3', async () => {
-    const mockArgs = {
-      spaceId: 'test-space-id',
-      environmentId: 'test-environment',
+    const testArgs = {
+      ...mockArgs,
       query: {
         limit: 10, // Should be capped to 3
       },
@@ -169,11 +137,11 @@ describe('searchEntries', () => {
       displayed: 0,
     });
 
-    await searchEntriesTool(mockArgs);
+    await searchEntriesTool(testArgs);
 
     expect(mockEntryGetMany).toHaveBeenCalledWith({
-      spaceId: mockArgs.spaceId,
-      environmentId: mockArgs.environmentId,
+      spaceId: testArgs.spaceId,
+      environmentId: testArgs.environmentId,
       query: {
         limit: 3,
         skip: 0,
@@ -182,9 +150,8 @@ describe('searchEntries', () => {
   });
 
   it('should handle errors when search fails', async () => {
-    const mockArgs = {
-      spaceId: 'test-space-id',
-      environmentId: 'test-environment',
+    const testArgs = {
+      ...mockArgs,
       query: {
         content_type: 'invalid-content-type',
       },
@@ -193,7 +160,7 @@ describe('searchEntries', () => {
     const error = new Error('Content type not found');
     mockEntryGetMany.mockRejectedValue(error);
 
-    const result = await searchEntriesTool(mockArgs);
+    const result = await searchEntriesTool(testArgs);
 
     expect(result).toEqual({
       isError: true,

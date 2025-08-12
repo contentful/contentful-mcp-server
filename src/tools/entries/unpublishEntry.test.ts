@@ -1,68 +1,45 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { unpublishEntryTool } from './unpublishEntry.js';
-import { createToolClient } from '../../utils/tools.js';
 import { formatResponse } from '../../utils/formatters.js';
+import {
+  setupMockClient,
+  mockEntryGet,
+  mockEntryUnpublish,
+  mockBulkActionUnpublish,
+  mockEntry,
+  mockArgs,
+  mockBulkArgs,
+} from '../../utils/mockClient.js';
 
 vi.mock('../../../src/utils/tools.js');
 vi.mock('../../../src/config/contentful.js');
 vi.mock('../../../src/utils/bulkOperations.js');
 
 describe('unpublishEntry', () => {
-  const mockEntryGet = vi.fn();
-  const mockEntryUnpublish = vi.fn();
-  const mockBulkActionUnpublish = vi.fn();
-  const mockClient = {
-    entry: {
-      get: mockEntryGet,
-      unpublish: mockEntryUnpublish,
-    },
-    bulkAction: {
-      unpublish: mockBulkActionUnpublish,
-    },
-  };
-
   beforeEach(() => {
-    vi.mocked(createToolClient).mockReturnValue(
-      mockClient as unknown as ReturnType<typeof createToolClient>,
-    );
+    setupMockClient();
   });
 
   it('should unpublish a single entry successfully', async () => {
-    const mockArgs = {
-      spaceId: 'test-space-id',
-      environmentId: 'test-environment',
-      entryId: 'test-entry-id',
-    };
-
-    const mockEntry = {
+    const mockPublishedEntry = {
+      ...mockEntry,
       sys: {
-        id: 'test-entry-id',
-        type: 'Entry',
-        contentType: {
-          sys: {
-            id: 'test-content-type',
-            type: 'Link',
-            linkType: 'ContentType',
-          },
-        },
-        version: 2,
+        ...mockEntry.sys,
+        status: 'published',
         publishedVersion: 1,
-      },
-      fields: {
-        title: { 'en-US': 'Test Entry Title' },
       },
     };
 
     const mockUnpublishedEntry = {
-      ...mockEntry,
+      ...mockPublishedEntry,
       sys: {
-        ...mockEntry.sys,
+        ...mockPublishedEntry.sys,
         status: 'draft',
         publishedVersion: undefined,
       },
     };
 
-    mockEntryGet.mockResolvedValue(mockEntry);
+    mockEntryGet.mockResolvedValue(mockPublishedEntry);
     mockEntryUnpublish.mockResolvedValue(mockUnpublishedEntry);
 
     const result = await unpublishEntryTool(mockArgs);
@@ -82,17 +59,6 @@ describe('unpublishEntry', () => {
   });
 
   it('should handle single entry unpublish failure', async () => {
-    const mockArgs = {
-      spaceId: 'test-space-id',
-      environmentId: 'test-environment',
-      entryId: 'test-entry-id',
-    };
-
-    const mockEntry = {
-      sys: { id: 'test-entry-id', type: 'Entry' },
-      fields: {},
-    };
-
     const unpublishError = new Error('Unpublish failed');
     mockEntryGet.mockResolvedValue(mockEntry);
     mockEntryUnpublish.mockRejectedValue(unpublishError);
@@ -111,12 +77,6 @@ describe('unpublishEntry', () => {
   });
 
   it('should unpublish multiple entries using bulk action', async () => {
-    const mockArgs = {
-      spaceId: 'test-space-id',
-      environmentId: 'test-environment',
-      entryId: ['entry-1', 'entry-2'],
-    };
-
     // Mock bulk operations
     const {
       createEntryUnversionedLinks,
@@ -157,13 +117,13 @@ describe('unpublishEntry', () => {
     );
     mockBulkActionUnpublish.mockResolvedValue(mockBulkAction);
 
-    const result = await unpublishEntryTool(mockArgs);
+    const result = await unpublishEntryTool(mockBulkArgs);
 
     const expectedResponse = formatResponse(
       'Entry(s) unpublished successfully',
       {
         status: mockCompletedAction.sys.status,
-        entryIds: mockArgs.entryId,
+        entryIds: mockBulkArgs.entryId,
       },
     );
     expect(result).toEqual({
@@ -177,12 +137,6 @@ describe('unpublishEntry', () => {
   });
 
   it('should handle errors when entry unpublishing fails', async () => {
-    const mockArgs = {
-      spaceId: 'test-space-id',
-      environmentId: 'test-environment',
-      entryId: 'non-existent-entry',
-    };
-
     const error = new Error('Entry not found');
     mockEntryGet.mockRejectedValue(error);
 

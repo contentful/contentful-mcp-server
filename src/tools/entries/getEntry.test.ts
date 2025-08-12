@@ -1,51 +1,22 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { getEntryTool } from './getEntry.js';
-import { createToolClient } from '../../utils/tools.js';
 import { formatResponse } from '../../utils/formatters.js';
+import {
+  setupMockClient,
+  mockEntryGet,
+  mockEntry,
+  mockArgs,
+} from '../../utils/mockClient.js';
 
 vi.mock('../../../src/utils/tools.js');
 vi.mock('../../../src/config/contentful.js');
 
 describe('getEntry', () => {
-  const mockEntryGet = vi.fn();
-  const mockClient = {
-    entry: {
-      get: mockEntryGet,
-    },
-  };
-
   beforeEach(() => {
-    vi.mocked(createToolClient).mockReturnValue(
-      mockClient as unknown as ReturnType<typeof createToolClient>,
-    );
+    setupMockClient();
   });
 
   it('should retrieve an entry successfully', async () => {
-    const mockArgs = {
-      spaceId: 'test-space-id',
-      environmentId: 'test-environment',
-      entryId: 'test-entry-id',
-    };
-
-    const mockEntry = {
-      sys: {
-        id: 'test-entry-id',
-        type: 'Entry',
-        contentType: {
-          sys: {
-            id: 'test-content-type',
-            type: 'Link',
-            linkType: 'ContentType',
-          },
-        },
-        version: 1,
-      },
-      fields: {
-        title: { 'en-US': 'Test Entry Title' },
-        description: { 'en-US': 'Test Entry Description' },
-      },
-    };
-
     mockEntryGet.mockResolvedValue(mockEntry);
 
     const result = await getEntryTool(mockArgs);
@@ -64,34 +35,17 @@ describe('getEntry', () => {
   });
 
   it('should retrieve an entry with empty fields', async () => {
-    const mockArgs = {
-      spaceId: 'test-space-id',
-      environmentId: 'test-environment',
-      entryId: 'empty-entry-id',
-    };
-
-    const mockEntry = {
-      sys: {
-        id: 'empty-entry-id',
-        type: 'Entry',
-        contentType: {
-          sys: {
-            id: 'test-content-type',
-            type: 'Link',
-            linkType: 'ContentType',
-          },
-        },
-        version: 1,
-      },
+    const mockEmptyEntry = {
+      ...mockEntry,
       fields: {},
     };
 
-    mockEntryGet.mockResolvedValue(mockEntry);
+    mockEntryGet.mockResolvedValue(mockEmptyEntry);
 
     const result = await getEntryTool(mockArgs);
 
     const expectedResponse = formatResponse('Entry retrieved successfully', {
-      entry: mockEntry,
+      entry: mockEmptyEntry,
     });
     expect(result).toEqual({
       content: [
@@ -104,12 +58,6 @@ describe('getEntry', () => {
   });
 
   it('should handle errors when entry retrieval fails', async () => {
-    const mockArgs = {
-      spaceId: 'test-space-id',
-      environmentId: 'test-environment',
-      entryId: 'non-existent-entry',
-    };
-
     const error = new Error('Entry not found');
     mockEntryGet.mockRejectedValue(error);
 

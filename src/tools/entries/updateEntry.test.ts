@@ -1,32 +1,25 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { updateEntryTool } from './updateEntry.js';
-import { createToolClient } from '../../utils/tools.js';
 import { formatResponse } from '../../utils/formatters.js';
+import {
+  setupMockClient,
+  mockEntryGet,
+  mockEntryUpdate,
+  mockEntry,
+  mockArgs,
+} from '../../utils/mockClient.js';
 
 vi.mock('../../../src/utils/tools.js');
 vi.mock('../../../src/config/contentful.js');
 
 describe('updateEntry', () => {
-  const mockEntryGet = vi.fn();
-  const mockEntryUpdate = vi.fn();
-  const mockClient = {
-    entry: {
-      get: mockEntryGet,
-      update: mockEntryUpdate,
-    },
-  };
-
   beforeEach(() => {
-    vi.mocked(createToolClient).mockReturnValue(
-      mockClient as unknown as ReturnType<typeof createToolClient>,
-    );
+    setupMockClient();
   });
 
   it('should update an entry successfully with fields only', async () => {
-    const mockArgs = {
-      spaceId: 'test-space-id',
-      environmentId: 'test-environment',
-      entryId: 'test-entry-id',
+    const testArgs = {
+      ...mockArgs,
       fields: {
         title: { 'en-US': 'Updated Title' },
         description: { 'en-US': 'Updated Description' },
@@ -34,11 +27,7 @@ describe('updateEntry', () => {
     };
 
     const mockExistingEntry = {
-      sys: {
-        id: 'test-entry-id',
-        type: 'Entry',
-        version: 1,
-      },
+      ...mockEntry,
       fields: {
         title: { 'en-US': 'Original Title' },
         category: { 'en-US': 'Existing Category' },
@@ -64,7 +53,7 @@ describe('updateEntry', () => {
     mockEntryGet.mockResolvedValue(mockExistingEntry);
     mockEntryUpdate.mockResolvedValue(mockUpdatedEntry);
 
-    const result = await updateEntryTool(mockArgs);
+    const result = await updateEntryTool(testArgs);
 
     const expectedResponse = formatResponse('Entry updated successfully', {
       updatedEntry: mockUpdatedEntry,
@@ -80,10 +69,8 @@ describe('updateEntry', () => {
   });
 
   it('should update an entry with metadata tags', async () => {
-    const mockArgs = {
-      spaceId: 'test-space-id',
-      environmentId: 'test-environment',
-      entryId: 'test-entry-id',
+    const testArgs = {
+      ...mockArgs,
       fields: {
         title: { 'en-US': 'Updated Title' },
       },
@@ -101,7 +88,7 @@ describe('updateEntry', () => {
     };
 
     const mockExistingEntry = {
-      sys: { id: 'test-entry-id', type: 'Entry', version: 1 },
+      ...mockEntry,
       fields: {
         title: { 'en-US': 'Original Title' },
       },
@@ -121,7 +108,7 @@ describe('updateEntry', () => {
     const mockUpdatedEntry = {
       ...mockExistingEntry,
       sys: { ...mockExistingEntry.sys, version: 2 },
-      fields: mockArgs.fields,
+      fields: testArgs.fields,
       metadata: {
         tags: [
           {
@@ -145,17 +132,17 @@ describe('updateEntry', () => {
     mockEntryGet.mockResolvedValue(mockExistingEntry);
     mockEntryUpdate.mockResolvedValue(mockUpdatedEntry);
 
-    const result = await updateEntryTool(mockArgs);
+    const result = await updateEntryTool(testArgs);
 
     expect(mockEntryUpdate).toHaveBeenCalledWith(
       {
-        spaceId: mockArgs.spaceId,
-        environmentId: mockArgs.environmentId,
-        entryId: mockArgs.entryId,
+        spaceId: testArgs.spaceId,
+        environmentId: testArgs.environmentId,
+        entryId: testArgs.entryId,
       },
       {
         ...mockExistingEntry,
-        fields: mockArgs.fields,
+        fields: testArgs.fields,
         metadata: {
           tags: [
             {
@@ -191,15 +178,13 @@ describe('updateEntry', () => {
   });
 
   it('should update an entry with empty fields', async () => {
-    const mockArgs = {
-      spaceId: 'test-space-id',
-      environmentId: 'test-environment',
-      entryId: 'test-entry-id',
+    const testArgs = {
+      ...mockArgs,
       fields: {},
     };
 
     const mockExistingEntry = {
-      sys: { id: 'test-entry-id', type: 'Entry', version: 1 },
+      ...mockEntry,
       fields: {
         title: { 'en-US': 'Existing Title' },
       },
@@ -214,7 +199,7 @@ describe('updateEntry', () => {
     mockEntryGet.mockResolvedValue(mockExistingEntry);
     mockEntryUpdate.mockResolvedValue(mockUpdatedEntry);
 
-    const result = await updateEntryTool(mockArgs);
+    const result = await updateEntryTool(testArgs);
 
     const expectedResponse = formatResponse('Entry updated successfully', {
       updatedEntry: mockUpdatedEntry,
@@ -230,9 +215,8 @@ describe('updateEntry', () => {
   });
 
   it('should handle errors when entry update fails', async () => {
-    const mockArgs = {
-      spaceId: 'test-space-id',
-      environmentId: 'test-environment',
+    const testArgs = {
+      ...mockArgs,
       entryId: 'non-existent-entry',
       fields: {
         title: { 'en-US': 'Updated Title' },
@@ -242,7 +226,7 @@ describe('updateEntry', () => {
     const error = new Error('Entry not found');
     mockEntryGet.mockRejectedValue(error);
 
-    const result = await updateEntryTool(mockArgs);
+    const result = await updateEntryTool(testArgs);
 
     expect(result).toEqual({
       isError: true,
@@ -256,17 +240,15 @@ describe('updateEntry', () => {
   });
 
   it('should handle errors when entry retrieval succeeds but update fails', async () => {
-    const mockArgs = {
-      spaceId: 'test-space-id',
-      environmentId: 'test-environment',
-      entryId: 'test-entry-id',
+    const testArgs = {
+      ...mockArgs,
       fields: {
         title: { 'en-US': 'Updated Title' },
       },
     };
 
     const mockExistingEntry = {
-      sys: { id: 'test-entry-id', type: 'Entry', version: 1 },
+      ...mockEntry,
       fields: { title: { 'en-US': 'Original Title' } },
       metadata: { tags: [] },
     };
@@ -275,7 +257,7 @@ describe('updateEntry', () => {
     mockEntryGet.mockResolvedValue(mockExistingEntry);
     mockEntryUpdate.mockRejectedValue(updateError);
 
-    const result = await updateEntryTool(mockArgs);
+    const result = await updateEntryTool(testArgs);
 
     expect(result).toEqual({
       isError: true,
