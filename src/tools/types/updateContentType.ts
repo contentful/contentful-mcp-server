@@ -6,6 +6,8 @@ import {
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
 import { FieldSchema } from '../../types/fieldSchema.js';
 
+type FieldType = z.infer<typeof FieldSchema>;
+
 export const UpdateContentTypeToolParams = BaseToolSchema.extend({
   contentTypeId: z.string().describe('The ID of the content type to update'),
   name: z.string().optional().describe('The name of the content type'),
@@ -44,18 +46,26 @@ async function tool(args: Params) {
 
   // If fields are provided, ensure we're not removing any required field metadata
   if (args.fields) {
-    const existingFieldsMap = new Map(
-      currentContentType.fields.map((field) => [field.id, field]),
+    const existingFieldsMap = currentContentType.fields.reduce(
+      (acc: Record<string, FieldType>, field: FieldType) => {
+        acc[field.id] = field;
+        return acc;
+      },
+      {},
     );
 
-    // Preserve metadata from existing fields
-    args.fields.forEach((field) => {
-      const existingField = existingFieldsMap.get(field.id);
+    // Ensure each field has all required metadata
+    fields.forEach((field: FieldType) => {
+      const existingField = existingFieldsMap[field.id];
       if (existingField) {
         // Preserve validations if not explicitly changed
-        if (!field.validations && existingField.validations) {
-          field.validations = existingField.validations;
-        }
+        field.validations = field.validations || existingField.validations;
+
+        // Preserve required flag if not explicitly set, default to false
+        field.required =
+          field.required !== undefined
+            ? field.required
+            : existingField.required || false;
 
         // Preserve link type for Link fields
         if (
@@ -70,6 +80,9 @@ async function tool(args: Params) {
         if (field.type === 'Array' && !field.items && existingField.items) {
           field.items = existingField.items;
         }
+      } else {
+        // For new fields, ensure required is a boolean
+        field.required = field.required || false;
       }
     });
   }
