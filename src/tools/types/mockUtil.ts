@@ -128,19 +128,6 @@ export const mockLinkField = {
   validations: [],
 };
 
-export const mockArrayField = {
-  id: 'tags',
-  name: 'Tags',
-  type: 'Array',
-  required: false,
-  localized: false,
-  validations: [],
-  items: {
-    type: 'Symbol',
-    validations: [],
-  },
-};
-
 /**
  * Mock content types list response
  */

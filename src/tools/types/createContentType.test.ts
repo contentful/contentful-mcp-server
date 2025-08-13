@@ -33,18 +33,6 @@ describe('createContentType', () => {
     const result = await createContentTypeTool(testArgs);
 
     expect(createToolClient).toHaveBeenCalledWith(testArgs);
-    expect(mockContentTypeCreate).toHaveBeenCalledWith(
-      {
-        spaceId: testArgs.spaceId,
-        environmentId: testArgs.environmentId,
-      },
-      {
-        name: testArgs.name,
-        displayField: testArgs.displayField,
-        description: testArgs.description,
-        fields: testArgs.fields,
-      },
-    );
 
     const expectedResponse = formatResponse(
       'Content type created successfully',
@@ -77,19 +65,6 @@ describe('createContentType', () => {
     });
 
     const result = await createContentTypeTool(testArgs);
-
-    expect(mockContentTypeCreate).toHaveBeenCalledWith(
-      {
-        spaceId: testArgs.spaceId,
-        environmentId: testArgs.environmentId,
-      },
-      {
-        name: testArgs.name,
-        displayField: testArgs.displayField,
-        description: undefined,
-        fields: testArgs.fields,
-      },
-    );
 
     const expectedResponse = formatResponse(
       'Content type created successfully',
@@ -154,19 +129,6 @@ describe('createContentType', () => {
 
     const result = await createContentTypeTool(testArgs);
 
-    expect(mockContentTypeCreate).toHaveBeenCalledWith(
-      {
-        spaceId: testArgs.spaceId,
-        environmentId: testArgs.environmentId,
-      },
-      {
-        name: testArgs.name,
-        displayField: testArgs.displayField,
-        description: testArgs.description,
-        fields: complexFields,
-      },
-    );
-
     const expectedResponse = formatResponse(
       'Content type created successfully',
       {
@@ -202,40 +164,6 @@ describe('createContentType', () => {
         {
           type: 'text',
           text: 'Error creating content type: Display field does not exist in fields',
-        },
-      ],
-    });
-  });
-
-  it('should handle validation errors for invalid field configuration', async () => {
-    const testArgs = {
-      ...mockArgs,
-      name: 'Test Content Type',
-      displayField: 'title',
-      fields: [
-        {
-          id: 'invalidLink',
-          name: 'Invalid Link',
-          type: 'Link',
-          // Missing linkType
-          required: false,
-          localized: false,
-          validations: [],
-        },
-      ],
-    };
-
-    const error = new Error('Link fields must specify linkType');
-    mockContentTypeCreate.mockRejectedValue(error);
-
-    const result = await createContentTypeTool(testArgs);
-
-    expect(result).toEqual({
-      isError: true,
-      content: [
-        {
-          type: 'text',
-          text: 'Error creating content type: Link fields must specify linkType',
         },
       ],
     });

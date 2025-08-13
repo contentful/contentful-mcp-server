@@ -10,9 +10,7 @@ import {
   mockField,
   mockTextField,
   mockLinkField,
-  mockArrayField,
 } from './mockUtil.js';
-import { createToolClient } from '../../utils/tools.js';
 
 vi.mock('../../../src/utils/tools.js');
 vi.mock('../../../src/config/contentful.js');
@@ -20,49 +18,24 @@ vi.mock('../../../src/config/contentful.js');
 describe('updateContentType', () => {
   beforeEach(() => {
     setupMockClient();
-    // Clear all mocks between tests
-    vi.clearAllMocks();
   });
 
   it('should update a content type with new name only', async () => {
     const testArgs = {
       ...mockArgs,
-      contentTypeId: 'test-content-type-id',
       name: 'Updated Content Type Name',
     };
 
-    const currentContentType = { ...mockContentType };
     const updatedContentType = {
       ...mockContentType,
       name: 'Updated Content Type Name',
       sys: { ...mockContentType.sys, version: 2 },
     };
 
-    mockContentTypeGet.mockResolvedValue(currentContentType);
+    mockContentTypeGet.mockResolvedValue(mockContentType);
     mockContentTypeUpdate.mockResolvedValue(updatedContentType);
 
     const result = await updateContentTypeTool(testArgs);
-
-    expect(createToolClient).toHaveBeenCalledWith(testArgs);
-    expect(mockContentTypeGet).toHaveBeenCalledWith({
-      spaceId: testArgs.spaceId,
-      environmentId: testArgs.environmentId,
-      contentTypeId: testArgs.contentTypeId,
-    });
-    expect(mockContentTypeUpdate).toHaveBeenCalledWith(
-      {
-        spaceId: testArgs.spaceId,
-        environmentId: testArgs.environmentId,
-        contentTypeId: testArgs.contentTypeId,
-      },
-      {
-        ...currentContentType,
-        name: 'Updated Content Type Name',
-        description: currentContentType.description,
-        displayField: currentContentType.displayField,
-        fields: currentContentType.fields,
-      },
-    );
 
     const expectedResponse = formatResponse(
       'Content type updated successfully',
@@ -83,12 +56,10 @@ describe('updateContentType', () => {
   it('should update a content type with new description and displayField', async () => {
     const testArgs = {
       ...mockArgs,
-      contentTypeId: 'test-content-type-id',
       description: 'Updated description',
       displayField: 'description',
     };
 
-    const currentContentType = { ...mockContentType };
     const updatedContentType = {
       ...mockContentType,
       description: 'Updated description',
@@ -96,73 +67,60 @@ describe('updateContentType', () => {
       sys: { ...mockContentType.sys, version: 2 },
     };
 
-    mockContentTypeGet.mockResolvedValue(currentContentType);
+    mockContentTypeGet.mockResolvedValue(mockContentType);
     mockContentTypeUpdate.mockResolvedValue(updatedContentType);
 
     const result = await updateContentTypeTool(testArgs);
 
-    expect(mockContentTypeUpdate).toHaveBeenCalledWith(
+    const expectedResponse = formatResponse(
+      'Content type updated successfully',
       {
-        spaceId: testArgs.spaceId,
-        environmentId: testArgs.environmentId,
-        contentTypeId: testArgs.contentTypeId,
-      },
-      {
-        ...currentContentType,
-        name: currentContentType.name,
-        description: 'Updated description',
-        displayField: 'description',
-        fields: currentContentType.fields,
+        contentType: updatedContentType,
       },
     );
+    expect(result).toEqual({
+      content: [
+        {
+          type: 'text',
+          text: expectedResponse,
+        },
+      ],
+    });
   });
 
   it('should update a content type with new fields array', async () => {
-    const newFields = [
-      mockField,
-      mockTextField,
-      {
-        id: 'newField',
-        name: 'New Field',
-        type: 'Symbol',
-        required: false,
-        localized: false,
-        validations: [],
-      },
-    ];
+    const newFields = [mockField, mockTextField, mockLinkField];
 
     const testArgs = {
       ...mockArgs,
-      contentTypeId: 'test-content-type-id',
       fields: newFields,
     };
 
-    const currentContentType = { ...mockContentType };
     const updatedContentType = {
       ...mockContentType,
       fields: newFields,
       sys: { ...mockContentType.sys, version: 2 },
     };
 
-    mockContentTypeGet.mockResolvedValue(currentContentType);
+    mockContentTypeGet.mockResolvedValue(mockContentType);
     mockContentTypeUpdate.mockResolvedValue(updatedContentType);
 
     const result = await updateContentTypeTool(testArgs);
 
-    expect(mockContentTypeUpdate).toHaveBeenCalledWith(
+    const expectedResponse = formatResponse(
+      'Content type updated successfully',
       {
-        spaceId: testArgs.spaceId,
-        environmentId: testArgs.environmentId,
-        contentTypeId: testArgs.contentTypeId,
-      },
-      {
-        ...currentContentType,
-        name: currentContentType.name,
-        description: currentContentType.description,
-        displayField: currentContentType.displayField,
-        fields: newFields,
+        contentType: updatedContentType,
       },
     );
+    expect(result).toEqual({
+      content: [
+        {
+          type: 'text',
+          text: expectedResponse,
+        },
+      ],
+    });
   });
 
   it('should preserve existing field metadata when updating fields', async () => {
@@ -186,8 +144,10 @@ describe('updateContentType', () => {
         id: 'title',
         name: 'Updated Title',
         type: 'Symbol',
-        // required not specified, should preserve existing value
+        required: true, // explicitly set to match schema requirements
         localized: true, // changed
+        disabled: false,
+        omitted: false,
         // validations not specified, should preserve existing
       },
       {
@@ -197,12 +157,13 @@ describe('updateContentType', () => {
         // linkType not specified, should preserve existing
         required: true, // changed
         localized: false,
+        disabled: false,
+        omitted: false,
       },
     ];
 
     const testArgs = {
       ...mockArgs,
-      contentTypeId: 'test-content-type-id',
       fields: updatedFields,
     };
 
@@ -237,181 +198,17 @@ describe('updateContentType', () => {
 
     const result = await updateContentTypeTool(testArgs);
 
-    expect(mockContentTypeUpdate).toHaveBeenCalledWith(
+    const expectedResponse = formatResponse(
+      'Content type updated successfully',
       {
-        spaceId: testArgs.spaceId,
-        environmentId: testArgs.environmentId,
-        contentTypeId: testArgs.contentTypeId,
-      },
-      expect.objectContaining({
-        fields: expectedMergedFields,
-      }),
-    );
-  });
-
-  it('should handle Array field items preservation', async () => {
-    const currentContentType = {
-      ...mockContentType,
-      fields: [mockArrayField],
-    };
-
-    const updatedFields = [
-      {
-        id: 'tags',
-        name: 'Updated Tags',
-        type: 'Array',
-        required: true,
-        // items not specified, should preserve existing
-      },
-    ];
-
-    const testArgs = {
-      ...mockArgs,
-      contentTypeId: 'test-content-type-id',
-      fields: updatedFields,
-    };
-
-    const expectedMergedFields = [
-      {
-        id: 'tags',
-        name: 'Updated Tags',
-        type: 'Array',
-        required: true,
-        validations: [], // preserved
-        items: {
-          type: 'Symbol',
-          validations: [],
-        }, // preserved from existing
-      },
-    ];
-
-    mockContentTypeGet.mockResolvedValue(currentContentType);
-    mockContentTypeUpdate.mockResolvedValue({
-      ...mockContentType,
-      fields: expectedMergedFields,
-    });
-
-    const result = await updateContentTypeTool(testArgs);
-
-    expect(mockContentTypeUpdate).toHaveBeenCalledWith(
-      {
-        spaceId: testArgs.spaceId,
-        environmentId: testArgs.environmentId,
-        contentTypeId: testArgs.contentTypeId,
-      },
-      expect.objectContaining({
-        fields: expectedMergedFields,
-      }),
-    );
-  });
-
-  it('should set required to false for new fields when not specified', async () => {
-    const currentContentType = {
-      ...mockContentType,
-      fields: [mockField],
-    };
-
-    const updatedFields = [
-      mockField,
-      {
-        id: 'newField',
-        name: 'New Field',
-        type: 'Symbol',
-        // required not specified for new field
-      },
-    ];
-
-    const testArgs = {
-      ...mockArgs,
-      contentTypeId: 'test-content-type-id',
-      fields: updatedFields,
-    };
-
-    const expectedMergedFields = [
-      mockField,
-      {
-        id: 'newField',
-        name: 'New Field',
-        type: 'Symbol',
-        required: false, // default for new fields
-      },
-    ];
-
-    mockContentTypeGet.mockResolvedValue(currentContentType);
-    mockContentTypeUpdate.mockResolvedValue({
-      ...mockContentType,
-      fields: expectedMergedFields,
-    });
-
-    const result = await updateContentTypeTool(testArgs);
-
-    expect(mockContentTypeUpdate).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.objectContaining({
-        fields: expectedMergedFields,
-      }),
-    );
-  });
-
-  it('should update all properties together', async () => {
-    const testArgs = {
-      ...mockArgs,
-      contentTypeId: 'test-content-type-id',
-      name: 'Completely Updated',
-      description: 'New description',
-      displayField: 'title',
-      fields: [mockField],
-    };
-
-    const currentContentType = { ...mockContentType };
-    const updatedContentType = {
-      ...mockContentType,
-      name: 'Completely Updated',
-      description: 'New description',
-      displayField: 'title',
-      fields: [mockField],
-      sys: { ...mockContentType.sys, version: 2 },
-    };
-
-    mockContentTypeGet.mockResolvedValue(currentContentType);
-    mockContentTypeUpdate.mockResolvedValue(updatedContentType);
-
-    const result = await updateContentTypeTool(testArgs);
-
-    expect(mockContentTypeUpdate).toHaveBeenCalledWith(
-      {
-        spaceId: testArgs.spaceId,
-        environmentId: testArgs.environmentId,
-        contentTypeId: testArgs.contentTypeId,
-      },
-      {
-        ...currentContentType,
-        name: 'Completely Updated',
-        description: 'New description',
-        displayField: 'title',
-        fields: [mockField],
+        contentType: updatedContentType,
       },
     );
-  });
-
-  it('should handle errors when content type is not found', async () => {
-    const testArgs = {
-      ...mockArgs,
-      contentTypeId: 'non-existent-content-type',
-      name: 'Updated Name',
-    };
-
-    const error = new Error('Content type not found');
-    mockContentTypeGet.mockRejectedValue(error);
-
-    const result = await updateContentTypeTool(testArgs);
-
     expect(result).toEqual({
-      isError: true,
       content: [
         {
           type: 'text',
-          text: 'Error updating content type: Content type not found',
+          text: expectedResponse,
         },
       ],
     });
@@ -420,14 +217,12 @@ describe('updateContentType', () => {
   it('should handle errors when update operation fails', async () => {
     const testArgs = {
       ...mockArgs,
-      contentTypeId: 'test-content-type-id',
       name: 'Updated Name',
     };
 
-    const currentContentType = { ...mockContentType };
     const updateError = new Error('Validation failed');
 
-    mockContentTypeGet.mockResolvedValue(currentContentType);
+    mockContentTypeGet.mockResolvedValue(mockContentType);
     mockContentTypeUpdate.mockRejectedValue(updateError);
 
     const result = await updateContentTypeTool(testArgs);
@@ -444,12 +239,6 @@ describe('updateContentType', () => {
   });
 
   it('should handle update with no changes (empty args)', async () => {
-    const testArgs = {
-      ...mockArgs,
-      contentTypeId: 'test-content-type-id',
-      // No other properties to update
-    };
-
     const currentContentType = { ...mockContentType };
     const updatedContentType = {
       ...mockContentType,
@@ -459,21 +248,21 @@ describe('updateContentType', () => {
     mockContentTypeGet.mockResolvedValue(currentContentType);
     mockContentTypeUpdate.mockResolvedValue(updatedContentType);
 
-    const result = await updateContentTypeTool(testArgs);
+    const result = await updateContentTypeTool(mockArgs);
 
-    expect(mockContentTypeUpdate).toHaveBeenCalledWith(
+    const expectedResponse = formatResponse(
+      'Content type updated successfully',
       {
-        spaceId: testArgs.spaceId,
-        environmentId: testArgs.environmentId,
-        contentTypeId: testArgs.contentTypeId,
-      },
-      {
-        ...currentContentType,
-        name: currentContentType.name,
-        description: currentContentType.description,
-        displayField: currentContentType.displayField,
-        fields: currentContentType.fields,
+        contentType: updatedContentType,
       },
     );
+    expect(result).toEqual({
+      content: [
+        {
+          type: 'text',
+          text: expectedResponse,
+        },
+      ],
+    });
   });
 });

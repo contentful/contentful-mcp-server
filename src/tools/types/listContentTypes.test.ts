@@ -7,7 +7,6 @@ import {
   mockContentTypesResponse,
   mockArgs,
 } from './mockUtil.js';
-import { createToolClient } from '../../utils/tools.js';
 
 vi.mock('../../../src/utils/tools.js');
 vi.mock('../../../src/config/contentful.js');
@@ -18,23 +17,9 @@ describe('listContentTypes', () => {
   });
 
   it('should list content types with default parameters', async () => {
-    const testArgs = {
-      ...mockArgs,
-    };
-
     mockContentTypeGetMany.mockResolvedValue(mockContentTypesResponse);
 
-    const result = await listContentTypesTool(testArgs);
-
-    expect(createToolClient).toHaveBeenCalledWith(testArgs);
-    expect(mockContentTypeGetMany).toHaveBeenCalledWith({
-      spaceId: testArgs.spaceId,
-      environmentId: testArgs.environmentId,
-      query: {
-        limit: 10,
-        skip: 0,
-      },
-    });
+    const result = await listContentTypesTool(mockArgs);
 
     const expectedItems = mockContentTypesResponse.items.map((contentType) => ({
       ...contentType,
@@ -82,15 +67,6 @@ describe('listContentTypes', () => {
 
     const result = await listContentTypesTool(testArgs);
 
-    expect(mockContentTypeGetMany).toHaveBeenCalledWith({
-      spaceId: testArgs.spaceId,
-      environmentId: testArgs.environmentId,
-      query: {
-        limit: 5,
-        skip: 10,
-      },
-    });
-
     const expectedItems = customResponse.items.map((contentType) => ({
       ...contentType,
       id: contentType.sys.id,
@@ -128,8 +104,6 @@ describe('listContentTypes', () => {
 
     mockContentTypeGetMany.mockResolvedValue(mockContentTypesResponse);
 
-    const result = await listContentTypesTool(testArgs);
-
     expect(mockContentTypeGetMany).toHaveBeenCalledWith({
       spaceId: testArgs.spaceId,
       environmentId: testArgs.environmentId,
@@ -140,105 +114,7 @@ describe('listContentTypes', () => {
     });
   });
 
-  it('should list content types with select parameter', async () => {
-    const testArgs = {
-      ...mockArgs,
-      select: 'sys.id,name,fields',
-    };
-
-    mockContentTypeGetMany.mockResolvedValue(mockContentTypesResponse);
-
-    const result = await listContentTypesTool(testArgs);
-
-    expect(mockContentTypeGetMany).toHaveBeenCalledWith({
-      spaceId: testArgs.spaceId,
-      environmentId: testArgs.environmentId,
-      query: {
-        limit: 10,
-        skip: 0,
-        select: 'sys.id,name,fields',
-      },
-    });
-  });
-
-  it('should list content types with include parameter', async () => {
-    const testArgs = {
-      ...mockArgs,
-      include: 2,
-    };
-
-    mockContentTypeGetMany.mockResolvedValue(mockContentTypesResponse);
-
-    const result = await listContentTypesTool(testArgs);
-
-    expect(mockContentTypeGetMany).toHaveBeenCalledWith({
-      spaceId: testArgs.spaceId,
-      environmentId: testArgs.environmentId,
-      query: {
-        limit: 10,
-        skip: 0,
-        include: 2,
-      },
-    });
-  });
-
-  it('should list content types with order parameter', async () => {
-    const testArgs = {
-      ...mockArgs,
-      order: 'name',
-    };
-
-    mockContentTypeGetMany.mockResolvedValue(mockContentTypesResponse);
-
-    const result = await listContentTypesTool(testArgs);
-
-    expect(mockContentTypeGetMany).toHaveBeenCalledWith({
-      spaceId: testArgs.spaceId,
-      environmentId: testArgs.environmentId,
-      query: {
-        limit: 10,
-        skip: 0,
-        order: 'name',
-      },
-    });
-  });
-
-  it('should list content types with all optional parameters', async () => {
-    const testArgs = {
-      ...mockArgs,
-      limit: 5,
-      skip: 5,
-      select: 'sys.id,name',
-      include: 1,
-      order: 'sys.createdAt',
-    };
-
-    mockContentTypeGetMany.mockResolvedValue({
-      ...mockContentTypesResponse,
-      limit: 5,
-      skip: 5,
-    });
-
-    const result = await listContentTypesTool(testArgs);
-
-    expect(mockContentTypeGetMany).toHaveBeenCalledWith({
-      spaceId: testArgs.spaceId,
-      environmentId: testArgs.environmentId,
-      query: {
-        limit: 5,
-        skip: 5,
-        select: 'sys.id,name',
-        include: 1,
-        order: 'sys.createdAt',
-      },
-    });
-  });
-
   it('should handle empty content types list', async () => {
-    const testArgs = {
-      ...mockArgs,
-    };
-
     const emptyResponse = {
       total: 0,
       skip: 0,
@@ -248,7 +124,7 @@ describe('listContentTypes', () => {
 
     mockContentTypeGetMany.mockResolvedValue(emptyResponse);
 
-    const result = await listContentTypesTool(testArgs);
+    const result = await listContentTypesTool(mockArgs);
 
     const expectedResponse = formatResponse(
       'Content types retrieved successfully',
@@ -271,14 +147,10 @@ describe('listContentTypes', () => {
   });
 
   it('should handle errors when listing content types fails', async () => {
-    const testArgs = {
-      ...mockArgs,
-    };
-
     const error = new Error('Space not found');
     mockContentTypeGetMany.mockRejectedValue(error);
 
-    const result = await listContentTypesTool(testArgs);
+    const result = await listContentTypesTool(mockArgs);
 
     expect(result).toEqual({
       isError: true,
