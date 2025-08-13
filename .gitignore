@@ -20,6 +20,7 @@ out/
 *.swp
 *.swo
 .DS_Store
+.cursor/
 
 # ignore NX cache/configuration
 .nx/
