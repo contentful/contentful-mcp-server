@@ -48,6 +48,10 @@ This MCP server provides a comprehensive set of tools for content management, al
 
 _Note: This requires [Cursor](https://cursor.com/) to be installed. If the link doesn't work, try the manual installation below._
 
+**Claude Desktop:**
+
+Download the .dxt configuration file [here](https://github.com/contentful/contentful-mcp-server/releases) from the latest release and import it into Claude Desktop to automatically configure the MCP server with your environment variables.
+
 #### Install from source
 
 ```bash

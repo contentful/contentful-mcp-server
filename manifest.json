@@ -1,0 +1,238 @@
+{
+  "dxt_version": "0.1",
+  "name": "@contentful/mcp-server",
+  "version": "1.0.5",
+  "description": "MCP (Model Context Protocol) server for the Contentful Management API",
+  "author": {
+    "name": "Contentful"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/contentful/contentful-mcp-server"
+  },
+  "homepage": "https://github.com/contentful/contentful-mcp-server",
+  "support": "https://github.com/contentful/contentful-mcp-server/issues",
+  "icon": "icon.png",
+  "server": {
+    "type": "node",
+    "entry_point": "build/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/build/index.js"],
+      "env": {
+        "CONTENTFUL_HOST": "${user_config.CONTENTFUL_HOST}",
+        "CONTENTFUL_MANAGEMENT_ACCESS_TOKEN": "${user_config.CMA_TOKEN}",
+        "SPACE_ID": "${user_config.SPACE_ID}",
+        "ENVIRONMENT_ID": "${user_config.ENVIRONMENT_ID}"
+      }
+    }
+  },
+  "tools": [
+    {
+      "name": "get_initial_context",
+      "description": "Initialize connection and get usage instructions"
+    },
+    {
+      "name": "list_content_types",
+      "description": "List all content types"
+    },
+    {
+      "name": "get_content_type",
+      "description": "Get detailed content type information"
+    },
+    {
+      "name": "create_content_type",
+      "description": "Create new content types"
+    },
+    {
+      "name": "update_content_type",
+      "description": "Modify existing content types"
+    },
+    {
+      "name": "publish_content_type",
+      "description": "Publish content type changes"
+    },
+    {
+      "name": "unpublish_content_type",
+      "description": "Unpublish content types"
+    },
+    {
+      "name": "delete_content_type",
+      "description": "Remove content types"
+    },
+    {
+      "name": "search_entries",
+      "description": "Search and filter entries"
+    },
+    {
+      "name": "get_entry",
+      "description": "Retrieve specific entries"
+    },
+    {
+      "name": "create_entry",
+      "description": "Create new content entries"
+    },
+    {
+      "name": "update_entry",
+      "description": "Modify existing entries"
+    },
+    {
+      "name": "publish_entry",
+      "description": "Publish entries (single or bulk)"
+    },
+    {
+      "name": "unpublish_entry",
+      "description": "Unpublish entries (single or bulk)"
+    },
+    {
+      "name": "delete_entry",
+      "description": "Remove entries"
+    },
+    {
+      "name": "upload_asset",
+      "description": "Upload new assets"
+    },
+    {
+      "name": "list_assets",
+      "description": "List and browse assets"
+    },
+    {
+      "name": "get_asset",
+      "description": "Retrieve specific assets"
+    },
+    {
+      "name": "update_asset",
+      "description": "Modify asset metadata"
+    },
+    {
+      "name": "publish_asset",
+      "description": "Publish assets (single or bulk)"
+    },
+    {
+      "name": "unpublish_asset",
+      "description": "Unpublish assets (single or bulk)"
+    },
+    {
+      "name": "delete_asset",
+      "description": "Remove assets"
+    },
+    {
+      "name": "list_spaces",
+      "description": "List available spaces"
+    },
+    {
+      "name": "get_space",
+      "description": "Get space details"
+    },
+    {
+      "name": "list_environments",
+      "description": "List environments"
+    },
+    {
+      "name": "create_environment",
+      "description": "Create new environments"
+    },
+    {
+      "name": "delete_environment",
+      "description": "Remove environments"
+    },
+    {
+      "name": "list_tags",
+      "description": "List all tags"
+    },
+    {
+      "name": "create_tag",
+      "description": "Create new tags"
+    },
+    {
+      "name": "create_ai_action",
+      "description": "Create custom AI-powered workflows"
+    },
+    {
+      "name": "invoke_ai_action",
+      "description": "Invoke an AI action with variables"
+    },
+    {
+      "name": "get_ai_action_invocation",
+      "description": "Get AI action invocation details"
+    },
+    {
+      "name": "get_ai_action",
+      "description": "Retrieve AI action details and configuration"
+    },
+    {
+      "name": "list_ai_actions",
+      "description": "List AI actions in a space"
+    },
+    {
+      "name": "update_ai_action",
+      "description": "Update existing AI actions"
+    },
+    {
+      "name": "publish_ai_action",
+      "description": "Publish AI actions for use"
+    },
+    {
+      "name": "unpublish_ai_action",
+      "description": "Unpublish AI actions"
+    },
+    {
+      "name": "delete_ai_action",
+      "description": "Remove AI actions"
+    },
+    {
+      "name": "get_locale",
+      "description": "Retrieve a specific locale from your Contentful environment"
+    },
+    {
+      "name": "create_locale",
+      "description": "Create a new locale in your Contentful environment"
+    },
+    {
+      "name": "list_locales",
+      "description": "List all locales in your Contentful environment"
+    },
+    {
+      "name": "update_locale",
+      "description": "Update an existing locale in your Contentful environment"
+    },
+    {
+      "name": "delete_locale",
+      "description": "Delete a specific locale from your Contentful environment"
+    }
+  ],
+  "prompts": [],
+  "tools_generated": false,
+  "prompts_generated": false,
+  "compatibility": {},
+  "user_config": {
+    "CMA_TOKEN": {
+      "type": "string",
+      "title": "CONTENTFUL_MANAGEMENT_ACCESS_TOKEN",
+      "description": "Contentful Management Access Token",
+      "required": true,
+      "sensitive": true
+    },
+    "SPACE_ID": {
+      "type": "string",
+      "title": "SPACE_ID",
+      "description": "Contentful Space ID",
+      "required": true
+    },
+    "ENVIRONMENT_ID": {
+      "type": "string",
+      "title": "ENVIRONMENT_ID",
+      "description": "Contentful Environment ID",
+      "required": false,
+      "default": "master"
+    },
+    "CONTENTFUL_HOST": {
+      "type": "string",
+      "title": "CONTENTFUL_HOST",
+      "description": "Contentful Host",
+      "required": false,
+      "default": "api.contentful.com"
+    }
+  },
+  "license": "MIT"
+}

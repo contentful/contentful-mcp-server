@@ -1,3 +1,9 @@
+## 1.0.5 (2025-08-13)
+
+### 🩹 Fixes
+
+- .dxt extension included as release asset [DX-318] ([#92](https://github.com/contentful/contentful-mcp-server/pull/92))
+
 ## 1.0.4 (2025-08-06)
 
 ### 🩹 Fixes

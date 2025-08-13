@@ -24,3 +24,5 @@ out/
 
 # ignore NX cache/configuration
 .nx/
+
+contentful-mcp-server.dxt
