@@ -10,7 +10,7 @@ export const CreateLocaleToolParams = BaseToolSchema.extend({
   code: z.string().describe('The locale code (e.g., "en-US")'),
   fallbackCode: z
     .string()
-    .optional()
+    .nullable()
     .describe(
       'The locale code to fallback to when there is no content for the current locale',
     ),
@@ -54,7 +54,7 @@ async function tool(args: Params) {
   const newLocale = await contentfulClient.locale.create(params, {
     name: args.name,
     code: args.code,
-    fallbackCode: args.fallbackCode || null,
+    fallbackCode: args.fallbackCode,
     contentDeliveryApi: args.contentDeliveryApi,
     contentManagementApi: args.contentManagementApi,
     optional: args.optional,

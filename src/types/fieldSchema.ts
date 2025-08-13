@@ -8,12 +8,11 @@ export const FieldSchema = z.object({
     .describe(
       'The field type (e.g., "Symbol", "Text", "Integer", "Boolean", "Date", "Location", "Link", "Array", "Object")',
     ),
-  required: z.boolean().optional().describe('Whether the field is required'),
-  localized: z.boolean().optional().describe('Whether the field is localized'),
-  disabled: z.boolean().optional().describe('Whether the field is disabled'),
+  required: z.boolean().describe('Whether the field is required'),
+  localized: z.boolean().describe('Whether the field is localized'),
+  disabled: z.boolean().describe('Whether the field is disabled'),
   omitted: z
     .boolean()
-    .optional()
     .describe('Whether the field is omitted from the API response'),
   validations: z.array(z.any()).optional().describe('Field validations'),
   settings: z.record(z.any()).optional().describe('Field-specific settings'),

@@ -33,13 +33,7 @@ async function tool(args: Params) {
     name: args.name,
     displayField: args.displayField,
     description: args.description,
-    fields: args.fields.map((field) => ({
-      ...field,
-      required: field.required ?? false,
-      localized: field.localized ?? false,
-      disabled: field.disabled ?? false,
-      omitted: field.omitted ?? false,
-    })),
+    fields: args.fields,
   });
 
   return createSuccessResponse('Content type created successfully', {
