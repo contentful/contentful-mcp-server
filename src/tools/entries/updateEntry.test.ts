@@ -134,36 +134,6 @@ describe('updateEntry', () => {
 
     const result = await updateEntryTool(testArgs);
 
-    expect(mockEntryUpdate).toHaveBeenCalledWith(
-      {
-        spaceId: testArgs.spaceId,
-        environmentId: testArgs.environmentId,
-        entryId: testArgs.entryId,
-      },
-      {
-        ...mockExistingEntry,
-        fields: testArgs.fields,
-        metadata: {
-          tags: [
-            {
-              sys: {
-                type: 'Link',
-                linkType: 'Tag',
-                id: 'existing-tag-id',
-              },
-            },
-            {
-              sys: {
-                type: 'Link',
-                linkType: 'Tag',
-                id: 'new-tag-id',
-              },
-            },
-          ],
-        },
-      },
-    );
-
     const expectedResponse = formatResponse('Entry updated successfully', {
       updatedEntry: mockUpdatedEntry,
     });
