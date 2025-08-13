@@ -6,7 +6,7 @@ import {
   mockEntryCreate,
   mockEntry,
   mockArgs,
-} from '../../utils/mockClient.js';
+} from './mockClient.js';
 import { createToolClient } from '../../utils/tools.js';
 
 vi.mock('../../../src/utils/tools.js');

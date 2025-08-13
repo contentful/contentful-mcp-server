@@ -7,7 +7,7 @@ import {
   mockEntryGetMany,
   mockEntry,
   mockArgs,
-} from '../../utils/mockClient.js';
+} from './mockClient.js';
 
 vi.mock('../../../src/utils/tools.js');
 vi.mock('../../../src/config/contentful.js');

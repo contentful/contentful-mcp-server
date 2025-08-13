@@ -1,5 +1,5 @@
 import { vi } from 'vitest';
-import { createToolClient } from './tools.js';
+import { createToolClient } from '../../utils/tools.js';
 
 /**
  * Shared mock objects for entry tests
