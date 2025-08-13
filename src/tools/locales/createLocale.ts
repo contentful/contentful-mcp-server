@@ -54,7 +54,7 @@ async function tool(args: Params) {
   const newLocale = await contentfulClient.locale.create(params, {
     name: args.name,
     code: args.code,
-    fallbackCode: args.fallbackCode,
+    fallbackCode: args.fallbackCode || null,
     contentDeliveryApi: args.contentDeliveryApi,
     contentManagementApi: args.contentManagementApi,
     optional: args.optional,
