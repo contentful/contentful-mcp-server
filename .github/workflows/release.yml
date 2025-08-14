@@ -71,6 +71,7 @@ jobs:
           echo -e "//npm.pkg.github.com/:_authToken=${{ steps.vault.outputs.GITHUB_PACKAGES_WRITE_TOKEN }}\n@contentful:registry=https://npm.pkg.github.com" > ./.npmrc
 
       - name: NX Release
+        id: nx-release
         run: |
           npx nx release --yes
         env:
@@ -86,7 +87,12 @@ jobs:
 
       - name: Upload DXT file to release
         run: |
-          gh release upload ${{ steps.get-tag.outputs.tag }} \
-            ./contentful-mcp-server.dxt
+          if ! gh release view ${{ steps.get-tag.outputs.tag }} --json assets --jq '.assets[].name' | grep -q "contentful-mcp-server.dxt"; then
+            echo "DXT file not found in release, uploading..."
+            gh release upload ${{ steps.get-tag.outputs.tag }} \
+              ./contentful-mcp-server.dxt
+          else
+            echo "DXT file already exists in release, skipping upload."
+          fi
         env:
           GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
