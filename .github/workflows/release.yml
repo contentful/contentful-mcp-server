@@ -77,11 +77,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
 
-      - name: Create Test Release
-        run: gh release create v0.2.0
-        env:
-          GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
-
       - name: Get latest release tag
         id: get-tag
         run: |
