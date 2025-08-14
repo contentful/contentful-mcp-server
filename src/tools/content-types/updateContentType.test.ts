@@ -10,7 +10,7 @@ import {
   mockField,
   mockTextField,
   mockLinkField,
-} from './mockUtil.js';
+} from './mockClient.js';
 
 vi.mock('../../../src/utils/tools.js');
 vi.mock('../../../src/config/contentful.js');

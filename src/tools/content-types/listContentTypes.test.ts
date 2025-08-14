@@ -6,7 +6,7 @@ import {
   mockContentTypeGetMany,
   mockContentTypesResponse,
   mockArgs,
-} from './mockUtil.js';
+} from './mockClient.js';
 
 vi.mock('../../../src/utils/tools.js');
 vi.mock('../../../src/config/contentful.js');
