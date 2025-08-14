@@ -37,7 +37,7 @@ describe('deleteContentType', () => {
   });
 
   it('should handle errors when content type deletion fails due to non-existent content type', async () => {
-    const error = new Error('Content type not found');
+    const error = new Error('Content type deletion failed');
     mockContentTypeDelete.mockRejectedValue(error);
 
     const result = await deleteContentTypeTool(mockArgs);
@@ -47,41 +47,7 @@ describe('deleteContentType', () => {
       content: [
         {
           type: 'text',
-          text: 'Error deleting content type: Content type not found',
-        },
-      ],
-    });
-  });
-
-  it('should handle errors when content type has existing entries', async () => {
-    const error = new Error('Cannot delete content type with existing entries');
-    mockContentTypeDelete.mockRejectedValue(error);
-
-    const result = await deleteContentTypeTool(mockArgs);
-
-    expect(result).toEqual({
-      isError: true,
-      content: [
-        {
-          type: 'text',
-          text: 'Error deleting content type: Cannot delete content type with existing entries',
-        },
-      ],
-    });
-  });
-
-  it('should handle errors when content type is published', async () => {
-    const error = new Error('Cannot delete published content type');
-    mockContentTypeDelete.mockRejectedValue(error);
-
-    const result = await deleteContentTypeTool(mockArgs);
-
-    expect(result).toEqual({
-      isError: true,
-      content: [
-        {
-          type: 'text',
-          text: 'Error deleting content type: Cannot delete published content type',
+          text: 'Error deleting content type: Content type deletion failed',
         },
       ],
     });

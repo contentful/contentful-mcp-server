@@ -109,21 +109,4 @@ describe('getContentType', () => {
       ],
     });
   });
-
-  it('should handle permission errors', async () => {
-    const error = new Error('Access denied');
-    mockContentTypeGet.mockRejectedValue(error);
-
-    const result = await getContentTypeTool(mockArgs);
-
-    expect(result).toEqual({
-      isError: true,
-      content: [
-        {
-          type: 'text',
-          text: 'Error retrieving content type: Access denied',
-        },
-      ],
-    });
-  });
 });

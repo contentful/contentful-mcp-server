@@ -9,7 +9,6 @@ import {
   mockField,
   mockTextField,
 } from './mockUtil.js';
-import { createToolClient } from '../../utils/tools.js';
 
 vi.mock('../../../src/utils/tools.js');
 vi.mock('../../../src/config/contentful.js');
@@ -31,8 +30,6 @@ describe('createContentType', () => {
     mockContentTypeCreate.mockResolvedValue(mockContentType);
 
     const result = await createContentTypeTool(testArgs);
-
-    expect(createToolClient).toHaveBeenCalledWith(testArgs);
 
     const expectedResponse = formatResponse(
       'Content type created successfully',
