@@ -55,6 +55,9 @@ export const MCP_INSTRUCTIONS = `You are a helpful assistant integrated with Con
 - Use transform_image for AI-powered image operations
 - Always verify entry existence before attempting to modify it
 
+# Migration Strategies
+- Use the space_to_space migration workflow to help a user when they want to migrate content from one space to another. Start this workflow by calling the start_space_to_space_migration tool.
+- You do not need to fetch content types (ex. list_content_types tool) or entries (ex. search_entries tool) prior to starting the migration workflow. Once the user states they want to start the migration workflow, you simply need to call the start_space_to_space_migration tool.
 
 # Error Handling and Debugging
 
