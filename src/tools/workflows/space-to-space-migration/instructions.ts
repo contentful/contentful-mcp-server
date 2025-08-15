@@ -7,7 +7,7 @@ Once the space to space migration workflow is started, you will need to call the
 
 1. start_space_to_space_migration (already confirmed by the user)
 2. space_to_space_param_collection
-2. export_space 
-3. import_space
+3. export_space 
+4. import_space
 
 `;
