@@ -18,7 +18,8 @@
     "npm": ">=10.0.0"
   },
   "scripts": {
-    "build": "tsc",
+    "clean": "rimraf build",
+    "build": "npm run clean && tsc",
     "dev": "nodemon --ext ts --ignore build/ --watch src/ --exec 'npm run build && npm start'",
     "format": "prettier --write .",
     "lint": "eslint .",
@@ -58,6 +59,7 @@
     "nx": "^21.3.5",
     "prettier": "^3.6.2",
     "pretty-quick": "^4.2.2",
+    "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.2",
     "vitest": "^3.2.4"
