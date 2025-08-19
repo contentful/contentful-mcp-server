@@ -5,7 +5,7 @@ dotenv.config();
 const EnvSchema = z.object({
   CONTENTFUL_MANAGEMENT_ACCESS_TOKEN: z
     .string()
-    .describe('Contentul CMA token'),
+    .describe('Contentful CMA token'),
   CONTENTFUL_HOST: z
     .string()
     .optional()
@@ -23,7 +23,7 @@ const EnvSchema = z.object({
 
 export const env = EnvSchema.safeParse(process.env);
 
-if (!env.success) {
+if (!env.success && process.env.TEST_TYPE !== 'unit') {
   console.error('Invalid environment variables', env.error.format());
   process.exit(1);
 }
