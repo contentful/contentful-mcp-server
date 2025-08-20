@@ -9,6 +9,7 @@ import { createToolClient } from '../../utils/tools.js';
 // Create mock functions for the client
 export const mockContentTypeGet = vi.fn();
 export const mockContentTypeCreate = vi.fn();
+export const mockContentTypeCreateWithId = vi.fn();
 export const mockContentTypeUpdate = vi.fn();
 export const mockContentTypeDelete = vi.fn();
 export const mockContentTypePublish = vi.fn();
@@ -22,6 +23,7 @@ export const mockClient = {
   contentType: {
     get: mockContentTypeGet,
     create: mockContentTypeCreate,
+    createWithId: mockContentTypeCreateWithId,
     update: mockContentTypeUpdate,
     delete: mockContentTypeDelete,
     publish: mockContentTypePublish,
