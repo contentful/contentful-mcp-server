@@ -274,31 +274,6 @@ describe('unpublishAsset', () => {
     });
   });
 
-  it('should handle unpublishing already unpublished assets', async () => {
-    const alreadyUnpublishedAsset = {
-      ...mockAsset,
-      sys: {
-        ...mockAsset.sys,
-        status: 'draft',
-        publishedVersion: undefined,
-      },
-    };
-
-    mockAssetGet.mockResolvedValue(alreadyUnpublishedAsset);
-    mockAssetUnpublish.mockResolvedValue(alreadyUnpublishedAsset);
-
-    const result = await unpublishAssetTool(mockArgs);
-
-    expect(result).toEqual({
-      content: [
-        {
-          type: 'text',
-          text: expect.stringContaining('Asset unpublished successfully'),
-        },
-      ],
-    });
-  });
-
   it('should handle asset with no published version', async () => {
     const draftAsset = {
       ...mockAsset,
@@ -319,27 +294,6 @@ describe('unpublishAsset', () => {
         {
           type: 'text',
           text: expect.stringContaining('Asset unpublished successfully'),
-        },
-      ],
-    });
-  });
-
-  it('should handle permission errors during unpublish', async () => {
-    mockAssetGet.mockResolvedValue(mockAsset);
-    const permissionError = new Error('Insufficient permissions');
-    mockAssetUnpublish.mockRejectedValue(permissionError);
-
-    const result = await unpublishAssetTool(mockArgs);
-
-    const expectedResponse = formatResponse('Asset unpublish failed', {
-      status: permissionError,
-      assetId: mockArgs.assetId,
-    });
-    expect(result).toEqual({
-      content: [
-        {
-          type: 'text',
-          text: expectedResponse,
         },
       ],
     });

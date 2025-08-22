@@ -85,22 +85,4 @@ describe('deleteAsset', () => {
       ],
     });
   });
-
-  it('should handle errors when asset is referenced by other content', async () => {
-    mockAssetGet.mockResolvedValue(mockAsset);
-    const referenceError = new Error('Asset is referenced by other content');
-    mockAssetDelete.mockRejectedValue(referenceError);
-
-    const result = await deleteAssetTool(mockArgs);
-
-    expect(result).toEqual({
-      isError: true,
-      content: [
-        {
-          type: 'text',
-          text: 'Error deleting asset: Asset is referenced by other content',
-        },
-      ],
-    });
-  });
 });

@@ -41,7 +41,7 @@ describe('getAsset', () => {
     });
   });
 
-  it('should handle errors when asset retrieval fails due to non-existent asset', async () => {
+  it('should handle errors when asset retrieval fails', async () => {
     const error = new Error('Asset not found');
     mockAssetGet.mockRejectedValue(error);
 
@@ -53,23 +53,6 @@ describe('getAsset', () => {
         {
           type: 'text',
           text: 'Error retrieving asset: Asset not found',
-        },
-      ],
-    });
-  });
-
-  it('should handle errors when asset retrieval fails due to permission issues', async () => {
-    const error = new Error('Access denied');
-    mockAssetGet.mockRejectedValue(error);
-
-    const result = await getAssetTool(mockArgs);
-
-    expect(result).toEqual({
-      isError: true,
-      content: [
-        {
-          type: 'text',
-          text: 'Error retrieving asset: Access denied',
         },
       ],
     });

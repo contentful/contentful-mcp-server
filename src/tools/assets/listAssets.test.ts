@@ -1,6 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { listAssetsTool } from './listAssets.js';
-import { formatResponse } from '../../utils/formatters.js';
 import {
   setupMockClient,
   mockAssetGetMany,
