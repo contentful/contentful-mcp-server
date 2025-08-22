@@ -142,6 +142,81 @@ describe('createContentType', () => {
     });
   });
 
+  it('should create a content type with fields containing defaultValue', async () => {
+    const fieldsWithDefaults = [
+      {
+        id: 'title',
+        name: 'Title',
+        type: 'Symbol',
+        required: true,
+        localized: false,
+        defaultValue: 'Untitled',
+      },
+      {
+        id: 'published',
+        name: 'Published',
+        type: 'Boolean',
+        required: false,
+        localized: false,
+        defaultValue: false,
+      },
+      {
+        id: 'priority',
+        name: 'Priority',
+        type: 'Integer',
+        required: false,
+        localized: false,
+        defaultValue: 1,
+      },
+    ];
+
+    const testArgs = {
+      ...mockArgs,
+      name: 'Content Type with Defaults',
+      displayField: 'title',
+      description: 'A content type with default values',
+      fields: fieldsWithDefaults,
+    };
+
+    const mockContentTypeWithDefaults = {
+      ...mockContentType,
+      name: 'Content Type with Defaults',
+      fields: fieldsWithDefaults,
+    };
+
+    mockContentTypeCreate.mockResolvedValue(mockContentTypeWithDefaults);
+
+    const result = await createContentTypeTool(testArgs);
+
+    expect(mockContentTypeCreate).toHaveBeenCalledWith(
+      {
+        spaceId: mockArgs.spaceId,
+        environmentId: mockArgs.environmentId,
+      },
+      {
+        name: 'Content Type with Defaults',
+        displayField: 'title',
+        description: 'A content type with default values',
+        fields: fieldsWithDefaults,
+      },
+    );
+
+    const expectedResponse = formatResponse(
+      'Content type created successfully',
+      {
+        contentType: mockContentTypeWithDefaults,
+      },
+    );
+    expect(result).toEqual({
+      content: [
+        {
+          type: 'text',
+          text: expectedResponse,
+        },
+      ],
+    });
+  });
+
   it('should handle errors when content type creation fails', async () => {
     const testArgs = {
       ...mockArgs,
