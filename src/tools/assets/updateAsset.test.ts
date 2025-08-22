@@ -141,7 +141,7 @@ describe('updateAsset', () => {
     mockAssetGet.mockResolvedValue(assetWithExistingTags);
     mockAssetUpdate.mockResolvedValue(updatedAsset);
 
-    const result = await updateAssetTool(testArgs);
+    await updateAssetTool(testArgs);
 
     expect(mockAssetUpdate).toHaveBeenCalledWith(
       expect.anything(),
@@ -187,7 +187,7 @@ describe('updateAsset', () => {
     mockAssetGet.mockResolvedValue(mockAsset);
     mockAssetUpdate.mockResolvedValue(updatedAsset);
 
-    const result = await updateAssetTool(testArgs);
+    await updateAssetTool(testArgs);
 
     expect(mockAssetUpdate).toHaveBeenCalledWith(
       expect.anything(),

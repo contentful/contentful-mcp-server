@@ -6,7 +6,6 @@ import {
   mockAssetGet,
   mockAssetPublish,
   mockBulkActionPublish,
-  mockBulkActionGet,
   mockArgs,
   mockAsset,
   mockBulkAction,

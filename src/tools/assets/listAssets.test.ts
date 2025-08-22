@@ -21,19 +21,6 @@ describe('listAssets', () => {
 
     const result = await listAssetsTool(mockArgs);
 
-    const expectedSummarizedAssets = mockAssetsResponse.items.map((asset) => ({
-      id: asset.sys.id,
-      title: asset.fields.title?.['en-US'] || 'Untitled',
-      description: asset.fields.description?.['en-US'] || null,
-      fileName: asset.fields.file?.['en-US']?.fileName || null,
-      contentType: asset.fields.file?.['en-US']?.contentType || null,
-      url: asset.fields.file?.['en-US']?.url || null,
-      size: asset.fields.file?.['en-US']?.details?.size || null,
-      createdAt: asset.sys.createdAt,
-      updatedAt: asset.sys.updatedAt,
-      publishedVersion: asset.sys.publishedVersion,
-    }));
-
     expect(result).toEqual({
       content: [
         {
@@ -66,7 +53,7 @@ describe('listAssets', () => {
       skip: 5,
     });
 
-    const result = await listAssetsTool(testArgs);
+    await listAssetsTool(testArgs);
 
     expect(mockAssetGetMany).toHaveBeenCalledWith({
       spaceId: mockArgs.spaceId,

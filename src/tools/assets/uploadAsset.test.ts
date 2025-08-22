@@ -124,7 +124,7 @@ describe('uploadAsset', () => {
     mockAssetCreate.mockResolvedValue(mockAsset);
     mockAssetProcessForAllLocales.mockResolvedValue(mockProcessedAsset);
 
-    const result = await uploadAssetTool(testArgs);
+    await uploadAssetTool(testArgs);
 
     expect(mockAssetCreate).toHaveBeenCalledWith(
       expect.anything(),
