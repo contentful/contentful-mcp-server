@@ -1,8 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { createContentTypeTool } from './createContentType.js';
-import { formatResponse } from '../../utils/formatters.js';
 import {
-  setupMockClient,
   mockContentTypeCreate,
   mockContentTypeCreateWithId,
   mockContentType,
@@ -10,14 +7,16 @@ import {
   mockField,
   mockTextField,
 } from './mockClient.js';
+import { createContentTypeTool } from './createContentType.js';
+import { formatResponse } from '../../utils/formatters.js';
 
-vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
+// vi.mock('../../../src/utils/tools.js');
+// vi.mock('../../../src/config/contentful.js');
 
 describe('createContentType', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    setupMockClient();
+    // setupMockClient();
   });
 
   it('should create a content type successfully with basic fields', async () => {
@@ -146,7 +145,7 @@ describe('createContentType', () => {
       ],
     });
   });
-  
+
   it('should create a content type with fields containing defaultValue', async () => {
     const fieldsWithDefaults = [
       {
@@ -189,12 +188,13 @@ describe('createContentType', () => {
       fields: fieldsWithDefaults,
     };
 
-    mockContentTypeCreate.mockResolvedValue(mockContentTypeWithDefaults);
+    mockContentTypeCreateWithId.mockResolvedValue(mockContentTypeWithDefaults);
 
     const result = await createContentTypeTool(testArgs);
 
-    expect(mockContentTypeCreate).toHaveBeenCalledWith(
+    expect(mockContentTypeCreateWithId).toHaveBeenCalledWith(
       {
+        contentTypeId: testArgs.contentTypeId,
         spaceId: mockArgs.spaceId,
         environmentId: mockArgs.environmentId,
       },
@@ -223,7 +223,6 @@ describe('createContentType', () => {
   });
 
   it('should create a content type with custom ID using createWithId', async () => {
-
     const testArgs = {
       ...mockArgs,
       name: 'Content Type with Custom ID',

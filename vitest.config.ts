@@ -4,6 +4,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
+    restoreMocks: true,
     env: {
       TEST_TYPE: 'unit',
     },
