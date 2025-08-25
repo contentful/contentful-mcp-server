@@ -5,6 +5,7 @@ const {
   mockLocaleGet,
   mockLocaleDelete,
   mockLocaleGetMany,
+  mockLocaleUpdate,
   mockCreateToolClient,
 } = vi.hoisted(() => {
   return {
@@ -12,6 +13,7 @@ const {
     mockLocaleGet: vi.fn(),
     mockLocaleDelete: vi.fn(),
     mockLocaleGetMany: vi.fn(),
+    mockLocaleUpdate: vi.fn(),
     mockCreateToolClient: vi.fn(() => {
       return {
         locale: {
@@ -19,6 +21,7 @@ const {
           get: mockLocaleGet,
           delete: mockLocaleDelete,
           getMany: mockLocaleGetMany,
+          update: mockLocaleUpdate,
         },
       };
     }),
@@ -38,6 +41,7 @@ export {
   mockLocaleGet,
   mockLocaleDelete,
   mockLocaleGetMany,
+  mockLocaleUpdate,
   mockCreateToolClient,
 };
 
