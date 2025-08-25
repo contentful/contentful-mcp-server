@@ -4,6 +4,7 @@ import { formatResponse } from '../../utils/formatters.js';
 import {
   setupMockClient,
   mockContentTypeCreate,
+  mockContentTypeCreateWithId,
   mockContentType,
   mockArgs,
   mockField,
@@ -15,12 +16,14 @@ vi.mock('../../../src/config/contentful.js');
 
 describe('createContentType', () => {
   beforeEach(() => {
+    vi.clearAllMocks();
     setupMockClient();
   });
 
   it('should create a content type successfully with basic fields', async () => {
     const testArgs = {
-      ...mockArgs,
+      spaceId: mockArgs.spaceId,
+      environmentId: mockArgs.environmentId,
       name: 'Test Content Type',
       displayField: 'title',
       description: 'A test content type',
@@ -49,7 +52,8 @@ describe('createContentType', () => {
 
   it('should create a content type without optional description', async () => {
     const testArgs = {
-      ...mockArgs,
+      spaceId: mockArgs.spaceId,
+      environmentId: mockArgs.environmentId,
       name: 'Simple Content Type',
       displayField: 'title',
       fields: [mockField],
@@ -109,7 +113,8 @@ describe('createContentType', () => {
     ];
 
     const testArgs = {
-      ...mockArgs,
+      spaceId: mockArgs.spaceId,
+      environmentId: mockArgs.environmentId,
       name: 'Complex Content Type',
       displayField: 'title',
       description: 'A content type with complex fields',
@@ -141,7 +146,7 @@ describe('createContentType', () => {
       ],
     });
   });
-
+  
   it('should create a content type with fields containing defaultValue', async () => {
     const fieldsWithDefaults = [
       {
@@ -217,9 +222,65 @@ describe('createContentType', () => {
     });
   });
 
-  it('should handle errors when content type creation fails', async () => {
+  it('should create a content type with custom ID using createWithId', async () => {
+
     const testArgs = {
       ...mockArgs,
+      name: 'Content Type with Custom ID',
+      displayField: 'title',
+      description: 'A content type with custom ID',
+      fields: [mockField],
+    };
+
+    const mockContentTypeWithId = {
+      ...mockContentType,
+      sys: {
+        ...mockContentType.sys,
+        id: testArgs.contentTypeId,
+      },
+      name: 'Content Type with Custom ID',
+    };
+
+    mockContentTypeCreateWithId.mockResolvedValue(mockContentTypeWithId);
+
+    const result = await createContentTypeTool(testArgs);
+
+    expect(mockContentTypeCreateWithId).toHaveBeenCalledWith(
+      {
+        spaceId: mockArgs.spaceId,
+        environmentId: mockArgs.environmentId,
+        contentTypeId: testArgs.contentTypeId,
+      },
+      {
+        name: 'Content Type with Custom ID',
+        displayField: 'title',
+        description: 'A content type with custom ID',
+        fields: [mockField],
+      },
+    );
+
+    expect(mockContentTypeCreate).not.toHaveBeenCalled();
+
+    const expectedResponse = formatResponse(
+      'Content type created successfully',
+      {
+        contentType: mockContentTypeWithId,
+      },
+    );
+    expect(result).toEqual({
+      content: [
+        {
+          type: 'text',
+          text: expectedResponse,
+        },
+      ],
+    });
+  });
+
+  it('should handle errors when content type creation fails', async () => {
+    const testArgs = {
+      spaceId: mockArgs.spaceId,
+      environmentId: mockArgs.environmentId,
       name: 'Invalid Content Type',
       displayField: 'nonExistentField',
       fields: [mockField],
