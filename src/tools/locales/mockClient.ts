@@ -4,18 +4,21 @@ const {
   mockLocaleCreate,
   mockLocaleGet,
   mockLocaleDelete,
+  mockLocaleGetMany,
   mockCreateToolClient,
 } = vi.hoisted(() => {
   return {
     mockLocaleCreate: vi.fn(),
     mockLocaleGet: vi.fn(),
     mockLocaleDelete: vi.fn(),
+    mockLocaleGetMany: vi.fn(),
     mockCreateToolClient: vi.fn(() => {
       return {
         locale: {
           create: mockLocaleCreate,
           get: mockLocaleGet,
           delete: mockLocaleDelete,
+          getMany: mockLocaleGetMany,
         },
       };
     }),
@@ -34,6 +37,7 @@ export {
   mockLocaleCreate,
   mockLocaleGet,
   mockLocaleDelete,
+  mockLocaleGetMany,
   mockCreateToolClient,
 };
 
@@ -41,6 +45,10 @@ export const testLocale = {
   name: 'Test Locale',
   code: 'en-US',
   fallbackCode: null,
+  contentDeliveryApi: true,
+  contentManagementApi: true,
+  default: true,
+  optional: false,
   sys: {
     id: 'test-locale-id',
     type: 'Locale',
@@ -48,6 +56,9 @@ export const testLocale = {
     environment: {
       sys: { type: 'Link', linkType: 'Environment', id: 'test-environment-id' },
     },
+    createdAt: '2025-08-25T10:00:00Z',
+    updatedAt: '2025-08-25T10:00:00Z',
+    version: 1,
   },
 };
 
