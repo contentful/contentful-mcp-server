@@ -1,12 +1,21 @@
 import { vi } from 'vitest';
 
-const { mockLocaleCreate, mockCreateToolClient } = vi.hoisted(() => {
+const {
+  mockLocaleCreate,
+  mockLocaleGet,
+  mockLocaleDelete,
+  mockCreateToolClient,
+} = vi.hoisted(() => {
   return {
     mockLocaleCreate: vi.fn(),
+    mockLocaleGet: vi.fn(),
+    mockLocaleDelete: vi.fn(),
     mockCreateToolClient: vi.fn(() => {
       return {
         locale: {
           create: mockLocaleCreate,
+          get: mockLocaleGet,
+          delete: mockLocaleDelete,
         },
       };
     }),
@@ -21,7 +30,12 @@ vi.mock('../../utils/tools.js', async (importOriginal) => {
   };
 });
 
-export { mockLocaleCreate, mockCreateToolClient };
+export {
+  mockLocaleCreate,
+  mockLocaleGet,
+  mockLocaleDelete,
+  mockCreateToolClient,
+};
 
 export const testLocale = {
   name: 'Test Locale',
