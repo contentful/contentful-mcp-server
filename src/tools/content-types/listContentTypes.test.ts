@@ -94,6 +94,8 @@ describe('listContentTypes', () => {
       limit: 50, // Will be capped at 10
     };
 
+    await listContentTypesTool(testArgs);
+
     mockContentTypeGetMany.mockResolvedValue(mockContentTypesResponse);
 
     await listContentTypesTool(testArgs);
