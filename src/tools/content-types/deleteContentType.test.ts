@@ -1,20 +1,9 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
+import { mockContentTypeDelete, mockArgs } from './mockClient.js';
 import { deleteContentTypeTool } from './deleteContentType.js';
 import { formatResponse } from '../../utils/formatters.js';
-import {
-  setupMockClient,
-  mockContentTypeDelete,
-  mockArgs,
-} from './mockClient.js';
-
-vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
 
 describe('deleteContentType', () => {
-  beforeEach(() => {
-    setupMockClient();
-  });
-
   it('should delete a content type successfully', async () => {
     mockContentTypeDelete.mockResolvedValue(undefined);
 

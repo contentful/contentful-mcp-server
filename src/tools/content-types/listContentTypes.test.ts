@@ -1,21 +1,13 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { listContentTypesTool } from './listContentTypes.js';
-import { formatResponse } from '../../utils/formatters.js';
+import { describe, it, expect } from 'vitest';
 import {
-  setupMockClient,
   mockContentTypeGetMany,
   mockContentTypesResponse,
   mockArgs,
 } from './mockClient.js';
-
-vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
+import { listContentTypesTool } from './listContentTypes.js';
+import { formatResponse } from '../../utils/formatters.js';
 
 describe('listContentTypes', () => {
-  beforeEach(() => {
-    setupMockClient();
-  });
-
   it('should list content types with default parameters', async () => {
     mockContentTypeGetMany.mockResolvedValue(mockContentTypesResponse);
 
@@ -105,6 +97,8 @@ describe('listContentTypes', () => {
     await listContentTypesTool(testArgs);
 
     mockContentTypeGetMany.mockResolvedValue(mockContentTypesResponse);
+
+    await listContentTypesTool(testArgs);
 
     expect(mockContentTypeGetMany).toHaveBeenCalledWith({
       spaceId: testArgs.spaceId,

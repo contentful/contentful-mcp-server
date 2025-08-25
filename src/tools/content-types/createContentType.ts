@@ -13,6 +13,12 @@ export const CreateContentTypeToolParams = BaseToolSchema.extend({
     .string()
     .optional()
     .describe('Description of the content type'),
+  contentTypeId: z
+    .string()
+    .optional()
+    .describe(
+      'Optional ID for the content type. If provided, will use createWithId method',
+    ),
   fields: z
     .array(FieldSchema)
     .describe('Array of field definitions for the content type'),
@@ -28,13 +34,20 @@ async function tool(args: Params) {
 
   const contentfulClient = createToolClient(args);
 
-  // Create the content type
-  const contentType = await contentfulClient.contentType.create(params, {
+  const contentTypeData = {
     name: args.name,
     displayField: args.displayField,
     description: args.description,
     fields: args.fields,
-  });
+  };
+
+  // Create the content type with or without ID
+  const contentType = args.contentTypeId
+    ? await contentfulClient.contentType.createWithId(
+        { ...params, contentTypeId: args.contentTypeId },
+        contentTypeData,
+      )
+    : await contentfulClient.contentType.create(params, contentTypeData);
 
   return createSuccessResponse('Content type created successfully', {
     contentType,

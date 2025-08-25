@@ -1,21 +1,9 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
+import { mockContentTypeGet, mockContentType, mockArgs } from './mockClient.js';
 import { getContentTypeTool } from './getContentType.js';
 import { formatResponse } from '../../utils/formatters.js';
-import {
-  setupMockClient,
-  mockContentTypeGet,
-  mockContentType,
-  mockArgs,
-} from './mockClient.js';
-
-vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
 
 describe('getContentType', () => {
-  beforeEach(() => {
-    setupMockClient();
-  });
-
   it('should retrieve a content type successfully', async () => {
     mockContentTypeGet.mockResolvedValue(mockContentType);
 

@@ -1,8 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { updateContentTypeTool } from './updateContentType.js';
-import { formatResponse } from '../../utils/formatters.js';
+import { describe, it, expect } from 'vitest';
 import {
-  setupMockClient,
   mockContentTypeGet,
   mockContentTypeUpdate,
   mockContentType,
@@ -11,15 +8,10 @@ import {
   mockTextField,
   mockLinkField,
 } from './mockClient.js';
-
-vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
+import { updateContentTypeTool } from './updateContentType.js';
+import { formatResponse } from '../../utils/formatters.js';
 
 describe('updateContentType', () => {
-  beforeEach(() => {
-    setupMockClient();
-  });
-
   it('should update a content type with new name only', async () => {
     const testArgs = {
       ...mockArgs,
