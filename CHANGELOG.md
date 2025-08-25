@@ -1,3 +1,9 @@
+## 1.1.0 (2025-08-21)
+
+### 🚀 Features
+
+- add support for default values in content type fields [DX-345] ([#113](https://github.com/contentful/contentful-mcp-server/issues/113))
+
 ## 1.0.5 (2025-08-13)
 
 ### 🩹 Fixes

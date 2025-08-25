@@ -30,6 +30,18 @@ zod
 
 Development Dependencies
 
+@commitlint/cli
+    License: MIT
+    https://www.npmjs.com/package/@commitlint/cli [npmjs.com]
+@commitlint/config-conventional
+    License: MIT
+    https://www.npmjs.com/package/@commitlint/config-conventional [npmjs.com]
+@modelcontextprotocol/inspector
+    License: MIT
+    https://www.npmjs.com/package/@modelcontextprotocol/inspector [npmjs.com]
+@nx/js
+    License: MIT
+    https://www.npmjs.com/package/@nx/js [npmjs.com]
 @types/node
     License: MIT
     https://www.npmjs.com/package/@types/node [npmjs.com]
@@ -42,15 +54,24 @@ eslint-plugin-simple-import-sort
 eslint-plugin-unused-imports
     License: MIT
     https://www.npmjs.com/package/eslint-plugin-unused-imports [npmjs.com]
+husky
+    License: MIT
+    https://www.npmjs.com/package/husky [npmjs.com]
 mcps-logger
     License: MIT
     https://www.npmjs.com/package/mcps-logger [npmjs.com]
 nodemon
     License: MIT
     https://www.npmjs.com/package/nodemon [npmjs.com]
+nx
+    License: MIT
+    https://www.npmjs.com/package/nx [npmjs.com]
 prettier
     License: MIT
     https://www.npmjs.com/package/prettier [npmjs.com]
+pretty-quick
+    License: MIT
+    https://www.npmjs.com/package/pretty-quick [npmjs.com]
 ts-node
     License: MIT
     https://www.npmjs.com/package/ts-node [npmjs.com]

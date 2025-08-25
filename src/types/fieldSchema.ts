@@ -17,6 +17,7 @@ export const FieldSchema = z.object({
     .describe('Whether the field is omitted from the API response'),
   validations: z.array(z.any()).optional().describe('Field validations'),
   settings: z.record(z.any()).optional().describe('Field-specific settings'),
+  defaultValue: z.any().optional().describe('Default value for the field'),
   linkType: z
     .string()
     .optional()
