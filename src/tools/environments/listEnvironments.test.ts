@@ -32,7 +32,12 @@ describe('listEnvironmentsTool', () => {
 
     const result = await listEnvironmentsTool(mockArgs);
 
-    expect(createToolClient).toHaveBeenCalledWith(mockArgs);
+    const clientArgs = {
+      spaceId: mockArgs.spaceId,
+      environmentId: mockArgs.environmentId,
+    };
+
+    expect(createToolClient).toHaveBeenCalledWith(clientArgs);
     expect(mockEnvironmentGetMany).toHaveBeenCalledWith({
       spaceId: mockArgs.spaceId,
       query: {

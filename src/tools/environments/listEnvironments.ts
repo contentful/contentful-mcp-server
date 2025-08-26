@@ -33,7 +33,7 @@ type Params = z.infer<typeof ListEnvironmentsToolParams>;
 
 async function tool(args: Params) {
   const clientArgs = {
-    ...args,
+    spaceId: args.spaceId,
     environmentId: args.environmentId || 'master',
   };
 
