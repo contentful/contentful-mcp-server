@@ -5,6 +5,7 @@ import {
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
 import { VariableType } from '../../utils/ai-actions.js';
+import { AiActionTestCaseSchema } from '../../types/aiActionTestCaseSchema.js';
 
 export const CreateAiActionToolParams = BaseToolSchema.extend({
   name: z.string().describe('The name of the AI action'),
@@ -36,7 +37,7 @@ export const CreateAiActionToolParams = BaseToolSchema.extend({
     })
     .describe('The configuration for the AI action'),
   testCases: z
-    .array(z.any())
+    .array(AiActionTestCaseSchema)
     .optional()
     .describe('Test cases for the AI action'),
 });

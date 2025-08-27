@@ -20,7 +20,7 @@
   "scripts": {
     "clean": "rimraf build",
     "build": "npm run clean && tsc",
-    "dev": "nodemon --ext ts --ignore build/ --watch src/ --exec 'npm run build && npm start'",
+    "dev": "npm run clean && tsc --watch",
     "format": "prettier --write .",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -55,7 +55,7 @@
     "eslint-plugin-unused-imports": "^4.1.4",
     "husky": "^9.1.7",
     "mcps-logger": "^1.0.0",
-    "nodemon": "^3.1.0",
+    "nodemon": "^3.1.10",
     "nx": "^21.3.5",
     "prettier": "^3.6.2",
     "pretty-quick": "^4.2.2",

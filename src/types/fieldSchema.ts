@@ -1,5 +1,5 @@
 import { z } from 'zod';
-
+import { ContentTypeFieldValidationSchema } from './contentTypeFieldValidationSchema.js';
 export const FieldSchema = z.object({
   id: z.string().describe('The field ID'),
   name: z.string().describe('The field name'),
@@ -15,7 +15,10 @@ export const FieldSchema = z.object({
     .boolean()
     .optional()
     .describe('Whether the field is omitted from the API response'),
-  validations: z.array(z.any()).optional().describe('Field validations'),
+  validations: z
+    .array(ContentTypeFieldValidationSchema)
+    .optional()
+    .describe('Field validations'),
   settings: z.record(z.any()).optional().describe('Field-specific settings'),
   defaultValue: z.any().optional().describe('Default value for the field'),
   linkType: z
@@ -26,7 +29,7 @@ export const FieldSchema = z.object({
     .object({
       type: z.string(),
       linkType: z.string().optional(),
-      validations: z.array(z.any()).optional(),
+      validations: z.array(ContentTypeFieldValidationSchema).optional(),
     })
     .optional()
     .describe('Items configuration for Array fields'),

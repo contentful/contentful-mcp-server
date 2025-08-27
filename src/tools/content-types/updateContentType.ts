@@ -5,8 +5,7 @@ import {
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
 import { FieldSchema } from '../../types/fieldSchema.js';
-
-type FieldType = z.infer<typeof FieldSchema>;
+import { ContentFields } from 'contentful-management';
 
 export const UpdateContentTypeToolParams = BaseToolSchema.extend({
   contentTypeId: z.string().describe('The ID of the content type to update'),
@@ -47,7 +46,7 @@ async function tool(args: Params) {
   // If fields are provided, ensure we're not removing any required field metadata
   if (args.fields) {
     const existingFieldsMap = currentContentType.fields.reduce(
-      (acc: Record<string, FieldType>, field: FieldType) => {
+      (acc: Record<string, ContentFields>, field: ContentFields) => {
         acc[field.id] = field;
         return acc;
       },
@@ -55,7 +54,7 @@ async function tool(args: Params) {
     );
 
     // Ensure each field has all required metadata
-    fields.forEach((field: FieldType) => {
+    fields.forEach((field: ContentFields) => {
       const existingField = existingFieldsMap[field.id];
       if (existingField) {
         // Preserve validations if not explicitly changed
