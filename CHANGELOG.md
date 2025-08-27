@@ -1,3 +1,9 @@
+## 1.2.0 (2025-08-25)
+
+### 🚀 Features
+
+- add custom content type ID support for content type creation ([#122](https://github.com/contentful/contentful-mcp-server/pull/122), [#115](https://github.com/contentful/contentful-mcp-server/issues/115))
+
 ## 1.1.0 (2025-08-21)
 
 ### 🚀 Features

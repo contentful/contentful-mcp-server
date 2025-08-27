@@ -1,22 +1,14 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { publishContentTypeTool } from './publishContentType.js';
-import { formatResponse } from '../../utils/formatters.js';
+import { describe, it, expect } from 'vitest';
 import {
-  setupMockClient,
   mockContentTypeGet,
   mockContentTypePublish,
   mockContentType,
   mockArgs,
 } from './mockClient.js';
-
-vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
+import { publishContentTypeTool } from './publishContentType.js';
+import { formatResponse } from '../../utils/formatters.js';
 
 describe('publishContentType', () => {
-  beforeEach(() => {
-    setupMockClient();
-  });
-
   it('should publish a content type successfully', async () => {
     const unpublishedContentType = {
       ...mockContentType,
