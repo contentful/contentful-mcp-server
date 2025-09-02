@@ -35,6 +35,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.0",
+    "contentful-export": "^7.21.78",
     "contentful-management": "^11.54.3",
     "dotenv": "^16.4.7",
     "fast-xml-parser": "^5.2.5",
