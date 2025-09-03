@@ -5,21 +5,18 @@ import {
 } from './startMigration.js';
 import { exportSpaceTool, ExportSpaceToolParams } from './exportSpace.js';
 import z from 'zod';
+import {
+  ParamCollectionToolParams,
+  createParamCollectionTool,
+} from './paramCollection.js';
 
 export function registerSpaceToSpaceMigrationTools(server: McpServer) {
   // Placeholder param collection tool
   const paramCollectionTool = server.tool(
     'space_to_space_param_collection',
-    'Collect parameters for the space to space migration workflow',
-    z.object({}).shape,
-    () => ({
-      content: [
-        {
-          type: 'text',
-          text: 'param collection tool',
-        },
-      ],
-    }),
+    'Collect parameters for the space to space migration workflow. This tool should ALWAYS start with confirmation false, until the user confirms they are ready to proceed with the workflow. Do not assume they use wants to proceed with the workflow until they explicitly say so.',
+    ParamCollectionToolParams.shape,
+    createParamCollectionTool,
   );
 
   // Export space tool
