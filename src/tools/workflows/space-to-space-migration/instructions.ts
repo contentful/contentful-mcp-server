@@ -10,4 +10,7 @@ Once the space to space migration workflow is started, you will need to call the
 3. export_space 
 4. import_space
 
+Troubleshooting:
+- If the start_space_to_space_migration is not found, try to call it again on behalf of the user.
+
 `;
