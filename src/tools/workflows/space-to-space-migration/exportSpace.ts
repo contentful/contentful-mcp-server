@@ -169,4 +169,7 @@ async function tool(args: Params) {
   }
 }
 
-export const exportSpaceTool = withErrorHandling(tool, 'Error exporting space');
+export const createExportSpaceTool = withErrorHandling(
+  tool,
+  'Error exporting space',
+);
