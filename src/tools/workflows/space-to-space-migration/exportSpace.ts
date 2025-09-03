@@ -95,6 +95,30 @@ export const ExportSpaceToolParams = BaseToolSchema.extend({
     .optional()
     .default(1000)
     .describe('Maximum number of items per request'),
+  deliveryToken: z
+    .string()
+    .optional()
+    .describe('CDA token to export only published content (excludes tags)'),
+  host: z.string().optional().describe('Management API host'),
+  hostDelivery: z.string().optional().describe('Delivery API host'),
+  proxy: z.string().optional().describe('HTTP/HTTPS proxy config'),
+  rawProxy: z
+    .boolean()
+    .optional()
+    .describe('Pass raw proxy config directly to Axios'),
+  headers: z
+    .record(z.any())
+    .optional()
+    .describe('Additional headers to include in requests'),
+  errorLogFile: z.string().optional().describe('Path to error log output file'),
+  useVerboseRenderer: z
+    .boolean()
+    .optional()
+    .describe('Line-by-line logging, useful for CI'),
+  config: z
+    .string()
+    .optional()
+    .describe('Path to a JSON config file with all options'),
 });
 
 type Params = z.infer<typeof ExportSpaceToolParams>;
@@ -120,6 +144,15 @@ async function tool(args: Params) {
     skipWebhooks,
     downloadAssets,
     maxAllowedLimit,
+    deliveryToken,
+    host,
+    hostDelivery,
+    proxy,
+    rawProxy,
+    headers,
+    errorLogFile,
+    useVerboseRenderer,
+    config,
   } = args;
 
   // Get management token from the same config used by other MCP tools
@@ -134,6 +167,7 @@ async function tool(args: Params) {
   const exportOptions = {
     spaceId,
     managementToken,
+    deliveryToken,
     environmentId: environmentId || 'master',
     exportDir: exportDir || process.cwd(),
     saveFile,
@@ -152,6 +186,14 @@ async function tool(args: Params) {
     contentOnly,
     downloadAssets,
     maxAllowedLimit,
+    host,
+    hostDelivery,
+    proxy,
+    rawProxy,
+    headers,
+    errorLogFile,
+    useVerboseRenderer,
+    config,
   };
 
   try {
