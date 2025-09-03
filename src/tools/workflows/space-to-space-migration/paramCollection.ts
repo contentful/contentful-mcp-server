@@ -19,10 +19,6 @@ export const ParamCollectionToolParams = BaseToolSchema.extend({
         .string()
         .optional()
         .describe('ID of the space with source data'),
-      managementToken: z
-        .string()
-        .optional()
-        .describe('Contentful Management API token'),
       environmentId: z
         .string()
         .optional()
@@ -118,10 +114,6 @@ export const ParamCollectionToolParams = BaseToolSchema.extend({
   import: z
     .object({
       spaceId: z.string().optional().describe('ID of the space to import into'),
-      managementToken: z
-        .string()
-        .optional()
-        .describe('Contentful Management API token'),
       environmentId: z
         .string()
         .optional()
@@ -213,7 +205,6 @@ const paramCollectionConfig = {
   export: {
     requiredParams: `
 spaceId                 // [string] [required] - ID of the space with source data
-managementToken         // [string] [required] - Contentful Management API token
     `,
     optionalParams: `
 environmentId           // [string] [default: 'master'] - ID of the environment in the source space
