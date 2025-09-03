@@ -124,37 +124,6 @@ export const ExportSpaceToolParams = BaseToolSchema.extend({
 type Params = z.infer<typeof ExportSpaceToolParams>;
 
 async function tool(args: Params) {
-  const {
-    spaceId,
-    environmentId,
-    exportDir,
-    saveFile,
-    contentFile,
-    includeDrafts,
-    includeArchived,
-    skipContent,
-    skipContentModel,
-    skipEditorInterfaces,
-    queryEntries,
-    queryAssets,
-    stripTags,
-    contentOnly,
-    skipRoles,
-    skipTags,
-    skipWebhooks,
-    downloadAssets,
-    maxAllowedLimit,
-    deliveryToken,
-    host,
-    hostDelivery,
-    proxy,
-    rawProxy,
-    headers,
-    errorLogFile,
-    useVerboseRenderer,
-    config,
-  } = args;
-
   // Get management token from the same config used by other MCP tools
   const clientConfig = getDefaultClientConfig();
   const managementToken = clientConfig.accessToken;
@@ -163,37 +132,13 @@ async function tool(args: Params) {
     throw new Error('Contentful management token is not configured');
   }
 
-  // Set up export options
+  // Consolidate args with defaults and additional required fields
   const exportOptions = {
-    spaceId,
+    ...args,
     managementToken,
-    deliveryToken,
-    environmentId: environmentId || 'master',
-    exportDir: exportDir || process.cwd(),
-    saveFile,
-    contentFile: contentFile || `contentful-export-${spaceId}.json`,
-    includeDrafts,
-    includeArchived,
-    skipContent,
-    skipContentModel,
-    skipEditorInterfaces,
-    skipRoles,
-    skipTags,
-    skipWebhooks,
-    queryEntries,
-    queryAssets,
-    stripTags,
-    contentOnly,
-    downloadAssets,
-    maxAllowedLimit,
-    host,
-    hostDelivery,
-    proxy,
-    rawProxy,
-    headers,
-    errorLogFile,
-    useVerboseRenderer,
-    config,
+    environmentId: args.environmentId || 'master',
+    exportDir: args.exportDir || process.cwd(),
+    contentFile: args.contentFile || `contentful-export-${args.spaceId}.json`,
   };
 
   try {
@@ -205,8 +150,8 @@ async function tool(args: Params) {
     );
 
     return createSuccessResponse('Space exported successfully', {
-      spaceId,
-      environmentId: environmentId || 'master',
+      spaceId: args.spaceId,
+      environmentId: args.environmentId || 'master',
       exportPath,
       contentTypes: result.contentTypes?.length || 0,
       entries: result.entries?.length || 0,
