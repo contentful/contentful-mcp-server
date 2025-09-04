@@ -94,7 +94,7 @@ export const ParamCollectionToolParams = BaseToolSchema.extend({
         .describe('Pass raw proxy config directly to Axios'),
       maxAllowedLimit: z.number().optional().describe('Page size for requests'),
       headers: z
-        .record(z.string())
+        .record(z.any())
         .optional()
         .describe('Additional headers to include in requests'),
 
@@ -125,7 +125,7 @@ export const ParamCollectionToolParams = BaseToolSchema.extend({
         .optional()
         .describe('Path to JSON file containing the content to import'),
       content: z
-        .record(z.unknown())
+        .record(z.any())
         .optional()
         .describe(
           'JS object containing import content (must match expected structure)',
@@ -184,7 +184,7 @@ export const ParamCollectionToolParams = BaseToolSchema.extend({
         .optional()
         .describe('Max requests per second to the API'),
       headers: z
-        .record(z.string())
+        .record(z.any())
         .optional()
         .describe('Additional headers to attach to requests'),
 
