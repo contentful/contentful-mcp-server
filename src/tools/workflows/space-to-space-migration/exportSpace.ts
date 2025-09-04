@@ -107,7 +107,7 @@ export const ExportSpaceToolParams = BaseToolSchema.extend({
     .optional()
     .describe('Pass raw proxy config directly to Axios'),
   headers: z
-    .record(z.any())
+    .record(z.string())
     .optional()
     .describe('Additional headers to include in requests'),
   errorLogFile: z.string().optional().describe('Path to error log output file'),
