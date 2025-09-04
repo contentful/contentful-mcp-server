@@ -71,11 +71,11 @@ export const ParamCollectionToolParams = BaseToolSchema.extend({
         .describe('Export only entries and assets'),
 
       queryEntries: z
-        .array(z.string())
+        .record(z.union([z.string(), z.number()]))
         .optional()
         .describe('Export only entries that match query parameters'),
       queryAssets: z
-        .array(z.string())
+        .record(z.union([z.string(), z.number()]))
         .optional()
         .describe('Export only assets that match query parameters'),
       downloadAssets: z
