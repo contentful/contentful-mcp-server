@@ -5,6 +5,10 @@ import {
 } from '../../../utils/response.js';
 import { BaseToolSchema } from '../../../utils/tools.js';
 import { getDefaultClientConfig } from '../../../config/contentful.js';
+import {
+  EntryQuerySchema,
+  AssetQuerySchema,
+} from '../../../types/querySchema.js';
 import path from 'path';
 import { createRequire } from 'module';
 
@@ -77,14 +81,12 @@ export const ExportSpaceToolParams = BaseToolSchema.extend({
     .optional()
     .default(false)
     .describe('Only export assets and entries'),
-  queryEntries: z
-    .array(z.string())
-    .optional()
-    .describe('Only export entries that match the query'),
-  queryAssets: z
-    .array(z.string())
-    .optional()
-    .describe('Only export assets that match the query'),
+  queryEntries: EntryQuerySchema.optional().describe(
+    'Export only entries that match query parameters',
+  ),
+  queryAssets: AssetQuerySchema.optional().describe(
+    'Export only assets that match query parameters',
+  ),
   downloadAssets: z
     .boolean()
     .optional()
