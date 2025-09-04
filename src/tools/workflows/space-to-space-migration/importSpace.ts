@@ -5,16 +5,12 @@ import {
 } from '../../../utils/response.js';
 import { BaseToolSchema } from '../../../utils/tools.js';
 import { createRequire } from 'module';
+import { getDefaultClientConfig } from '../../../config/contentful.js';
 
 const require = createRequire(import.meta.url);
 const contentfulImport = require('contentful-import');
 
 export const ImportSpaceToolParams = BaseToolSchema.extend({
-  managementToken: z
-    .string()
-    .describe(
-      'Contentful management token. This token may be different than the one used in the export step, depending on the space being imported into.',
-    ),
   contentFile: z
     .string()
     .optional()
@@ -105,10 +101,19 @@ export const ImportSpaceToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof ImportSpaceToolParams>;
 
+// Get management token from the same config used by other MCP tools
+const clientConfig = getDefaultClientConfig();
+const managementToken = clientConfig.accessToken;
+
+if (!managementToken) {
+  throw new Error('Contentful management token is not configured');
+}
+
 async function tool(args: Params) {
   // Consolidate args with defaults and additional required fields
   const importOptions = {
     ...args,
+    managementToken,
     environmentId: args.environmentId || 'master',
   };
 
