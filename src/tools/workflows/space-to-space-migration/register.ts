@@ -37,7 +37,7 @@ export function registerSpaceToSpaceMigrationTools(server: McpServer) {
   // Placeholder import space tool
   const importSpaceTool = server.tool(
     'import_space',
-    'Import a space from a file. Step 3 of the space to space migration workflow.',
+    'Import a space from a file. Step 4 of the space to space migration workflow.',
     ImportSpaceToolParams.shape,
     createImportSpaceTool,
   );
