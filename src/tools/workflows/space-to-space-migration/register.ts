@@ -8,6 +8,7 @@ import {
   ParamCollectionToolParams,
   createParamCollectionTool,
 } from './paramCollection.js';
+import { ImportSpaceToolParams, createImportSpaceTool } from './importSpace.js';
 
 export function registerSpaceToSpaceMigrationTools(server: McpServer) {
   // Placeholder param collection tool
@@ -36,16 +37,9 @@ export function registerSpaceToSpaceMigrationTools(server: McpServer) {
   // Placeholder import space tool
   const importSpaceTool = server.tool(
     'import_space',
-    'Import a space from a file',
-    z.object({}).shape,
-    () => ({
-      content: [
-        {
-          type: 'text',
-          text: 'import tool',
-        },
-      ],
-    }),
+    'Import a space from a file. Step 3 of the space to space migration workflow.',
+    ImportSpaceToolParams.shape,
+    createImportSpaceTool,
   );
 
   // Disable all tools except the start_space_to_space_migration tool by default
