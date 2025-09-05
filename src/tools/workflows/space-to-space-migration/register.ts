@@ -3,6 +3,7 @@ import {
   makeSpaceToSpaceMigrationTool,
   StartSpaceToSpaceMigrationToolParams,
 } from './startMigration.js';
+import { createExportSpaceTool, ExportSpaceToolParams } from './exportSpace.js';
 import z from 'zod';
 import {
   ParamCollectionToolParams,
@@ -19,19 +20,12 @@ export function registerSpaceToSpaceMigrationTools(server: McpServer) {
     createParamCollectionTool,
   );
 
-  // Placeholder export space tool
+  // Export space tool
   const exportSpaceTool = server.tool(
     'export_space',
     'Export a space to a file',
-    z.object({}).shape,
-    () => ({
-      content: [
-        {
-          type: 'text',
-          text: 'export tool',
-        },
-      ],
-    }),
+    ExportSpaceToolParams.shape,
+    createExportSpaceTool,
   );
 
   // Placeholder import space tool

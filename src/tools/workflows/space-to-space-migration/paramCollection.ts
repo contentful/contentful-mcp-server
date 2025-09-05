@@ -4,6 +4,10 @@ import {
   withErrorHandling,
 } from '../../../utils/response.js';
 import { BaseToolSchema } from '../../../utils/tools.js';
+import {
+  EntryQuerySchema,
+  AssetQuerySchema,
+} from '../../../types/querySchema.js';
 
 export const ParamCollectionToolParams = BaseToolSchema.extend({
   confirmation: z
@@ -70,14 +74,12 @@ export const ParamCollectionToolParams = BaseToolSchema.extend({
         .optional()
         .describe('Export only entries and assets'),
 
-      queryEntries: z
-        .array(z.string())
-        .optional()
-        .describe('Export only entries that match query parameters'),
-      queryAssets: z
-        .array(z.string())
-        .optional()
-        .describe('Export only assets that match query parameters'),
+      queryEntries: EntryQuerySchema.optional().describe(
+        'Export only entries that match query parameters',
+      ),
+      queryAssets: AssetQuerySchema.optional().describe(
+        'Export only assets that match query parameters',
+      ),
       downloadAssets: z
         .boolean()
         .optional()
