@@ -85,7 +85,7 @@ export const ImportSpaceToolParams = BaseToolSchema.extend({
     .default(7)
     .describe('Max requests per second to the API'),
   headers: z
-    .record(z.string())
+    .record(z.any())
     .optional()
     .describe('Additional headers to attach to requests'),
   errorLogFile: z.string().optional().describe('Path to error log file'),
