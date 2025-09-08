@@ -9,6 +9,10 @@ import {
   createParamCollectionTool,
 } from './paramCollection.js';
 import { ImportSpaceToolParams, createImportSpaceTool } from './importSpace.js';
+import {
+  TeardownSpaceToSpaceMigrationToolParams,
+  makeSpaceToSpaceTeardownTool,
+} from './teardownMigration.js';
 
 export function registerSpaceToSpaceMigrationTools(server: McpServer) {
   // Param collection tool
@@ -51,5 +55,18 @@ export function registerSpaceToSpaceMigrationTools(server: McpServer) {
     'Confirmation if the user wants to start the space to space migration workflow',
     StartSpaceToSpaceMigrationToolParams.shape,
     StartSpaceToSpaceMigrationTool,
+  );
+
+  const TeardownSpaceToSpaceMigrationTool = makeSpaceToSpaceTeardownTool([
+    paramCollectionTool,
+    exportSpaceTool,
+    importSpaceTool,
+  ]);
+
+  server.tool(
+    's2s_teardown',
+    'Conclude the space to space migration workflow and disable all related tools',
+    TeardownSpaceToSpaceMigrationToolParams.shape,
+    TeardownSpaceToSpaceMigrationTool,
   );
 }
