@@ -39,15 +39,30 @@ export function registerSpaceToSpaceMigrationTools(server: McpServer) {
     createImportSpaceTool,
   );
 
+  const TeardownSpaceToSpaceMigrationTool = makeSpaceToSpaceTeardownTool([
+    paramCollectionTool,
+    exportSpaceTool,
+    importSpaceTool,
+  ]);
+
+  const teardownTool = server.tool(
+    's2s_teardown',
+    'Conclude the space to space migration workflow and disable all related tools',
+    TeardownSpaceToSpaceMigrationToolParams.shape,
+    TeardownSpaceToSpaceMigrationTool,
+  );
+
   // Disable all tools except the start_space_to_space_migration tool by default
   paramCollectionTool.disable();
   importSpaceTool.disable();
   exportSpaceTool.disable();
+  teardownTool.disable();
 
   const StartSpaceToSpaceMigrationTool = makeSpaceToSpaceMigrationTool([
     paramCollectionTool,
     exportSpaceTool,
     importSpaceTool,
+    teardownTool,
   ]);
 
   server.tool(
@@ -55,18 +70,5 @@ export function registerSpaceToSpaceMigrationTools(server: McpServer) {
     'Confirmation if the user wants to start the space to space migration workflow',
     StartSpaceToSpaceMigrationToolParams.shape,
     StartSpaceToSpaceMigrationTool,
-  );
-
-  const TeardownSpaceToSpaceMigrationTool = makeSpaceToSpaceTeardownTool([
-    paramCollectionTool,
-    exportSpaceTool,
-    importSpaceTool,
-  ]);
-
-  server.tool(
-    's2s_teardown',
-    'Conclude the space to space migration workflow and disable all related tools',
-    TeardownSpaceToSpaceMigrationToolParams.shape,
-    TeardownSpaceToSpaceMigrationTool,
   );
 }
