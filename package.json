@@ -50,7 +50,7 @@
     "@modelcontextprotocol/inspector": "0.16.2",
     "@nx/js": "^21.3.6",
     "@types/node": "^22.16.5",
-    "@typescript-eslint/eslint-plugin": "^8.38.0",
+    "@typescript-eslint/eslint-plugin": "^8.43.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-unused-imports": "^4.1.4",
     "husky": "^9.1.7",
