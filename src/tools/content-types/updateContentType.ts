@@ -5,6 +5,7 @@ import {
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
 import { FieldSchema } from '../../types/fieldSchema.js';
+import { ContentTypeMetadataSchema } from '../../types/taxonomySchema.js';
 import { ContentFields } from 'contentful-management';
 
 export const UpdateContentTypeToolParams = BaseToolSchema.extend({
@@ -24,6 +25,7 @@ export const UpdateContentTypeToolParams = BaseToolSchema.extend({
     .describe(
       'Array of field definitions for the content type. Will be merged with existing fields.',
     ),
+  metadata: ContentTypeMetadataSchema,
 });
 
 type Params = z.infer<typeof UpdateContentTypeToolParams>;
@@ -93,6 +95,7 @@ async function tool(args: Params) {
     description: args.description || currentContentType.description,
     displayField: args.displayField || currentContentType.displayField,
     fields: fields as typeof currentContentType.fields,
+    metadata: args.metadata || currentContentType.metadata,
   });
 
   return createSuccessResponse('Content type updated successfully', {

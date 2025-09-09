@@ -5,6 +5,7 @@ import {
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
 import { FieldSchema } from '../../types/fieldSchema.js';
+import { ContentTypeMetadataSchema } from '../../types/taxonomySchema.js';
 
 export const CreateContentTypeToolParams = BaseToolSchema.extend({
   name: z.string().describe('The name of the content type'),
@@ -22,6 +23,7 @@ export const CreateContentTypeToolParams = BaseToolSchema.extend({
   fields: z
     .array(FieldSchema)
     .describe('Array of field definitions for the content type'),
+  metadata: ContentTypeMetadataSchema,
 });
 
 type Params = z.infer<typeof CreateContentTypeToolParams>;
@@ -39,6 +41,7 @@ async function tool(args: Params) {
     displayField: args.displayField,
     description: args.description,
     fields: args.fields,
+    metadata: args.metadata,
   };
 
   // Create the content type with or without ID
