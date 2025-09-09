@@ -1,8 +1,4 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import {
-  makeSpaceToSpaceMigrationTool,
-  StartSpaceToSpaceMigrationToolParams,
-} from './startMigration.js';
 import { createExportSpaceTool, ExportSpaceToolParams } from './exportSpace.js';
 import {
   ParamCollectionToolParams,
@@ -10,9 +6,9 @@ import {
 } from './paramCollection.js';
 import { ImportSpaceToolParams, createImportSpaceTool } from './importSpace.js';
 import {
-  TeardownSpaceToSpaceMigrationToolParams,
-  makeSpaceToSpaceTeardownTool,
-} from './teardownMigration.js';
+  SpaceToSpaceMigrationHandlerToolParams,
+  makeSpaceToSpaceMigrationHandlerTool,
+} from './migrationHandler.js';
 
 export function registerSpaceToSpaceMigrationTools(server: McpServer) {
   // Param collection tool
@@ -39,36 +35,20 @@ export function registerSpaceToSpaceMigrationTools(server: McpServer) {
     createImportSpaceTool,
   );
 
-  const TeardownSpaceToSpaceMigrationTool = makeSpaceToSpaceTeardownTool([
-    paramCollectionTool,
-    exportSpaceTool,
-    importSpaceTool,
-  ]);
-
-  const teardownTool = server.tool(
-    's2s_teardown',
-    'Conclude the space to space migration workflow and disable all related tools',
-    TeardownSpaceToSpaceMigrationToolParams.shape,
-    TeardownSpaceToSpaceMigrationTool,
+  // Create the unified migration handler tool
+  server.tool(
+    'space_to_space_migration_handler',
+    'Enable or disable the space to space migration workflow tools. Set enableWorkflow=true to start, false to conclude the workflow.',
+    SpaceToSpaceMigrationHandlerToolParams.shape,
+    makeSpaceToSpaceMigrationHandlerTool([
+      paramCollectionTool,
+      exportSpaceTool,
+      importSpaceTool,
+    ]),
   );
 
-  // Disable all tools except the start_space_to_space_migration tool by default
+  // Disable all workflow tools by default (only the handler remains enabled)
   paramCollectionTool.disable();
   importSpaceTool.disable();
   exportSpaceTool.disable();
-  teardownTool.disable();
-
-  const StartSpaceToSpaceMigrationTool = makeSpaceToSpaceMigrationTool([
-    paramCollectionTool,
-    exportSpaceTool,
-    importSpaceTool,
-    teardownTool,
-  ]);
-
-  server.tool(
-    'start_space_to_space_migration',
-    'Confirmation if the user wants to start the space to space migration workflow',
-    StartSpaceToSpaceMigrationToolParams.shape,
-    StartSpaceToSpaceMigrationTool,
-  );
 }
