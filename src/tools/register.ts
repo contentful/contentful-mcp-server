@@ -8,7 +8,7 @@ import { registerSpaceTools } from './spaces/register.js';
 import { registerTagsTools } from './tags/register.js';
 import { registerAiActionsTools } from './ai-actions/register.js';
 import { registerLocaleTools } from './locales/register.js';
-import { registerWorkflows } from './workflows/register.js';
+import { registerWorkflows } from './jobs/register.js';
 
 export function registerAllTools(server: McpServer) {
   registerContextTools(server);
