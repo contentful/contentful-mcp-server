@@ -230,6 +230,73 @@ describe('updateContentType', () => {
     });
   });
 
+  it('should update a content type with taxonomy metadata', async () => {
+    const currentContentType = { ...mockContentType };
+
+    const taxonomyMetadata = {
+      taxonomy: [
+        {
+          sys: {
+            type: 'Link' as const,
+            linkType: 'TaxonomyConceptScheme' as const,
+            id: 'updated-concept-scheme',
+          },
+          required: true,
+        },
+        {
+          sys: {
+            type: 'Link' as const,
+            linkType: 'TaxonomyConcept' as const,
+            id: 'updated-concept',
+          },
+          required: false,
+        },
+      ],
+    };
+
+    const testArgs = {
+      ...mockArgs,
+      metadata: taxonomyMetadata,
+    };
+
+    const updatedContentType = {
+      ...mockContentType,
+      sys: { ...mockContentType.sys, version: 2 },
+      metadata: taxonomyMetadata,
+    };
+
+    mockContentTypeGet.mockResolvedValue(currentContentType);
+    mockContentTypeUpdate.mockResolvedValue(updatedContentType);
+
+    const result = await updateContentTypeTool(testArgs);
+
+    expect(mockContentTypeUpdate).toHaveBeenCalledWith(
+      {
+        spaceId: mockArgs.spaceId,
+        environmentId: mockArgs.environmentId,
+        contentTypeId: mockArgs.contentTypeId,
+      },
+      expect.objectContaining({
+        metadata: taxonomyMetadata,
+      }),
+    );
+
+    const expectedResponse = formatResponse(
+      'Content type updated successfully',
+      {
+        contentType: updatedContentType,
+      },
+    );
+    expect(result).toEqual({
+      content: [
+        {
+          type: 'text',
+          text: expectedResponse,
+        },
+      ],
+    });
+  });
+
   it('should handle update with no changes (empty args)', async () => {
     const currentContentType = { ...mockContentType };
     const updatedContentType = {

@@ -268,6 +268,78 @@ describe('createContentType', () => {
     });
   });
 
+  it('should create a content type with taxonomy metadata', async () => {
+    const taxonomyMetadata = {
+      taxonomy: [
+        {
+          sys: {
+            type: 'Link' as const,
+            linkType: 'TaxonomyConceptScheme' as const,
+            id: 'test-concept-scheme',
+          },
+          required: false,
+        },
+        {
+          sys: {
+            type: 'Link' as const,
+            linkType: 'TaxonomyConcept' as const,
+            id: 'test-concept',
+          },
+          required: true,
+        },
+      ],
+    };
+
+    const testArgs = {
+      spaceId: mockArgs.spaceId,
+      environmentId: mockArgs.environmentId,
+      name: 'Content Type with Taxonomy',
+      displayField: 'title',
+      description: 'A content type with taxonomy concepts',
+      fields: [mockField],
+      metadata: taxonomyMetadata,
+    };
+
+    const mockContentTypeWithTaxonomy = {
+      ...mockContentType,
+      name: 'Content Type with Taxonomy',
+      metadata: taxonomyMetadata,
+    };
+
+    mockContentTypeCreate.mockResolvedValue(mockContentTypeWithTaxonomy);
+
+    const result = await createContentTypeTool(testArgs);
+
+    expect(mockContentTypeCreate).toHaveBeenCalledWith(
+      {
+        spaceId: mockArgs.spaceId,
+        environmentId: mockArgs.environmentId,
+      },
+      {
+        name: 'Content Type with Taxonomy',
+        displayField: 'title',
+        description: 'A content type with taxonomy concepts',
+        fields: [mockField],
+        metadata: taxonomyMetadata,
+      },
+    );
+
+    const expectedResponse = formatResponse(
+      'Content type created successfully',
+      {
+        contentType: mockContentTypeWithTaxonomy,
+      },
+    );
+    expect(result).toEqual({
+      content: [
+        {
+          type: 'text',
+          text: expectedResponse,
+        },
+      ],
+    });
+  });
+
   it('should handle errors when content type creation fails', async () => {
     const testArgs = {
       spaceId: mockArgs.spaceId,
