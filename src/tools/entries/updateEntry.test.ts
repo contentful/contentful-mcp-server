@@ -84,6 +84,15 @@ describe('updateEntry', () => {
             },
           },
         ],
+        concepts: [
+          {
+            sys: {
+              type: 'Link' as const,
+              linkType: 'TaxonomyConcept' as const,
+              id: 'concept-id-123',
+            },
+          },
+        ],
       },
     };
 
@@ -99,6 +108,15 @@ describe('updateEntry', () => {
               type: 'Link' as const,
               linkType: 'Tag' as const,
               id: 'existing-tag-id',
+            },
+          },
+        ],
+        concepts: [
+          {
+            sys: {
+              type: 'Link' as const,
+              linkType: 'TaxonomyConcept' as const,
+              id: 'existing-concept-id',
             },
           },
         ],
@@ -126,6 +144,22 @@ describe('updateEntry', () => {
             },
           },
         ],
+        concepts: [
+          {
+            sys: {
+              type: 'Link' as const,
+              linkType: 'TaxonomyConcept' as const,
+              id: 'existing-concept-id',
+            },
+          },
+          {
+            sys: {
+              type: 'Link' as const,
+              linkType: 'TaxonomyConcept' as const,
+              id: 'concept-id-123',
+            },
+          },
+        ],
       },
     };
 
@@ -145,6 +179,51 @@ describe('updateEntry', () => {
         },
       ],
     });
+
+    // Verify that the entry.update was called with the correct merged concepts
+    expect(mockEntryUpdate).toHaveBeenCalledWith(
+      {
+        spaceId: 'test-space-id',
+        environmentId: 'test-environment',
+        entryId: 'test-entry-id',
+      },
+      expect.objectContaining({
+        metadata: expect.objectContaining({
+          tags: [
+            {
+              sys: {
+                id: 'existing-tag-id',
+                linkType: 'Tag',
+                type: 'Link',
+              },
+            },
+            {
+              sys: {
+                id: 'new-tag-id',
+                linkType: 'Tag',
+                type: 'Link',
+              },
+            },
+          ],
+          concepts: [
+            {
+              sys: {
+                type: 'Link',
+                linkType: 'TaxonomyConcept',
+                id: 'existing-concept-id',
+              },
+            },
+            {
+              sys: {
+                type: 'Link',
+                linkType: 'TaxonomyConcept',
+                id: 'concept-id-123',
+              },
+            },
+          ],
+        }),
+      }),
+    );
   });
 
   it('should update an entry with empty fields', async () => {

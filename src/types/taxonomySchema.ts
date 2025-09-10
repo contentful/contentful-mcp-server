@@ -44,3 +44,32 @@ export const ContentTypeMetadataSchema = z
     taxonomy: z.array(TaxonomyValidationLinkSchema).optional(),
   })
   .optional();
+
+/**
+ * Schema for entry type metadata
+ * Matches Contentful's MetadataProps type structure
+ */
+export const EntryMetadataSchema = z
+  .object({
+    tags: z.array(
+      z.object({
+        sys: z.object({
+          type: z.literal('Link'),
+          linkType: z.literal('Tag'),
+          id: z.string(),
+        }),
+      }),
+    ),
+    concepts: z
+      .array(
+        z.object({
+          sys: z.object({
+            type: z.literal('Link'),
+            linkType: z.literal('TaxonomyConcept'),
+            id: z.string(),
+          }),
+        }),
+      )
+      .optional(),
+  })
+  .optional();
