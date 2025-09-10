@@ -86,6 +86,15 @@ describe('createEntry', () => {
           },
         },
       ],
+      concepts: [
+        {
+          sys: {
+            type: 'Link' as const,
+            linkType: 'TaxonomyConcept' as const,
+            id: 'test-concept-id',
+          },
+        },
+      ],
     };
 
     const testArgs = {

@@ -4,6 +4,7 @@ import {
   withErrorHandling,
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import { EntryMetadataSchema } from '../../types/taxonomySchema.js';
 
 export const CreateEntryToolParams = BaseToolSchema.extend({
   contentTypeId: z
@@ -14,19 +15,7 @@ export const CreateEntryToolParams = BaseToolSchema.extend({
     .describe(
       'The field values for the new entry. Keys should be field IDs and values should be the field content.',
     ),
-  metadata: z
-    .object({
-      tags: z.array(
-        z.object({
-          sys: z.object({
-            type: z.literal('Link'),
-            linkType: z.literal('Tag'),
-            id: z.string(),
-          }),
-        }),
-      ),
-    })
-    .optional(),
+  metadata: EntryMetadataSchema,
 });
 
 type Params = z.infer<typeof CreateEntryToolParams>;
@@ -45,7 +34,7 @@ async function tool(args: Params) {
     },
     {
       fields: args.fields,
-      metadata: args.metadata,
+      ...(args.metadata ? { metadata: args.metadata } : {}),
     },
   );
 
