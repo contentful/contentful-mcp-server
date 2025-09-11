@@ -17,20 +17,35 @@ export const ListConceptsToolParams = BaseToolSchema.extend({
   limit: z
     .number()
     .optional()
-    .describe('Maximum number of concepts to return (max 10)'),
-  skip: z
-    .number()
-    .optional()
-    .describe('Skip this many concepts for pagination'),
-  select: z
+    .describe('Maximum number of concepts to return (per page)'),
+  pageNext: z
     .string()
     .optional()
-    .describe('Comma-separated list of fields to return'),
-  include: z
-    .number()
+    .describe(
+      'Pagination cursor from which to return the next page of concepts',
+    ),
+  pagePrev: z
+    .string()
     .optional()
-    .describe('Include this many levels of linked entries'),
-  order: z.string().optional().describe('Order concepts by this field'),
+    .describe(
+      'Pagination cursor from which to return the previous page of concepts',
+    ),
+  order: z
+    .string()
+    .optional()
+    .describe(
+      'Order concepts by this field. Options: sys.createdAt, sys.updatedAt, prefLabel, -sys.createdAt, -sys.updatedAt, -prefLabel',
+    ),
+  conceptScheme: z
+    .string()
+    .optional()
+    .describe('Return only concepts belonging to the specified concept scheme'),
+  query: z
+    .string()
+    .optional()
+    .describe(
+      'Filter results using a full-text search query, looking at prefLabel, altLabels, hiddenLabels and notations fields',
+    ),
   // Operation type flags - only one should be true at a time
   getMany: z
     .boolean()
@@ -86,11 +101,12 @@ async function tool(args: Params) {
     result = await contentfulClient.concept.getMany({
       organizationId: args.organizationId,
       query: {
-        limit: Math.min(args.limit || 10, 10),
-        skip: args.skip || 0,
-        ...(args.select && { select: args.select }),
-        ...(args.include && { include: args.include }),
+        ...(args.limit && { limit: args.limit }),
+        ...(args.pageNext && { pageNext: args.pageNext }),
+        ...(args.pagePrev && { pagePrev: args.pagePrev }),
         ...(args.order && { order: args.order }),
+        ...(args.conceptScheme && { conceptScheme: args.conceptScheme }),
+        ...(args.query && { query: args.query }),
       },
     });
     message = 'Concepts retrieved successfully';
@@ -104,7 +120,7 @@ async function tool(args: Params) {
     const summarized = summarizeData(result, {
       maxItems: 10,
       remainingMessage:
-        'To see more concepts, please ask me to retrieve the next page using the skip parameter.',
+        'To see more concepts, please ask me to retrieve the next page using the pageNext parameter.',
     });
 
     return createSuccessResponse(message, {
@@ -112,7 +128,7 @@ async function tool(args: Params) {
       // Only include pagination info if result has these properties (getMany operation)
       ...(result && 'total' in result && { total: result.total }),
       ...(result && 'limit' in result && { limit: result.limit }),
-      ...(result && 'skip' in result && { skip: result.skip }),
+      ...(result && 'pages' in result && { pages: result.pages }),
     });
   }
 

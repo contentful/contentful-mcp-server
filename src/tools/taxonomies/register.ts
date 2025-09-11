@@ -15,7 +15,7 @@ export function registerTaxonomyTools(server: McpServer) {
 
   server.tool(
     'list_concepts',
-    'List taxonomy concepts with configurable operations: getMany (default with pagination), getTotal (count), getDescendants (requires conceptId), or getAncestors (requires conceptId). Only one operation type should be used at a time.',
+    'List taxonomy concepts with configurable operations: getMany (default with cursor-based pagination using pageNext/pagePrev), getTotal (count), getDescendants (requires conceptId), or getAncestors (requires conceptId). Supports filtering by conceptScheme and full-text query. Only one operation type should be used at a time.',
     ListConceptsToolParams.shape,
     listConceptsTool,
   );
