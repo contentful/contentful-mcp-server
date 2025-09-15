@@ -1,3 +1,9 @@
+## 1.4.0 (2025-09-15)
+
+### 🚀 Features
+
+- **entry:** add taxonomy concepts to entrys ([#146](https://github.com/contentful/contentful-mcp-server/pull/146))
+
 ## 1.3.0 (2025-09-15)
 
 ### 🚀 Features
