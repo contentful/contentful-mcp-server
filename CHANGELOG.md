@@ -1,3 +1,9 @@
+## 1.3.0 (2025-09-15)
+
+### 🚀 Features
+
+- add organization support through env variable and tools [DX-381] ([#148](https://github.com/contentful/contentful-mcp-server/pull/148))
+
 ## 1.2.2 (2025-08-29)
 
 ### 🩹 Fixes
