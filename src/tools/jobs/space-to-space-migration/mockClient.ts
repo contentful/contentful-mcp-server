@@ -94,34 +94,51 @@ export const mockArgs = {
 };
 
 /**
- * Mock export arguments with common options
+ * Helper function to create import test args with defaults
  */
-export const mockExportArgs = {
-  ...mockArgs,
-  exportDir: '/test/export/dir',
-  contentFile: 'test-export.json',
-  includeDrafts: false,
-  includeArchived: false,
-  skipContentModel: false,
-  skipContent: false,
-  downloadAssets: false,
-  maxAllowedLimit: 1000,
-};
-
-/**
- * Mock import arguments with common options
- */
-export const mockImportArgs = {
-  ...mockArgs,
-  contentFile: '/test/import/test-export.json',
+export const createImportTestArgs = (
+  overrides: Record<string, unknown> = {},
+) => ({
+  spaceId: 'test-space-id',
+  environmentId: 'test-environment',
   contentModelOnly: false,
   skipContentModel: false,
+  skipLocales: false,
+  skipContentUpdates: false,
   skipContentPublishing: false,
   uploadAssets: false,
+  skipAssetUpdates: false,
   timeout: 3000,
   retryLimit: 10,
   rateLimit: 7,
-};
+  ...overrides,
+});
+
+/**
+ * Helper function to create export test args with defaults
+ */
+export const createExportTestArgs = (
+  overrides: Record<string, unknown> = {},
+) => ({
+  spaceId: 'test-space-id',
+  environmentId: 'test-environment',
+  saveFile: true,
+  includeDrafts: false,
+  includeArchived: false,
+  skipContentModel: false,
+  skipEditorInterfaces: false,
+  skipContent: false,
+  skipRoles: false,
+  skipTags: false,
+  skipWebhooks: false,
+  stripTags: false,
+  contentOnly: false,
+  downloadAssets: false,
+  maxAllowedLimit: 1000,
+  rawProxy: false,
+  useVerboseRenderer: false,
+  ...overrides,
+});
 
 /**
  * Mock parameter collection arguments

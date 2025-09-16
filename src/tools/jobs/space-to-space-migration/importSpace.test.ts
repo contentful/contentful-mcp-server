@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { createImportSpaceTool } from './importSpace.js';
 import { formatResponse } from '../../../utils/formatters.js';
-import { mockImportResult } from './mockClient.js';
+import { mockImportResult, createImportTestArgs } from './mockClient.js';
 
 // Mock contentful-import at the top level using vi.hoisted
 const mockContentfulImport = vi.hoisted(() => vi.fn());
@@ -25,23 +25,6 @@ vi.mock('../../../config/contentful.js', () => ({
   })),
 }));
 
-// Helper function to create test args with defaults
-const createTestArgs = (overrides: Record<string, unknown> = {}) => ({
-  spaceId: 'test-space-id',
-  environmentId: 'test-environment',
-  contentModelOnly: false,
-  skipContentModel: false,
-  skipLocales: false,
-  skipContentUpdates: false,
-  skipContentPublishing: false,
-  uploadAssets: false,
-  skipAssetUpdates: false,
-  timeout: 3000,
-  retryLimit: 10,
-  rateLimit: 7,
-  ...overrides,
-});
-
 describe('importSpace', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -50,7 +33,7 @@ describe('importSpace', () => {
   });
 
   it('should import space with minimal options', async () => {
-    const testArgs = createTestArgs({
+    const testArgs = createImportTestArgs({
       content: { contentTypes: [], entries: [] },
     });
 
@@ -86,7 +69,7 @@ describe('importSpace', () => {
   });
 
   it('should import space with complex configuration options', async () => {
-    const testArgs = createTestArgs({
+    const testArgs = createImportTestArgs({
       // Content options
       contentFile: '/exports/full-export.json',
       content: { contentTypes: [{ sys: { id: 'ct1' } }], entries: [] },
@@ -137,7 +120,7 @@ describe('importSpace', () => {
     const error = new Error('Space not found');
     mockContentfulImport.mockRejectedValue(error);
 
-    const testArgs = createTestArgs({
+    const testArgs = createImportTestArgs({
       spaceId: 'invalid-space-id',
       content: { contentTypes: [], entries: [] },
     });

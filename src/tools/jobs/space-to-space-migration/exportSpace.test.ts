@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { createExportSpaceTool } from './exportSpace.js';
 import { formatResponse } from '../../../utils/formatters.js';
-import { mockExportResult } from './mockClient.js';
+import { mockExportResult, createExportTestArgs } from './mockClient.js';
 
 // Mock contentful-export at the top level using vi.hoisted
 const mockContentfulExport = vi.hoisted(() => vi.fn());
@@ -32,28 +32,6 @@ vi.mock('path', () => ({
   },
 }));
 
-// Helper function to create test args with defaults
-const createTestArgs = (overrides: Record<string, unknown> = {}) => ({
-  spaceId: 'test-space-id',
-  environmentId: 'test-environment',
-  saveFile: true,
-  includeDrafts: false,
-  includeArchived: false,
-  skipContentModel: false,
-  skipEditorInterfaces: false,
-  skipContent: false,
-  skipRoles: false,
-  skipTags: false,
-  skipWebhooks: false,
-  stripTags: false,
-  contentOnly: false,
-  downloadAssets: false,
-  maxAllowedLimit: 1000,
-  rawProxy: false,
-  useVerboseRenderer: false,
-  ...overrides,
-});
-
 describe('exportSpace', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -62,7 +40,7 @@ describe('exportSpace', () => {
   });
 
   it('should export space with minimal options', async () => {
-    const testArgs = createTestArgs();
+    const testArgs = createExportTestArgs();
 
     const result = await createExportSpaceTool(testArgs);
 
@@ -99,7 +77,7 @@ describe('exportSpace', () => {
   });
 
   it('should export space with complex configuration options', async () => {
-    const testArgs = createTestArgs({
+    const testArgs = createExportTestArgs({
       // File and directory options
       exportDir: '/custom/export/dir',
       contentFile: 'custom-export.json',
@@ -168,7 +146,7 @@ describe('exportSpace', () => {
     const error = new Error('Space not found');
     mockContentfulExport.mockRejectedValue(error);
 
-    const testArgs = createTestArgs({
+    const testArgs = createExportTestArgs({
       spaceId: 'invalid-space-id',
     });
 
