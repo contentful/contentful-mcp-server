@@ -146,28 +146,7 @@ export const mockParamCollectionArgs = {
  * Mock migration handler arguments
  */
 export const mockMigrationHandlerArgs = {
+  spaceId: 'test-space-id',
+  environmentId: 'test-environment',
   enableWorkflow: true,
 };
-
-/**
- * Sets up mocks for contentful-export and contentful-import
- * Call this in beforeEach to ensure proper mock configuration
- */
-export function setupMockExportImport() {
-  // Mock the dynamic imports for contentful-export and contentful-import
-  vi.doMock('contentful-export', () => ({
-    default: mockContentfulExport,
-  }));
-
-  vi.doMock('contentful-import', () => ({
-    default: mockContentfulImport,
-  }));
-
-  // Reset all mocks
-  mockContentfulExport.mockReset();
-  mockContentfulImport.mockReset();
-
-  // Set default successful responses
-  mockContentfulExport.mockResolvedValue(mockExportResult);
-  mockContentfulImport.mockResolvedValue(mockImportResult);
-}

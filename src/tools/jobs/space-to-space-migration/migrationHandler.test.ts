@@ -1,33 +1,43 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { makeSpaceToSpaceMigrationHandlerTool } from './migrationHandler.js';
-import { formatResponse } from '../../../utils/formatters.js';
 import { mockMigrationHandlerArgs } from './mockClient.js';
-import {
-  S2S_MIGRATION_INSTRUCTIONS,
-  S2S_TEARDOWN_INSTRUCTIONS,
-} from './migrationHandler.js';
+import type { RegisteredTool } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 describe('migrationHandler', () => {
-  let mockTool1: any;
-  let mockTool2: any;
-  let mockTool3: any;
-  let tools: any[];
-  let migrationHandlerTool: any;
+  let mockTool1: RegisteredTool;
+  let mockTool2: RegisteredTool;
+  let mockTool3: RegisteredTool;
+  let tools: RegisteredTool[];
+  let migrationHandlerTool: ReturnType<
+    typeof makeSpaceToSpaceMigrationHandlerTool
+  >;
 
   beforeEach(() => {
     // Create mock tools with enable/disable methods
     mockTool1 = {
       enable: vi.fn(),
       disable: vi.fn(),
-    };
+      callback: vi.fn(),
+      enabled: true,
+      update: vi.fn(),
+      remove: vi.fn(),
+    } as RegisteredTool;
     mockTool2 = {
       enable: vi.fn(),
       disable: vi.fn(),
-    };
+      callback: vi.fn(),
+      enabled: true,
+      update: vi.fn(),
+      remove: vi.fn(),
+    } as RegisteredTool;
     mockTool3 = {
       enable: vi.fn(),
       disable: vi.fn(),
-    };
+      callback: vi.fn(),
+      enabled: true,
+      update: vi.fn(),
+      remove: vi.fn(),
+    } as RegisteredTool;
 
     tools = [mockTool1, mockTool2, mockTool3];
     migrationHandlerTool = makeSpaceToSpaceMigrationHandlerTool(tools);
@@ -109,7 +119,13 @@ describe('migrationHandler', () => {
   });
 
   it('should handle tools with null/undefined values', async () => {
-    const toolsWithNulls = [mockTool1, null, mockTool2, undefined, mockTool3];
+    const toolsWithNulls = [
+      mockTool1,
+      null,
+      mockTool2,
+      undefined,
+      mockTool3,
+    ].filter(Boolean) as RegisteredTool[];
     const handlerWithNulls =
       makeSpaceToSpaceMigrationHandlerTool(toolsWithNulls);
 
@@ -132,7 +148,7 @@ describe('migrationHandler', () => {
 
   it('should handle tool enable/disable method failures gracefully', async () => {
     // Make one tool throw an error
-    mockTool2.enable.mockImplementation(() => {
+    vi.mocked(mockTool2.enable).mockImplementation(() => {
       throw new Error('Tool enable failed');
     });
 
@@ -161,7 +177,7 @@ describe('migrationHandler', () => {
 
   it('should handle disable workflow with tool failures', async () => {
     // Make one tool throw an error on disable
-    mockTool1.disable.mockImplementation(() => {
+    vi.mocked(mockTool1.disable).mockImplementation(() => {
       throw new Error('Tool disable failed');
     });
 
@@ -215,8 +231,16 @@ describe('migrationHandler', () => {
 
   it('should handle boolean parameter correctly', async () => {
     // Test with explicit boolean values
-    const enableResult = await migrationHandlerTool({ enableWorkflow: true });
-    const disableResult = await migrationHandlerTool({ enableWorkflow: false });
+    const enableResult = await migrationHandlerTool({
+      spaceId: 'test-space',
+      environmentId: 'test-env',
+      enableWorkflow: true,
+    });
+    const disableResult = await migrationHandlerTool({
+      spaceId: 'test-space',
+      environmentId: 'test-env',
+      enableWorkflow: false,
+    });
 
     expect(enableResult.content[0].text).toContain('workflow started');
     expect(disableResult.content[0].text).toContain('workflow concluded');
@@ -231,8 +255,16 @@ describe('migrationHandler', () => {
   });
 
   it('should include enableWorkflow value in response data', async () => {
-    const enableArgs = { enableWorkflow: true };
-    const disableArgs = { enableWorkflow: false };
+    const enableArgs = {
+      spaceId: 'test-space',
+      environmentId: 'test-env',
+      enableWorkflow: true,
+    };
+    const disableArgs = {
+      spaceId: 'test-space',
+      environmentId: 'test-env',
+      enableWorkflow: false,
+    };
 
     const enableResult = await migrationHandlerTool(enableArgs);
     const disableResult = await migrationHandlerTool(disableArgs);

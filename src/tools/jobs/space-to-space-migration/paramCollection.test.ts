@@ -160,7 +160,8 @@ describe('paramCollection', () => {
           'fields.published': true,
         },
         queryAssets: {
-          'fields.title[exists]': true,
+          mimetype_group: 'image',
+          limit: 50,
         },
         host: 'custom.contentful.com',
         proxy: 'http://proxy:8080',
@@ -319,8 +320,8 @@ describe('paramCollection', () => {
           limit: 100,
         },
         queryAssets: {
-          'fields.file.contentType': 'image/jpeg',
-          'sys.createdAt[gte]': '2023-01-01',
+          mimetype_group: 'image',
+          order: 'sys.createdAt',
         },
       },
     };
@@ -332,5 +333,6 @@ describe('paramCollection', () => {
     expect(responseText).toContain('queryAssets');
     expect(responseText).toContain('<content_type>article</content_type>');
     expect(responseText).toContain('<fields.status>published</fields.status>');
+    expect(responseText).toContain('<mimetype_group>image</mimetype_group>');
   });
 });
