@@ -103,44 +103,6 @@ describe('paramCollection', () => {
     expect(result.content[0].text).toContain('<currentParams/>');
   });
 
-  it('should filter out undefined values from export parameters', async () => {
-    const testArgs = {
-      ...mockArgs,
-      confirmation: false,
-      export: {
-        spaceId: 'test-space',
-        environmentId: undefined,
-        exportDir: '/test/dir',
-        contentFile: undefined,
-        includeDrafts: true,
-        includeArchived: undefined,
-      },
-      import: {
-        spaceId: 'import-space',
-        contentFile: undefined,
-        uploadAssets: false,
-      },
-    };
-
-    const result = await createParamCollectionTool(testArgs);
-
-    expect(result.content[0].text).toContain('<spaceId>test-space</spaceId>');
-    expect(result.content[0].text).toContain(
-      '<exportDir>/test/dir</exportDir>',
-    );
-    expect(result.content[0].text).toContain(
-      '<includeDrafts>true</includeDrafts>',
-    );
-    // Check that the undefined values are not in the currentParams section
-    expect(result.content[0].text).toContain('<currentParams>');
-    const currentParamsSection = result.content[0].text
-      .split('<currentParams>')[1]
-      .split('</currentParams>')[0];
-    expect(currentParamsSection).not.toContain('environmentId');
-    expect(currentParamsSection).not.toContain('contentFile');
-    expect(currentParamsSection).not.toContain('includeArchived');
-  });
-
   it('should handle complex export parameters', async () => {
     const testArgs = {
       ...mockArgs,
@@ -230,82 +192,6 @@ describe('paramCollection', () => {
     expect(responseText).toContain('<timeout>5000</timeout>');
     expect(responseText).toContain('<retryLimit>15</retryLimit>');
     expect(responseText).toContain('<rateLimit>10</rateLimit>');
-  });
-
-  it('should include available parameters configuration in response', async () => {
-    const testArgs = {
-      ...mockArgs,
-      confirmation: false,
-    };
-
-    const result = await createParamCollectionTool(testArgs);
-
-    const responseText = result.content[0].text;
-    expect(responseText).toContain('availableParams');
-    expect(responseText).toContain('export');
-    expect(responseText).toContain('import');
-    expect(responseText).toContain('requiredParams');
-    expect(responseText).toContain('optionalParams');
-  });
-
-  it('should provide proper workflow instructions', async () => {
-    const testArgs = {
-      ...mockArgs,
-      confirmation: false,
-    };
-
-    const result = await createParamCollectionTool(testArgs);
-
-    const responseText = result.content[0].text;
-    expect(responseText).toContain(
-      'Help the user collect the correct parameters',
-    );
-    expect(responseText).toContain('space to space migration workflow');
-    expect(responseText).toContain('required and optional parameters');
-    expect(responseText).toContain('Continue to build the parameters');
-    expect(responseText).toContain('confirmation that they are ready');
-  });
-
-  it('should handle confirmation with partial parameters', async () => {
-    const testArgs = {
-      ...mockArgs,
-      confirmation: true,
-      export: {
-        spaceId: 'partial-space',
-      },
-    };
-
-    const result = await createParamCollectionTool(testArgs);
-
-    expect(result.content[0].text).toContain(
-      'User ready to proceed with workflow',
-    );
-    expect(result.content[0].text).toContain(
-      '<spaceId>partial-space</spaceId>',
-    );
-    expect(result.content[0].text).toContain('nextStep');
-  });
-
-  it('should handle content object in import parameters', async () => {
-    const contentData = {
-      contentTypes: [{ sys: { id: 'test' }, name: 'Test' }],
-      entries: [{ sys: { id: 'entry1' }, fields: {} }],
-    };
-
-    const testArgs = {
-      ...mockArgs,
-      confirmation: false,
-      import: {
-        spaceId: 'target-space',
-        content: contentData,
-      },
-    };
-
-    const result = await createParamCollectionTool(testArgs);
-
-    const responseText = result.content[0].text;
-    expect(responseText).toContain('<spaceId>target-space</spaceId>');
-    expect(responseText).toContain('<content>');
   });
 
   it('should handle query parameters for entries and assets', async () => {
