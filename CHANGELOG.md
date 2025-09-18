@@ -1,3 +1,9 @@
+## 1.5.0 (2025-09-18)
+
+### 🚀 Features
+
+- space to space migration job [DX-215] ([#164](https://github.com/contentful/contentful-mcp-server/pull/164), [#102](https://github.com/contentful/contentful-mcp-server/issues/102), [#131](https://github.com/contentful/contentful-mcp-server/issues/131), [#134](https://github.com/contentful/contentful-mcp-server/issues/134), [#138](https://github.com/contentful/contentful-mcp-server/issues/138), [#143](https://github.com/contentful/contentful-mcp-server/issues/143), [#160](https://github.com/contentful/contentful-mcp-server/issues/160), [#166](https://github.com/contentful/contentful-mcp-server/issues/166))
+
 ## 1.4.0 (2025-09-15)
 
 ### 🚀 Features
