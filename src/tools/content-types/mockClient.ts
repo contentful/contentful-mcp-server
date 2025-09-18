@@ -1,44 +1,65 @@
 import { vi } from 'vitest';
-import { createToolClient } from '../../utils/tools.js';
 
 /**
  * Shared mock objects for content type tests
  * Provides standardized mock client and content type objects used across all content type tests
  */
+const {
+  mockContentTypeGet,
+  mockContentTypeCreate,
+  mockContentTypeCreateWithId,
+  mockContentTypeUpdate,
+  mockContentTypeDelete,
+  mockContentTypePublish,
+  mockContentTypeUnpublish,
+  mockContentTypeGetMany,
+  mockCreateToolClient,
+} = vi.hoisted(() => {
+  return {
+    mockContentTypeGet: vi.fn(),
+    mockContentTypeCreate: vi.fn(),
+    mockContentTypeCreateWithId: vi.fn(),
+    mockContentTypeUpdate: vi.fn(),
+    mockContentTypeDelete: vi.fn(),
+    mockContentTypePublish: vi.fn(),
+    mockContentTypeUnpublish: vi.fn(),
+    mockContentTypeGetMany: vi.fn(),
+    mockCreateToolClient: vi.fn(() => {
+      return {
+        contentType: {
+          get: mockContentTypeGet,
+          create: mockContentTypeCreate,
+          createWithId: mockContentTypeCreateWithId,
+          update: mockContentTypeUpdate,
+          delete: mockContentTypeDelete,
+          publish: mockContentTypePublish,
+          unpublish: mockContentTypeUnpublish,
+          getMany: mockContentTypeGetMany,
+        },
+      };
+    }),
+  };
+});
 
-// Create mock functions for the client
-export const mockContentTypeGet = vi.fn();
-export const mockContentTypeCreate = vi.fn();
-export const mockContentTypeUpdate = vi.fn();
-export const mockContentTypeDelete = vi.fn();
-export const mockContentTypePublish = vi.fn();
-export const mockContentTypeUnpublish = vi.fn();
-export const mockContentTypeGetMany = vi.fn();
+vi.mock('../../utils/tools.js', async (importOriginal) => {
+  const org = await importOriginal<typeof import('../../utils/tools.js')>();
+  return {
+    ...org,
+    createToolClient: mockCreateToolClient,
+  };
+});
 
-/**
- * Standard mock Contentful client with all content type operations
- */
-export const mockClient = {
-  contentType: {
-    get: mockContentTypeGet,
-    create: mockContentTypeCreate,
-    update: mockContentTypeUpdate,
-    delete: mockContentTypeDelete,
-    publish: mockContentTypePublish,
-    unpublish: mockContentTypeUnpublish,
-    getMany: mockContentTypeGetMany,
-  },
+export {
+  mockContentTypeGet,
+  mockContentTypeCreate,
+  mockContentTypeCreateWithId,
+  mockContentTypeUpdate,
+  mockContentTypeDelete,
+  mockContentTypePublish,
+  mockContentTypeUnpublish,
+  mockContentTypeGetMany,
+  mockCreateToolClient,
 };
-
-/**
- * Sets up the mock client for tests
- * Call this in beforeEach to ensure the mock is properly configured
- */
-export function setupMockClient() {
-  vi.mocked(createToolClient).mockReturnValue(
-    mockClient as unknown as ReturnType<typeof createToolClient>,
-  );
-}
 
 /**
  * Standard mock content type object used across tests

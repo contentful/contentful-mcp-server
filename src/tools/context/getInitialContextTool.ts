@@ -17,11 +17,13 @@ async function tool(_params: Params) {
   const config = {
     space: env.data?.SPACE_ID,
     environment: env.data?.ENVIRONMENT_ID,
+    organization: env.data?.ORGANIZATION_ID,
   };
 
   const configInfo = `Current Contentful Configuration:
   - Space ID: ${config.space}
-  - Environment ID: ${config.environment}`;
+  - Environment ID: ${config.environment}
+  - Organization ID: ${config.organization}`;
 
   const todaysDate = new Date().toLocaleDateString('en-US');
 

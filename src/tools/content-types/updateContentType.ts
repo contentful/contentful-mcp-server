@@ -5,8 +5,8 @@ import {
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
 import { FieldSchema } from '../../types/fieldSchema.js';
-
-type FieldType = z.infer<typeof FieldSchema>;
+import { ContentTypeMetadataSchema } from '../../types/taxonomySchema.js';
+import { ContentFields } from 'contentful-management';
 
 export const UpdateContentTypeToolParams = BaseToolSchema.extend({
   contentTypeId: z.string().describe('The ID of the content type to update'),
@@ -25,6 +25,7 @@ export const UpdateContentTypeToolParams = BaseToolSchema.extend({
     .describe(
       'Array of field definitions for the content type. Will be merged with existing fields.',
     ),
+  metadata: ContentTypeMetadataSchema,
 });
 
 type Params = z.infer<typeof UpdateContentTypeToolParams>;
@@ -47,7 +48,7 @@ async function tool(args: Params) {
   // If fields are provided, ensure we're not removing any required field metadata
   if (args.fields) {
     const existingFieldsMap = currentContentType.fields.reduce(
-      (acc: Record<string, FieldType>, field: FieldType) => {
+      (acc: Record<string, ContentFields>, field: ContentFields) => {
         acc[field.id] = field;
         return acc;
       },
@@ -55,7 +56,7 @@ async function tool(args: Params) {
     );
 
     // Ensure each field has all required metadata
-    fields.forEach((field: FieldType) => {
+    fields.forEach((field: ContentFields) => {
       const existingField = existingFieldsMap[field.id];
       if (existingField) {
         // Preserve validations if not explicitly changed
@@ -94,6 +95,7 @@ async function tool(args: Params) {
     description: args.description || currentContentType.description,
     displayField: args.displayField || currentContentType.displayField,
     fields: fields as typeof currentContentType.fields,
+    metadata: args.metadata || currentContentType.metadata,
   });
 
   return createSuccessResponse('Content type updated successfully', {

@@ -1,8 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { updateContentTypeTool } from './updateContentType.js';
-import { formatResponse } from '../../utils/formatters.js';
+import { describe, it, expect } from 'vitest';
 import {
-  setupMockClient,
   mockContentTypeGet,
   mockContentTypeUpdate,
   mockContentType,
@@ -11,15 +8,10 @@ import {
   mockTextField,
   mockLinkField,
 } from './mockClient.js';
-
-vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
+import { updateContentTypeTool } from './updateContentType.js';
+import { formatResponse } from '../../utils/formatters.js';
 
 describe('updateContentType', () => {
-  beforeEach(() => {
-    setupMockClient();
-  });
-
   it('should update a content type with new name only', async () => {
     const testArgs = {
       ...mockArgs,
@@ -233,6 +225,73 @@ describe('updateContentType', () => {
         {
           type: 'text',
           text: 'Error updating content type: Validation failed',
+        },
+      ],
+    });
+  });
+
+  it('should update a content type with taxonomy metadata', async () => {
+    const currentContentType = { ...mockContentType };
+
+    const taxonomyMetadata = {
+      taxonomy: [
+        {
+          sys: {
+            type: 'Link' as const,
+            linkType: 'TaxonomyConceptScheme' as const,
+            id: 'updated-concept-scheme',
+          },
+          required: true,
+        },
+        {
+          sys: {
+            type: 'Link' as const,
+            linkType: 'TaxonomyConcept' as const,
+            id: 'updated-concept',
+          },
+          required: false,
+        },
+      ],
+    };
+
+    const testArgs = {
+      ...mockArgs,
+      metadata: taxonomyMetadata,
+    };
+
+    const updatedContentType = {
+      ...mockContentType,
+      sys: { ...mockContentType.sys, version: 2 },
+      metadata: taxonomyMetadata,
+    };
+
+    mockContentTypeGet.mockResolvedValue(currentContentType);
+    mockContentTypeUpdate.mockResolvedValue(updatedContentType);
+
+    const result = await updateContentTypeTool(testArgs);
+
+    expect(mockContentTypeUpdate).toHaveBeenCalledWith(
+      {
+        spaceId: mockArgs.spaceId,
+        environmentId: mockArgs.environmentId,
+        contentTypeId: mockArgs.contentTypeId,
+      },
+      expect.objectContaining({
+        metadata: taxonomyMetadata,
+      }),
+    );
+
+    const expectedResponse = formatResponse(
+      'Content type updated successfully',
+      {
+        contentType: updatedContentType,
+      },
+    );
+    expect(result).toEqual({
+      content: [
+        {
+          type: 'text',
+          text: expectedResponse,
         },
       ],
     });

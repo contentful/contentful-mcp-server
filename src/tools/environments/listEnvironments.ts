@@ -32,7 +32,6 @@ export const ListEnvironmentsToolParams = BaseToolSchema.extend({
 type Params = z.infer<typeof ListEnvironmentsToolParams>;
 
 async function tool(args: Params) {
-  // Provide a default environmentId if not specified
   const clientArgs = {
     spaceId: args.spaceId,
     environmentId: args.environmentId || 'master',

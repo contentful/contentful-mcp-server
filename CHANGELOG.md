@@ -1,3 +1,39 @@
+## 1.4.0 (2025-09-15)
+
+### 🚀 Features
+
+- **entry:** add taxonomy concepts to entrys ([#146](https://github.com/contentful/contentful-mcp-server/pull/146))
+
+## 1.3.0 (2025-09-15)
+
+### 🚀 Features
+
+- add organization support through env variable and tools [DX-381] ([#148](https://github.com/contentful/contentful-mcp-server/pull/148))
+
+## 1.2.2 (2025-08-29)
+
+### 🩹 Fixes
+
+- update install to cursor link in README [DX-356] ([#130](https://github.com/contentful/contentful-mcp-server/pull/130))
+
+## 1.2.1 (2025-08-28)
+
+### 🩹 Fixes
+
+- update zod arrays with actual schema objects for VSCode compatibility ([#126](https://github.com/contentful/contentful-mcp-server/pull/126))
+
+## 1.2.0 (2025-08-25)
+
+### 🚀 Features
+
+- add custom content type ID support for content type creation ([#122](https://github.com/contentful/contentful-mcp-server/pull/122), [#115](https://github.com/contentful/contentful-mcp-server/issues/115))
+
+## 1.1.0 (2025-08-21)
+
+### 🚀 Features
+
+- add support for default values in content type fields [DX-345] ([#113](https://github.com/contentful/contentful-mcp-server/issues/113))
+
 ## 1.0.5 (2025-08-13)
 
 ### 🩹 Fixes

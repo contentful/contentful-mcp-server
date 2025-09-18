@@ -19,6 +19,7 @@ const EnvSchema = z.object({
     .optional()
     .default('master')
     .describe('Contentful environment ID'),
+  ORGANIZATION_ID: z.string().optional().describe('Contentful organization ID'),
 });
 
 export const env = EnvSchema.safeParse(process.env);
