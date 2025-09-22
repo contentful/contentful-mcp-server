@@ -21,12 +21,6 @@ async function tool(args: Params) {
     environmentId: 'dummy', // Not needed for concept scheme deletion but required by BaseToolSchema
   });
 
-  // First, get the concept scheme to store info for return
-  const conceptScheme = await contentfulClient.conceptScheme.get({
-    organizationId: args.organizationId,
-    conceptSchemeId: args.conceptSchemeId,
-  });
-
   // Delete the concept scheme
   await contentfulClient.conceptScheme.delete({
     organizationId: args.organizationId,
@@ -35,7 +29,7 @@ async function tool(args: Params) {
   });
 
   return createSuccessResponse('Concept scheme deleted successfully', {
-    conceptScheme,
+    conceptSchemeId: args.conceptSchemeId,
   });
 }
 

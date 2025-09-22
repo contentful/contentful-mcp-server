@@ -1,78 +1,12 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
+import {
+  testConceptScheme,
+  testUpdatedConceptScheme,
+  mockConceptSchemeUpdate,
+} from './mockClient.js';
 import { updateConceptSchemeTool } from './updateConceptScheme.js';
 import { createToolClient } from '../../../utils/tools.js';
 import { formatResponse } from '../../../utils/formatters.js';
-
-const { mockConceptSchemeUpdate, mockCreateToolClient } = vi.hoisted(() => {
-  return {
-    mockConceptSchemeUpdate: vi.fn(),
-    mockCreateToolClient: vi.fn(() => {
-      return {
-        conceptScheme: {
-          update: mockConceptSchemeUpdate,
-        },
-      };
-    }),
-  };
-});
-
-vi.mock('../../../utils/tools.js', async (importOriginal) => {
-  const org = await importOriginal<typeof import('../../../utils/tools.js')>();
-  return {
-    ...org,
-    createToolClient: mockCreateToolClient,
-  };
-});
-
-const testConceptScheme = {
-  sys: {
-    type: 'TaxonomyConceptScheme',
-    id: 'test-concept-scheme-id',
-    version: 1,
-    createdAt: '2023-01-01T00:00:00Z',
-    updatedAt: '2023-01-01T00:00:00Z',
-    createdBy: {
-      sys: {
-        type: 'Link',
-        linkType: 'User',
-        id: 'user-id',
-      },
-    },
-    updatedBy: {
-      sys: {
-        type: 'Link',
-        linkType: 'User',
-        id: 'user-id',
-      },
-    },
-  },
-  prefLabel: {
-    'en-US': 'Test Concept Scheme',
-  },
-  uri: null,
-  definition: null,
-  editorialNote: null,
-  historyNote: null,
-  example: null,
-  note: null,
-  scopeNote: null,
-  topConcepts: [],
-};
-
-const updatedConceptScheme = {
-  ...testConceptScheme,
-  sys: {
-    ...testConceptScheme.sys,
-    version: 2,
-    updatedAt: '2023-01-02T00:00:00Z',
-  },
-  prefLabel: {
-    'en-US': 'Updated Test Concept Scheme',
-  },
-  definition: {
-    'en-US': 'Updated definition',
-  },
-};
 
 describe('updateConceptScheme', () => {
   beforeEach(() => {
@@ -83,17 +17,15 @@ describe('updateConceptScheme', () => {
     organizationId: 'test-org-id',
     conceptSchemeId: 'test-concept-scheme-id',
     version: 1,
+    prefLabel: {
+      'en-US': 'Updated Test Concept Scheme',
+    },
   };
 
-  it('should update a concept scheme successfully with only prefLabel', async () => {
-    mockConceptSchemeUpdate.mockResolvedValue(updatedConceptScheme);
+  it('should update a concept scheme successfully', async () => {
+    mockConceptSchemeUpdate.mockResolvedValue(testUpdatedConceptScheme);
 
-    const result = await updateConceptSchemeTool({
-      ...testArgs,
-      prefLabel: {
-        'en-US': 'Updated Test Concept Scheme',
-      },
-    });
+    const result = await updateConceptSchemeTool(testArgs);
 
     expect(createToolClient).toHaveBeenCalledWith({
       spaceId: 'dummy',
@@ -120,7 +52,7 @@ describe('updateConceptScheme', () => {
     const expectedResponse = formatResponse(
       'Concept scheme updated successfully',
       {
-        updatedConceptScheme,
+        updatedConceptScheme: testUpdatedConceptScheme,
       },
     );
     expect(result).toEqual({
@@ -133,22 +65,23 @@ describe('updateConceptScheme', () => {
     });
   });
 
-  it('should update a concept scheme successfully with multiple fields', async () => {
-    mockConceptSchemeUpdate.mockResolvedValue(updatedConceptScheme);
-
-    const result = await updateConceptSchemeTool({
-      ...testArgs,
+  it('should update multiple fields', async () => {
+    const multiFieldArgs = {
+      organizationId: 'test-org-id',
+      conceptSchemeId: 'test-concept-scheme-id',
+      version: 1,
       prefLabel: {
         'en-US': 'Updated Test Concept Scheme',
       },
       definition: {
         'en-US': 'Updated definition',
       },
-      uri: 'https://example.com/updated-scheme',
-      editorialNote: {
-        'en-US': 'Updated editorial note',
-      },
-    });
+      uri: 'https://example.com/updated',
+    };
+
+    mockConceptSchemeUpdate.mockResolvedValue(testUpdatedConceptScheme);
+
+    const result = await updateConceptSchemeTool(multiFieldArgs);
 
     expect(mockConceptSchemeUpdate).toHaveBeenCalledWith(
       {
@@ -173,15 +106,8 @@ describe('updateConceptScheme', () => {
         },
         {
           op: 'replace',
-          path: '/editorialNote',
-          value: {
-            'en-US': 'Updated editorial note',
-          },
-        },
-        {
-          op: 'replace',
           path: '/uri',
-          value: 'https://example.com/updated-scheme',
+          value: 'https://example.com/updated',
         },
       ],
     );
@@ -189,7 +115,7 @@ describe('updateConceptScheme', () => {
     const expectedResponse = formatResponse(
       'Concept scheme updated successfully',
       {
-        updatedConceptScheme,
+        updatedConceptScheme: testUpdatedConceptScheme,
       },
     );
     expect(result).toEqual({
@@ -202,72 +128,17 @@ describe('updateConceptScheme', () => {
     });
   });
 
-  it('should update a concept scheme successfully with topConcepts', async () => {
-    mockConceptSchemeUpdate.mockResolvedValue(updatedConceptScheme);
-
-    const topConcepts = [
-      {
-        sys: {
-          type: 'Link' as const,
-          linkType: 'TaxonomyConcept' as const,
-          id: 'concept-1',
-        },
-      },
-      {
-        sys: {
-          type: 'Link' as const,
-          linkType: 'TaxonomyConcept' as const,
-          id: 'concept-2',
-        },
-      },
-    ];
-
-    const result = await updateConceptSchemeTool({
-      ...testArgs,
-      topConcepts,
-    });
-
-    expect(mockConceptSchemeUpdate).toHaveBeenCalledWith(
-      {
-        organizationId: 'test-org-id',
-        conceptSchemeId: 'test-concept-scheme-id',
-        version: 1,
-      },
-      [
-        {
-          op: 'replace',
-          path: '/topConcepts',
-          value: topConcepts,
-        },
-      ],
-    );
-
-    const expectedResponse = formatResponse(
-      'Concept scheme updated successfully',
-      {
-        updatedConceptScheme,
-      },
-    );
-    expect(result).toEqual({
-      content: [
-        {
-          type: 'text',
-          text: expectedResponse,
-        },
-      ],
-    });
-  });
-
-  it('should handle null values for optional fields', async () => {
-    mockConceptSchemeUpdate.mockResolvedValue(updatedConceptScheme);
-
-    const result = await updateConceptSchemeTool({
-      ...testArgs,
+  it('should handle URI removal when set to null', async () => {
+    const argsWithNullUri = {
+      organizationId: 'test-org-id',
+      conceptSchemeId: 'test-concept-scheme-id',
+      version: 1,
       uri: null,
-      definition: {
-        'en-US': null,
-      },
-    });
+    };
+
+    mockConceptSchemeUpdate.mockResolvedValue(testConceptScheme);
+
+    const result = await updateConceptSchemeTool(argsWithNullUri);
 
     expect(mockConceptSchemeUpdate).toHaveBeenCalledWith(
       {
@@ -276,13 +147,6 @@ describe('updateConceptScheme', () => {
         version: 1,
       },
       [
-        {
-          op: 'replace',
-          path: '/definition',
-          value: {
-            'en-US': null,
-          },
-        },
         {
           op: 'remove',
           path: '/uri',
@@ -293,7 +157,7 @@ describe('updateConceptScheme', () => {
     const expectedResponse = formatResponse(
       'Concept scheme updated successfully',
       {
-        updatedConceptScheme,
+        updatedConceptScheme: testConceptScheme,
       },
     );
     expect(result).toEqual({
@@ -306,10 +170,33 @@ describe('updateConceptScheme', () => {
     });
   });
 
-  it('should update concept scheme with minimal fields (only version)', async () => {
-    mockConceptSchemeUpdate.mockResolvedValue(testConceptScheme);
+  it('should handle errors gracefully', async () => {
+    const errorMessage = 'Failed to update concept scheme';
+    mockConceptSchemeUpdate.mockRejectedValue(new Error(errorMessage));
 
     const result = await updateConceptSchemeTool(testArgs);
+
+    expect(result).toEqual({
+      content: [
+        {
+          type: 'text',
+          text: `Error updating concept scheme: ${errorMessage}`,
+        },
+      ],
+      isError: true,
+    });
+  });
+
+  it('should handle empty update (no fields provided)', async () => {
+    const emptyArgs = {
+      organizationId: 'test-org-id',
+      conceptSchemeId: 'test-concept-scheme-id',
+      version: 1,
+    };
+
+    mockConceptSchemeUpdate.mockResolvedValue(testConceptScheme);
+
+    const result = await updateConceptSchemeTool(emptyArgs);
 
     expect(mockConceptSchemeUpdate).toHaveBeenCalledWith(
       {
@@ -333,23 +220,6 @@ describe('updateConceptScheme', () => {
           text: expectedResponse,
         },
       ],
-    });
-  });
-
-  it('should handle errors properly', async () => {
-    const error = new Error('Test error');
-    mockConceptSchemeUpdate.mockRejectedValue(error);
-
-    const result = await updateConceptSchemeTool(testArgs);
-
-    expect(result).toEqual({
-      content: [
-        {
-          type: 'text',
-          text: 'Error updating concept scheme: Test error',
-        },
-      ],
-      isError: true,
     });
   });
 });

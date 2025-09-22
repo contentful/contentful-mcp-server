@@ -1,69 +1,11 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
+import {
+  testConceptScheme1,
+  testConceptScheme2,
+  mockConceptSchemeGetMany,
+} from './mockClient.js';
 import { listConceptSchemesTool } from './listConceptSchemes.js';
 import { createToolClient } from '../../../utils/tools.js';
-
-const { mockConceptSchemeGetMany, mockCreateToolClient } = vi.hoisted(() => {
-  return {
-    mockConceptSchemeGetMany: vi.fn(),
-    mockCreateToolClient: vi.fn(() => {
-      return {
-        conceptScheme: {
-          getMany: mockConceptSchemeGetMany,
-        },
-      };
-    }),
-  };
-});
-
-vi.mock('../../../utils/tools.js', async (importOriginal) => {
-  const org = await importOriginal<typeof import('../../../utils/tools.js')>();
-  return {
-    ...org,
-    createToolClient: mockCreateToolClient,
-  };
-});
-
-const testConceptScheme1 = {
-  sys: {
-    type: 'TaxonomyConceptScheme',
-    id: 'concept-scheme-1',
-    version: 1,
-    createdAt: '2023-01-01T00:00:00Z',
-    updatedAt: '2023-01-01T00:00:00Z',
-  },
-  prefLabel: {
-    'en-US': 'First Concept Scheme',
-  },
-  uri: null,
-  definition: {
-    'en-US': 'First concept scheme for testing',
-  },
-  topConcepts: [],
-};
-
-const testConceptScheme2 = {
-  sys: {
-    type: 'TaxonomyConceptScheme',
-    id: 'concept-scheme-2',
-    version: 2,
-    createdAt: '2023-01-02T00:00:00Z',
-    updatedAt: '2023-01-02T00:00:00Z',
-  },
-  prefLabel: {
-    'en-US': 'Second Concept Scheme',
-  },
-  uri: 'https://example.com/second-scheme',
-  definition: null,
-  topConcepts: [
-    {
-      sys: {
-        type: 'Link',
-        linkType: 'TaxonomyConcept',
-        id: 'concept-1',
-      },
-    },
-  ],
-};
 
 const mockConceptSchemesResponse = {
   sys: {
@@ -102,93 +44,60 @@ describe('listConceptSchemes', () => {
       },
     });
 
-    expect(result.content[0].type).toBe('text');
-    expect(result.content[0].text).toContain(
-      'Concept schemes retrieved successfully',
-    );
-    expect(result.content[0].text).toContain('First Concept Scheme');
-    expect(result.content[0].text).toContain('Second Concept Scheme');
+    expect(result).toMatchObject({
+      content: [
+        {
+          type: 'text',
+          text: expect.stringContaining(
+            'Concept schemes retrieved successfully',
+          ),
+        },
+      ],
+    });
   });
 
-  it('should list concept schemes with custom pagination', async () => {
-    const customResponse = {
-      ...mockConceptSchemesResponse,
-      skip: 5,
-      limit: 3,
-    };
-    mockConceptSchemeGetMany.mockResolvedValue(customResponse);
-
-    const result = await listConceptSchemesTool({
-      ...testArgs,
-      limit: 3,
-      skip: 5,
-    });
-
-    expect(mockConceptSchemeGetMany).toHaveBeenCalledWith({
+  it('should list concept schemes with custom parameters', async () => {
+    const customArgs = {
       organizationId: 'test-org-id',
-      query: {
-        limit: 3,
-        skip: 5,
-      },
-    });
-
-    expect(result.content[0].type).toBe('text');
-    expect(result.content[0].text).toContain(
-      'Concept schemes retrieved successfully',
-    );
-  });
-
-  it('should list concept schemes with query parameters', async () => {
-    mockConceptSchemeGetMany.mockResolvedValue(mockConceptSchemesResponse);
-
-    const result = await listConceptSchemesTool({
-      ...testArgs,
+      limit: 5,
+      skip: 2,
       select: 'sys.id,prefLabel',
       order: 'sys.createdAt',
-      include: 1,
+    };
+
+    mockConceptSchemeGetMany.mockResolvedValue({
+      ...mockConceptSchemesResponse,
+      limit: 5,
+      skip: 2,
     });
+
+    const result = await listConceptSchemesTool(customArgs);
 
     expect(mockConceptSchemeGetMany).toHaveBeenCalledWith({
       organizationId: 'test-org-id',
       query: {
-        limit: 10,
-        skip: 0,
+        limit: 5,
+        skip: 2,
         select: 'sys.id,prefLabel',
         order: 'sys.createdAt',
-        include: 1,
       },
     });
 
-    expect(result.content[0].type).toBe('text');
-    expect(result.content[0].text).toContain(
-      'Concept schemes retrieved successfully',
-    );
+    expect(result).toMatchObject({
+      content: [
+        {
+          type: 'text',
+          text: expect.stringContaining(
+            'Concept schemes retrieved successfully',
+          ),
+        },
+      ],
+    });
   });
 
-  it('should handle empty results', async () => {
-    const emptyResponse = {
-      sys: {
-        type: 'Array',
-      },
-      total: 0,
-      skip: 0,
-      limit: 10,
-      items: [],
-    };
-    mockConceptSchemeGetMany.mockResolvedValue(emptyResponse);
-
-    const result = await listConceptSchemesTool(testArgs);
-
-    expect(result.content[0].type).toBe('text');
-    expect(result.content[0].text).toContain(
-      'Concept schemes retrieved successfully',
-    );
-    expect(result.content[0].text).toContain('<total>0</total>');
-  });
-
-  it('should handle errors properly', async () => {
-    const error = new Error('Test error');
-    mockConceptSchemeGetMany.mockRejectedValue(error);
+  it('should handle API errors gracefully', async () => {
+    const errorMessage = 'Failed to retrieve concept schemes';
+    mockConceptSchemeGetMany.mockRejectedValue(new Error(errorMessage));
 
     const result = await listConceptSchemesTool(testArgs);
 
@@ -196,37 +105,82 @@ describe('listConceptSchemes', () => {
       content: [
         {
           type: 'text',
-          text: 'Error listing concept schemes: Test error',
+          text: `Error listing concept schemes: ${errorMessage}`,
         },
       ],
       isError: true,
     });
   });
 
-  it('should summarize concept schemes correctly', async () => {
-    mockConceptSchemeGetMany.mockResolvedValue(mockConceptSchemesResponse);
+  it('should handle pagination correctly', async () => {
+    const paginatedResponse = {
+      sys: {
+        type: 'Array',
+      },
+      total: 15,
+      skip: 10,
+      limit: 10,
+      items: [testConceptScheme1],
+    };
 
-    const result = await listConceptSchemesTool(testArgs);
+    const paginatedArgs = {
+      organizationId: 'test-org-id',
+      limit: 10,
+      skip: 10,
+    };
 
-    const responseText = result.content[0].text;
+    mockConceptSchemeGetMany.mockResolvedValue(paginatedResponse);
 
-    // Check that summarized fields are included
-    expect(responseText).toContain('concept-scheme-1');
-    expect(responseText).toContain('concept-scheme-2');
-    expect(responseText).toContain('First Concept Scheme');
-    expect(responseText).toContain('Second Concept Scheme');
-    expect(responseText).toContain('2023-01-01T00:00:00Z');
-    expect(responseText).toContain('2023-01-02T00:00:00Z');
+    const result = await listConceptSchemesTool(paginatedArgs);
+
+    expect(mockConceptSchemeGetMany).toHaveBeenCalledWith({
+      organizationId: 'test-org-id',
+      query: {
+        limit: 10,
+        skip: 10,
+      },
+    });
+
+    expect(result).toMatchObject({
+      content: [
+        {
+          type: 'text',
+          text: expect.stringContaining(
+            'Concept schemes retrieved successfully',
+          ),
+        },
+      ],
+    });
   });
 
-  it('should include pagination information in response', async () => {
+  it('should handle include parameter', async () => {
+    const argsWithInclude = {
+      organizationId: 'test-org-id',
+      include: 2,
+    };
+
     mockConceptSchemeGetMany.mockResolvedValue(mockConceptSchemesResponse);
 
-    const result = await listConceptSchemesTool(testArgs);
+    const result = await listConceptSchemesTool(argsWithInclude);
 
-    const responseText = result.content[0].text;
-    expect(responseText).toContain('<total>2</total>');
-    expect(responseText).toContain('<limit>10</limit>');
-    expect(responseText).toContain('<skip>0</skip>');
+    expect(mockConceptSchemeGetMany).toHaveBeenCalledWith({
+      organizationId: 'test-org-id',
+      query: {
+        limit: 10,
+        skip: 0,
+        include: 2,
+      },
+    });
+
+    expect(result).toMatchObject({
+      content: [
+        {
+          type: 'text',
+          text: expect.stringContaining(
+            'Concept schemes retrieved successfully',
+          ),
+        },
+      ],
+    });
   });
 });

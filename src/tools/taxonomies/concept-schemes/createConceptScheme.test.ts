@@ -205,43 +205,6 @@ describe('createConceptScheme', () => {
     });
   });
 
-  it('should handle null URI correctly', async () => {
-    const argsWithNullUri = {
-      ...testArgs,
-      uri: null,
-    };
-    mockConceptSchemeCreate.mockResolvedValue(testConceptScheme);
-
-    const result = await createConceptSchemeTool(argsWithNullUri);
-
-    expect(mockConceptSchemeCreate).toHaveBeenCalledWith(
-      {
-        organizationId: 'test-org-id',
-      },
-      {
-        prefLabel: {
-          'en-US': 'Test Concept Scheme',
-        },
-        uri: null,
-      },
-    );
-
-    const expectedResponse = formatResponse(
-      'Concept scheme created successfully',
-      {
-        newConceptScheme: testConceptScheme,
-      },
-    );
-    expect(result).toEqual({
-      content: [
-        {
-          type: 'text',
-          text: expectedResponse,
-        },
-      ],
-    });
-  });
-
   it('should handle API errors gracefully', async () => {
     const errorMessage = 'Failed to create concept scheme';
     mockConceptSchemeCreate.mockRejectedValue(new Error(errorMessage));

@@ -1,63 +1,8 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
+import { testConceptScheme, mockConceptSchemeGet } from './mockClient.js';
 import { getConceptSchemeTool } from './getConceptScheme.js';
 import { createToolClient } from '../../../utils/tools.js';
 import { formatResponse } from '../../../utils/formatters.js';
-
-const { mockConceptSchemeGet, mockCreateToolClient } = vi.hoisted(() => {
-  return {
-    mockConceptSchemeGet: vi.fn(),
-    mockCreateToolClient: vi.fn(() => {
-      return {
-        conceptScheme: {
-          get: mockConceptSchemeGet,
-        },
-      };
-    }),
-  };
-});
-
-vi.mock('../../../utils/tools.js', async (importOriginal) => {
-  const org = await importOriginal<typeof import('../../../utils/tools.js')>();
-  return {
-    ...org,
-    createToolClient: mockCreateToolClient,
-  };
-});
-
-const testConceptScheme = {
-  sys: {
-    type: 'TaxonomyConceptScheme',
-    id: 'test-concept-scheme-id',
-    version: 1,
-    createdAt: '2023-01-01T00:00:00Z',
-    updatedAt: '2023-01-01T00:00:00Z',
-    createdBy: {
-      sys: {
-        type: 'Link',
-        linkType: 'User',
-        id: 'user-id',
-      },
-    },
-    updatedBy: {
-      sys: {
-        type: 'Link',
-        linkType: 'User',
-        id: 'user-id',
-      },
-    },
-  },
-  prefLabel: {
-    'en-US': 'Test Concept Scheme',
-  },
-  uri: null,
-  definition: null,
-  editorialNote: null,
-  historyNote: null,
-  example: null,
-  note: null,
-  scopeNote: null,
-  topConcepts: [],
-};
 
 describe('getConceptScheme', () => {
   beforeEach(() => {
