@@ -1,7 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { listConceptSchemesTool } from './listConceptSchemes.js';
 import { createToolClient } from '../../../utils/tools.js';
-import { formatResponse } from '../../../utils/formatters.js';
 
 const { mockConceptSchemeGetMany, mockCreateToolClient } = vi.hoisted(() => {
   return {

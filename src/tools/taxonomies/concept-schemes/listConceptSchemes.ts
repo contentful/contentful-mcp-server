@@ -73,9 +73,11 @@ async function tool(args: Params) {
 
   return createSuccessResponse('Concept schemes retrieved successfully', {
     conceptSchemes: summarized,
-    total: (conceptSchemes as any).total || conceptSchemes.items.length,
-    limit: (conceptSchemes as any).limit || args.limit || 10,
-    skip: (conceptSchemes as any).skip || args.skip || 0,
+    total:
+      (conceptSchemes as { total?: number }).total ||
+      conceptSchemes.items.length,
+    limit: (conceptSchemes as { limit?: number }).limit || args.limit || 10,
+    skip: (conceptSchemes as { skip?: number }).skip || args.skip || 0,
   });
 }
 
