@@ -63,35 +63,22 @@ async function tool(args: Params) {
     environmentId: 'dummy', // Not needed for concept scheme creation but required by BaseToolSchema
   });
 
-  // Build the concept scheme payload
+  // Build the concept scheme payload by filtering out undefined values
   const conceptSchemePayload: ConceptSchemePayload = {
     prefLabel: args.prefLabel,
+    ...Object.fromEntries(
+      Object.entries({
+        uri: args.uri,
+        definition: args.definition,
+        editorialNote: args.editorialNote,
+        historyNote: args.historyNote,
+        example: args.example,
+        note: args.note,
+        scopeNote: args.scopeNote,
+        topConcepts: args.topConcepts,
+      }).filter(([, value]) => value !== undefined),
+    ),
   };
-
-  if (args.uri !== undefined) {
-    conceptSchemePayload.uri = args.uri;
-  }
-  if (args.definition) {
-    conceptSchemePayload.definition = args.definition;
-  }
-  if (args.editorialNote) {
-    conceptSchemePayload.editorialNote = args.editorialNote;
-  }
-  if (args.historyNote) {
-    conceptSchemePayload.historyNote = args.historyNote;
-  }
-  if (args.example) {
-    conceptSchemePayload.example = args.example;
-  }
-  if (args.note) {
-    conceptSchemePayload.note = args.note;
-  }
-  if (args.scopeNote) {
-    conceptSchemePayload.scopeNote = args.scopeNote;
-  }
-  if (args.topConcepts) {
-    conceptSchemePayload.topConcepts = args.topConcepts;
-  }
 
   const newConceptScheme = args.conceptSchemeId
     ? await contentfulClient.conceptScheme.createWithId(

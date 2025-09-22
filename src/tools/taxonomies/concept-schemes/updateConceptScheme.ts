@@ -65,73 +65,41 @@ async function tool(args: Params) {
   };
 
   // Build JSON Patch operations for the fields that were provided
+  const fieldMappings = {
+    prefLabel: '/prefLabel',
+    definition: '/definition',
+    editorialNote: '/editorialNote',
+    historyNote: '/historyNote',
+    example: '/example',
+    note: '/note',
+    scopeNote: '/scopeNote',
+    topConcepts: '/topConcepts',
+  } as const;
+
   const patchOperations: Array<{
     op: string;
     path: string;
     value?: unknown;
   }> = [];
 
-  if (args.prefLabel !== undefined) {
-    patchOperations.push({
-      op: 'replace',
-      path: '/prefLabel',
-      value: args.prefLabel,
-    });
-  }
+  // Handle regular fields with replace operation
+  Object.entries(fieldMappings).forEach(([field, path]) => {
+    const value = args[field as keyof typeof fieldMappings];
+    if (value !== undefined) {
+      patchOperations.push({
+        op: 'replace',
+        path,
+        value,
+      });
+    }
+  });
+
+  // Handle URI field specially (can be removed when null)
   if (args.uri !== undefined) {
     patchOperations.push({
       op: args.uri === null ? 'remove' : 'replace',
       path: '/uri',
       ...(args.uri !== null && { value: args.uri }),
-    });
-  }
-  if (args.definition !== undefined) {
-    patchOperations.push({
-      op: 'replace',
-      path: '/definition',
-      value: args.definition,
-    });
-  }
-  if (args.editorialNote !== undefined) {
-    patchOperations.push({
-      op: 'replace',
-      path: '/editorialNote',
-      value: args.editorialNote,
-    });
-  }
-  if (args.historyNote !== undefined) {
-    patchOperations.push({
-      op: 'replace',
-      path: '/historyNote',
-      value: args.historyNote,
-    });
-  }
-  if (args.example !== undefined) {
-    patchOperations.push({
-      op: 'replace',
-      path: '/example',
-      value: args.example,
-    });
-  }
-  if (args.note !== undefined) {
-    patchOperations.push({
-      op: 'replace',
-      path: '/note',
-      value: args.note,
-    });
-  }
-  if (args.scopeNote !== undefined) {
-    patchOperations.push({
-      op: 'replace',
-      path: '/scopeNote',
-      value: args.scopeNote,
-    });
-  }
-  if (args.topConcepts !== undefined) {
-    patchOperations.push({
-      op: 'replace',
-      path: '/topConcepts',
-      value: args.topConcepts,
     });
   }
 

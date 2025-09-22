@@ -166,11 +166,6 @@ describe('updateConceptScheme', () => {
         },
         {
           op: 'replace',
-          path: '/uri',
-          value: 'https://example.com/updated-scheme',
-        },
-        {
-          op: 'replace',
           path: '/definition',
           value: {
             'en-US': 'Updated definition',
@@ -182,6 +177,11 @@ describe('updateConceptScheme', () => {
           value: {
             'en-US': 'Updated editorial note',
           },
+        },
+        {
+          op: 'replace',
+          path: '/uri',
+          value: 'https://example.com/updated-scheme',
         },
       ],
     );
@@ -277,15 +277,15 @@ describe('updateConceptScheme', () => {
       },
       [
         {
-          op: 'remove',
-          path: '/uri',
-        },
-        {
           op: 'replace',
           path: '/definition',
           value: {
             'en-US': null,
           },
+        },
+        {
+          op: 'remove',
+          path: '/uri',
         },
       ],
     );
