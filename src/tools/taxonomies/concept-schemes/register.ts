@@ -4,6 +4,14 @@ import {
   CreateConceptSchemeToolParams,
 } from './createConceptScheme.js';
 import {
+  getConceptSchemeTool,
+  GetConceptSchemeToolParams,
+} from './getConceptScheme.js';
+import {
+  listConceptSchemesTool,
+  ListConceptSchemesToolParams,
+} from './listConceptSchemes.js';
+import {
   updateConceptSchemeTool,
   UpdateConceptSchemeToolParams,
 } from './updateConceptScheme.js';
@@ -18,6 +26,20 @@ export function registerConceptSchemesTools(server: McpServer) {
     'Create a new taxonomy concept scheme in Contentful. Concept schemes organize related concepts and provide hierarchical structure for taxonomy management. The prefLabel is required and should be localized. You can optionally provide a conceptSchemeId for a user-defined ID, or let Contentful generate one automatically. You can also include definitions, notes, and references to top-level concepts.',
     CreateConceptSchemeToolParams.shape,
     createConceptSchemeTool,
+  );
+
+  server.tool(
+    'get_concept_scheme',
+    'Retrieve a specific taxonomy concept scheme from Contentful. Returns the complete concept scheme with all its properties including prefLabel, definition, topConcepts, and other metadata.',
+    GetConceptSchemeToolParams.shape,
+    getConceptSchemeTool,
+  );
+
+  server.tool(
+    'list_concept_schemes',
+    'List taxonomy concept schemes in a Contentful organization. Supports pagination and filtering options. Returns a summarized view of concept schemes with essential information.',
+    ListConceptSchemesToolParams.shape,
+    listConceptSchemesTool,
   );
 
   server.tool(
