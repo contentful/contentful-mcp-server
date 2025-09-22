@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { registerConceptSchemesTools } from './register.js';
 import { CreateConceptSchemeToolParams } from './createConceptScheme.js';
+import { UpdateConceptSchemeToolParams } from './updateConceptScheme.js';
 import { DeleteConceptSchemeToolParams } from './deleteConceptScheme.js';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
@@ -20,12 +21,19 @@ describe('registerConceptSchemesTools', () => {
     );
 
     expect(mockServer.tool).toHaveBeenCalledWith(
+      'update_concept_scheme',
+      'Update a taxonomy concept scheme in Contentful. Requires the concept scheme ID and version number for optimistic concurrency control. You can update any combination of fields - only the fields you provide will be changed, while others remain unchanged. Use this to modify labels, definitions, relationships, and other concept scheme properties.',
+      UpdateConceptSchemeToolParams.shape,
+      expect.any(Function),
+    );
+
+    expect(mockServer.tool).toHaveBeenCalledWith(
       'delete_concept_scheme',
       'Delete a taxonomy concept scheme from Contentful. Requires the concept scheme ID and version number for optimistic concurrency control. This operation permanently removes the concept scheme and cannot be undone.',
       DeleteConceptSchemeToolParams.shape,
       expect.any(Function),
     );
 
-    expect(mockServer.tool).toHaveBeenCalledTimes(2);
+    expect(mockServer.tool).toHaveBeenCalledTimes(3);
   });
 });

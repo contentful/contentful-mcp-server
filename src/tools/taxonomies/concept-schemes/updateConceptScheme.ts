@@ -1,0 +1,155 @@
+import { z } from 'zod';
+import {
+  createSuccessResponse,
+  withErrorHandling,
+} from '../../../utils/response.js';
+import { createToolClient } from '../../../utils/tools.js';
+import { TaxonomyConceptLinkSchema } from '../../../types/conceptPayloadTypes.js';
+
+export const UpdateConceptSchemeToolParams = z.object({
+  organizationId: z.string().describe('The ID of the Contentful organization'),
+  conceptSchemeId: z
+    .string()
+    .describe('The ID of the concept scheme to update'),
+  version: z.number().describe('The current version of the concept scheme'),
+  prefLabel: z
+    .record(z.string())
+    .optional()
+    .describe('The preferred label for the concept scheme (localized)'),
+  uri: z
+    .string()
+    .nullable()
+    .optional()
+    .describe('The URI for the concept scheme'),
+  definition: z
+    .record(z.string().nullable())
+    .optional()
+    .describe('Definition of the concept scheme (localized)'),
+  editorialNote: z
+    .record(z.string().nullable())
+    .optional()
+    .describe('Editorial note for the concept scheme (localized)'),
+  historyNote: z
+    .record(z.string().nullable())
+    .optional()
+    .describe('History note for the concept scheme (localized)'),
+  example: z
+    .record(z.string().nullable())
+    .optional()
+    .describe('Example for the concept scheme (localized)'),
+  note: z
+    .record(z.string().nullable())
+    .optional()
+    .describe('General note for the concept scheme (localized)'),
+  scopeNote: z
+    .record(z.string().nullable())
+    .optional()
+    .describe('Scope note for the concept scheme (localized)'),
+  topConcepts: z
+    .array(TaxonomyConceptLinkSchema)
+    .optional()
+    .describe('Links to top-level concepts in this scheme'),
+});
+
+type Params = z.infer<typeof UpdateConceptSchemeToolParams>;
+
+async function tool(args: Params) {
+  const contentfulClient = createToolClient({
+    spaceId: 'dummy', // Not needed for concept scheme operations but required by BaseToolSchema
+    environmentId: 'dummy', // Not needed for concept scheme operations but required by BaseToolSchema
+  });
+
+  const params = {
+    organizationId: args.organizationId,
+    conceptSchemeId: args.conceptSchemeId,
+  };
+
+  // Build JSON Patch operations for the fields that were provided
+  const patchOperations: Array<{
+    op: string;
+    path: string;
+    value?: unknown;
+  }> = [];
+
+  if (args.prefLabel !== undefined) {
+    patchOperations.push({
+      op: 'replace',
+      path: '/prefLabel',
+      value: args.prefLabel,
+    });
+  }
+  if (args.uri !== undefined) {
+    patchOperations.push({
+      op: args.uri === null ? 'remove' : 'replace',
+      path: '/uri',
+      ...(args.uri !== null && { value: args.uri }),
+    });
+  }
+  if (args.definition !== undefined) {
+    patchOperations.push({
+      op: 'replace',
+      path: '/definition',
+      value: args.definition,
+    });
+  }
+  if (args.editorialNote !== undefined) {
+    patchOperations.push({
+      op: 'replace',
+      path: '/editorialNote',
+      value: args.editorialNote,
+    });
+  }
+  if (args.historyNote !== undefined) {
+    patchOperations.push({
+      op: 'replace',
+      path: '/historyNote',
+      value: args.historyNote,
+    });
+  }
+  if (args.example !== undefined) {
+    patchOperations.push({
+      op: 'replace',
+      path: '/example',
+      value: args.example,
+    });
+  }
+  if (args.note !== undefined) {
+    patchOperations.push({
+      op: 'replace',
+      path: '/note',
+      value: args.note,
+    });
+  }
+  if (args.scopeNote !== undefined) {
+    patchOperations.push({
+      op: 'replace',
+      path: '/scopeNote',
+      value: args.scopeNote,
+    });
+  }
+  if (args.topConcepts !== undefined) {
+    patchOperations.push({
+      op: 'replace',
+      path: '/topConcepts',
+      value: args.topConcepts,
+    });
+  }
+
+  // Update the concept scheme using JSON Patch
+  const updatedConceptScheme = await contentfulClient.conceptScheme.update(
+    {
+      ...params,
+      version: args.version,
+    },
+    patchOperations,
+  );
+
+  return createSuccessResponse('Concept scheme updated successfully', {
+    updatedConceptScheme,
+  });
+}
+
+export const updateConceptSchemeTool = withErrorHandling(
+  tool,
+  'Error updating concept scheme',
+);
