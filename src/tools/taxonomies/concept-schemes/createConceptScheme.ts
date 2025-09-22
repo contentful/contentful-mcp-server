@@ -4,18 +4,10 @@ import {
   withErrorHandling,
 } from '../../../utils/response.js';
 import { createToolClient } from '../../../utils/tools.js';
-
-/**
- * Schema for taxonomy concept scheme link validation
- * Used for topConcept relationships
- */
-const TaxonomyConceptLinkSchema = z.object({
-  sys: z.object({
-    type: z.literal('Link'),
-    linkType: z.literal('TaxonomyConcept'),
-    id: z.string(),
-  }),
-});
+import {
+  ConceptSchemePayload,
+  TaxonomyConceptLinkSchema,
+} from '../../../types/conceptPayloadTypes.js';
 
 export const CreateConceptSchemeToolParams = z.object({
   organizationId: z.string().describe('The ID of the Contentful organization'),
@@ -72,7 +64,7 @@ async function tool(args: Params) {
   });
 
   // Build the concept scheme payload
-  const conceptSchemePayload: Record<string, unknown> = {
+  const conceptSchemePayload: ConceptSchemePayload = {
     prefLabel: args.prefLabel,
   };
 
@@ -107,13 +99,11 @@ async function tool(args: Params) {
           organizationId: args.organizationId,
           conceptSchemeId: args.conceptSchemeId,
         },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        conceptSchemePayload as any,
+        conceptSchemePayload,
       )
     : await contentfulClient.conceptScheme.create(
         { organizationId: args.organizationId },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        conceptSchemePayload as any,
+        conceptSchemePayload,
       );
 
   return createSuccessResponse('Concept scheme created successfully', {
