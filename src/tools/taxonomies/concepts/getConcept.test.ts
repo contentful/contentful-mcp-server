@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { mockArgs, testConcept, mockConceptGet } from './mockClient.js';
+import { testConcept, mockConceptGet } from './mockClient.js';
 import { getConceptTool } from './getConcept.js';
 import { createToolClient } from '../../../utils/tools.js';
 import { formatResponse } from '../../../utils/formatters.js';
