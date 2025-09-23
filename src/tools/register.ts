@@ -10,6 +10,7 @@ import { registerAiActionsTools } from './ai-actions/register.js';
 import { registerLocaleTools } from './locales/register.js';
 import { registerJobs } from './jobs/register.js';
 import { registerOrgTools } from './orgs/register.js';
+import { registerTaxonomyTools } from './taxonomies/register.js';
 
 export function registerAllTools(server: McpServer) {
   registerContextTools(server);
@@ -23,4 +24,5 @@ export function registerAllTools(server: McpServer) {
   registerLocaleTools(server);
   registerJobs(server);
   registerOrgTools(server);
+  registerTaxonomyTools(server);
 }
