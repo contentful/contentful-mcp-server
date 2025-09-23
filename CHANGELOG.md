@@ -1,3 +1,9 @@
+## 1.6.0 (2025-09-23)
+
+### 🚀 Features
+
+- taxonomy concept scheme tools [DX-409] ([#173](https://github.com/contentful/contentful-mcp-server/pull/173))
+
 ## 1.5.0 (2025-09-18)
 
 ### 🚀 Features
