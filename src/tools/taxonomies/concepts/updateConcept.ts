@@ -4,18 +4,10 @@ import {
   withErrorHandling,
 } from '../../../utils/response.js';
 import { createToolClient } from '../../../utils/tools.js';
-
-/**
- * Schema for taxonomy concept link validation
- * Used for broader and related concept relationships
- */
-const TaxonomyConceptLinkSchema = z.object({
-  sys: z.object({
-    type: z.literal('Link'),
-    linkType: z.literal('TaxonomyConcept'),
-    id: z.string(),
-  }),
-});
+import {
+  TaxonomyConceptLinkSchema,
+  type ConceptPayload,
+} from '../../../types/conceptPayloadTypes.js';
 
 export const UpdateConceptToolParams = z.object({
   organizationId: z.string().describe('The ID of the Contentful organization'),
@@ -87,83 +79,21 @@ async function tool(args: Params) {
   });
 
   // Build the updated concept payload by merging existing data with provided updates
-  const updatedPayload: Record<string, unknown> = {
-    prefLabel: args.prefLabel || existingConcept.prefLabel,
+  const updatedPayload: ConceptPayload = {
+    prefLabel: args.prefLabel ?? existingConcept.prefLabel,
+    uri: args.uri !== undefined ? args.uri : existingConcept.uri,
+    altLabels: args.altLabels ?? existingConcept.altLabels,
+    hiddenLabels: args.hiddenLabels ?? existingConcept.hiddenLabels,
+    definition: args.definition ?? existingConcept.definition,
+    editorialNote: args.editorialNote ?? existingConcept.editorialNote,
+    historyNote: args.historyNote ?? existingConcept.historyNote,
+    example: args.example ?? existingConcept.example,
+    note: args.note ?? existingConcept.note,
+    scopeNote: args.scopeNote ?? existingConcept.scopeNote,
+    notations: args.notations ?? existingConcept.notations,
+    broader: args.broader ?? existingConcept.broader,
+    related: args.related ?? existingConcept.related,
   };
-
-  // Handle URI - can be explicitly set to null, so check if it's provided
-  if (args.uri !== undefined) {
-    updatedPayload.uri = args.uri;
-  } else {
-    updatedPayload.uri = existingConcept.uri;
-  }
-
-  // Merge other optional fields
-  if (args.altLabels !== undefined) {
-    updatedPayload.altLabels = args.altLabels;
-  } else {
-    updatedPayload.altLabels = existingConcept.altLabels;
-  }
-
-  if (args.hiddenLabels !== undefined) {
-    updatedPayload.hiddenLabels = args.hiddenLabels;
-  } else {
-    updatedPayload.hiddenLabels = existingConcept.hiddenLabels;
-  }
-
-  if (args.definition !== undefined) {
-    updatedPayload.definition = args.definition;
-  } else {
-    updatedPayload.definition = existingConcept.definition;
-  }
-
-  if (args.editorialNote !== undefined) {
-    updatedPayload.editorialNote = args.editorialNote;
-  } else {
-    updatedPayload.editorialNote = existingConcept.editorialNote;
-  }
-
-  if (args.historyNote !== undefined) {
-    updatedPayload.historyNote = args.historyNote;
-  } else {
-    updatedPayload.historyNote = existingConcept.historyNote;
-  }
-
-  if (args.example !== undefined) {
-    updatedPayload.example = args.example;
-  } else {
-    updatedPayload.example = existingConcept.example;
-  }
-
-  if (args.note !== undefined) {
-    updatedPayload.note = args.note;
-  } else {
-    updatedPayload.note = existingConcept.note;
-  }
-
-  if (args.scopeNote !== undefined) {
-    updatedPayload.scopeNote = args.scopeNote;
-  } else {
-    updatedPayload.scopeNote = existingConcept.scopeNote;
-  }
-
-  if (args.notations !== undefined) {
-    updatedPayload.notations = args.notations;
-  } else {
-    updatedPayload.notations = existingConcept.notations;
-  }
-
-  if (args.broader !== undefined) {
-    updatedPayload.broader = args.broader;
-  } else {
-    updatedPayload.broader = existingConcept.broader;
-  }
-
-  if (args.related !== undefined) {
-    updatedPayload.related = args.related;
-  } else {
-    updatedPayload.related = existingConcept.related;
-  }
 
   // Update the concept using the PUT method
   const updatedConcept = await contentfulClient.concept.updatePut(
@@ -172,8 +102,7 @@ async function tool(args: Params) {
       conceptId: args.conceptId,
       version: args.version,
     },
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    updatedPayload as any,
+    updatedPayload,
   );
 
   return createSuccessResponse('Concept updated successfully', {

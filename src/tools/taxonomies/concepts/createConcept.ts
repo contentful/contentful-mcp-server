@@ -4,18 +4,10 @@ import {
   withErrorHandling,
 } from '../../../utils/response.js';
 import { createToolClient } from '../../../utils/tools.js';
-
-/**
- * Schema for taxonomy concept link validation
- * Used for broader and related concept relationships
- */
-const TaxonomyConceptLinkSchema = z.object({
-  sys: z.object({
-    type: z.literal('Link'),
-    linkType: z.literal('TaxonomyConcept'),
-    id: z.string(),
-  }),
-});
+import {
+  TaxonomyConceptLinkSchema,
+  type ConceptPayload,
+} from '../../../types/conceptPayloadTypes.js';
 
 export const CreateConceptToolParams = z.object({
   organizationId: z.string().describe('The ID of the Contentful organization'),
@@ -83,58 +75,31 @@ async function tool(args: Params) {
     environmentId: 'dummy', // Not needed for concept creation but required by BaseToolSchema
   });
 
-  // Build the concept payload
-  const conceptPayload: Record<string, unknown> = {
+  // Build the concept payload using the shared type
+  const conceptPayload: ConceptPayload = {
     prefLabel: args.prefLabel,
+    ...(args.uri !== undefined && { uri: args.uri }),
+    ...(args.altLabels && { altLabels: args.altLabels }),
+    ...(args.hiddenLabels && { hiddenLabels: args.hiddenLabels }),
+    ...(args.definition && { definition: args.definition }),
+    ...(args.editorialNote && { editorialNote: args.editorialNote }),
+    ...(args.historyNote && { historyNote: args.historyNote }),
+    ...(args.example && { example: args.example }),
+    ...(args.note && { note: args.note }),
+    ...(args.scopeNote && { scopeNote: args.scopeNote }),
+    ...(args.notations && { notations: args.notations }),
+    ...(args.broader && { broader: args.broader }),
+    ...(args.related && { related: args.related }),
   };
-
-  if (args.uri !== undefined) {
-    conceptPayload.uri = args.uri;
-  }
-  if (args.altLabels) {
-    conceptPayload.altLabels = args.altLabels;
-  }
-  if (args.hiddenLabels) {
-    conceptPayload.hiddenLabels = args.hiddenLabels;
-  }
-  if (args.definition) {
-    conceptPayload.definition = args.definition;
-  }
-  if (args.editorialNote) {
-    conceptPayload.editorialNote = args.editorialNote;
-  }
-  if (args.historyNote) {
-    conceptPayload.historyNote = args.historyNote;
-  }
-  if (args.example) {
-    conceptPayload.example = args.example;
-  }
-  if (args.note) {
-    conceptPayload.note = args.note;
-  }
-  if (args.scopeNote) {
-    conceptPayload.scopeNote = args.scopeNote;
-  }
-  if (args.notations) {
-    conceptPayload.notations = args.notations;
-  }
-  if (args.broader) {
-    conceptPayload.broader = args.broader;
-  }
-  if (args.related) {
-    conceptPayload.related = args.related;
-  }
 
   const newConcept = args.conceptId
     ? await contentfulClient.concept.createWithId(
         { organizationId: args.organizationId, conceptId: args.conceptId },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        conceptPayload as any,
+        conceptPayload,
       )
     : await contentfulClient.concept.create(
         { organizationId: args.organizationId },
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        conceptPayload as any,
+        conceptPayload,
       );
 
   return createSuccessResponse('Concept created successfully', { newConcept });
