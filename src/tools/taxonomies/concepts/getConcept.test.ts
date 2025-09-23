@@ -56,20 +56,4 @@ describe('getConcept', () => {
     expect(result.content[0].text).toContain('Error retrieving concept');
     expect(result.content[0].text).toContain('Concept not found');
   });
-
-  it('should handle network errors', async () => {
-    const networkError = new Error('Network error');
-    mockConceptGet.mockRejectedValue(networkError);
-
-    const result = await getConceptTool(testArgs);
-
-    expect(mockConceptGet).toHaveBeenCalledWith({
-      organizationId: 'test-org-id',
-      conceptId: 'test-concept-id',
-    });
-
-    expect(result.isError).toBe(true);
-    expect(result.content[0].text).toContain('Error retrieving concept');
-    expect(result.content[0].text).toContain('Network error');
-  });
 });

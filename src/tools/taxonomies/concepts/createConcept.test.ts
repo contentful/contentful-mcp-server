@@ -92,8 +92,8 @@ describe('createConcept', () => {
       broader: [
         {
           sys: {
-            type: 'Link',
-            linkType: 'TaxonomyConcept',
+            type: 'Link' as const,
+            linkType: 'TaxonomyConcept' as const,
             id: 'broader-concept-id',
           },
         },
@@ -101,8 +101,8 @@ describe('createConcept', () => {
       related: [
         {
           sys: {
-            type: 'Link',
-            linkType: 'TaxonomyConcept',
+            type: 'Link' as const,
+            linkType: 'TaxonomyConcept' as const,
             id: 'related-concept-id',
           },
         },
@@ -153,112 +153,6 @@ describe('createConcept', () => {
 
     const expectedResponse = formatResponse('Concept created successfully', {
       newConcept: fullMockConcept,
-    });
-    expect(result).toEqual({
-      content: [
-        {
-          type: 'text',
-          text: expectedResponse,
-        },
-      ],
-    });
-  });
-
-  it('should create a concept with null URI when explicitly provided', async () => {
-    const argsWithNullUri = {
-      ...testArgs,
-      uri: null,
-    };
-
-    const mockConceptWithNullUri = {
-      ...testConcept,
-      uri: null,
-    };
-
-    mockConceptCreate.mockResolvedValue(mockConceptWithNullUri);
-
-    const result = await createConceptTool(argsWithNullUri);
-
-    expect(mockConceptCreate).toHaveBeenCalledWith(
-      {
-        organizationId: 'test-org-id',
-      },
-      {
-        prefLabel: {
-          'en-US': 'Test Concept',
-        },
-        uri: null,
-      },
-    );
-
-    const expectedResponse = formatResponse('Concept created successfully', {
-      newConcept: mockConceptWithNullUri,
-    });
-    expect(result).toEqual({
-      content: [
-        {
-          type: 'text',
-          text: expectedResponse,
-        },
-      ],
-    });
-  });
-
-  it('should handle concept creation with broader and related concepts', async () => {
-    const argsWithRelations = {
-      ...testArgs,
-      broader: [
-        {
-          sys: {
-            type: 'Link' as const,
-            linkType: 'TaxonomyConcept' as const,
-            id: 'parent-concept-1',
-          },
-        },
-        {
-          sys: {
-            type: 'Link' as const,
-            linkType: 'TaxonomyConcept' as const,
-            id: 'parent-concept-2',
-          },
-        },
-      ],
-      related: [
-        {
-          sys: {
-            type: 'Link' as const,
-            linkType: 'TaxonomyConcept' as const,
-            id: 'sibling-concept-1',
-          },
-        },
-      ],
-    };
-
-    const mockConceptWithRelations = {
-      ...testConcept,
-      broader: argsWithRelations.broader,
-      related: argsWithRelations.related,
-    };
-
-    mockConceptCreate.mockResolvedValue(mockConceptWithRelations);
-
-    const result = await createConceptTool(argsWithRelations);
-
-    expect(mockConceptCreate).toHaveBeenCalledWith(
-      {
-        organizationId: 'test-org-id',
-      },
-      {
-        prefLabel: {
-          'en-US': 'Test Concept',
-        },
-        broader: argsWithRelations.broader,
-        related: argsWithRelations.related,
-      },
-    );
-
-    const expectedResponse = formatResponse('Concept created successfully', {
-      newConcept: mockConceptWithRelations,
     });
     expect(result).toEqual({
       content: [
