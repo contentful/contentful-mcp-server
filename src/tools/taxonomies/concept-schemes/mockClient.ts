@@ -7,35 +7,41 @@ const {
   mockConceptSchemeGetMany,
   mockConceptSchemeUpdate,
   mockConceptSchemeDelete,
-  mockCreateToolClient,
+  mockCreateClient,
 } = vi.hoisted(() => {
+  const mockConceptSchemeCreate = vi.fn();
+  const mockConceptSchemeCreateWithId = vi.fn();
+  const mockConceptSchemeGet = vi.fn();
+  const mockConceptSchemeGetMany = vi.fn();
+  const mockConceptSchemeUpdate = vi.fn();
+  const mockConceptSchemeDelete = vi.fn();
+  const mockCreateClient = vi.fn(() => ({
+    conceptScheme: {
+      create: mockConceptSchemeCreate,
+      createWithId: mockConceptSchemeCreateWithId,
+      get: mockConceptSchemeGet,
+      getMany: mockConceptSchemeGetMany,
+      update: mockConceptSchemeUpdate,
+      delete: mockConceptSchemeDelete,
+    },
+  }));
   return {
-    mockConceptSchemeCreate: vi.fn(),
-    mockConceptSchemeCreateWithId: vi.fn(),
-    mockConceptSchemeGet: vi.fn(),
-    mockConceptSchemeGetMany: vi.fn(),
-    mockConceptSchemeUpdate: vi.fn(),
-    mockConceptSchemeDelete: vi.fn(),
-    mockCreateToolClient: vi.fn(() => {
-      return {
-        conceptScheme: {
-          create: mockConceptSchemeCreate,
-          createWithId: mockConceptSchemeCreateWithId,
-          get: mockConceptSchemeGet,
-          getMany: mockConceptSchemeGetMany,
-          update: mockConceptSchemeUpdate,
-          delete: mockConceptSchemeDelete,
-        },
-      };
-    }),
+    mockConceptSchemeCreate,
+    mockConceptSchemeCreateWithId,
+    mockConceptSchemeGet,
+    mockConceptSchemeGetMany,
+    mockConceptSchemeUpdate,
+    mockConceptSchemeDelete,
+    mockCreateClient,
   };
 });
 
-vi.mock('../../../utils/tools.js', async (importOriginal) => {
-  const org = await importOriginal<typeof import('../../../utils/tools.js')>();
+vi.mock('contentful-management', () => {
   return {
-    ...org,
-    createToolClient: mockCreateToolClient,
+    default: {
+      createClient: mockCreateClient,
+    },
+    createClient: mockCreateClient,
   };
 });
 
@@ -46,7 +52,7 @@ export {
   mockConceptSchemeGetMany,
   mockConceptSchemeUpdate,
   mockConceptSchemeDelete,
-  mockCreateToolClient,
+  mockCreateClient,
 };
 
 export const testConceptScheme = {
