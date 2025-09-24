@@ -216,7 +216,10 @@ async function updateNoticeFile(runtimePackages, devPackages) {
         let url;
         try {
           const parsedUrl = new URL(pkg.repository);
-          if (parsedUrl.host === 'npmjs.com' || parsedUrl.host.endsWith('.npmjs.com')) {
+          if (
+            parsedUrl.host === 'npmjs.com' ||
+            parsedUrl.host.endsWith('.npmjs.com')
+          ) {
             url = pkg.repository;
           } else {
             url = `https://www.npmjs.com/package/${pkg.name}`;

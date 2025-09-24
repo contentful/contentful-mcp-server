@@ -1,28 +1,23 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "production": ["default"]
+  },
   "neverConnectToCloud": true,
   "targetDefaults": {
     "build": {
-      "outputs": ["{workspaceRoot}/build"],
+      "dependsOn": ["^build"],
       "cache": true
     },
-    "update-licenses": {
-      "outputs": ["{workspaceRoot}/licenses"],
-      "cache": true
-    },
-    "format": {
+    "dev": {
+      "dependsOn": ["^build"],
       "cache": true
     },
     "lint": {
       "cache": true
     },
-    "lint:fix": {
-      "cache": true
-    },
     "test": {
-      "cache": true
-    },
-    "test:run": {
       "cache": true
     }
   },
@@ -35,7 +30,7 @@
         },
         "build": {
           "targetName": "build",
-          "configName": "tsconfig.json",
+          "configName": "tsconfig.lib.json",
           "buildDepsName": "build-deps",
           "watchDepsName": "watch-deps"
         }
@@ -43,23 +38,29 @@
     }
   ],
   "release": {
-    "projects": ["."],
-    "version": {
-      "conventionalCommits": true
-    },
     "changelog": {
-      "workspaceChangelog": {
-        "createRelease": "github",
-        "file": "{workspaceRoot}/CHANGELOG.md",
+      "automaticFromRef": true,
+      "projectChangelogs": {
         "renderOptions": {
           "authors": false
-        }
+        },
+        "createRelease": "github"
       }
     },
     "git": {
-      "commitMessage": "chore(release): publish {version} [skip ci]",
+      "commitMessage": "chore(release): publish v{version} [skip ci]",
       "tagMessage": "Release {version}"
     },
-    "releaseTagPattern": "v{version}"
+    "groups": {
+      "mcp-server": {
+        "releaseTagPattern": "v{version}",
+        "version": {
+          "conventionalCommits": true,
+          "fallbackCurrentVersionResolver": "disk"
+        },
+        "projects": ["packages/mcp-server"],
+        "projectsRelationship": "independent"
+      }
+    }
   }
 }

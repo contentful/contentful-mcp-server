@@ -2,34 +2,14 @@ This project includes the following third-party open-source software components.
 
 Runtime Dependencies (Production)
 
-@modelcontextprotocol/sdk
-    License: MIT
-    https://www.npmjs.com/package/@modelcontextprotocol/sdk [npmjs.com]
-contentful-management
-    License: MIT
-    https://www.npmjs.com/package/contentful-management [npmjs.com]
-dotenv
-    License: BSD-2-Clause
-    https://www.npmjs.com/package/dotenv [npmjs.com]
-fast-xml-parser
-    License: MIT
-    https://www.npmjs.com/package/fast-xml-parser [npmjs.com]
-get-it
-    License: MIT
-    https://www.npmjs.com/package/get-it [npmjs.com]
-gpt-tokenizer
-    License: MIT
-    https://www.npmjs.com/package/gpt-tokenizer [npmjs.com]
-outdent
-    License: MIT
-    https://www.npmjs.com/package/outdent [npmjs.com]
-zod
-    License: MIT
-    https://www.npmjs.com/package/zod [npmjs.com]
+
 
 
 Development Dependencies
 
+@anthropic-ai/dxt
+    License: MIT
+    https://www.npmjs.com/package/@anthropic-ai/dxt [npmjs.com]
 @commitlint/cli
     License: MIT
     https://www.npmjs.com/package/@commitlint/cli [npmjs.com]
@@ -39,6 +19,9 @@ Development Dependencies
 @modelcontextprotocol/inspector
     License: MIT
     https://www.npmjs.com/package/@modelcontextprotocol/inspector [npmjs.com]
+@nx/eslint-plugin
+    License: MIT
+    https://www.npmjs.com/package/@nx/eslint-plugin [npmjs.com]
 @nx/js
     License: MIT
     https://www.npmjs.com/package/@nx/js [npmjs.com]
@@ -48,6 +31,9 @@ Development Dependencies
 @typescript-eslint/eslint-plugin
     License: MIT
     https://www.npmjs.com/package/@typescript-eslint/eslint-plugin [npmjs.com]
+eslint
+    License: MIT
+    https://www.npmjs.com/package/eslint [npmjs.com]
 eslint-plugin-simple-import-sort
     License: MIT
     https://www.npmjs.com/package/eslint-plugin-simple-import-sort [npmjs.com]
@@ -57,6 +43,9 @@ eslint-plugin-unused-imports
 husky
     License: MIT
     https://www.npmjs.com/package/husky [npmjs.com]
+license-checker-rseidelsohn
+    License: BSD-3-Clause
+    https://www.npmjs.com/package/license-checker-rseidelsohn [npmjs.com]
 mcps-logger
     License: MIT
     https://www.npmjs.com/package/mcps-logger [npmjs.com]
@@ -72,9 +61,18 @@ prettier
 pretty-quick
     License: MIT
     https://www.npmjs.com/package/pretty-quick [npmjs.com]
+rimraf
+    License: ISC
+    https://www.npmjs.com/package/rimraf [npmjs.com]
 ts-node
     License: MIT
     https://www.npmjs.com/package/ts-node [npmjs.com]
+tslib
+    License: 0BSD
+    https://www.npmjs.com/package/tslib [npmjs.com]
+tsup
+    License: MIT
+    https://www.npmjs.com/package/tsup [npmjs.com]
 typescript
     License: Apache-2.0
     https://www.npmjs.com/package/typescript [npmjs.com]

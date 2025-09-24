@@ -1,55 +1,42 @@
 {
-  "name": "@contentful/mcp-server",
-  "version": "1.6.0",
+  "name": "contentful-mcp-tools",
+  "version": "0.0.0",
+  "private": true,
   "repository": {
     "type": "git",
     "url": "https://github.com/contentful/contentful-mcp-server"
   },
   "license": "MIT",
   "type": "module",
-  "bin": {
-    "contentful-mcp-server": "./build/index.js"
-  },
-  "files": [
-    "build"
-  ],
   "engines": {
     "node": ">=22.0.0",
     "npm": ">=10.0.0"
   },
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "clean": "rimraf build",
-    "build": "npm run clean && tsc",
-    "dev": "npm run clean && tsc --watch",
-    "format": "prettier --write .",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "start": "node build/index.js",
-    "test": "vitest",
-    "test:run": "vitest run",
+    "build": "nx run-many --target=build",
+    "clean": "nx run-many --target=clean",
+    "dev": "nx run-many --target=build --watch",
+    "format": "nx run-many --target=format",
+    "format:fix": "nx run-many --target=format:fix",
+    "lint": "nx run-many --target=lint",
+    "lint:fix": "nx run-many --target=lint:fix",
+    "test": "nx run-many --target=test",
+    "test:run": "nx run-many --target=test:run",
     "inspect": "node -r dotenv/config ./scripts/inspect.js",
     "inspect:watch": "node ./scripts/inspect-watch.js",
     "logs:watch": "npx mcps-logger",
-    "update-licenses": "node scripts/update-licenses.js",
+    "update-licenses": "node ./scripts/update-licenses.js",
     "prepare": "husky"
-  },
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.17.0",
-    "contentful-export": "^7.21.78",
-    "contentful-management": "^11.54.3",
-    "contentful-import": "^9.4.111",
-    "dotenv": "^16.4.7",
-    "fast-xml-parser": "^5.2.5",
-    "get-it": "^8.6.10",
-    "gpt-tokenizer": "^2.9.0",
-    "outdent": "^0.8.0",
-    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@anthropic-ai/dxt": "^0.2.6",
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@modelcontextprotocol/inspector": "0.16.2",
+    "@nx/eslint-plugin": "^21.3.6",
     "@nx/js": "^21.3.6",
     "@types/node": "^22.16.5",
     "@typescript-eslint/eslint-plugin": "^8.42.0",
@@ -57,6 +44,7 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "eslint-plugin-unused-imports": "^4.1.4",
     "husky": "^9.1.7",
+    "license-checker-rseidelsohn": "^4.4.2",
     "mcps-logger": "^1.0.0",
     "nodemon": "^3.1.10",
     "nx": "^21.3.5",
@@ -64,6 +52,8 @@
     "pretty-quick": "^4.2.2",
     "rimraf": "^6.0.1",
     "ts-node": "^10.9.2",
+    "tslib": "^2.3.0",
+    "tsup": "^8.5.0",
     "typescript": "^5.8.2",
     "vitest": "^3.2.4"
   }
