@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { testConcept, mockConceptGet } from './mockClient.js';
+import { testConcept, mockConceptGet, mockCreateClient } from './mockClient.js';
 import { getConceptTool } from './getConcept.js';
-import { createToolClient } from '../../../utils/tools.js';
 import { formatResponse } from '../../../utils/formatters.js';
+import { getDefaultClientConfig } from '../../../config/contentful.js';
 
 describe('getConcept', () => {
   beforeEach(() => {
@@ -19,9 +19,10 @@ describe('getConcept', () => {
 
     const result = await getConceptTool(testArgs);
 
-    expect(createToolClient).toHaveBeenCalledWith({
-      spaceId: 'dummy',
-      environmentId: 'dummy',
+    const clientConfig = getDefaultClientConfig();
+    delete clientConfig.space;
+    expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
+      type: 'plain',
     });
     expect(mockConceptGet).toHaveBeenCalledWith({
       organizationId: 'test-org-id',

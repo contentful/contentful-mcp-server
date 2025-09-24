@@ -10,41 +10,50 @@ const {
   mockConceptGetTotal,
   mockConceptDelete,
   mockConceptUpdatePut,
-  mockCreateToolClient,
+  mockCreateClient,
 } = vi.hoisted(() => {
+  const mockConceptCreate = vi.fn();
+  const mockConceptCreateWithId = vi.fn();
+  const mockConceptGet = vi.fn();
+  const mockConceptGetMany = vi.fn();
+  const mockConceptGetDescendants = vi.fn();
+  const mockConceptGetAncestors = vi.fn();
+  const mockConceptGetTotal = vi.fn();
+  const mockConceptDelete = vi.fn();
+  const mockConceptUpdatePut = vi.fn();
+  const mockCreateClient = vi.fn(() => ({
+    concept: {
+      create: mockConceptCreate,
+      createWithId: mockConceptCreateWithId,
+      get: mockConceptGet,
+      getMany: mockConceptGetMany,
+      getDescendants: mockConceptGetDescendants,
+      getAncestors: mockConceptGetAncestors,
+      getTotal: mockConceptGetTotal,
+      delete: mockConceptDelete,
+      updatePut: mockConceptUpdatePut,
+    },
+  }));
   return {
-    mockConceptCreate: vi.fn(),
-    mockConceptCreateWithId: vi.fn(),
-    mockConceptGet: vi.fn(),
-    mockConceptGetMany: vi.fn(),
-    mockConceptGetDescendants: vi.fn(),
-    mockConceptGetAncestors: vi.fn(),
-    mockConceptGetTotal: vi.fn(),
-    mockConceptDelete: vi.fn(),
-    mockConceptUpdatePut: vi.fn(),
-    mockCreateToolClient: vi.fn(() => {
-      return {
-        concept: {
-          create: mockConceptCreate,
-          createWithId: mockConceptCreateWithId,
-          get: mockConceptGet,
-          getMany: mockConceptGetMany,
-          getDescendants: mockConceptGetDescendants,
-          getAncestors: mockConceptGetAncestors,
-          getTotal: mockConceptGetTotal,
-          delete: mockConceptDelete,
-          updatePut: mockConceptUpdatePut,
-        },
-      };
-    }),
+    mockConceptCreate,
+    mockConceptCreateWithId,
+    mockConceptGet,
+    mockConceptGetMany,
+    mockConceptGetDescendants,
+    mockConceptGetAncestors,
+    mockConceptGetTotal,
+    mockConceptDelete,
+    mockConceptUpdatePut,
+    mockCreateClient,
   };
 });
 
-vi.mock('../../../utils/tools.js', async (importOriginal) => {
-  const org = await importOriginal<typeof import('../../../utils/tools.js')>();
+vi.mock('contentful-management', () => {
   return {
-    ...org,
-    createToolClient: mockCreateToolClient,
+    default: {
+      createClient: mockCreateClient,
+    },
+    createClient: mockCreateClient,
   };
 });
 
@@ -58,7 +67,7 @@ export {
   mockConceptGetTotal,
   mockConceptDelete,
   mockConceptUpdatePut,
-  mockCreateToolClient,
+  mockCreateClient,
 };
 
 export const testConcept = {

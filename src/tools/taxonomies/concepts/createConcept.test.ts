@@ -3,10 +3,11 @@ import {
   testConcept,
   mockConceptCreate,
   mockConceptCreateWithId,
+  mockCreateClient,
 } from './mockClient.js';
 import { createConceptTool } from './createConcept.js';
-import { createToolClient } from '../../../utils/tools.js';
 import { formatResponse } from '../../../utils/formatters.js';
+import { getDefaultClientConfig } from '../../../config/contentful.js';
 
 describe('createConcept', () => {
   beforeEach(() => {
@@ -26,9 +27,10 @@ describe('createConcept', () => {
 
     const result = await createConceptTool(testArgs);
 
-    expect(createToolClient).toHaveBeenCalledWith({
-      spaceId: 'dummy',
-      environmentId: 'dummy',
+    const clientConfig = getDefaultClientConfig();
+    delete clientConfig.space;
+    expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
+      type: 'plain',
     });
     expect(mockConceptCreate).toHaveBeenCalledWith(
       {
@@ -199,9 +201,10 @@ describe('createConcept', () => {
 
     const result = await createConceptTool(argsWithId);
 
-    expect(createToolClient).toHaveBeenCalledWith({
-      spaceId: 'dummy',
-      environmentId: 'dummy',
+    const clientConfig = getDefaultClientConfig();
+    delete clientConfig.space;
+    expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
+      type: 'plain',
     });
     expect(mockConceptCreateWithId).toHaveBeenCalledWith(
       {

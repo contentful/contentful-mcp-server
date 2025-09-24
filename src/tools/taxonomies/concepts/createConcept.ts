@@ -3,7 +3,8 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../../utils/response.js';
-import { createToolClient } from '../../../utils/tools.js';
+import ctfl from 'contentful-management';
+import { getDefaultClientConfig } from '../../../config/contentful.js';
 import {
   TaxonomyConceptLinkSchema,
   type ConceptPayload,
@@ -70,10 +71,11 @@ export const CreateConceptToolParams = z.object({
 type Params = z.infer<typeof CreateConceptToolParams>;
 
 async function tool(args: Params) {
-  const contentfulClient = createToolClient({
-    spaceId: 'dummy', // Not needed for concept creation but required by BaseToolSchema
-    environmentId: 'dummy', // Not needed for concept creation but required by BaseToolSchema
-  });
+  // Create a client without space-specific configuration for concept operations
+  const clientConfig = getDefaultClientConfig();
+  // Remove space from config since we're working at the organization level
+  delete clientConfig.space;
+  const contentfulClient = ctfl.createClient(clientConfig, { type: 'plain' });
 
   // Build the concept payload using the shared type
   const conceptPayload: ConceptPayload = {

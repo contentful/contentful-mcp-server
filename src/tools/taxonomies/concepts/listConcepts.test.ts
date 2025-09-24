@@ -5,9 +5,10 @@ import {
   mockConceptGetDescendants,
   mockConceptGetAncestors,
   mockConceptGetTotal,
+  mockCreateClient,
 } from './mockClient.js';
 import { listConceptsTool } from './listConcepts.js';
-import { createToolClient } from '../../../utils/tools.js';
+import { getDefaultClientConfig } from '../../../config/contentful.js';
 
 describe('listConcepts', () => {
   beforeEach(() => {
@@ -33,9 +34,10 @@ describe('listConcepts', () => {
 
     const result = await listConceptsTool(testArgs);
 
-    expect(createToolClient).toHaveBeenCalledWith({
-      spaceId: 'dummy',
-      environmentId: 'dummy',
+    const clientConfig = getDefaultClientConfig();
+    delete clientConfig.space;
+    expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
+      type: 'plain',
     });
     expect(mockConceptGetMany).toHaveBeenCalledWith({
       organizationId: 'test-org-id',
