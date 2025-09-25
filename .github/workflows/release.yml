@@ -2,6 +2,11 @@ name: release
 
 on:
   workflow_call:
+    inputs:
+      branch:
+        type: string
+        required: false
+        default: 'main'
     secrets:
       VAULT_URL:
         required: true
@@ -70,9 +75,18 @@ jobs:
         run: |
           echo -e "//npm.pkg.github.com/:_authToken=${{ steps.vault.outputs.GITHUB_PACKAGES_WRITE_TOKEN }}\n@contentful:registry=https://npm.pkg.github.com" > ./.npmrc
 
+      - name: Set Release Arguments
+        id: release-args
+        run: |
+          if [[ "${{ inputs.branch }}" == "develop" ]]; then
+            echo "args=--preid next" >> $GITHUB_OUTPUT
+          else
+            echo "args=" >> $GITHUB_OUTPUT
+          fi
+
       - name: NX Release
         run: |
-          npx nx release --yes
+          npx nx release --yes ${{ steps.release-args.outputs.args }}
         env:
           GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
 

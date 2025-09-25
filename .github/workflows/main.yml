@@ -17,12 +17,14 @@ jobs:
     uses: ./.github/workflows/check.yml
 
   release:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop')
     needs: [build, check]
     permissions:
       contents: write
       id-token: write
       actions: read
     uses: ./.github/workflows/release.yml
+    with:
+      branch: ${{ github.ref_name }}
     secrets:
       VAULT_URL: ${{ secrets.VAULT_URL }}

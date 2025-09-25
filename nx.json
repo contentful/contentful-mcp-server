@@ -10,10 +10,6 @@
       "dependsOn": ["^build"],
       "cache": true
     },
-    "dev": {
-      "dependsOn": ["^build"],
-      "cache": true
-    },
     "lint": {
       "cache": true
     },
@@ -38,6 +34,13 @@
     }
   ],
   "release": {
+    "projectsRelationship": "independent",
+    "projects": ["packages/mcp-server"],
+    "version": {
+      "conventionalCommits": true,
+      "fallbackCurrentVersionResolver": "disk"
+    },
+    "releaseTagPattern": "v{version}",
     "changelog": {
       "automaticFromRef": true,
       "projectChangelogs": {
@@ -49,18 +52,9 @@
     },
     "git": {
       "commitMessage": "chore(release): publish v{version} [skip ci]",
-      "tagMessage": "Release {version}"
-    },
-    "groups": {
-      "mcp-server": {
-        "releaseTagPattern": "v{version}",
-        "version": {
-          "conventionalCommits": true,
-          "fallbackCurrentVersionResolver": "disk"
-        },
-        "projects": ["packages/mcp-server"],
-        "projectsRelationship": "independent"
-      }
+      "tagMessage": "Release {version}",
+      "tag": true,
+      "commit": true
     }
   }
 }
