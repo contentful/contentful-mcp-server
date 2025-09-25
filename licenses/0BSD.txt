@@ -1,0 +1,3 @@
+License: 0BSD
+
+Please add the appropriate license text for 0BSD.

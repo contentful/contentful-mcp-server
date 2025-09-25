@@ -19,6 +19,9 @@ Development Dependencies
 @modelcontextprotocol/inspector
     License: MIT
     https://www.npmjs.com/package/@modelcontextprotocol/inspector [npmjs.com]
+@nx/eslint
+    License: MIT
+    https://www.npmjs.com/package/@nx/eslint [npmjs.com]
 @nx/eslint-plugin
     License: MIT
     https://www.npmjs.com/package/@nx/eslint-plugin [npmjs.com]
