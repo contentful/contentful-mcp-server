@@ -36,11 +36,17 @@
   "release": {
     "projectsRelationship": "independent",
     "projects": ["packages/mcp-server"],
+    "releaseTagPattern": "v{version}",
     "version": {
       "conventionalCommits": true,
-      "fallbackCurrentVersionResolver": "disk"
+      "fallbackCurrentVersionResolver": "disk",
+      "git": {
+        "commit": true,
+        "commitMessage": "chore(release): publish v{version} [skip ci]",
+        "tag": true,
+        "tagMessage": "Release {version}"
+      }
     },
-    "releaseTagPattern": "v{version}",
     "changelog": {
       "automaticFromRef": true,
       "projectChangelogs": {
@@ -48,13 +54,11 @@
           "authors": false
         },
         "createRelease": "github"
+      },
+      "git": {
+        "commit": false,
+        "tag": false
       }
-    },
-    "git": {
-      "commitMessage": "chore(release): publish v{version} [skip ci]",
-      "tagMessage": "Release {version}",
-      "tag": true,
-      "commit": true
     }
   }
 }

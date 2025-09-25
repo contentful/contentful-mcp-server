@@ -78,7 +78,7 @@ jobs:
       - name: Set Release Arguments
         id: release-args
         run: |
-          if [[ "${{ inputs.branch }}" == "develop" ]]; then
+          if [[ "${{ inputs.branch }}" == "development" ]]; then
             echo "args=--preid next" >> $GITHUB_OUTPUT
           else
             echo "args=" >> $GITHUB_OUTPUT
@@ -91,6 +91,7 @@ jobs:
           GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
 
       - name: Get latest release tag
+        if: ${{ inputs.branch == 'main' }}
         id: get-tag
         run: |
           TAG=$(gh api repos/${{ github.repository }}/releases/latest --jq .tag_name)
@@ -99,6 +100,7 @@ jobs:
           GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
 
       - name: Upload DXT file to release
+        if: ${{ inputs.branch == 'main' }}
         run: |
           if ! gh release view ${{ steps.get-tag.outputs.tag }} --json assets --jq '.assets[].name' | grep -q "contentful-mcp-server.dxt"; then
             echo "DXT file not found in release, uploading..."
