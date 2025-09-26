@@ -5,8 +5,7 @@ on:
     inputs:
       branch:
         type: string
-        required: false
-        default: 'main'
+        required: true
     secrets:
       VAULT_URL:
         required: true
