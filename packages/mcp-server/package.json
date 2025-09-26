@@ -1,6 +1,6 @@
 {
   "name": "@contentful/mcp-server",
-  "version": "1.7.0",
+  "version": "1.6.0",
   "description": "Contentful MCP Server - Model Context Protocol server for Contentful",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -38,6 +38,10 @@
     "type": "git",
     "url": "git+https://github.com/contentful/contentful-mcp-server.git",
     "directory": "packages/mcp-server"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.0",
