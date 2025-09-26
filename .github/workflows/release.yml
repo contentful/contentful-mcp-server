@@ -72,7 +72,7 @@ jobs:
 
       - name: NX Release
         run: |
-          if [ ${{ github.ref_name }} = chore/ci-fixes ]; then
+          if [ ${{ github.ref_name }} = development ]; then
             npx nx release version --preid dev-$(date +%Y%m%dT%H%M)-$(git rev-parse HEAD | cut -c1-7)
             npx nx release publish --tag dev
           else
