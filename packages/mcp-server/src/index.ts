@@ -10,7 +10,9 @@ if (process.env.NODE_ENV === 'development') {
   try {
     await import('mcps-logger/console');
   } catch {
-    console.warn('mcps-logger not available in production environment');
+    console.warn(
+      'mcps-logger not available outside the development environment',
+    );
   }
 }
 
