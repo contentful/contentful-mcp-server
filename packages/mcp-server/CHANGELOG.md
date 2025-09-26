@@ -1,3 +1,9 @@
+## 1.7.0 (2025-09-26)
+
+### 🩹 Fixes
+
+- linter ([1acbbb2](https://github.com/contentful/contentful-mcp-server/commit/1acbbb2))
+
 ## 1.6.0 (2025-09-23)
 
 ### 🚀 Features
