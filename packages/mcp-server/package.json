@@ -39,10 +39,6 @@
     "url": "git+https://github.com/contentful/contentful-mcp-server.git",
     "directory": "packages/mcp-server"
   },
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
-  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.0",
     "contentful-export": "^7.21.78",
