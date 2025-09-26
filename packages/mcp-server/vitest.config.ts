@@ -13,8 +13,10 @@ export default defineConfig({
       CONTENTFUL_HOST: 'api.contentful.com',
     },
     setupFiles: ['./vitest.setup.ts'],
+    include: ['src/**/*.test.ts', 'src/**/*.spec.ts'],
     coverage: {
       include: ['src/**/*.{ts,tsx,js,jsx}'],
+      exclude: ['node_modules', 'dist', '**/*.config.ts', '**/*.config.js'],
     },
   },
 });

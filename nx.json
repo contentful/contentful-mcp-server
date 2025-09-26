@@ -1,28 +1,19 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "production": ["default"]
+  },
   "neverConnectToCloud": true,
   "targetDefaults": {
     "build": {
-      "outputs": ["{workspaceRoot}/build"],
-      "cache": true
-    },
-    "update-licenses": {
-      "outputs": ["{workspaceRoot}/licenses"],
-      "cache": true
-    },
-    "format": {
+      "dependsOn": ["^build"],
       "cache": true
     },
     "lint": {
       "cache": true
     },
-    "lint:fix": {
-      "cache": true
-    },
     "test": {
-      "cache": true
-    },
-    "test:run": {
       "cache": true
     }
   },
@@ -35,7 +26,7 @@
         },
         "build": {
           "targetName": "build",
-          "configName": "tsconfig.json",
+          "configName": "tsconfig.lib.json",
           "buildDepsName": "build-deps",
           "watchDepsName": "watch-deps"
         }
@@ -43,23 +34,27 @@
     }
   ],
   "release": {
-    "projects": ["."],
-    "version": {
-      "conventionalCommits": true
-    },
-    "changelog": {
-      "workspaceChangelog": {
-        "createRelease": "github",
-        "file": "{workspaceRoot}/CHANGELOG.md",
-        "renderOptions": {
-          "authors": false
-        }
-      }
-    },
+    "projectsRelationship": "independent",
+    "projects": ["packages/mcp-server"],
+    "releaseTagPattern": "{projectName}@{version}",
     "git": {
-      "commitMessage": "chore(release): publish {version} [skip ci]",
+      "commit": true,
+      "commitMessage": "chore(release): publish v{version} [skip ci]",
+      "tag": true,
       "tagMessage": "Release {version}"
     },
-    "releaseTagPattern": "v{version}"
+    "version": {
+      "conventionalCommits": true,
+      "fallbackCurrentVersionResolver": "disk"
+    },
+    "changelog": {
+      "automaticFromRef": true,
+      "projectChangelogs": {
+        "renderOptions": {
+          "authors": false
+        },
+        "createRelease": "github"
+      }
+    }
   }
 }

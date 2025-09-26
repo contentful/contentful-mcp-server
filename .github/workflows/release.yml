@@ -72,11 +72,16 @@ jobs:
 
       - name: NX Release
         run: |
-          npx nx release --yes
+          if [ ${{ github.ref_name }} = development ]; then
+            npx nx release --yes --preid dev-$(date +%Y%m%dT%H%M)-$(git rev-parse HEAD | cut -c1-7)
+          else
+            npx nx release --yes 
+          fi
         env:
           GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
 
       - name: Get latest release tag
+        if: ${{ github.ref_name == 'main' }}
         id: get-tag
         run: |
           TAG=$(gh api repos/${{ github.repository }}/releases/latest --jq .tag_name)
@@ -85,6 +90,7 @@ jobs:
           GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
 
       - name: Upload DXT file to release
+        if: ${{ github.ref_name == 'main' }}
         run: |
           if ! gh release view ${{ steps.get-tag.outputs.tag }} --json assets --jq '.assets[].name' | grep -q "contentful-mcp-server.dxt"; then
             echo "DXT file not found in release, uploading..."
