@@ -1,3 +1,7 @@
+## 1.7.0-dev-20250926T1821-3e36310.0 (2025-09-26)
+
+This was a version bump only for mcp-server to align it with other projects, there were no code changes.
+
 ## 1.6.0 (2025-09-23)
 
 ### 🚀 Features
