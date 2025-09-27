@@ -24,7 +24,7 @@ async function tool(args: Params) {
 
   const contentfulClient = createToolClient(args);
 
-  let newTag = await contentfulClient.tag.createWithId(params, {
+  const newTag = await contentfulClient.tag.createWithId(params, {
     name: args.name,
     sys: { visibility: args.visibility },
   });
