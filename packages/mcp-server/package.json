@@ -9,9 +9,12 @@
     "contentful-mcp-server": "./dist/index.js"
   },
   "exports": {
+    "./package.json": "./package.json",
     ".": {
+      "@contentful/mcp-server": "./src/index.ts",
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "default": "./dist/index.js"
     }
   },
   "files": [
@@ -42,8 +45,8 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.0",
     "contentful-export": "^7.21.78",
-    "contentful-management": "^11.54.3",
     "contentful-import": "^9.4.111",
+    "contentful-management": "^11.54.3",
     "dotenv": "^16.4.7",
     "fast-xml-parser": "^5.2.5",
     "get-it": "^8.6.10",
