@@ -73,9 +73,12 @@ jobs:
       - name: NX Release
         run: |
           if [ ${{ github.ref_name }} = development ]; then
-            npx nx release --yes --preid dev-$(date +%Y%m%dT%H%M)-$(git rev-parse HEAD | cut -c1-7)
+            npx nx release version --preid dev-$(date +%Y%m%dT%H%M)-$(git rev-parse HEAD | cut -c1-7)
+            npx nx release publish --tag dev
           else
-            npx nx release --yes 
+            npx nx release version
+            npx nx release changelog
+            npx nx release publish
           fi
         env:
           GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
