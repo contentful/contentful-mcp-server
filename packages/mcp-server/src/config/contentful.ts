@@ -1,6 +1,6 @@
 import { ClientOptions } from 'contentful-management';
 import { env } from '../config/env.js';
-import { getVersion } from '../utils/getVersion.js';
+import { getVersion } from '../getVersion.js';
 
 /**
  * Creates a default Contentful client configuration without actually initializing it.
