@@ -56,7 +56,7 @@ async function tool(args: Params) {
     fileName: asset.fields.file?.['en-US']?.fileName || null,
     contentType: asset.fields.file?.['en-US']?.contentType || null,
     url: asset.fields.file?.['en-US']?.url || null,
-    size: asset.fields.file?.['en-US']?.details?.size || null,
+    size: asset.fields.file?.['en-US']?.details?.['size'] || null,
     createdAt: asset.sys.createdAt,
     updatedAt: asset.sys.updatedAt,
     publishedVersion: asset.sys.publishedVersion,

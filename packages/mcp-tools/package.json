@@ -3,16 +3,16 @@
   "version": "0.0.1",
   "private": true,
   "type": "module",
-  "main": "./dist/index.esm.js",
-  "module": "./dist/index.esm.js",
-  "types": "./dist/index.esm.d.ts",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     "./package.json": "./package.json",
     ".": {
       "@contentful/mcp-server": "./src/index.ts",
-      "types": "./dist/index.esm.d.ts",
-      "import": "./dist/index.esm.js",
-      "default": "./dist/index.esm.js"
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     }
   },
   "dependencies": {
@@ -29,13 +29,23 @@
   },
   "devDependencies": {
     "@types/node": "^22.16.5",
+    "eslint": "^9.35.0",
+    "prettier": "^3.6.2",
+    "rimraf": "^6.0.1",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.2",
     "vitest": "^3.2.4"
   },
   "scripts": {
+    "prebuild": "npm run clean",
+    "build": "tsup",
+    "clean": "rimraf dist",
+    "dev": "tsup --watch",
     "test": "vitest",
     "test:run": "vitest run",
-    "build": "rollup -c",
-    "lint": "eslint src/**/*.ts",
-    "typecheck": "tsc --noEmit"
+    "format": "prettier --check \"**/*.{ts,js,json,md}\"",
+    "format:fix": "prettier --write \"**/*.{ts,js,json,md}\"",
+    "lint": "eslint --ext .ts,.js .",
+    "lint:fix": "eslint --ext .ts,.js . --fix"
   }
 }

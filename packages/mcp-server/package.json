@@ -43,6 +43,7 @@
     "directory": "packages/mcp-server"
   },
   "dependencies": {
+    "@contentful/mcp-tools": "file:../mcp-tools",
     "@modelcontextprotocol/sdk": "^1.17.0",
     "contentful-export": "^7.21.78",
     "contentful-import": "^9.4.111",
