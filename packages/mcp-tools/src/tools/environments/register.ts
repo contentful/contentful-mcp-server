@@ -12,8 +12,8 @@ import {
   DeleteEnvironmentToolParams,
 } from './deleteEnvironment.js';
 
-export function registerEnvironmentTools(server: McpServer) {
-  server.registerTool(
+export function registerCreateEnvironmentTool(server: McpServer) {
+  return server.registerTool(
     'create_environment',
     {
       description: 'Create a new environment',
@@ -21,8 +21,10 @@ export function registerEnvironmentTools(server: McpServer) {
     },
     createEnvironmentTool,
   );
+}
 
-  server.registerTool(
+export function registerListEnvironmentsTool(server: McpServer) {
+  return server.registerTool(
     'list_environments',
     {
       description: 'List all environments in a space',
@@ -30,8 +32,10 @@ export function registerEnvironmentTools(server: McpServer) {
     },
     listEnvironmentsTool,
   );
+}
 
-  server.registerTool(
+export function registerDeleteEnvironmentTool(server: McpServer) {
+  return server.registerTool(
     'delete_environment',
     {
       description: 'Delete an environment',

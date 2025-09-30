@@ -30,8 +30,8 @@ import {
   UpdateAiActionToolParams,
 } from './updateAiAction.js';
 
-export function registerAiActionsTools(server: McpServer) {
-  server.registerTool(
+export function registerCreateAiActionTool(server: McpServer) {
+  return server.registerTool(
     'create_ai_action',
     {
       description:
@@ -40,8 +40,10 @@ export function registerAiActionsTools(server: McpServer) {
     },
     createAiActionTool,
   );
+}
 
-  server.registerTool(
+export function registerInvokeAiActionTool(server: McpServer) {
+  return server.registerTool(
     'invoke_ai_action',
     {
       description:
@@ -50,8 +52,10 @@ export function registerAiActionsTools(server: McpServer) {
     },
     invokeAiActionTool,
   );
+}
 
-  server.registerTool(
+export function registerGetAiActionInvocationTool(server: McpServer) {
+  return server.registerTool(
     'get_ai_action_invocation',
     {
       description:
@@ -60,8 +64,10 @@ export function registerAiActionsTools(server: McpServer) {
     },
     getAiActionInvocationTool,
   );
+}
 
-  server.registerTool(
+export function registerDeleteAiActionTool(server: McpServer) {
+  return server.registerTool(
     'delete_ai_action',
     {
       description: 'Delete a specific AI action from your Contentful space',
@@ -69,8 +75,10 @@ export function registerAiActionsTools(server: McpServer) {
     },
     deleteAiActionTool,
   );
+}
 
-  server.registerTool(
+export function registerGetAiActionTool(server: McpServer) {
+  return server.registerTool(
     'get_ai_action',
     {
       description:
@@ -79,8 +87,10 @@ export function registerAiActionsTools(server: McpServer) {
     },
     getAiActionTool,
   );
+}
 
-  server.registerTool(
+export function registerListAiActionsTool(server: McpServer) {
+  return server.registerTool(
     'list_ai_actions',
     {
       description:
@@ -89,8 +99,10 @@ export function registerAiActionsTools(server: McpServer) {
     },
     listAiActionTool,
   );
+}
 
-  server.registerTool(
+export function registerPublishAiActionTool(server: McpServer) {
+  return server.registerTool(
     'publish_ai_action',
     {
       description:
@@ -99,8 +111,10 @@ export function registerAiActionsTools(server: McpServer) {
     },
     publishAiActionTool,
   );
+}
 
-  server.registerTool(
+export function registerUnpublishAiActionTool(server: McpServer) {
+  return server.registerTool(
     'unpublish_ai_action',
     {
       description:
@@ -109,8 +123,10 @@ export function registerAiActionsTools(server: McpServer) {
     },
     unpublishAiActionTool,
   );
+}
 
-  server.registerTool(
+export function registerUpdateAiActionTool(server: McpServer) {
+  return server.registerTool(
     'update_ai_action',
     {
       description:

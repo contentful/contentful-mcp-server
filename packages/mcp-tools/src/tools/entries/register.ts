@@ -10,8 +10,8 @@ import {
   UnpublishEntryToolParams,
 } from './unpublishEntry.js';
 
-export function registerEntriesTools(server: McpServer) {
-  server.registerTool(
+export function registerSearchEntriesTool(server: McpServer) {
+  return server.registerTool(
     'search_entries',
     {
       description: 'Search for specific entries in your Contentful space',
@@ -19,8 +19,10 @@ export function registerEntriesTools(server: McpServer) {
     },
     searchEntriesTool,
   );
+}
 
-  server.registerTool(
+export function registerCreateEntryTool(server: McpServer) {
+  return server.registerTool(
     'create_entry',
     {
       description:
@@ -29,8 +31,10 @@ export function registerEntriesTools(server: McpServer) {
     },
     createEntryTool,
   );
+}
 
-  server.registerTool(
+export function registerGetEntryTool(server: McpServer) {
+  return server.registerTool(
     'get_entry',
     {
       description: 'Retrieve an existing entry',
@@ -38,8 +42,10 @@ export function registerEntriesTools(server: McpServer) {
     },
     getEntryTool,
   );
+}
 
-  server.registerTool(
+export function registerUpdateEntryTool(server: McpServer) {
+  return server.registerTool(
     'update_entry',
     {
       description:
@@ -48,8 +54,10 @@ export function registerEntriesTools(server: McpServer) {
     },
     updateEntryTool,
   );
+}
 
-  server.registerTool(
+export function registerDeleteEntryTool(server: McpServer) {
+  return server.registerTool(
     'delete_entry',
     {
       description: 'Delete a specific content entry from your Contentful space',
@@ -57,8 +65,10 @@ export function registerEntriesTools(server: McpServer) {
     },
     deleteEntryTool,
   );
+}
 
-  server.registerTool(
+export function registerPublishEntryTool(server: McpServer) {
+  return server.registerTool(
     'publish_entry',
     {
       description:
@@ -67,8 +77,10 @@ export function registerEntriesTools(server: McpServer) {
     },
     publishEntryTool,
   );
+}
 
-  server.registerTool(
+export function registerUnpublishEntryTool(server: McpServer) {
+  return server.registerTool(
     'unpublish_entry',
     {
       description:

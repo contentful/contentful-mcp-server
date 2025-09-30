@@ -1,4 +1,7 @@
-export * from './space-to-space-migration/exportSpace.js';
-export * from './space-to-space-migration/importSpace.js';
-export * from './space-to-space-migration/paramCollection.js';
-export * from './space-to-space-migration/migrationHandler.js';
+export {
+  registerSpaceToSpaceMigrationHandlerTool,
+  registerSpaceToSpaceParamCollectionTool,
+  registerExportSpaceTool,
+  registerImportSpaceTool,
+} from './space-to-space-migration/register.js';
+export { handleSpaceToSpaceMigration } from './space-to-space-migration/migrationHandler.js';

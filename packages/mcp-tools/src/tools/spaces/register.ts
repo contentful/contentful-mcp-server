@@ -2,8 +2,8 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { listSpacesTool, ListSpacesToolParams } from './listSpaces.js';
 import { getSpaceTool, GetSpaceToolParams } from './getSpace.js';
 
-export function registerSpaceTools(server: McpServer) {
-  server.registerTool(
+export function registerListSpacesTool(server: McpServer) {
+  return server.registerTool(
     'list_spaces',
     {
       description: 'List all available spaces',
@@ -11,8 +11,10 @@ export function registerSpaceTools(server: McpServer) {
     },
     listSpacesTool,
   );
+}
 
-  server.registerTool(
+export function registerGetSpaceTool(server: McpServer) {
+  return server.registerTool(
     'get_space',
     {
       description: 'Get details of a space',

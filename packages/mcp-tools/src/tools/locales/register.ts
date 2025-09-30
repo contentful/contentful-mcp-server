@@ -5,8 +5,8 @@ import { listLocaleTool, ListLocaleToolParams } from './listLocales.js';
 import { updateLocaleTool, UpdateLocaleToolParams } from './updateLocale.js';
 import { deleteLocaleTool, DeleteLocaleToolParams } from './deleteLocale.js';
 
-export function registerLocaleTools(server: McpServer) {
-  server.registerTool(
+export function registerGetLocaleTool(server: McpServer) {
+  return server.registerTool(
     'get_locale',
     {
       description:
@@ -15,8 +15,10 @@ export function registerLocaleTools(server: McpServer) {
     },
     getLocaleTool,
   );
+}
 
-  server.registerTool(
+export function registerCreateLocaleTool(server: McpServer) {
+  return server.registerTool(
     'create_locale',
     {
       description:
@@ -25,8 +27,10 @@ export function registerLocaleTools(server: McpServer) {
     },
     createLocaleTool,
   );
+}
 
-  server.registerTool(
+export function registerListLocalesTool(server: McpServer) {
+  return server.registerTool(
     'list_locales',
     {
       description:
@@ -35,8 +39,10 @@ export function registerLocaleTools(server: McpServer) {
     },
     listLocaleTool,
   );
+}
 
-  server.registerTool(
+export function registerUpdateLocaleTool(server: McpServer) {
+  return server.registerTool(
     'update_locale',
     {
       description:
@@ -45,8 +51,10 @@ export function registerLocaleTools(server: McpServer) {
     },
     updateLocaleTool,
   );
+}
 
-  server.registerTool(
+export function registerDeleteLocaleTool(server: McpServer) {
+  return server.registerTool(
     'delete_locale',
     {
       description:

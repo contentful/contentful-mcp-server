@@ -2,8 +2,8 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { listTagsTool, ListTagsToolParams } from './listTags.js';
 import { createTagTool, CreateTagToolParams } from './createTag.js';
 
-export function registerTagsTools(server: McpServer) {
-  server.registerTool(
+export function registerListTagsTool(server: McpServer) {
+  return server.registerTool(
     'list_tags',
     {
       description:
@@ -12,8 +12,10 @@ export function registerTagsTools(server: McpServer) {
     },
     listTagsTool,
   );
+}
 
-  server.registerTool(
+export function registerCreateTagTool(server: McpServer) {
+  return server.registerTool(
     'create_tag',
     {
       description:

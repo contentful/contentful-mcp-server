@@ -1,17 +1,23 @@
 import { describe, it, expect, vi } from 'vitest';
-import { registerEnvironmentTools } from './register.js';
+import {
+  registerCreateEnvironmentTool,
+  registerDeleteEnvironmentTool,
+  registerListEnvironmentsTool,
+} from './register.js';
 import { CreateEnvironmentToolParams } from './createEnvironment.js';
 import { ListEnvironmentsToolParams } from './listEnvironments.js';
 import { DeleteEnvironmentToolParams } from './deleteEnvironment.js';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-describe('registerEnvironmentTools', () => {
+describe('environment registration helpers', () => {
   it('should register all environment tools', () => {
     const mockServer = {
       registerTool: vi.fn(),
     };
 
-    registerEnvironmentTools(mockServer as unknown as McpServer);
+    registerCreateEnvironmentTool(mockServer as unknown as McpServer);
+    registerListEnvironmentsTool(mockServer as unknown as McpServer);
+    registerDeleteEnvironmentTool(mockServer as unknown as McpServer);
 
     expect(mockServer.registerTool).toHaveBeenCalledWith(
       'create_environment',

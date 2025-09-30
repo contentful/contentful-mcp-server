@@ -10,9 +10,8 @@ import {
   makeSpaceToSpaceMigrationHandlerTool,
 } from './migrationHandler.js';
 
-export function registerSpaceToSpaceMigrationTools(server: McpServer) {
-  // Param collection tool
-  const paramCollectionTool = server.registerTool(
+export function registerSpaceToSpaceParamCollectionTool(server: McpServer) {
+  return server.registerTool(
     'space_to_space_param_collection',
     {
       description:
@@ -21,9 +20,10 @@ export function registerSpaceToSpaceMigrationTools(server: McpServer) {
     },
     createParamCollectionTool,
   );
+}
 
-  // Export space tool
-  const exportSpaceTool = server.registerTool(
+export function registerExportSpaceTool(server: McpServer) {
+  return server.registerTool(
     'export_space',
     {
       description: 'Export a space to a file',
@@ -31,9 +31,10 @@ export function registerSpaceToSpaceMigrationTools(server: McpServer) {
     },
     createExportSpaceTool,
   );
+}
 
-  // Import space tool
-  const importSpaceTool = server.registerTool(
+export function registerImportSpaceTool(server: McpServer) {
+  return server.registerTool(
     'import_space',
     {
       description:
@@ -42,9 +43,14 @@ export function registerSpaceToSpaceMigrationTools(server: McpServer) {
     },
     createImportSpaceTool,
   );
+}
 
-  // Create the unified migration handler tool
-  server.registerTool(
+export function registerSpaceToSpaceMigrationHandlerTool(server: McpServer) {
+  const paramCollectionTool = registerSpaceToSpaceParamCollectionTool(server);
+  const exportSpaceTool = registerExportSpaceTool(server);
+  const importSpaceTool = registerImportSpaceTool(server);
+
+  const handler = server.registerTool(
     'space_to_space_migration_handler',
     {
       description:
@@ -58,8 +64,9 @@ export function registerSpaceToSpaceMigrationTools(server: McpServer) {
     ]),
   );
 
-  // Disable all workflow tools by default (only the handler remains enabled)
   paramCollectionTool.disable();
   importSpaceTool.disable();
   exportSpaceTool.disable();
+
+  return handler;
 }

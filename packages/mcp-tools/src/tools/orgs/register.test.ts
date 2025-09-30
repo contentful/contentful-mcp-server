@@ -1,16 +1,17 @@
 import { describe, it, expect, vi } from 'vitest';
-import { registerOrgTools } from './register.js';
+import { registerGetOrgTool, registerListOrgsTool } from './register.js';
 import { ListOrgsToolParams } from './listOrgs.js';
 import { GetOrgToolParams } from './getOrg.js';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-describe('registerOrgTools', () => {
+describe('organization registration helpers', () => {
   it('should register all organization tools', () => {
     const mockServer = {
       registerTool: vi.fn(),
     };
 
-    registerOrgTools(mockServer as unknown as McpServer);
+    registerListOrgsTool(mockServer as unknown as McpServer);
+    registerGetOrgTool(mockServer as unknown as McpServer);
 
     expect(mockServer.registerTool).toHaveBeenCalledWith(
       'list_orgs',

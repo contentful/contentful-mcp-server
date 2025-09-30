@@ -28,8 +28,8 @@ import {
   UnpublishContentTypeToolParams,
 } from './unpublishContentType.js';
 
-export function registerContentTypesTools(server: McpServer) {
-  server.registerTool(
+export function registerGetContentTypeTool(server: McpServer) {
+  return server.registerTool(
     'get_content_type',
     {
       description: 'Get details about a specific Contentful content type',
@@ -37,8 +37,10 @@ export function registerContentTypesTools(server: McpServer) {
     },
     getContentTypeTool,
   );
+}
 
-  server.registerTool(
+export function registerListContentTypesTool(server: McpServer) {
+  return server.registerTool(
     'list_content_types',
     {
       description:
@@ -47,8 +49,10 @@ export function registerContentTypesTools(server: McpServer) {
     },
     listContentTypesTool,
   );
+}
 
-  server.registerTool(
+export function registerCreateContentTypeTool(server: McpServer) {
+  return server.registerTool(
     'create_content_type',
     {
       description: 'Create a new content type',
@@ -56,8 +60,10 @@ export function registerContentTypesTools(server: McpServer) {
     },
     createContentTypeTool,
   );
+}
 
-  server.registerTool(
+export function registerUpdateContentTypeTool(server: McpServer) {
+  return server.registerTool(
     'update_content_type',
     {
       description:
@@ -66,8 +72,10 @@ export function registerContentTypesTools(server: McpServer) {
     },
     updateContentTypeTool,
   );
+}
 
-  server.registerTool(
+export function registerDeleteContentTypeTool(server: McpServer) {
+  return server.registerTool(
     'delete_content_type',
     {
       description: 'Delete a content type',
@@ -75,8 +83,10 @@ export function registerContentTypesTools(server: McpServer) {
     },
     deleteContentTypeTool,
   );
+}
 
-  server.registerTool(
+export function registerPublishContentTypeTool(server: McpServer) {
+  return server.registerTool(
     'publish_content_type',
     {
       description: 'Publish a content type',
@@ -84,8 +94,10 @@ export function registerContentTypesTools(server: McpServer) {
     },
     publishContentTypeTool,
   );
+}
 
-  server.registerTool(
+export function registerUnpublishContentTypeTool(server: McpServer) {
+  return server.registerTool(
     'unpublish_content_type',
     {
       description: 'Unpublish a content type',

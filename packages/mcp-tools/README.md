@@ -13,31 +13,35 @@ npm install @contentful/mcp-tools
 ### Registering All Tools
 
 ```typescript
-import { registerAllTools } from '@contentful/mcp-tools';
+import {
+  registerGetInitialContextTool,
+  registerSearchEntriesTool,
+  registerCreateEntryTool,
+} from '@contentful/mcp-tools';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 const server = new McpServer();
 
-// Register all Contentful MCP tools
-registerAllTools(server);
+registerGetInitialContextTool(server);
+registerSearchEntriesTool(server);
+registerCreateEntryTool(server);
 ```
 
 ### Registering Specific Tool Categories
 
 ```typescript
 import {
-  registerAssetTools,
-  registerEntriesTools,
-  registerContentTypesTools,
+  registerUploadAssetTool,
+  registerListAssetsTool,
 } from '@contentful/mcp-tools';
+import { registerCreateEntryTool } from '@contentful/mcp-tools';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
 const server = new McpServer();
 
-// Register only specific tool categories
-registerAssetTools(server);
-registerEntriesTools(server);
-registerContentTypesTools(server);
+registerUploadAssetTool(server);
+registerListAssetsTool(server);
+registerCreateEntryTool(server);
 ```
 
 ## 🛠️ Available Tools

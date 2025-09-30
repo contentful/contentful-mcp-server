@@ -1,5 +1,11 @@
 import { describe, it, expect, vi } from 'vitest';
-import { registerConceptSchemesTools } from './register.js';
+import {
+  registerCreateConceptSchemeTool,
+  registerDeleteConceptSchemeTool,
+  registerGetConceptSchemeTool,
+  registerListConceptSchemesTool,
+  registerUpdateConceptSchemeTool,
+} from './register.js';
 import { CreateConceptSchemeToolParams } from './createConceptScheme.js';
 import { GetConceptSchemeToolParams } from './getConceptScheme.js';
 import { ListConceptSchemesToolParams } from './listConceptSchemes.js';
@@ -7,13 +13,17 @@ import { UpdateConceptSchemeToolParams } from './updateConceptScheme.js';
 import { DeleteConceptSchemeToolParams } from './deleteConceptScheme.js';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-describe('registerConceptSchemesTools', () => {
+describe('concept schemes registration helpers', () => {
   it('should register all concept scheme tools', () => {
     const mockServer = {
       registerTool: vi.fn(),
     };
 
-    registerConceptSchemesTools(mockServer as unknown as McpServer);
+    registerCreateConceptSchemeTool(mockServer as unknown as McpServer);
+    registerGetConceptSchemeTool(mockServer as unknown as McpServer);
+    registerListConceptSchemesTool(mockServer as unknown as McpServer);
+    registerUpdateConceptSchemeTool(mockServer as unknown as McpServer);
+    registerDeleteConceptSchemeTool(mockServer as unknown as McpServer);
 
     expect(mockServer.registerTool).toHaveBeenCalledWith(
       'create_concept_scheme',

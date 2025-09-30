@@ -4,8 +4,8 @@ import {
   GetInitialContextToolParams,
 } from './getInitialContextTool.js';
 
-export function registerContextTools(server: McpServer) {
-  server.registerTool(
+export function registerGetInitialContextTool(server: McpServer) {
+  return server.registerTool(
     'get_initial_context',
     {
       description:

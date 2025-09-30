@@ -5,25 +5,25 @@ describe('Package Exports', () => {
     const moduleExports = await import('./index.js');
 
     const {
-      uploadAssetTool,
+      registerUploadAssetTool,
       UploadAssetToolParams,
-      createEntryTool,
+      registerCreateEntryTool,
       CreateEntryToolParams,
-      listContentTypesTool,
+      registerListContentTypesTool,
       ListContentTypesToolParams,
-      getInitialContextTool,
+      registerGetInitialContextTool,
     } = moduleExports;
 
-    expect(typeof uploadAssetTool).toBe('function');
+    expect(typeof registerUploadAssetTool).toBe('function');
     expect(UploadAssetToolParams).toBeDefined();
 
-    expect(typeof createEntryTool).toBe('function');
+    expect(typeof registerCreateEntryTool).toBe('function');
     expect(CreateEntryToolParams).toBeDefined();
 
-    expect(typeof listContentTypesTool).toBe('function');
+    expect(typeof registerListContentTypesTool).toBe('function');
     expect(ListContentTypesToolParams).toBeDefined();
 
-    expect(typeof getInitialContextTool).toBe('function');
+    expect(typeof registerGetInitialContextTool).toBe('function');
 
     expect(moduleExports.registerAssetTools).toBeUndefined();
     expect(moduleExports.registerAllTools).toBeUndefined();

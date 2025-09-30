@@ -1,16 +1,17 @@
 import { describe, it, expect, vi } from 'vitest';
-import { registerSpaceTools } from './register.js';
+import { registerGetSpaceTool, registerListSpacesTool } from './register.js';
 import { ListSpacesToolParams } from './listSpaces.js';
 import { GetSpaceToolParams } from './getSpace.js';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-describe('registerSpaceTools', () => {
+describe('space registration helpers', () => {
   it('should register all space tools', () => {
     const mockServer = {
       registerTool: vi.fn(),
     };
 
-    registerSpaceTools(mockServer as unknown as McpServer);
+    registerListSpacesTool(mockServer as unknown as McpServer);
+    registerGetSpaceTool(mockServer as unknown as McpServer);
 
     expect(mockServer.registerTool).toHaveBeenCalledWith(
       'list_spaces',

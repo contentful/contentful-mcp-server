@@ -20,8 +20,8 @@ import {
   DeleteConceptSchemeToolParams,
 } from './deleteConceptScheme.js';
 
-export function registerConceptSchemesTools(server: McpServer) {
-  server.registerTool(
+export function registerCreateConceptSchemeTool(server: McpServer) {
+  return server.registerTool(
     'create_concept_scheme',
     {
       description:
@@ -30,8 +30,10 @@ export function registerConceptSchemesTools(server: McpServer) {
     },
     createConceptSchemeTool,
   );
+}
 
-  server.registerTool(
+export function registerGetConceptSchemeTool(server: McpServer) {
+  return server.registerTool(
     'get_concept_scheme',
     {
       description:
@@ -40,8 +42,10 @@ export function registerConceptSchemesTools(server: McpServer) {
     },
     getConceptSchemeTool,
   );
+}
 
-  server.registerTool(
+export function registerListConceptSchemesTool(server: McpServer) {
+  return server.registerTool(
     'list_concept_schemes',
     {
       description:
@@ -50,8 +54,10 @@ export function registerConceptSchemesTools(server: McpServer) {
     },
     listConceptSchemesTool,
   );
+}
 
-  server.registerTool(
+export function registerUpdateConceptSchemeTool(server: McpServer) {
+  return server.registerTool(
     'update_concept_scheme',
     {
       description:
@@ -60,8 +66,10 @@ export function registerConceptSchemesTools(server: McpServer) {
     },
     updateConceptSchemeTool,
   );
+}
 
-  server.registerTool(
+export function registerDeleteConceptSchemeTool(server: McpServer) {
+  return server.registerTool(
     'delete_concept_scheme',
     {
       description:

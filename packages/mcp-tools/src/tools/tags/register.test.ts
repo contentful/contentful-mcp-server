@@ -1,16 +1,17 @@
 import { describe, it, expect, vi } from 'vitest';
-import { registerTagsTools } from './register.js';
+import { registerCreateTagTool, registerListTagsTool } from './register.js';
 import { ListTagsToolParams } from './listTags.js';
 import { CreateTagToolParams } from './createTag.js';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-describe('registerTagsTools', () => {
+describe('tag registration helpers', () => {
   it('should register all tag tools', () => {
     const mockServer = {
       registerTool: vi.fn(),
     };
 
-    registerTagsTools(mockServer as unknown as McpServer);
+    registerListTagsTool(mockServer as unknown as McpServer);
+    registerCreateTagTool(mockServer as unknown as McpServer);
 
     expect(mockServer.registerTool).toHaveBeenCalledWith(
       'list_tags',

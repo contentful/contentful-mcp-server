@@ -1,4 +1,4 @@
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { uploadAssetTool, UploadAssetToolParams } from './uploadAsset.js';
 import { listAssetsTool, ListAssetsToolParams } from './listAssets.js';
 import { getAssetTool, GetAssetToolParams } from './getAsset.js';
@@ -10,8 +10,8 @@ import {
   UnpublishAssetToolParams,
 } from './unpublishAsset.js';
 
-export function registerAssetTools(server: McpServer) {
-  server.registerTool(
+export function registerUploadAssetTool(server: McpServer) {
+  return server.registerTool(
     'upload_asset',
     {
       description: 'Upload a new asset',
@@ -19,8 +19,10 @@ export function registerAssetTools(server: McpServer) {
     },
     uploadAssetTool,
   );
+}
 
-  server.registerTool(
+export function registerListAssetsTool(server: McpServer) {
+  return server.registerTool(
     'list_assets',
     {
       description:
@@ -29,8 +31,10 @@ export function registerAssetTools(server: McpServer) {
     },
     listAssetsTool,
   );
+}
 
-  server.registerTool(
+export function registerGetAssetTool(server: McpServer) {
+  return server.registerTool(
     'get_asset',
     {
       description: 'Retrieve an asset',
@@ -38,8 +42,10 @@ export function registerAssetTools(server: McpServer) {
     },
     getAssetTool,
   );
+}
 
-  server.registerTool(
+export function registerUpdateAssetTool(server: McpServer) {
+  return server.registerTool(
     'update_asset',
     {
       description: 'Update an asset',
@@ -47,8 +53,10 @@ export function registerAssetTools(server: McpServer) {
     },
     updateAssetTool,
   );
+}
 
-  server.registerTool(
+export function registerDeleteAssetTool(server: McpServer) {
+  return server.registerTool(
     'delete_asset',
     {
       description: 'Delete an asset',
@@ -56,8 +64,10 @@ export function registerAssetTools(server: McpServer) {
     },
     deleteAssetTool,
   );
+}
 
-  server.registerTool(
+export function registerPublishAssetTool(server: McpServer) {
+  return server.registerTool(
     'publish_asset',
     {
       description:
@@ -66,8 +76,10 @@ export function registerAssetTools(server: McpServer) {
     },
     publishAssetTool,
   );
+}
 
-  server.registerTool(
+export function registerUnpublishAssetTool(server: McpServer) {
+  return server.registerTool(
     'unpublish_asset',
     {
       description:
