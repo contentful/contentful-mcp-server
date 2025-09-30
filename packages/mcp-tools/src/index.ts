@@ -1,1 +1,16 @@
-export * from './lib/mcp-tools.js';
+// Export main tool registration function
+export * from './tools/register.js';
+
+// Export individual tool category registration functions
+export * from './tools/assets/register.js';
+export * from './tools/entries/register.js';
+export * from './tools/content-types/register.js';
+export * from './tools/environments/register.js';
+export * from './tools/spaces/register.js';
+export * from './tools/tags/register.js';
+export * from './tools/ai-actions/register.js';
+export * from './tools/locales/register.js';
+export * from './tools/orgs/register.js';
+export * from './tools/context/register.js';
+export * from './tools/jobs/register.js';
+export * from './tools/taxonomies/register.js';
