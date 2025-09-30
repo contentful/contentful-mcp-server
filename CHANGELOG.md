@@ -1,3 +1,10 @@
+## 1.6.1 (2025-09-30)
+
+### 🩹 Fixes
+
+- remove console.log [DX-434] ([#194](https://github.com/contentful/contentful-mcp-server/pull/194))
+- remove log [DX-434] ([#195](https://github.com/contentful/contentful-mcp-server/pull/195))
+
 ## 1.6.0 (2025-09-23)
 
 ### 🚀 Features
