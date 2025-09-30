@@ -1,46 +1,31 @@
 import { describe, it, expect } from 'vitest';
 
-// Test that registration function exports are available
 describe('Package Exports', () => {
-  it('should export main registration function', async () => {
-    const { registerAllTools } = await import('./index.js');
+  it('should export individual tool handlers and schemas', async () => {
+    const moduleExports = await import('./index.js');
 
-    expect(registerAllTools).toBeDefined();
-    expect(typeof registerAllTools).toBe('function');
-  });
-
-  it('should export category-specific registration functions', async () => {
     const {
-      registerAssetTools,
-      registerEntriesTools,
-      registerContentTypesTools,
-      registerEnvironmentTools,
-      registerSpaceTools,
-      registerTagsTools,
-      registerAiActionsTools,
-      registerLocaleTools,
-      registerOrgTools,
-      registerContextTools,
-      registerJobs,
-      registerTaxonomyTools,
-    } = await import('./index.js');
+      uploadAssetTool,
+      UploadAssetToolParams,
+      createEntryTool,
+      CreateEntryToolParams,
+      listContentTypesTool,
+      ListContentTypesToolParams,
+      getInitialContextTool,
+    } = moduleExports;
 
-    expect(registerAssetTools).toBeDefined();
-    expect(registerEntriesTools).toBeDefined();
-    expect(registerContentTypesTools).toBeDefined();
-    expect(registerEnvironmentTools).toBeDefined();
-    expect(registerSpaceTools).toBeDefined();
-    expect(registerTagsTools).toBeDefined();
-    expect(registerAiActionsTools).toBeDefined();
-    expect(registerLocaleTools).toBeDefined();
-    expect(registerOrgTools).toBeDefined();
-    expect(registerContextTools).toBeDefined();
-    expect(registerJobs).toBeDefined();
-    expect(registerTaxonomyTools).toBeDefined();
+    expect(typeof uploadAssetTool).toBe('function');
+    expect(UploadAssetToolParams).toBeDefined();
 
-    // Verify they are all functions
-    expect(typeof registerAssetTools).toBe('function');
-    expect(typeof registerEntriesTools).toBe('function');
-    expect(typeof registerContentTypesTools).toBe('function');
+    expect(typeof createEntryTool).toBe('function');
+    expect(CreateEntryToolParams).toBeDefined();
+
+    expect(typeof listContentTypesTool).toBe('function');
+    expect(ListContentTypesToolParams).toBeDefined();
+
+    expect(typeof getInitialContextTool).toBe('function');
+
+    expect(moduleExports.registerAssetTools).toBeUndefined();
+    expect(moduleExports.registerAllTools).toBeUndefined();
   });
 });
