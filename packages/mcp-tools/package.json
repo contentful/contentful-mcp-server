@@ -22,9 +22,10 @@
     "contentful-management": "^11.54.3",
     "dotenv": "^16.4.7",
     "fast-xml-parser": "^5.2.5",
-    "get-it": "^8.6.10",
-    "gpt-tokenizer": "^2.9.0",
     "outdent": "^0.8.0",
+    "tsup": "^8.5.0",
+    "vitest": "^3.2.4",
+    "@contentful/rich-text-types": "^16.8.5",
     "zod": "^3.25.76"
   },
   "devDependencies": {
@@ -32,9 +33,7 @@
     "eslint": "^9.35.0",
     "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
-    "tsup": "^8.5.0",
-    "typescript": "^5.8.2",
-    "vitest": "^3.2.4"
+    "typescript": "^5.8.2"
   },
   "scripts": {
     "prebuild": "npm run clean",
