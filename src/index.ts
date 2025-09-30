@@ -9,7 +9,6 @@ import { VERSION } from './config/version.js';
 if (process.env.NODE_ENV === 'development') {
   try {
     await import('mcps-logger/console');
-    console.log('mcps-logger loaded');
   } catch {
     console.warn('mcps-logger not available in production environment');
   }
