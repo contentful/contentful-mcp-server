@@ -8,32 +8,38 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 describe('registerEnvironmentTools', () => {
   it('should register all environment tools', () => {
     const mockServer = {
-      tool: vi.fn(),
+      registerTool: vi.fn(),
     };
 
     registerEnvironmentTools(mockServer as unknown as McpServer);
 
-    expect(mockServer.tool).toHaveBeenCalledWith(
+    expect(mockServer.registerTool).toHaveBeenCalledWith(
       'create_environment',
-      'Create a new environment',
-      CreateEnvironmentToolParams.shape,
+      {
+        description: 'Create a new environment',
+        inputSchema: CreateEnvironmentToolParams.shape,
+      },
       expect.any(Function),
     );
 
-    expect(mockServer.tool).toHaveBeenCalledWith(
+    expect(mockServer.registerTool).toHaveBeenCalledWith(
       'list_environments',
-      'List all environments in a space',
-      ListEnvironmentsToolParams.shape,
+      {
+        description: 'List all environments in a space',
+        inputSchema: ListEnvironmentsToolParams.shape,
+      },
       expect.any(Function),
     );
 
-    expect(mockServer.tool).toHaveBeenCalledWith(
+    expect(mockServer.registerTool).toHaveBeenCalledWith(
       'delete_environment',
-      'Delete an environment',
-      DeleteEnvironmentToolParams.shape,
+      {
+        description: 'Delete an environment',
+        inputSchema: DeleteEnvironmentToolParams.shape,
+      },
       expect.any(Function),
     );
 
-    expect(mockServer.tool).toHaveBeenCalledTimes(3);
+    expect(mockServer.registerTool).toHaveBeenCalledTimes(3);
   });
 });

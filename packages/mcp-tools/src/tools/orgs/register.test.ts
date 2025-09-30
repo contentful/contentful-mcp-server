@@ -7,25 +7,29 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 describe('registerOrgTools', () => {
   it('should register all organization tools', () => {
     const mockServer = {
-      tool: vi.fn(),
+      registerTool: vi.fn(),
     };
 
     registerOrgTools(mockServer as unknown as McpServer);
 
-    expect(mockServer.tool).toHaveBeenCalledWith(
+    expect(mockServer.registerTool).toHaveBeenCalledWith(
       'list_orgs',
-      'List all organizations that the user has access to',
-      ListOrgsToolParams.shape,
+      {
+        description: 'List all organizations that the user has access to',
+        inputSchema: ListOrgsToolParams.shape,
+      },
       expect.any(Function),
     );
 
-    expect(mockServer.tool).toHaveBeenCalledWith(
+    expect(mockServer.registerTool).toHaveBeenCalledWith(
       'get_org',
-      'Get details of a specific organization',
-      GetOrgToolParams.shape,
+      {
+        description: 'Get details of a specific organization',
+        inputSchema: GetOrgToolParams.shape,
+      },
       expect.any(Function),
     );
 
-    expect(mockServer.tool).toHaveBeenCalledTimes(2);
+    expect(mockServer.registerTool).toHaveBeenCalledTimes(2);
   });
 });

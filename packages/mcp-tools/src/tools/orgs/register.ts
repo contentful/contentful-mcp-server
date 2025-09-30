@@ -3,17 +3,21 @@ import { ListOrgsToolParams, listOrgsTool } from './listOrgs.js';
 import { GetOrgToolParams, getOrgTool } from './getOrg.js';
 
 export function registerOrgTools(server: McpServer) {
-  server.tool(
+  server.registerTool(
     'list_orgs',
-    'List all organizations that the user has access to',
-    ListOrgsToolParams.shape,
+    {
+      description: 'List all organizations that the user has access to',
+      inputSchema: ListOrgsToolParams.shape,
+    },
     listOrgsTool,
   );
 
-  server.tool(
+  server.registerTool(
     'get_org',
-    'Get details of a specific organization',
-    GetOrgToolParams.shape,
+    {
+      description: 'Get details of a specific organization',
+      inputSchema: GetOrgToolParams.shape,
+    },
     getOrgTool,
   );
 }

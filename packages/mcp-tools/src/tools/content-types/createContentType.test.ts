@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   mockContentTypeCreate,
   mockContentTypeCreateWithId,
@@ -11,6 +11,10 @@ import { createContentTypeTool } from './createContentType.js';
 import { formatResponse } from '../../utils/formatters.js';
 
 describe('createContentType', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('should create a content type successfully with basic fields', async () => {
     const testArgs = {
       spaceId: mockArgs.spaceId,

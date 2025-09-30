@@ -6,38 +6,53 @@ import { updateLocaleTool, UpdateLocaleToolParams } from './updateLocale.js';
 import { deleteLocaleTool, DeleteLocaleToolParams } from './deleteLocale.js';
 
 export function registerLocaleTools(server: McpServer) {
-  server.tool(
+  server.registerTool(
     'get_locale',
-    'Retrieve a specific locale from your Contentful environment',
-    GetLocaleToolParams.shape,
+    {
+      description:
+        'Retrieve a specific locale from your Contentful environment',
+      inputSchema: GetLocaleToolParams.shape,
+    },
     getLocaleTool,
   );
 
-  server.tool(
+  server.registerTool(
     'create_locale',
-    'Create a new locale in your Contentful environment. A locale defines a language-region pair (e.g., "en-US" for English United States). You can specify fallback behavior, API availability settings, and whether the locale is optional for content editors. Note: setting \'default\' is currently not supported.',
-    CreateLocaleToolParams.shape,
+    {
+      description:
+        'Create a new locale in your Contentful environment. A locale defines a language-region pair (e.g., "en-US" for English United States). You can specify fallback behavior, API availability settings, and whether the locale is optional for content editors. Note: setting \'default\' is currently not supported.',
+      inputSchema: CreateLocaleToolParams.shape,
+    },
     createLocaleTool,
   );
 
-  server.tool(
+  server.registerTool(
     'list_locales',
-    'List all locales in your Contentful environment. Returns locale information including language codes, fallback settings, and API availability.',
-    ListLocaleToolParams.shape,
+    {
+      description:
+        'List all locales in your Contentful environment. Returns locale information including language codes, fallback settings, and API availability.',
+      inputSchema: ListLocaleToolParams.shape,
+    },
     listLocaleTool,
   );
 
-  server.tool(
+  server.registerTool(
     'update_locale',
-    'Update an existing locale in your Contentful environment. You can modify the locale name, code, fallback behavior, API availability settings, and whether the locale is optional for content editors. Only provide the fields you want to change. IMPORTANT: internal_code cannot be updated.',
-    UpdateLocaleToolParams.shape,
+    {
+      description:
+        'Update an existing locale in your Contentful environment. You can modify the locale name, code, fallback behavior, API availability settings, and whether the locale is optional for content editors. Only provide the fields you want to change. IMPORTANT: internal_code cannot be updated.',
+      inputSchema: UpdateLocaleToolParams.shape,
+    },
     updateLocaleTool,
   );
 
-  server.tool(
+  server.registerTool(
     'delete_locale',
-    'Delete a specific locale from your Contentful environment. This operation permanently removes the locale and cannot be undone.',
-    DeleteLocaleToolParams.shape,
+    {
+      description:
+        'Delete a specific locale from your Contentful environment. This operation permanently removes the locale and cannot be undone.',
+      inputSchema: DeleteLocaleToolParams.shape,
+    },
     deleteLocaleTool,
   );
 }

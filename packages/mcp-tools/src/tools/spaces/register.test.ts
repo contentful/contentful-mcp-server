@@ -7,25 +7,29 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 describe('registerSpaceTools', () => {
   it('should register all space tools', () => {
     const mockServer = {
-      tool: vi.fn(),
+      registerTool: vi.fn(),
     };
 
     registerSpaceTools(mockServer as unknown as McpServer);
 
-    expect(mockServer.tool).toHaveBeenCalledWith(
+    expect(mockServer.registerTool).toHaveBeenCalledWith(
       'list_spaces',
-      'List all available spaces',
-      ListSpacesToolParams.shape,
+      {
+        description: 'List all available spaces',
+        inputSchema: ListSpacesToolParams.shape,
+      },
       expect.any(Function),
     );
 
-    expect(mockServer.tool).toHaveBeenCalledWith(
+    expect(mockServer.registerTool).toHaveBeenCalledWith(
       'get_space',
-      'Get details of a space',
-      GetSpaceToolParams.shape,
+      {
+        description: 'Get details of a space',
+        inputSchema: GetSpaceToolParams.shape,
+      },
       expect.any(Function),
     );
 
-    expect(mockServer.tool).toHaveBeenCalledTimes(2);
+    expect(mockServer.registerTool).toHaveBeenCalledTimes(2);
   });
 });

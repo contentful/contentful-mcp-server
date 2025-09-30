@@ -13,24 +13,30 @@ import {
 } from './deleteEnvironment.js';
 
 export function registerEnvironmentTools(server: McpServer) {
-  server.tool(
+  server.registerTool(
     'create_environment',
-    'Create a new environment',
-    CreateEnvironmentToolParams.shape,
+    {
+      description: 'Create a new environment',
+      inputSchema: CreateEnvironmentToolParams.shape,
+    },
     createEnvironmentTool,
   );
 
-  server.tool(
+  server.registerTool(
     'list_environments',
-    'List all environments in a space',
-    ListEnvironmentsToolParams.shape,
+    {
+      description: 'List all environments in a space',
+      inputSchema: ListEnvironmentsToolParams.shape,
+    },
     listEnvironmentsTool,
   );
 
-  server.tool(
+  server.registerTool(
     'delete_environment',
-    'Delete an environment',
-    DeleteEnvironmentToolParams.shape,
+    {
+      description: 'Delete an environment',
+      inputSchema: DeleteEnvironmentToolParams.shape,
+    },
     deleteEnvironmentTool,
   );
 }

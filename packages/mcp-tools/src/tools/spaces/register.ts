@@ -3,17 +3,21 @@ import { listSpacesTool, ListSpacesToolParams } from './listSpaces.js';
 import { getSpaceTool, GetSpaceToolParams } from './getSpace.js';
 
 export function registerSpaceTools(server: McpServer) {
-  server.tool(
+  server.registerTool(
     'list_spaces',
-    'List all available spaces',
-    ListSpacesToolParams.shape,
+    {
+      description: 'List all available spaces',
+      inputSchema: ListSpacesToolParams.shape,
+    },
     listSpacesTool,
   );
 
-  server.tool(
+  server.registerTool(
     'get_space',
-    'Get details of a space',
-    GetSpaceToolParams.shape,
+    {
+      description: 'Get details of a space',
+      inputSchema: GetSpaceToolParams.shape,
+    },
     getSpaceTool,
   );
 }

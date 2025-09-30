@@ -5,10 +5,13 @@ import {
 } from './getInitialContextTool.js';
 
 export function registerContextTools(server: McpServer) {
-  server.tool(
+  server.registerTool(
     'get_initial_context',
-    'IMPORTANT: This tool must be called before using any other tools. It will get initial context and usage instructions for this MCP server. ',
-    GetInitialContextToolParams.shape,
+    {
+      description:
+        'IMPORTANT: This tool must be called before using any other tools. It will get initial context and usage instructions for this MCP server. ',
+      inputSchema: GetInitialContextToolParams.shape,
+    },
     getInitialContextTool,
   );
 }

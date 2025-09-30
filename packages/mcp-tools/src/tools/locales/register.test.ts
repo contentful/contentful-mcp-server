@@ -10,45 +10,55 @@ import { deleteLocaleTool, DeleteLocaleToolParams } from './deleteLocale.js';
 describe('registerLocaleTools', () => {
   it('should register all locale tools with the server', () => {
     const mockServer = {
-      tool: vi.fn(),
+      registerTool: vi.fn(),
     };
 
     registerLocaleTools(mockServer as unknown as McpServer);
 
-    expect(mockServer.tool).toHaveBeenCalledTimes(5);
+    expect(mockServer.registerTool).toHaveBeenCalledTimes(5);
 
-    expect(mockServer.tool).toHaveBeenCalledWith(
+    expect(mockServer.registerTool).toHaveBeenCalledWith(
       'get_locale',
-      expect.any(String),
-      GetLocaleToolParams.shape,
+      {
+        description: expect.any(String),
+        inputSchema: GetLocaleToolParams.shape,
+      },
       getLocaleTool,
     );
 
-    expect(mockServer.tool).toHaveBeenCalledWith(
+    expect(mockServer.registerTool).toHaveBeenCalledWith(
       'create_locale',
-      expect.any(String),
-      CreateLocaleToolParams.shape,
+      {
+        description: expect.any(String),
+        inputSchema: CreateLocaleToolParams.shape,
+      },
       createLocaleTool,
     );
 
-    expect(mockServer.tool).toHaveBeenCalledWith(
+    expect(mockServer.registerTool).toHaveBeenCalledWith(
       'list_locales',
-      expect.any(String),
-      ListLocaleToolParams.shape,
+      {
+        description: expect.any(String),
+        inputSchema: ListLocaleToolParams.shape,
+      },
       listLocaleTool,
     );
 
-    expect(mockServer.tool).toHaveBeenCalledWith(
+    expect(mockServer.registerTool).toHaveBeenCalledWith(
       'update_locale',
-      expect.any(String),
-      UpdateLocaleToolParams.shape,
+      {
+        description: expect.any(String),
+        inputSchema: UpdateLocaleToolParams.shape,
+      },
       updateLocaleTool,
     );
 
-    expect(mockServer.tool).toHaveBeenCalledWith(
+    expect(mockServer.registerTool).toHaveBeenCalledWith(
       'delete_locale',
-      expect.any(String),
-      DeleteLocaleToolParams.shape,
+      {
+        description: expect.any(String),
+        inputSchema: DeleteLocaleToolParams.shape,
+      },
       deleteLocaleTool,
     );
   });

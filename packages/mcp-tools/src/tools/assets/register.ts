@@ -11,52 +11,69 @@ import {
 } from './unpublishAsset.js';
 
 export function registerAssetTools(server: McpServer) {
-  server.tool(
+  server.registerTool(
     'upload_asset',
-    'Upload a new asset',
-    UploadAssetToolParams.shape,
+    {
+      description: 'Upload a new asset',
+      inputSchema: UploadAssetToolParams.shape,
+    },
     uploadAssetTool,
   );
 
-  server.tool(
+  server.registerTool(
     'list_assets',
-    'List assets in a space. Returns a maximum of 3 items per request. Use skip parameter to paginate through results.',
-    ListAssetsToolParams.shape,
+    {
+      description:
+        'List assets in a space. Returns a maximum of 3 items per request. Use skip parameter to paginate through results.',
+      inputSchema: ListAssetsToolParams.shape,
+    },
     listAssetsTool,
   );
 
-  server.tool(
+  server.registerTool(
     'get_asset',
-    'Retrieve an asset',
-    GetAssetToolParams.shape,
+    {
+      description: 'Retrieve an asset',
+      inputSchema: GetAssetToolParams.shape,
+    },
     getAssetTool,
   );
 
-  server.tool(
+  server.registerTool(
     'update_asset',
-    'Update an asset',
-    UpdateAssetToolParams.shape,
+    {
+      description: 'Update an asset',
+      inputSchema: UpdateAssetToolParams.shape,
+    },
     updateAssetTool,
   );
 
-  server.tool(
+  server.registerTool(
     'delete_asset',
-    'Delete an asset',
-    DeleteAssetToolParams.shape,
+    {
+      description: 'Delete an asset',
+      inputSchema: DeleteAssetToolParams.shape,
+    },
     deleteAssetTool,
   );
 
-  server.tool(
+  server.registerTool(
     'publish_asset',
-    'Publish an asset or multiple assets. Accepts either a single assetId (string) or an array of assetIds (up to 100 assets). For a single asset, it uses the standard publish operation. For multiple assets, it automatically uses bulk publishing.',
-    PublishAssetToolParams.shape,
+    {
+      description:
+        'Publish an asset or multiple assets. Accepts either a single assetId (string) or an array of assetIds (up to 100 assets). For a single asset, it uses the standard publish operation. For multiple assets, it automatically uses bulk publishing.',
+      inputSchema: PublishAssetToolParams.shape,
+    },
     publishAssetTool,
   );
 
-  server.tool(
+  server.registerTool(
     'unpublish_asset',
-    'Unpublish an asset or multiple assets. Accepts either a single assetId (string) or an array of assetIds (up to 100 assets). For a single asset, it uses the standard unpublish operation. For multiple assets, it automatically uses bulk unpublishing.',
-    UnpublishAssetToolParams.shape,
+    {
+      description:
+        'Unpublish an asset or multiple assets. Accepts either a single assetId (string) or an array of assetIds (up to 100 assets). For a single asset, it uses the standard unpublish operation. For multiple assets, it automatically uses bulk unpublishing.',
+      inputSchema: UnpublishAssetToolParams.shape,
+    },
     unpublishAssetTool,
   );
 }
