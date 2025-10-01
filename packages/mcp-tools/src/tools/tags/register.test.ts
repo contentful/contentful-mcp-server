@@ -1,38 +1,43 @@
-import { describe, it, expect, vi } from 'vitest';
-import { registerCreateTagTool, registerListTagsTool } from './register.js';
-import { ListTagsToolParams } from './listTags.js';
-import { CreateTagToolParams } from './createTag.js';
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { describe, it, expect } from 'vitest';
+import { tagTools } from './register.js';
+import { listTagsTool, ListTagsToolParams } from './listTags.js';
+import { createTagTool, CreateTagToolParams } from './createTag.js';
 
-describe('tag registration helpers', () => {
-  it('should register all tag tools', () => {
-    const mockServer = {
-      registerTool: vi.fn(),
-    };
+describe('tag tools collection', () => {
+  it('should export tagTools collection with correct structure', () => {
+    expect(tagTools).toBeDefined();
+    expect(Object.keys(tagTools)).toHaveLength(2);
+  });
 
-    registerListTagsTool(mockServer as unknown as McpServer);
-    registerCreateTagTool(mockServer as unknown as McpServer);
+  it('should have listTags tool with correct properties', () => {
+    const { listTags } = tagTools;
 
-    expect(mockServer.registerTool).toHaveBeenCalledWith(
-      'list_tags',
-      {
-        description:
-          'List all tags in a space. Returns all tags that exist in a given environment.',
-        inputSchema: ListTagsToolParams.shape,
-      },
-      expect.any(Function),
+    expect(listTags.title).toBe('list_tags');
+    expect(listTags.description).toBe(
+      'List all tags in a space. Returns all tags that exist in a given environment.',
     );
+    expect(listTags.inputParams).toStrictEqual(ListTagsToolParams.shape);
+    expect(listTags.annotations).toEqual({
+      readOnlyHint: true,
+      openWorldHint: false,
+    });
+    expect(listTags.tool).toBe(listTagsTool);
+  });
 
-    expect(mockServer.registerTool).toHaveBeenCalledWith(
-      'create_tag',
-      {
-        description:
-          'Creates a new tag and returns it. Both name and ID must be unique to each environment. Tag names can be modified after creation, but the tag ID cannot. The tag visibility can be set to public or private, defaulting to private if not specified.',
-        inputSchema: CreateTagToolParams.shape,
-      },
-      expect.any(Function),
+  it('should have createTag tool with correct properties', () => {
+    const { createTag } = tagTools;
+
+    expect(createTag.title).toBe('create_tag');
+    expect(createTag.description).toBe(
+      'Creates a new tag and returns it. Both name and ID must be unique to each environment. Tag names can be modified after creation, but the tag ID cannot. The tag visibility can be set to public or private, defaulting to private if not specified.',
     );
-
-    expect(mockServer.registerTool).toHaveBeenCalledTimes(2);
+    expect(createTag.inputParams).toStrictEqual(CreateTagToolParams.shape);
+    expect(createTag.annotations).toEqual({
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
+    });
+    expect(createTag.tool).toBe(createTagTool);
   });
 });

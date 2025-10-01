@@ -1,51 +1,72 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect } from 'vitest';
+import { environmentTools } from './register.js';
 import {
-  registerCreateEnvironmentTool,
-  registerDeleteEnvironmentTool,
-  registerListEnvironmentsTool,
-} from './register.js';
-import { CreateEnvironmentToolParams } from './createEnvironment.js';
-import { ListEnvironmentsToolParams } from './listEnvironments.js';
-import { DeleteEnvironmentToolParams } from './deleteEnvironment.js';
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+  createEnvironmentTool,
+  CreateEnvironmentToolParams,
+} from './createEnvironment.js';
+import {
+  listEnvironmentsTool,
+  ListEnvironmentsToolParams,
+} from './listEnvironments.js';
+import {
+  deleteEnvironmentTool,
+  DeleteEnvironmentToolParams,
+} from './deleteEnvironment.js';
 
-describe('environment registration helpers', () => {
-  it('should register all environment tools', () => {
-    const mockServer = {
-      registerTool: vi.fn(),
-    };
+describe('environment tools collection', () => {
+  it('should export environmentTools collection with correct structure', () => {
+    expect(environmentTools).toBeDefined();
+    expect(Object.keys(environmentTools)).toHaveLength(3);
+  });
 
-    registerCreateEnvironmentTool(mockServer as unknown as McpServer);
-    registerListEnvironmentsTool(mockServer as unknown as McpServer);
-    registerDeleteEnvironmentTool(mockServer as unknown as McpServer);
+  it('should have createEnvironment tool with correct properties', () => {
+    const { createEnvironment } = environmentTools;
 
-    expect(mockServer.registerTool).toHaveBeenCalledWith(
-      'create_environment',
-      {
-        description: 'Create a new environment',
-        inputSchema: CreateEnvironmentToolParams.shape,
-      },
-      expect.any(Function),
+    expect(createEnvironment.title).toBe('create_environment');
+    expect(createEnvironment.description).toBe('Create a new environment');
+    expect(createEnvironment.inputParams).toStrictEqual(
+      CreateEnvironmentToolParams.shape,
     );
+    expect(createEnvironment.annotations).toEqual({
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
+    });
+    expect(createEnvironment.tool).toBe(createEnvironmentTool);
+  });
 
-    expect(mockServer.registerTool).toHaveBeenCalledWith(
-      'list_environments',
-      {
-        description: 'List all environments in a space',
-        inputSchema: ListEnvironmentsToolParams.shape,
-      },
-      expect.any(Function),
+  it('should have listEnvironments tool with correct properties', () => {
+    const { listEnvironments } = environmentTools;
+
+    expect(listEnvironments.title).toBe('list_environments');
+    expect(listEnvironments.description).toBe(
+      'List all environments in a space',
     );
-
-    expect(mockServer.registerTool).toHaveBeenCalledWith(
-      'delete_environment',
-      {
-        description: 'Delete an environment',
-        inputSchema: DeleteEnvironmentToolParams.shape,
-      },
-      expect.any(Function),
+    expect(listEnvironments.inputParams).toStrictEqual(
+      ListEnvironmentsToolParams.shape,
     );
+    expect(listEnvironments.annotations).toEqual({
+      readOnlyHint: true,
+      openWorldHint: false,
+    });
+    expect(listEnvironments.tool).toBe(listEnvironmentsTool);
+  });
 
-    expect(mockServer.registerTool).toHaveBeenCalledTimes(3);
+  it('should have deleteEnvironment tool with correct properties', () => {
+    const { deleteEnvironment } = environmentTools;
+
+    expect(deleteEnvironment.title).toBe('delete_environment');
+    expect(deleteEnvironment.description).toBe('Delete an environment');
+    expect(deleteEnvironment.inputParams).toStrictEqual(
+      DeleteEnvironmentToolParams.shape,
+    );
+    expect(deleteEnvironment.annotations).toEqual({
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
+    });
+    expect(deleteEnvironment.tool).toBe(deleteEnvironmentTool);
   });
 });

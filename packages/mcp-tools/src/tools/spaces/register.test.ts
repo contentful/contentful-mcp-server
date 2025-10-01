@@ -1,36 +1,37 @@
-import { describe, it, expect, vi } from 'vitest';
-import { registerGetSpaceTool, registerListSpacesTool } from './register.js';
-import { ListSpacesToolParams } from './listSpaces.js';
-import { GetSpaceToolParams } from './getSpace.js';
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { describe, it, expect } from 'vitest';
+import { spaceTools } from './register.js';
+import { listSpacesTool, ListSpacesToolParams } from './listSpaces.js';
+import { getSpaceTool, GetSpaceToolParams } from './getSpace.js';
 
-describe('space registration helpers', () => {
-  it('should register all space tools', () => {
-    const mockServer = {
-      registerTool: vi.fn(),
-    };
+describe('space tools collection', () => {
+  it('should export spaceTools collection with correct structure', () => {
+    expect(spaceTools).toBeDefined();
+    expect(Object.keys(spaceTools)).toHaveLength(2);
+  });
 
-    registerListSpacesTool(mockServer as unknown as McpServer);
-    registerGetSpaceTool(mockServer as unknown as McpServer);
+  it('should have listSpaces tool with correct properties', () => {
+    const { listSpaces } = spaceTools;
 
-    expect(mockServer.registerTool).toHaveBeenCalledWith(
-      'list_spaces',
-      {
-        description: 'List all available spaces',
-        inputSchema: ListSpacesToolParams.shape,
-      },
-      expect.any(Function),
-    );
+    expect(listSpaces.title).toBe('list_spaces');
+    expect(listSpaces.description).toBe('List all available spaces');
+    expect(listSpaces.inputParams).toStrictEqual(ListSpacesToolParams.shape);
+    expect(listSpaces.annotations).toEqual({
+      readOnlyHint: true,
+      openWorldHint: false,
+    });
+    expect(listSpaces.tool).toBe(listSpacesTool);
+  });
 
-    expect(mockServer.registerTool).toHaveBeenCalledWith(
-      'get_space',
-      {
-        description: 'Get details of a space',
-        inputSchema: GetSpaceToolParams.shape,
-      },
-      expect.any(Function),
-    );
+  it('should have getSpace tool with correct properties', () => {
+    const { getSpace } = spaceTools;
 
-    expect(mockServer.registerTool).toHaveBeenCalledTimes(2);
+    expect(getSpace.title).toBe('get_space');
+    expect(getSpace.description).toBe('Get details of a space');
+    expect(getSpace.inputParams).toStrictEqual(GetSpaceToolParams.shape);
+    expect(getSpace.annotations).toEqual({
+      readOnlyHint: true,
+      openWorldHint: false,
+    });
+    expect(getSpace.tool).toBe(getSpaceTool);
   });
 });

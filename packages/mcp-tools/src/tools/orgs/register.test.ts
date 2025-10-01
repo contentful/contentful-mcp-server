@@ -1,36 +1,39 @@
-import { describe, it, expect, vi } from 'vitest';
-import { registerGetOrgTool, registerListOrgsTool } from './register.js';
-import { ListOrgsToolParams } from './listOrgs.js';
-import { GetOrgToolParams } from './getOrg.js';
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { describe, it, expect } from 'vitest';
+import { orgTools } from './register.js';
+import { listOrgsTool, ListOrgsToolParams } from './listOrgs.js';
+import { getOrgTool, GetOrgToolParams } from './getOrg.js';
 
-describe('organization registration helpers', () => {
-  it('should register all organization tools', () => {
-    const mockServer = {
-      registerTool: vi.fn(),
-    };
+describe('organization tools collection', () => {
+  it('should export orgTools collection with correct structure', () => {
+    expect(orgTools).toBeDefined();
+    expect(Object.keys(orgTools)).toHaveLength(2);
+  });
 
-    registerListOrgsTool(mockServer as unknown as McpServer);
-    registerGetOrgTool(mockServer as unknown as McpServer);
+  it('should have listOrgs tool with correct properties', () => {
+    const { listOrgs } = orgTools;
 
-    expect(mockServer.registerTool).toHaveBeenCalledWith(
-      'list_orgs',
-      {
-        description: 'List all organizations that the user has access to',
-        inputSchema: ListOrgsToolParams.shape,
-      },
-      expect.any(Function),
+    expect(listOrgs.title).toBe('list_orgs');
+    expect(listOrgs.description).toBe(
+      'List all organizations that the user has access to',
     );
+    expect(listOrgs.inputParams).toStrictEqual(ListOrgsToolParams.shape);
+    expect(listOrgs.annotations).toEqual({
+      readOnlyHint: true,
+      openWorldHint: false,
+    });
+    expect(listOrgs.tool).toBe(listOrgsTool);
+  });
 
-    expect(mockServer.registerTool).toHaveBeenCalledWith(
-      'get_org',
-      {
-        description: 'Get details of a specific organization',
-        inputSchema: GetOrgToolParams.shape,
-      },
-      expect.any(Function),
-    );
+  it('should have getOrg tool with correct properties', () => {
+    const { getOrg } = orgTools;
 
-    expect(mockServer.registerTool).toHaveBeenCalledTimes(2);
+    expect(getOrg.title).toBe('get_org');
+    expect(getOrg.description).toBe('Get details of a specific organization');
+    expect(getOrg.inputParams).toStrictEqual(GetOrgToolParams.shape);
+    expect(getOrg.annotations).toEqual({
+      readOnlyHint: true,
+      openWorldHint: false,
+    });
+    expect(getOrg.tool).toBe(getOrgTool);
   });
 });
