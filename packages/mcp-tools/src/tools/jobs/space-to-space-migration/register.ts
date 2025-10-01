@@ -1,4 +1,3 @@
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { createExportSpaceTool, ExportSpaceToolParams } from './exportSpace.js';
 import {
   ParamCollectionToolParams,
@@ -10,63 +9,52 @@ import {
   makeSpaceToSpaceMigrationHandlerTool,
 } from './migrationHandler.js';
 
-export function registerSpaceToSpaceParamCollectionTool(server: McpServer) {
-  return server.registerTool(
-    'space_to_space_param_collection',
-    {
-      description:
-        'Collect parameters for the space to space migration workflow. This tool should ALWAYS start with confirmation false, until the user confirms they are ready to proceed with the workflow. Do not assume they use wants to proceed with the workflow until they explicitly say so.',
-      inputSchema: ParamCollectionToolParams.shape,
+export const jobTools = {
+  spaceToSpaceParamCollection: {
+    title: 'space_to_space_param_collection',
+    description:
+      'Collect parameters for the space to space migration workflow. This tool should ALWAYS start with confirmation false, until the user confirms they are ready to proceed with the workflow. Do not assume they use wants to proceed with the workflow until they explicitly say so.',
+    inputParams: ParamCollectionToolParams.shape,
+    annotations: {
+      readOnlyHint: true,
+      openWorldHint: false,
     },
-    createParamCollectionTool,
-  );
-}
-
-export function registerExportSpaceTool(server: McpServer) {
-  return server.registerTool(
-    'export_space',
-    {
-      description: 'Export a space to a file',
-      inputSchema: ExportSpaceToolParams.shape,
+    tool: createParamCollectionTool,
+  },
+  exportSpace: {
+    title: 'export_space',
+    description: 'Export a space to a file',
+    inputParams: ExportSpaceToolParams.shape,
+    annotations: {
+      readOnlyHint: true,
+      openWorldHint: false,
     },
-    createExportSpaceTool,
-  );
-}
-
-export function registerImportSpaceTool(server: McpServer) {
-  return server.registerTool(
-    'import_space',
-    {
-      description:
-        'Import a space from a file. Step 4 of the space to space migration workflow.',
-      inputSchema: ImportSpaceToolParams.shape,
+    tool: createExportSpaceTool,
+  },
+  importSpace: {
+    title: 'import_space',
+    description:
+      'Import a space from a file. Step 4 of the space to space migration workflow.',
+    inputParams: ImportSpaceToolParams.shape,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
-    createImportSpaceTool,
-  );
-}
-
-export function registerSpaceToSpaceMigrationHandlerTool(server: McpServer) {
-  const paramCollectionTool = registerSpaceToSpaceParamCollectionTool(server);
-  const exportSpaceTool = registerExportSpaceTool(server);
-  const importSpaceTool = registerImportSpaceTool(server);
-
-  const handler = server.registerTool(
-    'space_to_space_migration_handler',
-    {
-      description:
-        'Enable or disable the space to space migration workflow tools. Set enableWorkflow=true to start, false to conclude the workflow.',
-      inputSchema: SpaceToSpaceMigrationHandlerToolParams.shape,
+    tool: createImportSpaceTool,
+  },
+  spaceToSpaceMigrationHandler: {
+    title: 'space_to_space_migration_handler',
+    description:
+      'Enable or disable the space to space migration workflow tools. Set enableWorkflow=true to start, false to conclude the workflow.',
+    inputParams: SpaceToSpaceMigrationHandlerToolParams.shape,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
-    makeSpaceToSpaceMigrationHandlerTool([
-      paramCollectionTool,
-      exportSpaceTool,
-      importSpaceTool,
-    ]),
-  );
-
-  paramCollectionTool.disable();
-  importSpaceTool.disable();
-  exportSpaceTool.disable();
-
-  return handler;
-}
+    tool: makeSpaceToSpaceMigrationHandlerTool,
+  },
+};

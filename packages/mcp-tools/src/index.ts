@@ -1,12 +1,27 @@
-export * from './tools/ai-actions/register.js';
-export * from './tools/assets/register.js';
-export * from './tools/content-types/register.js';
-export * from './tools/context/register.js';
-export * from './tools/entries/register.js';
-export * from './tools/environments/register.js';
-export * from './tools/jobs/space-to-space-migration/register.js';
-export * from './tools/locales/register.js';
-export * from './tools/orgs/register.js';
-export * from './tools/spaces/register.js';
-export * from './tools/tags/register.js';
-export * from './tools/taxonomies/register.js';
+import { aiActionTools } from './tools/ai-actions/register.js';
+import { assetTools } from './tools/assets/register.js';
+import { contentTypeTools } from './tools/content-types/register.js';
+import { contextTools } from './tools/context/register.js';
+import { entryTools } from './tools/entries/register.js';
+import { environmentTools } from './tools/environments/register.js';
+import { jobTools } from './tools/jobs/space-to-space-migration/register.js';
+import { localeTools } from './tools/locales/register.js';
+import { orgTools } from './tools/orgs/register.js';
+import { spaceTools } from './tools/spaces/register.js';
+import { tagTools } from './tools/tags/register.js';
+import { taxonomyTools } from './tools/taxonomies/register.js';
+
+export {
+  aiActionTools,
+  assetTools,
+  contentTypeTools,
+  contextTools,
+  entryTools,
+  environmentTools,
+  jobTools,
+  localeTools,
+  orgTools,
+  spaceTools,
+  tagTools,
+  taxonomyTools,
+};

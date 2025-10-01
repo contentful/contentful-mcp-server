@@ -1,1 +1,1 @@
-export * from './concept-schemes/register.js';
+export { taxonomyTools } from './concept-schemes/register.js';

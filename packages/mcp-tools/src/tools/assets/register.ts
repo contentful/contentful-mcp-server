@@ -1,4 +1,3 @@
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { uploadAssetTool, UploadAssetToolParams } from './uploadAsset.js';
 import { listAssetsTool, ListAssetsToolParams } from './listAssets.js';
 import { getAssetTool, GetAssetToolParams } from './getAsset.js';
@@ -10,82 +9,88 @@ import {
   UnpublishAssetToolParams,
 } from './unpublishAsset.js';
 
-export function registerUploadAssetTool(server: McpServer) {
-  return server.registerTool(
-    'upload_asset',
-    {
-      description: 'Upload a new asset',
-      inputSchema: UploadAssetToolParams.shape,
+export const assetTools = {
+  uploadAsset: {
+    title: 'upload_asset',
+    description: 'Upload a new asset',
+    inputParams: UploadAssetToolParams.shape,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
-    uploadAssetTool,
-  );
-}
-
-export function registerListAssetsTool(server: McpServer) {
-  return server.registerTool(
-    'list_assets',
-    {
-      description:
-        'List assets in a space. Returns a maximum of 3 items per request. Use skip parameter to paginate through results.',
-      inputSchema: ListAssetsToolParams.shape,
+    tool: uploadAssetTool,
+  },
+  listAssets: {
+    title: 'list_assets',
+    description:
+      'List assets in a space. Returns a maximum of 3 items per request. Use skip parameter to paginate through results.',
+    inputParams: ListAssetsToolParams.shape,
+    annotations: {
+      readOnlyHint: true,
+      openWorldHint: false,
     },
-    listAssetsTool,
-  );
-}
-
-export function registerGetAssetTool(server: McpServer) {
-  return server.registerTool(
-    'get_asset',
-    {
-      description: 'Retrieve an asset',
-      inputSchema: GetAssetToolParams.shape,
+    tool: listAssetsTool,
+  },
+  getAsset: {
+    title: 'get_asset',
+    description: 'Retrieve an asset',
+    inputParams: GetAssetToolParams.shape,
+    annotations: {
+      readOnlyHint: true,
+      openWorldHint: false,
     },
-    getAssetTool,
-  );
-}
-
-export function registerUpdateAssetTool(server: McpServer) {
-  return server.registerTool(
-    'update_asset',
-    {
-      description: 'Update an asset',
-      inputSchema: UpdateAssetToolParams.shape,
+    tool: getAssetTool,
+  },
+  updateAsset: {
+    title: 'update_asset',
+    description: 'Update an asset',
+    inputParams: UpdateAssetToolParams.shape,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
-    updateAssetTool,
-  );
-}
-
-export function registerDeleteAssetTool(server: McpServer) {
-  return server.registerTool(
-    'delete_asset',
-    {
-      description: 'Delete an asset',
-      inputSchema: DeleteAssetToolParams.shape,
+    tool: updateAssetTool,
+  },
+  deleteAsset: {
+    title: 'delete_asset',
+    description: 'Delete an asset',
+    inputParams: DeleteAssetToolParams.shape,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
-    deleteAssetTool,
-  );
-}
-
-export function registerPublishAssetTool(server: McpServer) {
-  return server.registerTool(
-    'publish_asset',
-    {
-      description:
-        'Publish an asset or multiple assets. Accepts either a single assetId (string) or an array of assetIds (up to 100 assets). For a single asset, it uses the standard publish operation. For multiple assets, it automatically uses bulk publishing.',
-      inputSchema: PublishAssetToolParams.shape,
+    tool: deleteAssetTool,
+  },
+  publishAsset: {
+    title: 'publish_asset',
+    description:
+      'Publish an asset or multiple assets. Accepts either a single assetId (string) or an array of assetIds (up to 100 assets). For a single asset, it uses the standard publish operation. For multiple assets, it automatically uses bulk publishing.',
+    inputParams: PublishAssetToolParams.shape,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
-    publishAssetTool,
-  );
-}
-
-export function registerUnpublishAssetTool(server: McpServer) {
-  return server.registerTool(
-    'unpublish_asset',
-    {
-      description:
-        'Unpublish an asset or multiple assets. Accepts either a single assetId (string) or an array of assetIds (up to 100 assets). For a single asset, it uses the standard unpublish operation. For multiple assets, it automatically uses bulk unpublishing.',
-      inputSchema: UnpublishAssetToolParams.shape,
+    tool: publishAssetTool,
+  },
+  unpublishAsset: {
+    title: 'unpublish_asset',
+    description:
+      'Unpublish an asset or multiple assets. Accepts either a single assetId (string) or an array of assetIds (up to 100 assets). For a single asset, it uses the standard unpublish operation. For multiple assets, it automatically uses bulk unpublishing.',
+    inputParams: UnpublishAssetToolParams.shape,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
-    unpublishAssetTool,
-  );
-}
+    tool: unpublishAssetTool,
+  },
+};

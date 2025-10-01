@@ -1,4 +1,3 @@
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import {
   createEnvironmentTool,
   CreateEnvironmentToolParams,
@@ -12,35 +11,39 @@ import {
   DeleteEnvironmentToolParams,
 } from './deleteEnvironment.js';
 
-export function registerCreateEnvironmentTool(server: McpServer) {
-  return server.registerTool(
-    'create_environment',
-    {
-      description: 'Create a new environment',
-      inputSchema: CreateEnvironmentToolParams.shape,
+export const environmentTools = {
+  createEnvironment: {
+    title: 'create_environment',
+    description: 'Create a new environment',
+    inputParams: CreateEnvironmentToolParams.shape,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
-    createEnvironmentTool,
-  );
-}
-
-export function registerListEnvironmentsTool(server: McpServer) {
-  return server.registerTool(
-    'list_environments',
-    {
-      description: 'List all environments in a space',
-      inputSchema: ListEnvironmentsToolParams.shape,
+    tool: createEnvironmentTool,
+  },
+  listEnvironments: {
+    title: 'list_environments',
+    description: 'List all environments in a space',
+    inputParams: ListEnvironmentsToolParams.shape,
+    annotations: {
+      readOnlyHint: true,
+      openWorldHint: false,
     },
-    listEnvironmentsTool,
-  );
-}
-
-export function registerDeleteEnvironmentTool(server: McpServer) {
-  return server.registerTool(
-    'delete_environment',
-    {
-      description: 'Delete an environment',
-      inputSchema: DeleteEnvironmentToolParams.shape,
+    tool: listEnvironmentsTool,
+  },
+  deleteEnvironment: {
+    title: 'delete_environment',
+    description: 'Delete an environment',
+    inputParams: DeleteEnvironmentToolParams.shape,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
-    deleteEnvironmentTool,
-  );
-}
+    tool: deleteEnvironmentTool,
+  },
+};

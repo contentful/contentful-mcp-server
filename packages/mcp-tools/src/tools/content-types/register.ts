@@ -1,4 +1,3 @@
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import {
   getContentTypeTool,
   GetContentTypeToolParams,
@@ -28,81 +27,87 @@ import {
   UnpublishContentTypeToolParams,
 } from './unpublishContentType.js';
 
-export function registerGetContentTypeTool(server: McpServer) {
-  return server.registerTool(
-    'get_content_type',
-    {
-      description: 'Get details about a specific Contentful content type',
-      inputSchema: GetContentTypeToolParams.shape,
+export const contentTypeTools = {
+  getContentType: {
+    title: 'get_content_type',
+    description: 'Get details about a specific Contentful content type',
+    inputParams: GetContentTypeToolParams.shape,
+    annotations: {
+      readOnlyHint: true,
+      openWorldHint: false,
     },
-    getContentTypeTool,
-  );
-}
-
-export function registerListContentTypesTool(server: McpServer) {
-  return server.registerTool(
-    'list_content_types',
-    {
-      description:
-        'List content types in a space. Returns a maximum of 10 items per request. Use skip parameter to paginate through results.',
-      inputSchema: ListContentTypesToolParams.shape,
+    tool: getContentTypeTool,
+  },
+  listContentTypes: {
+    title: 'list_content_types',
+    description:
+      'List content types in a space. Returns a maximum of 10 items per request. Use skip parameter to paginate through results.',
+    inputParams: ListContentTypesToolParams.shape,
+    annotations: {
+      readOnlyHint: true,
+      openWorldHint: false,
     },
-    listContentTypesTool,
-  );
-}
-
-export function registerCreateContentTypeTool(server: McpServer) {
-  return server.registerTool(
-    'create_content_type',
-    {
-      description: 'Create a new content type',
-      inputSchema: CreateContentTypeToolParams.shape,
+    tool: listContentTypesTool,
+  },
+  createContentType: {
+    title: 'create_content_type',
+    description: 'Create a new content type',
+    inputParams: CreateContentTypeToolParams.shape,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
-    createContentTypeTool,
-  );
-}
-
-export function registerUpdateContentTypeTool(server: McpServer) {
-  return server.registerTool(
-    'update_content_type',
-    {
-      description:
-        'Update an existing content type. The handler will merge your field updates with existing content type data, so you only need to provide the fields and properties you want to change.',
-      inputSchema: UpdateContentTypeToolParams.shape,
+    tool: createContentTypeTool,
+  },
+  updateContentType: {
+    title: 'update_content_type',
+    description:
+      'Update an existing content type. The handler will merge your field updates with existing content type data, so you only need to provide the fields and properties you want to change.',
+    inputParams: UpdateContentTypeToolParams.shape,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: false,
+      openWorldHint: false,
     },
-    updateContentTypeTool,
-  );
-}
-
-export function registerDeleteContentTypeTool(server: McpServer) {
-  return server.registerTool(
-    'delete_content_type',
-    {
-      description: 'Delete a content type',
-      inputSchema: DeleteContentTypeToolParams.shape,
+    tool: updateContentTypeTool,
+  },
+  deleteContentType: {
+    title: 'delete_content_type',
+    description: 'Delete a content type',
+    inputParams: DeleteContentTypeToolParams.shape,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: true,
+      idempotentHint: true,
+      openWorldHint: false,
     },
-    deleteContentTypeTool,
-  );
-}
-
-export function registerPublishContentTypeTool(server: McpServer) {
-  return server.registerTool(
-    'publish_content_type',
-    {
-      description: 'Publish a content type',
-      inputSchema: PublishContentTypeToolParams.shape,
+    tool: deleteContentTypeTool,
+  },
+  publishContentType: {
+    title: 'publish_content_type',
+    description: 'Publish a content type',
+    inputParams: PublishContentTypeToolParams.shape,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
-    publishContentTypeTool,
-  );
-}
-
-export function registerUnpublishContentTypeTool(server: McpServer) {
-  return server.registerTool(
-    'unpublish_content_type',
-    {
-      description: 'Unpublish a content type',
-      inputSchema: UnpublishContentTypeToolParams.shape,
+    tool: publishContentTypeTool,
+  },
+  unpublishContentType: {
+    title: 'unpublish_content_type',
+    description: 'Unpublish a content type',
+    inputParams: UnpublishContentTypeToolParams.shape,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
     },
-    unpublishContentTypeTool,
-  );
-}
+    tool: unpublishContentTypeTool,
+  },
+};
