@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitest/config';
+import path from 'path';
 
 export default defineConfig({
   test: {
@@ -17,6 +18,14 @@ export default defineConfig({
     coverage: {
       include: ['src/**/*.{ts,tsx,js,jsx}'],
       exclude: ['node_modules', 'dist', '**/*.config.ts', '**/*.config.js'],
+    },
+  },
+  resolve: {
+    alias: {
+      '@contentful/mcp-tools': path.resolve(
+        __dirname,
+        '../mcp-tools/src/index.ts',
+      ),
     },
   },
 });
