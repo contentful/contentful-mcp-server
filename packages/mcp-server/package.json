@@ -31,7 +31,9 @@
     "format": "prettier --check \"**/*.{ts,js,json,md}\"",
     "format:fix": "prettier --write \"**/*.{ts,js,json,md}\"",
     "lint": "eslint --ext .ts,.js .",
-    "lint:fix": "eslint --ext .ts,.js . --fix"
+    "lint:fix": "eslint --ext .ts,.js . --fix",
+    "test": "vitest",
+    "test:run": "vitest run"
   },
   "author": "Contentful GmbH",
   "license": "MIT",
@@ -50,6 +52,7 @@
     "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
     "tsup": "^8.5.0",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.2",
+    "vitest": "^3.2.4"
   }
 }
