@@ -101,15 +101,15 @@ export const ImportSpaceToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof ImportSpaceToolParams>;
 
-// Get management token from the same config used by other MCP tools
-const clientConfig = getDefaultClientConfig();
-const managementToken = clientConfig.accessToken;
-
-if (!managementToken) {
-  throw new Error('Contentful management token is not configured');
-}
-
 async function tool(args: Params) {
+  // Get management token from the same config used by other MCP tools
+  const clientConfig = getDefaultClientConfig();
+  const managementToken = clientConfig.accessToken;
+
+  if (!managementToken) {
+    throw new Error('Contentful management token is not configured');
+  }
+
   // Consolidate args with defaults and additional required fields
   const importOptions = {
     ...args,
