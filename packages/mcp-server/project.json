@@ -27,6 +27,7 @@
     },
     "test:run": {
       "executor": "nx:run-commands",
+      "dependsOn": ["^build"],
       "options": {
         "command": "vitest run",
         "cwd": "packages/mcp-server"

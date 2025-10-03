@@ -4,7 +4,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { registerAllPrompts } from './prompts/register.js';
 import { registerAllResources } from './resources/register.js';
 import { registerAllTools } from './tools/register.js';
-import { VERSION } from './config/version.js';
+import { getVersion } from './getVersion.js';
 
 if (process.env.NODE_ENV === 'development') {
   try {
@@ -21,7 +21,7 @@ const MCP_SERVER_NAME = '@contentful/mcp-server';
 async function initializeServer() {
   const server = new McpServer({
     name: MCP_SERVER_NAME,
-    version: VERSION,
+    version: getVersion(),
   });
 
   registerAllTools(server);
