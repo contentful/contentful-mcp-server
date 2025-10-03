@@ -43,7 +43,7 @@
     "directory": "packages/mcp-server"
   },
   "dependencies": {
-    "@contentful/mcp-tools": "*",
+    "@contentful/mcp-tools": "^0.0.1",
     "@modelcontextprotocol/sdk": "^1.17.0"
   },
   "devDependencies": {
