@@ -19,7 +19,7 @@ import {
   DeleteConceptSchemeToolParams,
 } from './deleteConceptScheme.js';
 
-export const taxonomyTools = {
+export const conceptSchemeTools = {
   createConceptScheme: {
     title: 'create_concept_scheme',
     description:

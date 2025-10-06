@@ -50,6 +50,12 @@ export const UpdateConceptSchemeToolParams = z.object({
     .array(TaxonomyConceptLinkSchema)
     .optional()
     .describe('Links to top-level concepts in this scheme'),
+  addConcept: z
+    .string()
+    .optional()
+    .describe(
+      'ID of a concept to add to this scheme (adds to both concepts and topConcepts)',
+    ),
 });
 
 type Params = z.infer<typeof UpdateConceptSchemeToolParams>;
@@ -102,6 +108,29 @@ async function tool(args: Params) {
       op: args.uri === null ? 'remove' : 'replace',
       path: '/uri',
       ...(args.uri !== null && { value: args.uri }),
+    });
+  }
+
+  // Handle adding a concept to the scheme
+  if (args.addConcept) {
+    const conceptLink = {
+      sys: {
+        id: args.addConcept,
+        linkType: 'TaxonomyConcept',
+        type: 'Link',
+      },
+    };
+    // Add to concepts array
+    patchOperations.push({
+      op: 'add',
+      path: '/concepts/-',
+      value: conceptLink,
+    });
+    // Add to topConcepts array
+    patchOperations.push({
+      op: 'add',
+      path: '/topConcepts/-',
+      value: conceptLink,
     });
   }
 
