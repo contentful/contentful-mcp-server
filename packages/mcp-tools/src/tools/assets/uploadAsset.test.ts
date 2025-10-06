@@ -183,4 +183,121 @@ describe('uploadAsset', () => {
       ],
     });
   });
+
+  it('should upload an asset with taxonomy concepts metadata', async () => {
+    const testArgs = {
+      ...mockArgs,
+      title: 'Asset with Concepts',
+      file: mockFile,
+      metadata: {
+        tags: [],
+        concepts: [
+          {
+            sys: {
+              type: 'Link' as const,
+              linkType: 'TaxonomyConcept' as const,
+              id: 'concept1',
+            },
+          },
+        ],
+      },
+    };
+
+    mockAssetCreate.mockResolvedValue(mockAsset);
+    mockAssetProcessForAllLocales.mockResolvedValue(mockProcessedAsset);
+
+    await uploadAssetTool(testArgs);
+
+    expect(mockAssetCreate).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        metadata: testArgs.metadata,
+      }),
+    );
+  });
+
+  it('should upload an asset with both tags and concepts', async () => {
+    const testArgs = {
+      ...mockArgs,
+      title: 'Asset with Tags and Concepts',
+      file: mockFile,
+      metadata: {
+        tags: [
+          {
+            sys: {
+              type: 'Link' as const,
+              linkType: 'Tag' as const,
+              id: 'tag1',
+            },
+          },
+        ],
+        concepts: [
+          {
+            sys: {
+              type: 'Link' as const,
+              linkType: 'TaxonomyConcept' as const,
+              id: 'concept1',
+            },
+          },
+          {
+            sys: {
+              type: 'Link' as const,
+              linkType: 'TaxonomyConcept' as const,
+              id: 'concept2',
+            },
+          },
+        ],
+      },
+    };
+
+    mockAssetCreate.mockResolvedValue(mockAsset);
+    mockAssetProcessForAllLocales.mockResolvedValue(mockProcessedAsset);
+
+    const result = await uploadAssetTool(testArgs);
+
+    const expectedResponse = formatResponse('Asset uploaded successfully', {
+      asset: mockProcessedAsset,
+    });
+    expect(result).toEqual({
+      content: [
+        {
+          type: 'text',
+          text: expectedResponse,
+        },
+      ],
+    });
+
+    expect(mockAssetCreate).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        metadata: {
+          tags: [
+            {
+              sys: {
+                type: 'Link',
+                linkType: 'Tag',
+                id: 'tag1',
+              },
+            },
+          ],
+          concepts: [
+            {
+              sys: {
+                type: 'Link',
+                linkType: 'TaxonomyConcept',
+                id: 'concept1',
+              },
+            },
+            {
+              sys: {
+                type: 'Link',
+                linkType: 'TaxonomyConcept',
+                id: 'concept2',
+              },
+            },
+          ],
+        },
+      }),
+    );
+  });
 });

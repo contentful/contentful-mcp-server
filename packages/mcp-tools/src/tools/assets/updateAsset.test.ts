@@ -73,6 +73,7 @@ describe('updateAsset', () => {
         },
         metadata: {
           tags: [],
+          concepts: [],
         },
       },
     );
@@ -94,6 +95,7 @@ describe('updateAsset', () => {
             },
           },
         ],
+        concepts: [],
       },
     };
 
@@ -109,6 +111,7 @@ describe('updateAsset', () => {
             },
           },
         ],
+        concepts: [],
       },
     };
 
@@ -135,6 +138,7 @@ describe('updateAsset', () => {
             },
           },
         ],
+        concepts: [],
       },
     };
 
@@ -163,6 +167,7 @@ describe('updateAsset', () => {
               },
             },
           ],
+          concepts: [],
         },
       }),
     );
@@ -278,6 +283,205 @@ describe('updateAsset', () => {
       expect.objectContaining({
         metadata: {
           tags: [],
+          concepts: [],
+        },
+      }),
+    );
+  });
+
+  it('should update an asset with new taxonomy concepts', async () => {
+    const testArgs = {
+      ...mockArgs,
+      fields: {
+        title: { 'en-US': 'Asset with Concepts' },
+      },
+      metadata: {
+        tags: [],
+        concepts: [
+          {
+            sys: {
+              type: 'Link' as const,
+              linkType: 'TaxonomyConcept' as const,
+              id: 'concept-1',
+            },
+          },
+        ],
+      },
+    };
+
+    const assetWithExistingConcepts = {
+      ...mockAsset,
+      metadata: {
+        tags: [],
+        concepts: [
+          {
+            sys: {
+              type: 'Link' as const,
+              linkType: 'TaxonomyConcept' as const,
+              id: 'existing-concept',
+            },
+          },
+        ],
+      },
+    };
+
+    const updatedAsset = {
+      ...assetWithExistingConcepts,
+      fields: {
+        ...assetWithExistingConcepts.fields,
+        title: { 'en-US': 'Asset with Concepts' },
+      },
+      metadata: {
+        tags: [],
+        concepts: [
+          {
+            sys: {
+              type: 'Link' as const,
+              linkType: 'TaxonomyConcept' as const,
+              id: 'existing-concept',
+            },
+          },
+          {
+            sys: {
+              type: 'Link' as const,
+              linkType: 'TaxonomyConcept' as const,
+              id: 'concept-1',
+            },
+          },
+        ],
+      },
+    };
+
+    mockAssetGet.mockResolvedValue(assetWithExistingConcepts);
+    mockAssetUpdate.mockResolvedValue(updatedAsset);
+
+    await updateAssetTool(testArgs);
+
+    expect(mockAssetUpdate).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        metadata: {
+          tags: [],
+          concepts: [
+            {
+              sys: {
+                type: 'Link',
+                linkType: 'TaxonomyConcept',
+                id: 'existing-concept',
+              },
+            },
+            {
+              sys: {
+                type: 'Link',
+                linkType: 'TaxonomyConcept',
+                id: 'concept-1',
+              },
+            },
+          ],
+        },
+      }),
+    );
+  });
+
+  it('should update an asset with both tags and concepts', async () => {
+    const testArgs = {
+      ...mockArgs,
+      fields: {
+        title: { 'en-US': 'Asset with Tags and Concepts' },
+      },
+      metadata: {
+        tags: [
+          {
+            sys: {
+              type: 'Link' as const,
+              linkType: 'Tag' as const,
+              id: 'new-tag',
+            },
+          },
+        ],
+        concepts: [
+          {
+            sys: {
+              type: 'Link' as const,
+              linkType: 'TaxonomyConcept' as const,
+              id: 'new-concept',
+            },
+          },
+        ],
+      },
+    };
+
+    const assetWithExistingMetadata = {
+      ...mockAsset,
+      metadata: {
+        tags: [
+          {
+            sys: {
+              type: 'Link' as const,
+              linkType: 'Tag' as const,
+              id: 'existing-tag',
+            },
+          },
+        ],
+        concepts: [
+          {
+            sys: {
+              type: 'Link' as const,
+              linkType: 'TaxonomyConcept' as const,
+              id: 'existing-concept',
+            },
+          },
+        ],
+      },
+    };
+
+    mockAssetGet.mockResolvedValue(assetWithExistingMetadata);
+    mockAssetUpdate.mockResolvedValue({
+      ...assetWithExistingMetadata,
+      fields: {
+        ...assetWithExistingMetadata.fields,
+        title: { 'en-US': 'Asset with Tags and Concepts' },
+      },
+    });
+
+    await updateAssetTool(testArgs);
+
+    expect(mockAssetUpdate).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({
+        metadata: {
+          tags: [
+            {
+              sys: {
+                type: 'Link',
+                linkType: 'Tag',
+                id: 'existing-tag',
+              },
+            },
+            {
+              sys: {
+                type: 'Link',
+                linkType: 'Tag',
+                id: 'new-tag',
+              },
+            },
+          ],
+          concepts: [
+            {
+              sys: {
+                type: 'Link',
+                linkType: 'TaxonomyConcept',
+                id: 'existing-concept',
+              },
+            },
+            {
+              sys: {
+                type: 'Link',
+                linkType: 'TaxonomyConcept',
+                id: 'new-concept',
+              },
+            },
+          ],
         },
       }),
     );

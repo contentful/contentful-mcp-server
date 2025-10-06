@@ -100,6 +100,10 @@ export const mockAsset = {
       },
     },
   },
+  metadata: {
+    tags: [],
+    concepts: [],
+  },
 };
 
 /**
@@ -167,6 +171,60 @@ export const mockProcessedAsset = {
         ...mockAsset.fields.file['en-US'],
         url: 'https://images.ctfassets.net/processed/test-image.jpg',
       },
+    },
+  },
+};
+
+/**
+ * Mock taxonomy concepts for testing
+ */
+export const mockTaxonomyConcepts = {
+  concept1: {
+    sys: {
+      type: 'Link' as const,
+      linkType: 'TaxonomyConcept' as const,
+      id: 'concept-1',
+    },
+  },
+  concept2: {
+    sys: {
+      type: 'Link' as const,
+      linkType: 'TaxonomyConcept' as const,
+      id: 'concept-2',
+    },
+  },
+  existingConcept: {
+    sys: {
+      type: 'Link' as const,
+      linkType: 'TaxonomyConcept' as const,
+      id: 'existing-concept',
+    },
+  },
+};
+
+/**
+ * Mock tags for testing
+ */
+export const mockTags = {
+  tag1: {
+    sys: {
+      type: 'Link' as const,
+      linkType: 'Tag' as const,
+      id: 'tag-1',
+    },
+  },
+  tag2: {
+    sys: {
+      type: 'Link' as const,
+      linkType: 'Tag' as const,
+      id: 'tag-2',
+    },
+  },
+  existingTag: {
+    sys: {
+      type: 'Link' as const,
+      linkType: 'Tag' as const,
+      id: 'existing-tag',
     },
   },
 };
