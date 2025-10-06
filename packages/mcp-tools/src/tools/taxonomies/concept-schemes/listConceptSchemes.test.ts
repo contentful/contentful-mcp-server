@@ -3,9 +3,10 @@ import {
   testConceptScheme1,
   testConceptScheme2,
   mockConceptSchemeGetMany,
+  mockCreateClient,
 } from './mockClient.js';
 import { listConceptSchemesTool } from './listConceptSchemes.js';
-import { createToolClient } from '../../../utils/tools.js';
+import { getDefaultClientConfig } from '../../../config/contentful.js';
 
 const mockConceptSchemesResponse = {
   sys: {
@@ -20,6 +21,7 @@ const mockConceptSchemesResponse = {
 describe('listConceptSchemes', () => {
   beforeEach(() => {
     mockConceptSchemeGetMany.mockClear();
+    mockCreateClient.mockClear();
   });
 
   const testArgs = {
@@ -31,9 +33,10 @@ describe('listConceptSchemes', () => {
 
     const result = await listConceptSchemesTool(testArgs);
 
-    expect(createToolClient).toHaveBeenCalledWith({
-      spaceId: 'dummy',
-      environmentId: 'dummy',
+    const clientConfig = getDefaultClientConfig();
+    delete clientConfig.space;
+    expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
+      type: 'plain',
     });
 
     expect(mockConceptSchemeGetMany).toHaveBeenCalledWith({

@@ -1,12 +1,13 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { mockConceptSchemeDelete } from './mockClient.js';
+import { mockConceptSchemeDelete, mockCreateClient } from './mockClient.js';
 import { deleteConceptSchemeTool } from './deleteConceptScheme.js';
-import { createToolClient } from '../../../utils/tools.js';
+import { getDefaultClientConfig } from '../../../config/contentful.js';
 import { formatResponse } from '../../../utils/formatters.js';
 
 describe('deleteConceptScheme', () => {
   beforeEach(() => {
     mockConceptSchemeDelete.mockClear();
+    mockCreateClient.mockClear();
   });
 
   const testArgs = {
@@ -20,9 +21,10 @@ describe('deleteConceptScheme', () => {
 
     const result = await deleteConceptSchemeTool(testArgs);
 
-    expect(createToolClient).toHaveBeenCalledWith({
-      spaceId: 'dummy',
-      environmentId: 'dummy',
+    const clientConfig = getDefaultClientConfig();
+    delete clientConfig.space;
+    expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
+      type: 'plain',
     });
 
     expect(mockConceptSchemeDelete).toHaveBeenCalledWith({
