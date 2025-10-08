@@ -6,36 +6,29 @@ import {
 import ctfl from 'contentful-management';
 import { getDefaultClientConfig } from '../../../config/contentful.js';
 
-export const GetConceptSchemeToolParams = z.object({
+export const GetConceptToolParams = z.object({
   organizationId: z.string().describe('The ID of the Contentful organization'),
-  conceptSchemeId: z
-    .string()
-    .describe('The ID of the concept scheme to retrieve'),
+  conceptId: z.string().describe('The ID of the concept to retrieve'),
 });
 
-type Params = z.infer<typeof GetConceptSchemeToolParams>;
+type Params = z.infer<typeof GetConceptToolParams>;
 
 async function tool(args: Params) {
-  // Create a client without space-specific configuration for concept scheme operations
+  // Create a client without space-specific configuration for concept operations
   const clientConfig = getDefaultClientConfig();
   // Remove space from config since we're working at the organization level
   delete clientConfig.space;
   const contentfulClient = ctfl.createClient(clientConfig, { type: 'plain' });
 
-  const params = {
+  const concept = await contentfulClient.concept.get({
     organizationId: args.organizationId,
-    conceptSchemeId: args.conceptSchemeId,
-  };
-
-  // Get the concept scheme
-  const conceptScheme = await contentfulClient.conceptScheme.get(params);
-
-  return createSuccessResponse('Concept scheme retrieved successfully', {
-    conceptScheme,
+    conceptId: args.conceptId,
   });
+
+  return createSuccessResponse('Concept retrieved successfully', { concept });
 }
 
-export const getConceptSchemeTool = withErrorHandling(
+export const getConceptTool = withErrorHandling(
   tool,
-  'Error retrieving concept scheme',
+  'Error retrieving concept',
 );

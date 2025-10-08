@@ -3,9 +3,10 @@ import {
   testConceptScheme,
   mockConceptSchemeCreate,
   mockConceptSchemeCreateWithId,
+  mockCreateClient,
 } from './mockClient.js';
 import { createConceptSchemeTool } from './createConceptScheme.js';
-import { createToolClient } from '../../../utils/tools.js';
+import { getDefaultClientConfig } from '../../../config/contentful.js';
 import { formatResponse } from '../../../utils/formatters.js';
 
 describe('createConceptScheme', () => {
@@ -26,9 +27,10 @@ describe('createConceptScheme', () => {
 
     const result = await createConceptSchemeTool(testArgs);
 
-    expect(createToolClient).toHaveBeenCalledWith({
-      spaceId: 'dummy',
-      environmentId: 'dummy',
+    const clientConfig = getDefaultClientConfig();
+    delete clientConfig.space;
+    expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
+      type: 'plain',
     });
     expect(mockConceptSchemeCreate).toHaveBeenCalledWith(
       {

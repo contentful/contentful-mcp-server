@@ -3,14 +3,16 @@ import {
   testConceptScheme,
   testUpdatedConceptScheme,
   mockConceptSchemeUpdate,
+  mockCreateClient,
 } from './mockClient.js';
 import { updateConceptSchemeTool } from './updateConceptScheme.js';
-import { createToolClient } from '../../../utils/tools.js';
+import { getDefaultClientConfig } from '../../../config/contentful.js';
 import { formatResponse } from '../../../utils/formatters.js';
 
 describe('updateConceptScheme', () => {
   beforeEach(() => {
     mockConceptSchemeUpdate.mockClear();
+    mockCreateClient.mockClear();
   });
 
   const testArgs = {
@@ -27,9 +29,10 @@ describe('updateConceptScheme', () => {
 
     const result = await updateConceptSchemeTool(testArgs);
 
-    expect(createToolClient).toHaveBeenCalledWith({
-      spaceId: 'dummy',
-      environmentId: 'dummy',
+    const clientConfig = getDefaultClientConfig();
+    delete clientConfig.space;
+    expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
+      type: 'plain',
     });
 
     expect(mockConceptSchemeUpdate).toHaveBeenCalledWith(

@@ -6,36 +6,34 @@ import {
 import ctfl from 'contentful-management';
 import { getDefaultClientConfig } from '../../../config/contentful.js';
 
-export const GetConceptSchemeToolParams = z.object({
+export const DeleteConceptToolParams = z.object({
   organizationId: z.string().describe('The ID of the Contentful organization'),
-  conceptSchemeId: z
-    .string()
-    .describe('The ID of the concept scheme to retrieve'),
+  conceptId: z.string().describe('The ID of the concept to delete'),
+  version: z.number().describe('The version of the concept to delete'),
 });
 
-type Params = z.infer<typeof GetConceptSchemeToolParams>;
+type Params = z.infer<typeof DeleteConceptToolParams>;
 
 async function tool(args: Params) {
-  // Create a client without space-specific configuration for concept scheme operations
+  // Create a client without space-specific configuration for concept operations
   const clientConfig = getDefaultClientConfig();
   // Remove space from config since we're working at the organization level
   delete clientConfig.space;
   const contentfulClient = ctfl.createClient(clientConfig, { type: 'plain' });
 
-  const params = {
+  // Delete the concept
+  await contentfulClient.concept.delete({
     organizationId: args.organizationId,
-    conceptSchemeId: args.conceptSchemeId,
-  };
+    conceptId: args.conceptId,
+    version: args.version,
+  });
 
-  // Get the concept scheme
-  const conceptScheme = await contentfulClient.conceptScheme.get(params);
-
-  return createSuccessResponse('Concept scheme retrieved successfully', {
-    conceptScheme,
+  return createSuccessResponse('Concept deleted successfully', {
+    conceptId: args.conceptId,
   });
 }
 
-export const getConceptSchemeTool = withErrorHandling(
+export const deleteConceptTool = withErrorHandling(
   tool,
-  'Error retrieving concept scheme',
+  'Error deleting concept',
 );

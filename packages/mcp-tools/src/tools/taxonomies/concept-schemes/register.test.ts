@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { taxonomyTools } from './register.js';
+import { conceptSchemeTools } from './register.js';
 import {
   createConceptSchemeTool,
   CreateConceptSchemeToolParams,
@@ -21,14 +21,14 @@ import {
   DeleteConceptSchemeToolParams,
 } from './deleteConceptScheme.js';
 
-describe('taxonomy tools collection', () => {
-  it('should export taxonomyTools collection with correct structure', () => {
-    expect(taxonomyTools).toBeDefined();
-    expect(Object.keys(taxonomyTools)).toHaveLength(5);
+describe('concept scheme tools collection', () => {
+  it('should export conceptSchemeTools collection with correct structure', () => {
+    expect(conceptSchemeTools).toBeDefined();
+    expect(Object.keys(conceptSchemeTools)).toHaveLength(5);
   });
 
   it('should have createConceptScheme tool with correct properties', () => {
-    const { createConceptScheme } = taxonomyTools;
+    const { createConceptScheme } = conceptSchemeTools;
 
     expect(createConceptScheme.title).toBe('create_concept_scheme');
     expect(createConceptScheme.description).toBe(
@@ -47,7 +47,7 @@ describe('taxonomy tools collection', () => {
   });
 
   it('should have getConceptScheme tool with correct properties', () => {
-    const { getConceptScheme } = taxonomyTools;
+    const { getConceptScheme } = conceptSchemeTools;
 
     expect(getConceptScheme.title).toBe('get_concept_scheme');
     expect(getConceptScheme.description).toBe(
@@ -64,7 +64,7 @@ describe('taxonomy tools collection', () => {
   });
 
   it('should have listConceptSchemes tool with correct properties', () => {
-    const { listConceptSchemes } = taxonomyTools;
+    const { listConceptSchemes } = conceptSchemeTools;
 
     expect(listConceptSchemes.title).toBe('list_concept_schemes');
     expect(listConceptSchemes.description).toBe(
@@ -81,7 +81,7 @@ describe('taxonomy tools collection', () => {
   });
 
   it('should have updateConceptScheme tool with correct properties', () => {
-    const { updateConceptScheme } = taxonomyTools;
+    const { updateConceptScheme } = conceptSchemeTools;
 
     expect(updateConceptScheme.title).toBe('update_concept_scheme');
     expect(updateConceptScheme.description).toBe(
@@ -100,7 +100,7 @@ describe('taxonomy tools collection', () => {
   });
 
   it('should have deleteConceptScheme tool with correct properties', () => {
-    const { deleteConceptScheme } = taxonomyTools;
+    const { deleteConceptScheme } = conceptSchemeTools;
 
     expect(deleteConceptScheme.title).toBe('delete_concept_scheme');
     expect(deleteConceptScheme.description).toBe(

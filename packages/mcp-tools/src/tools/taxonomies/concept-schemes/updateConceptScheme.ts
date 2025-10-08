@@ -3,7 +3,8 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../../utils/response.js';
-import { createToolClient } from '../../../utils/tools.js';
+import ctfl from 'contentful-management';
+import { getDefaultClientConfig } from '../../../config/contentful.js';
 import { TaxonomyConceptLinkSchema } from '../../../types/conceptPayloadTypes.js';
 
 export const UpdateConceptSchemeToolParams = z.object({
@@ -49,15 +50,22 @@ export const UpdateConceptSchemeToolParams = z.object({
     .array(TaxonomyConceptLinkSchema)
     .optional()
     .describe('Links to top-level concepts in this scheme'),
+  addConcept: z
+    .string()
+    .optional()
+    .describe(
+      'ID of a concept to add to this scheme (adds to both concepts and topConcepts)',
+    ),
 });
 
 type Params = z.infer<typeof UpdateConceptSchemeToolParams>;
 
 async function tool(args: Params) {
-  const contentfulClient = createToolClient({
-    spaceId: 'dummy', // Not needed for concept scheme operations but required by BaseToolSchema
-    environmentId: 'dummy', // Not needed for concept scheme operations but required by BaseToolSchema
-  });
+  // Create a client without space-specific configuration for concept scheme operations
+  const clientConfig = getDefaultClientConfig();
+  // Remove space from config since we're working at the organization level
+  delete clientConfig.space;
+  const contentfulClient = ctfl.createClient(clientConfig, { type: 'plain' });
 
   const params = {
     organizationId: args.organizationId,
@@ -100,6 +108,29 @@ async function tool(args: Params) {
       op: args.uri === null ? 'remove' : 'replace',
       path: '/uri',
       ...(args.uri !== null && { value: args.uri }),
+    });
+  }
+
+  // Handle adding a concept to the scheme
+  if (args.addConcept) {
+    const conceptLink = {
+      sys: {
+        id: args.addConcept,
+        linkType: 'TaxonomyConcept',
+        type: 'Link',
+      },
+    };
+    // Add to concepts array
+    patchOperations.push({
+      op: 'add',
+      path: '/concepts/-',
+      value: conceptLink,
+    });
+    // Add to topConcepts array
+    patchOperations.push({
+      op: 'add',
+      path: '/topConcepts/-',
+      value: conceptLink,
     });
   }
 
