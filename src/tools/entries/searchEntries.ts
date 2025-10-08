@@ -5,6 +5,7 @@ import {
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
 import { summarizeData } from '../../utils/summarizer.js';
+import { searchLimit } from '../../utils/limits.js';
 
 export const SearchEntriesToolParams = BaseToolSchema.extend({
   query: z
@@ -35,7 +36,7 @@ export const SearchEntriesToolParams = BaseToolSchema.extend({
         .describe('Skip this many entries for pagination'),
       order: z.string().optional().describe('Order entries by this field'),
 
-      // Full-text search (like ivo version)
+      // Full-text search
       query: z
         .string()
         .optional()
@@ -121,13 +122,13 @@ async function tool(args: Params) {
     ...params,
     query: {
       ...args.query,
-      limit: Math.min(args.query.limit || 10, 100), // Allow up to 100 results, default 10
+      limit: searchLimit(args.query.limit),
       skip: args.query.skip || 0,
     },
   });
 
   const summarized = summarizeData(entries, {
-    maxItems: Math.min(args.query.limit || 10, 100), // Match the query limit
+    maxItems: searchLimit(args.query.limit),
     remainingMessage:
       'To see more entries, please ask me to retrieve the next page.',
   });
