@@ -73,3 +73,32 @@ export const EntryMetadataSchema = z
       .optional(),
   })
   .optional();
+
+/**
+ * Schema for asset type metadata
+ * Matches Contentful's asset metadata structure with tags and taxonomy concepts
+ */
+export const AssetMetadataSchema = z
+  .object({
+    tags: z.array(
+      z.object({
+        sys: z.object({
+          type: z.literal('Link'),
+          linkType: z.literal('Tag'),
+          id: z.string(),
+        }),
+      }),
+    ),
+    concepts: z
+      .array(
+        z.object({
+          sys: z.object({
+            type: z.literal('Link'),
+            linkType: z.literal('TaxonomyConcept'),
+            id: z.string(),
+          }),
+        }),
+      )
+      .optional(),
+  })
+  .optional();

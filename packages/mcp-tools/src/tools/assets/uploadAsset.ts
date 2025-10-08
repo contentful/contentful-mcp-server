@@ -4,6 +4,7 @@ import {
   withErrorHandling,
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import { AssetMetadataSchema } from '../../types/taxonomySchema.js';
 
 const FileSchema = z.object({
   fileName: z.string().describe('The name of the file'),
@@ -15,19 +16,7 @@ export const UploadAssetToolParams = BaseToolSchema.extend({
   title: z.string().describe('The title of the asset'),
   description: z.string().optional().describe('The description of the asset'),
   file: FileSchema.describe('The file information for the asset'),
-  metadata: z
-    .object({
-      tags: z.array(
-        z.object({
-          sys: z.object({
-            type: z.literal('Link'),
-            linkType: z.literal('Tag'),
-            id: z.string(),
-          }),
-        }),
-      ),
-    })
-    .optional(),
+  metadata: AssetMetadataSchema,
 });
 
 type Params = z.infer<typeof UploadAssetToolParams>;

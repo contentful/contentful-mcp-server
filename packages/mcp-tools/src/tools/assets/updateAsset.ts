@@ -4,6 +4,7 @@ import {
   withErrorHandling,
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import { AssetMetadataSchema } from '../../types/taxonomySchema.js';
 
 export const UpdateAssetToolParams = BaseToolSchema.extend({
   assetId: z.string().describe('The ID of the asset to update'),
@@ -12,19 +13,7 @@ export const UpdateAssetToolParams = BaseToolSchema.extend({
     .describe(
       'The field values to update. Keys should be field IDs and values should be the field content. Will be merged with existing fields.',
     ),
-  metadata: z
-    .object({
-      tags: z.array(
-        z.object({
-          sys: z.object({
-            type: z.literal('Link'),
-            linkType: z.literal('Tag'),
-            id: z.string(),
-          }),
-        }),
-      ),
-    })
-    .optional(),
+  metadata: AssetMetadataSchema,
 });
 
 type Params = z.infer<typeof UpdateAssetToolParams>;
@@ -40,14 +29,23 @@ async function tool(args: Params) {
 
   // Get existing asset, merge fields, and update
   const existingAsset = await contentfulClient.asset.get(params);
+
+  const allTags = [
+    ...(existingAsset.metadata?.tags || []),
+    ...(args.metadata?.tags || []),
+  ];
+
+  const allConcepts = [
+    ...(existingAsset.metadata?.concepts || []),
+    ...(args.metadata?.concepts || []),
+  ];
+
   const updatedAsset = await contentfulClient.asset.update(params, {
     ...existingAsset,
     fields: { ...existingAsset.fields, ...args.fields },
     metadata: {
-      tags: [
-        ...(existingAsset.metadata?.tags || []),
-        ...(args.metadata?.tags || []),
-      ],
+      tags: allTags,
+      concepts: allConcepts,
     },
   });
 
