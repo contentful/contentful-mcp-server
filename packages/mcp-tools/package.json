@@ -1,7 +1,6 @@
 {
   "name": "@contentful/mcp-tools",
   "version": "0.0.1",
-  "private": true,
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -14,6 +13,31 @@
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     }
+  },
+  "files": [
+    "dist",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "prebuild": "npm run clean",
+    "build": "tsup",
+    "clean": "rimraf dist",
+    "dev": "tsup --watch",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "format": "prettier --check \"**/*.{ts,js,json,md}\"",
+    "format:fix": "prettier --write \"**/*.{ts,js,json,md}\"",
+    "lint": "eslint --ext .ts,.js .",
+    "lint:fix": "eslint --ext .ts,.js . --fix"
+  },
+  "author": "Contentful GmbH",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/contentful/contentful-mcp-server.git",
+    "directory": "packages/mcp-tools"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.17.0",
@@ -34,17 +58,5 @@
     "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
     "typescript": "^5.8.2"
-  },
-  "scripts": {
-    "prebuild": "npm run clean",
-    "build": "tsup",
-    "clean": "rimraf dist",
-    "dev": "tsup --watch",
-    "test": "vitest",
-    "test:run": "vitest run",
-    "format": "prettier --check \"**/*.{ts,js,json,md}\"",
-    "format:fix": "prettier --write \"**/*.{ts,js,json,md}\"",
-    "lint": "eslint --ext .ts,.js .",
-    "lint:fix": "eslint --ext .ts,.js . --fix"
   }
 }
