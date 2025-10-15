@@ -44,15 +44,15 @@
   },
   "dependencies": {
     "@contentful/mcp-tools": "^0.0.1",
-    "@modelcontextprotocol/sdk": "^1.17.0"
+    "@modelcontextprotocol/sdk": "^1.17.0",
+    "tsup": "^8.5.0",
+    "vitest": "^3.2.4"
   },
   "devDependencies": {
     "@types/node": "^22.16.5",
     "eslint": "^9.35.0",
     "prettier": "^3.6.2",
     "rimraf": "^6.0.1",
-    "tsup": "^8.5.0",
-    "typescript": "^5.8.2",
-    "vitest": "^3.2.4"
+    "typescript": "^5.8.2"
   }
 }
