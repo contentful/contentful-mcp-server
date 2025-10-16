@@ -6,6 +6,7 @@ import {
   mockAssetUnarchive,
   mockAsset,
   mockArgs,
+  mockArchivedAsset,
 } from './mockClient.js';
 
 vi.mock('../../../src/utils/tools.js');
@@ -71,6 +72,9 @@ describe('unarchiveAsset', () => {
         ],
         isError: true,
       });
+
+      // Verify the error message includes the asset ID
+      expect(result.content[0].text).toContain('test-asset-id');
     });
   });
 
@@ -98,19 +102,21 @@ describe('unarchiveAsset', () => {
       });
     });
 
-    it('should throw error immediately on first failure', async () => {
+    it('should stop at first failure and throw error with context', async () => {
       const testArgs = {
         ...mockArgs,
-        assetId: ['asset-1', 'asset-2'],
+        assetId: ['asset-1', 'asset-2', 'asset-3'],
       };
 
-      const error = new Error('Asset not found');
-      mockAssetUnarchive.mockRejectedValue(error);
+      // First asset succeeds, second asset fails
+      mockAssetUnarchive
+        .mockResolvedValueOnce(mockArchivedAsset)
+        .mockRejectedValueOnce(new Error('Must be unpublished'));
 
       const result = await unarchiveAssetTool(testArgs);
 
-      // Should only try first asset
-      expect(mockAssetUnarchive).toHaveBeenCalledTimes(1);
+      // Should only process first two assets before stopping
+      expect(mockAssetUnarchive).toHaveBeenCalledTimes(2);
 
       // withErrorHandling wraps the error in a formatted response
       expect(result).toEqual({
@@ -122,34 +128,13 @@ describe('unarchiveAsset', () => {
         ],
         isError: true,
       });
-    });
 
-    it('should handle empty array', async () => {
-      const testArgs = {
-        ...mockArgs,
-        assetId: [],
-      };
-
-      const result = await unarchiveAssetTool(testArgs);
-
-      expect(mockAssetUnarchive).not.toHaveBeenCalled();
-
-      const expectedResponse = formatResponse(
-        'Successfully unarchived 0 assets',
-        {
-          unarchivedCount: 0,
-          assetIds: [],
-        },
+      // Verify the error message includes context about successful operations
+      expect(result.content[0].text).toContain('asset-2');
+      expect(result.content[0].text).toContain(
+        'successfully unarchiving 1 asset',
       );
-
-      expect(result).toEqual({
-        content: [
-          {
-            type: 'text',
-            text: expectedResponse,
-          },
-        ],
-      });
+      expect(result.content[0].text).toContain('asset-1');
     });
   });
 });

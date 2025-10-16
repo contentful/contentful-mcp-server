@@ -71,6 +71,9 @@ describe('archiveAsset', () => {
         ],
         isError: true,
       });
+
+      // Verify the error message includes the asset ID
+      expect(result.content[0].text).toContain('test-asset-id');
     });
   });
 
@@ -98,7 +101,7 @@ describe('archiveAsset', () => {
       });
     });
 
-    it('should stop at first failure and throw error', async () => {
+    it('should stop at first failure and throw error with context', async () => {
       const testArgs = {
         ...mockArgs,
         assetId: ['asset-1', 'asset-2', 'asset-3'],
@@ -124,6 +127,13 @@ describe('archiveAsset', () => {
         ],
         isError: true,
       });
+
+      // Verify the error message includes context about successful operations
+      expect(result.content[0].text).toContain('asset-2');
+      expect(result.content[0].text).toContain(
+        'successfully archiving 1 asset',
+      );
+      expect(result.content[0].text).toContain('asset-1');
     });
   });
 });

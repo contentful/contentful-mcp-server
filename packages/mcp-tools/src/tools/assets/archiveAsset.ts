@@ -26,15 +26,29 @@ async function tool(args: Params) {
   // Normalize input to always be an array
   const assetIds = Array.isArray(args.assetId) ? args.assetId : [args.assetId];
 
+  // Track successfully archived assets
+  const successfullyArchived: string[] = [];
+
   // Process each asset sequentially, stopping at first failure
   for (const assetId of assetIds) {
-    const params = {
-      ...baseParams,
-      assetId,
-    };
+    try {
+      const params = {
+        ...baseParams,
+        assetId,
+      };
 
-    // Archive the asset - will throw on error
-    await contentfulClient.asset.archive(params);
+      // Archive the asset - will throw on error
+      await contentfulClient.asset.archive(params);
+      successfullyArchived.push(assetId);
+    } catch (error) {
+      // Enhance error with context about successful operations
+      const errorMessage =
+        successfullyArchived.length > 0
+          ? `Failed to archive asset '${assetId}' after successfully archiving ${successfullyArchived.length} asset(s): [${successfullyArchived.join(', ')}]. Original error: ${error instanceof Error ? error.message : String(error)}`
+          : `Failed to archive asset '${assetId}': ${error instanceof Error ? error.message : String(error)}`;
+
+      throw new Error(errorMessage);
+    }
   }
 
   if (assetIds.length === 1) {

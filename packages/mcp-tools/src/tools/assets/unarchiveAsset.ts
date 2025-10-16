@@ -26,15 +26,29 @@ async function tool(args: Params) {
   // Normalize input to always be an array
   const assetIds = Array.isArray(args.assetId) ? args.assetId : [args.assetId];
 
+  // Track successfully unarchived assets
+  const successfullyUnarchived: string[] = [];
+
   // Process each asset sequentially, stopping at first failure
   for (const assetId of assetIds) {
-    const params = {
-      ...baseParams,
-      assetId,
-    };
+    try {
+      const params = {
+        ...baseParams,
+        assetId,
+      };
 
-    // Unarchive the asset - will throw on error
-    await contentfulClient.asset.unarchive(params);
+      // Unarchive the asset - will throw on error
+      await contentfulClient.asset.unarchive(params);
+      successfullyUnarchived.push(assetId);
+    } catch (error) {
+      // Enhance error with context about successful operations
+      const errorMessage =
+        successfullyUnarchived.length > 0
+          ? `Failed to unarchive asset '${assetId}' after successfully unarchiving ${successfullyUnarchived.length} asset(s): [${successfullyUnarchived.join(', ')}]. Original error: ${error instanceof Error ? error.message : String(error)}`
+          : `Failed to unarchive asset '${assetId}': ${error instanceof Error ? error.message : String(error)}`;
+
+      throw new Error(errorMessage);
+    }
   }
 
   if (assetIds.length === 1) {
