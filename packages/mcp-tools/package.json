@@ -1,7 +1,6 @@
 {
   "name": "@contentful/mcp-tools",
   "version": "0.0.1",
-  "private": true,
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -15,26 +14,12 @@
       "default": "./dist/index.js"
     }
   },
-  "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.17.0",
-    "contentful-export": "^7.21.78",
-    "contentful-import": "^9.4.111",
-    "contentful-management": "^11.54.3",
-    "dotenv": "^16.4.7",
-    "fast-xml-parser": "^5.2.5",
-    "outdent": "^0.8.0",
-    "tsup": "^8.5.0",
-    "vitest": "^3.2.4",
-    "@contentful/rich-text-types": "^16.8.5",
-    "zod": "^3.25.76"
-  },
-  "devDependencies": {
-    "@types/node": "^22.16.5",
-    "eslint": "^9.35.0",
-    "prettier": "^3.6.2",
-    "rimraf": "^6.0.1",
-    "typescript": "^5.8.2"
-  },
+  "files": [
+    "dist",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "prebuild": "npm run clean",
     "build": "tsup",
@@ -46,5 +31,32 @@
     "format:fix": "prettier --write \"**/*.{ts,js,json,md}\"",
     "lint": "eslint --ext .ts,.js .",
     "lint:fix": "eslint --ext .ts,.js . --fix"
+  },
+  "author": "Contentful GmbH",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/contentful/contentful-mcp-server.git",
+    "directory": "packages/mcp-tools"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.17.0",
+    "contentful-export": "^7.21.78",
+    "contentful-import": "^9.4.111",
+    "contentful-management": "^11.54.3",
+    "dotenv": "^16.4.7",
+    "fast-xml-parser": "^5.2.5",
+    "outdent": "^0.8.0",
+    "@contentful/rich-text-types": "^16.8.5",
+    "tsup": "^8.5.0",
+    "vitest": "^3.2.4",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^22.16.5",
+    "eslint": "^9.35.0",
+    "prettier": "^3.6.2",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.8.2"
   }
 }

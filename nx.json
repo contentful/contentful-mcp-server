@@ -64,7 +64,7 @@
   ],
   "release": {
     "projectsRelationship": "independent",
-    "projects": ["packages/mcp-server"],
+    "projects": ["packages/mcp-server", "packages/mcp-tools"],
     "releaseTagPattern": "{projectName}@{version}",
     "version": {
       "conventionalCommits": true,
