@@ -68,22 +68,26 @@
     "releaseTagPattern": "{projectName}@{version}",
     "version": {
       "conventionalCommits": true,
-      "fallbackCurrentVersionResolver": "disk"
+      "fallbackCurrentVersionResolver": "disk",
+      "git": {
+        "commit": true,
+        "commitMessage": "chore(release): publish v{version} [skip ci]",
+        "tag": true,
+        "tagMessage": "Release {version}"
+      }
     },
     "changelog": {
       "automaticFromRef": true,
+      "git": {
+        "commit": true,
+        "tag": true
+      },
       "projectChangelogs": {
         "renderOptions": {
           "authors": false
         },
         "createRelease": "github"
       }
-    },
-    "git": {
-      "commit": true,
-      "commitMessage": "chore(release): publish v{version} [skip ci]",
-      "tag": true,
-      "tagMessage": "Release {version}"
     }
   }
 }
