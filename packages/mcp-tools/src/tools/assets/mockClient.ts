@@ -13,6 +13,8 @@ export const mockAssetUpdate = vi.fn();
 export const mockAssetDelete = vi.fn();
 export const mockAssetPublish = vi.fn();
 export const mockAssetUnpublish = vi.fn();
+export const mockAssetArchive = vi.fn();
+export const mockAssetUnarchive = vi.fn();
 export const mockAssetGetMany = vi.fn();
 export const mockAssetProcessForAllLocales = vi.fn();
 
@@ -32,6 +34,8 @@ export const mockClient = {
     delete: mockAssetDelete,
     publish: mockAssetPublish,
     unpublish: mockAssetUnpublish,
+    archive: mockAssetArchive,
+    unarchive: mockAssetUnarchive,
     getMany: mockAssetGetMany,
     processForAllLocales: mockAssetProcessForAllLocales,
   },
@@ -103,6 +107,18 @@ export const mockAsset = {
   metadata: {
     tags: [],
     concepts: [],
+  },
+};
+
+/**
+ * Mock archived asset object
+ */
+export const mockArchivedAsset = {
+  ...mockAsset,
+  sys: {
+    ...mockAsset.sys,
+    archivedVersion: 1,
+    archivedAt: '2023-01-02T00:00:00Z',
   },
 };
 
