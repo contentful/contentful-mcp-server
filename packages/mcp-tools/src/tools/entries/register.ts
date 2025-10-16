@@ -8,6 +8,11 @@ import {
   unpublishEntryTool,
   UnpublishEntryToolParams,
 } from './unpublishEntry.js';
+import { archiveEntryTool, ArchiveEntryToolParams } from './archiveEntry.js';
+import {
+  unarchiveEntryTool,
+  UnarchiveEntryToolParams,
+} from './unarchiveEntry.js';
 
 export const entryTools = {
   searchEntries: {
@@ -93,5 +98,31 @@ export const entryTools = {
       openWorldHint: false,
     },
     tool: unpublishEntryTool,
+  },
+  archiveEntry: {
+    title: 'archive_entry',
+    description:
+      'Archive an entry or multiple entries. Archives entries that are no longer needed but should be preserved. Entries must be unpublished before they can be archived. Accepts either a single entryId (string) or an array of entryIds (up to 100 entries). For multiple entries, processes each one sequentially as a pseudo-bulk operation.',
+    inputParams: ArchiveEntryToolParams.shape,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
+    tool: archiveEntryTool,
+  },
+  unarchiveEntry: {
+    title: 'unarchive_entry',
+    description:
+      'Unarchive an entry or multiple entries. Restores archived entries, making them available for editing and publishing again. Accepts either a single entryId (string) or an array of entryIds (up to 100 entries). For multiple entries, processes each one sequentially as a pseudo-bulk operation.',
+    inputParams: UnarchiveEntryToolParams.shape,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
+    tool: unarchiveEntryTool,
   },
 };
