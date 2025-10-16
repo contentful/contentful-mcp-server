@@ -8,6 +8,11 @@ import {
   unpublishAssetTool,
   UnpublishAssetToolParams,
 } from './unpublishAsset.js';
+import { archiveAssetTool, ArchiveAssetToolParams } from './archiveAsset.js';
+import {
+  unarchiveAssetTool,
+  UnarchiveAssetToolParams,
+} from './unarchiveAsset.js';
 
 export const assetTools = {
   uploadAsset: {
@@ -92,5 +97,31 @@ export const assetTools = {
       openWorldHint: false,
     },
     tool: unpublishAssetTool,
+  },
+  archiveAsset: {
+    title: 'archive_asset',
+    description:
+      'Archive an asset or multiple assets. Archives assets that are no longer needed but should be preserved. Assets must be unpublished before they can be archived. Accepts either a single assetId (string) or an array of assetIds (up to 100 assets). For multiple assets, processes each one sequentially as a pseudo-bulk operation.',
+    inputParams: ArchiveAssetToolParams.shape,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
+    tool: archiveAssetTool,
+  },
+  unarchiveAsset: {
+    title: 'unarchive_asset',
+    description:
+      'Unarchive an asset or multiple assets. Restores archived assets, making them available for editing and publishing again. Accepts either a single assetId (string) or an array of assetIds (up to 100 assets). For multiple assets, processes each one sequentially as a pseudo-bulk operation.',
+    inputParams: UnarchiveAssetToolParams.shape,
+    annotations: {
+      readOnlyHint: false,
+      destructiveHint: false,
+      idempotentHint: true,
+      openWorldHint: false,
+    },
+    tool: unarchiveAssetTool,
   },
 };
