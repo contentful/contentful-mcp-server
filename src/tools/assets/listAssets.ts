@@ -25,6 +25,12 @@ export const ListAssetsToolParams = BaseToolSchema.extend({
     .string()
     .optional()
     .describe('Find assets that link to the specified entry ID'),
+  locale: z
+    .string()
+    .optional()
+    .describe(
+      'The locale to display asset fields in (e.g., "en-US", "de-DE"). Defaults to "en-US" if not specified.',
+    ),
 });
 
 type Params = z.infer<typeof ListAssetsToolParams>;
@@ -49,18 +55,23 @@ async function tool(args: Params) {
     },
   });
 
-  const summarizedAssets = assets.items.map((asset) => ({
-    id: asset.sys.id,
-    title: asset.fields.title?.['en-US'] || 'Untitled',
-    description: asset.fields.description?.['en-US'] || null,
-    fileName: asset.fields.file?.['en-US']?.fileName || null,
-    contentType: asset.fields.file?.['en-US']?.contentType || null,
-    url: asset.fields.file?.['en-US']?.url || null,
-    size: asset.fields.file?.['en-US']?.details?.size || null,
-    createdAt: asset.sys.createdAt,
-    updatedAt: asset.sys.updatedAt,
-    publishedVersion: asset.sys.publishedVersion,
-  }));
+  const locale = args.locale || 'en-US';
+
+  const summarizedAssets = assets.items.map((asset) => {
+    return {
+      id: asset.sys.id,
+      title: asset.fields.title?.[locale] || 'Untitled',
+      description: asset.fields.description?.[locale] || null,
+      fileName: asset.fields.file?.[locale]?.fileName || null,
+      contentType: asset.fields.file?.[locale]?.contentType || null,
+      url: asset.fields.file?.[locale]?.url || null,
+      size: asset.fields.file?.[locale]?.details?.size || null,
+      createdAt: asset.sys.createdAt,
+      updatedAt: asset.sys.updatedAt,
+      publishedVersion: asset.sys.publishedVersion,
+      locale: locale,
+    };
+  });
 
   const summarized = summarizeData(
     {
