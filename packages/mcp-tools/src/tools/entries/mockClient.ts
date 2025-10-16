@@ -13,6 +13,8 @@ export const mockEntryUpdate = vi.fn();
 export const mockEntryDelete = vi.fn();
 export const mockEntryPublish = vi.fn();
 export const mockEntryUnpublish = vi.fn();
+export const mockEntryArchive = vi.fn();
+export const mockEntryUnarchive = vi.fn();
 export const mockEntryGetMany = vi.fn();
 export const mockBulkActionPublish = vi.fn();
 export const mockBulkActionUnpublish = vi.fn();
@@ -28,6 +30,8 @@ export const mockClient = {
     delete: mockEntryDelete,
     publish: mockEntryPublish,
     unpublish: mockEntryUnpublish,
+    archive: mockEntryArchive,
+    unarchive: mockEntryUnarchive,
     getMany: mockEntryGetMany,
   },
   bulkAction: {
@@ -65,6 +69,18 @@ export const mockEntry = {
   fields: {
     title: { 'en-US': 'Test Entry Title' },
     description: { 'en-US': 'Test Entry Description' },
+  },
+};
+
+/**
+ * Mock archived entry object
+ */
+export const mockArchivedEntry = {
+  ...mockEntry,
+  sys: {
+    ...mockEntry.sys,
+    archivedVersion: 1,
+    archivedAt: '2023-01-02T00:00:00Z',
   },
 };
 
