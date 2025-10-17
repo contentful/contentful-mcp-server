@@ -1,3 +1,9 @@
+## 1.6.2 (2025-10-17)
+
+### 🩹 Fixes
+
+- locale support added to upload/list asset tools [DX-483] ([#229](https://github.com/contentful/contentful-mcp-server/pull/229))
+
 ## 1.6.1 (2025-09-30)
 
 ### 🩹 Fixes
