@@ -183,4 +183,46 @@ describe('uploadAsset', () => {
       ],
     });
   });
+
+  it('should upload an asset with a custom locale', async () => {
+    const testArgs = {
+      ...mockArgs,
+      title: 'Deutsche Testdatei',
+      description: 'Eine deutsche Beschreibung',
+      file: mockFile,
+      locale: 'de-DE',
+    };
+
+    mockAssetCreate.mockResolvedValue(mockAsset);
+    mockAssetProcessForAllLocales.mockResolvedValue(mockProcessedAsset);
+
+    const result = await uploadAssetTool(testArgs);
+
+    const expectedResponse = formatResponse('Asset uploaded successfully', {
+      asset: mockProcessedAsset,
+    });
+    expect(result).toEqual({
+      content: [
+        {
+          type: 'text',
+          text: expectedResponse,
+        },
+      ],
+    });
+
+    expect(mockAssetCreate).toHaveBeenCalledWith(
+      {
+        spaceId: testArgs.spaceId,
+        environmentId: testArgs.environmentId,
+      },
+      {
+        fields: {
+          title: { 'de-DE': 'Deutsche Testdatei' },
+          description: { 'de-DE': 'Eine deutsche Beschreibung' },
+          file: { 'de-DE': mockFile },
+        },
+        metadata: undefined,
+      },
+    );
+  });
 });

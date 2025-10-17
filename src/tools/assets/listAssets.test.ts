@@ -181,4 +181,57 @@ describe('listAssets', () => {
       ],
     });
   });
+
+  it('should list assets with custom locale', async () => {
+    const germanAssetResponse = {
+      total: 1,
+      skip: 0,
+      limit: 3,
+      items: [
+        {
+          sys: {
+            id: 'german-asset',
+            createdAt: '2023-01-01T00:00:00Z',
+            updatedAt: '2023-01-01T00:00:00Z',
+          },
+          fields: {
+            title: {
+              'de-DE': 'Deutscher Titel',
+              'en-US': 'English Title',
+            },
+            description: {
+              'de-DE': 'Deutsche Beschreibung',
+              'en-US': 'English Description',
+            },
+            file: {
+              'de-DE': {
+                fileName: 'test-de.jpg',
+                contentType: 'image/jpeg',
+                url: 'https://example.com/test-de.jpg',
+                details: { size: 1024 },
+              },
+            },
+          },
+        },
+      ],
+    };
+
+    mockAssetGetMany.mockResolvedValue(germanAssetResponse);
+
+    const testArgs = {
+      ...mockArgs,
+      locale: 'de-DE',
+    };
+
+    const result = await listAssetsTool(testArgs);
+
+    expect(result).toEqual({
+      content: [
+        {
+          type: 'text',
+          text: expect.stringContaining('Deutscher Titel'),
+        },
+      ],
+    });
+  });
 });
