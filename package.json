@@ -50,7 +50,7 @@
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
     "@modelcontextprotocol/inspector": "0.16.2",
-    "@nx/js": "^21.3.6",
+    "@nx/js": "^21.6.5",
     "@types/node": "^22.16.5",
     "@typescript-eslint/eslint-plugin": "^8.42.0",
     "eslint": "^9.35.0",
