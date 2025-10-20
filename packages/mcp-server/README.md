@@ -113,6 +113,9 @@ Below is a sample configuration:
 |                           | `publish_entry`                    | Publish entries (single or bulk up to 100)       |
 |                           | `unpublish_entry`                  | Unpublish entries (single or bulk up to 100)     |
 |                           | `delete_entry`                     | Remove entries                                   |
+| **Editor Interfaces**     | `list_editor_interfaces`           | List all editor interfaces in a space            |
+|                           | `get_editor_interface`             | Get editor interface for a content type          |
+|                           | `update_editor_interface`          | Update field controls, sidebars, and layouts     |
 | **Assets**                | `upload_asset`                     | Upload new assets                                |
 |                           | `list_assets`                      | List and browse assets (max 3 per request)       |
 |                           | `get_asset`                        | Retrieve specific assets                         |

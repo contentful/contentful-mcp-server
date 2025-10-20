@@ -9,6 +9,7 @@ describe('Package Exports', () => {
       assetTools,
       contentTypeTools,
       contextTools,
+      editorInterfaceTools,
       entryTools,
       environmentTools,
       jobTools,
@@ -30,6 +31,9 @@ describe('Package Exports', () => {
 
     expect(contextTools).toBeDefined();
     expect(typeof contextTools).toBe('object');
+
+    expect(editorInterfaceTools).toBeDefined();
+    expect(typeof editorInterfaceTools).toBe('object');
 
     expect(entryTools).toBeDefined();
     expect(typeof entryTools).toBe('object');
@@ -56,10 +60,10 @@ describe('Package Exports', () => {
     expect(typeof taxonomyTools).toBe('object');
   });
 
-  it('should export exactly 12 tool collections', async () => {
+  it('should export exactly 13 tool collections', async () => {
     const moduleExports = await import('./index.js');
     const exportedKeys = Object.keys(moduleExports);
 
-    expect(exportedKeys).toHaveLength(12);
+    expect(exportedKeys).toHaveLength(13);
   });
 });
