@@ -2,6 +2,7 @@ import { aiActionTools } from './tools/ai-actions/register.js';
 import { assetTools } from './tools/assets/register.js';
 import { contentTypeTools } from './tools/content-types/register.js';
 import { contextTools } from './tools/context/register.js';
+import { editorInterfaceTools } from './tools/editor-interfaces/register.js';
 import { entryTools } from './tools/entries/register.js';
 import { environmentTools } from './tools/environments/register.js';
 import { jobTools } from './tools/jobs/space-to-space-migration/register.js';
@@ -16,6 +17,7 @@ export {
   assetTools,
   contentTypeTools,
   contextTools,
+  editorInterfaceTools,
   entryTools,
   environmentTools,
   jobTools,
