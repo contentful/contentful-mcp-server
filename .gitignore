@@ -26,3 +26,7 @@ out/
 .nx/
 
 contentful-mcp-server.dxt
+.github/instructions/nx.instructions.md
+
+vite.config.*.timestamp*
+vitest.config.*.timestamp*

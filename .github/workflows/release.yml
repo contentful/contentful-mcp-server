@@ -61,6 +61,8 @@ jobs:
         with:
           path: |
             build
+            packages/mcp-server/dist
+            packages/mcp-tools/dist
             contentful-mcp-server.dxt
           key: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
 
@@ -68,15 +70,23 @@ jobs:
 
       - name: Setup npmrc file
         run: |
-          echo -e "//npm.pkg.github.com/:_authToken=${{ steps.vault.outputs.GITHUB_PACKAGES_WRITE_TOKEN }}\n@contentful:registry=https://npm.pkg.github.com" > ./.npmrc
-
+          echo "//npm.pkg.github.com/:_authToken=${{ steps.vault.outputs.GITHUB_PACKAGES_WRITE_TOKEN }}" > ~/.npmrc
+          echo "@contentful:registry=https://npm.pkg.github.com" >> ~/.npmrc
       - name: NX Release
         run: |
-          npx nx release --yes
+          if [ ${{ github.ref_name }} = development ]; then
+            npx nx release version --preid dev-$(date +%Y%m%dT%H%M)-$(git rev-parse HEAD | cut -c1-7)
+            npx nx release publish --tag dev --first-release
+          else
+            npx nx release version
+            npx nx release changelog
+            npx nx release publish --first-release
+          fi
         env:
           GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
 
       - name: Get latest release tag
+        if: ${{ github.ref_name == 'main' }}
         id: get-tag
         run: |
           TAG=$(gh api repos/${{ github.repository }}/releases/latest --jq .tag_name)
@@ -85,6 +95,7 @@ jobs:
           GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
 
       - name: Upload DXT file to release
+        if: ${{ github.ref_name == 'main' }}
         run: |
           if ! gh release view ${{ steps.get-tag.outputs.tag }} --json assets --jq '.assets[].name' | grep -q "contentful-mcp-server.dxt"; then
             echo "DXT file not found in release, uploading..."

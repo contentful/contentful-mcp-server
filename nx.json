@@ -1,29 +1,21 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "production": [
+      "default",
+      "!{projectRoot}/.eslintrc.json",
+      "!{projectRoot}/eslint.config.mjs",
+      "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
+      "!{projectRoot}/tsconfig.spec.json",
+      "!{projectRoot}/src/test-setup.[jt]s"
+    ],
+    "sharedGlobals": ["{workspaceRoot}/.github/workflows/ci.yml"]
+  },
   "neverConnectToCloud": true,
   "targetDefaults": {
-    "build": {
-      "outputs": ["{workspaceRoot}/build"],
-      "cache": true
-    },
-    "update-licenses": {
-      "outputs": ["{workspaceRoot}/licenses"],
-      "cache": true
-    },
-    "format": {
-      "cache": true
-    },
-    "lint": {
-      "cache": true
-    },
-    "lint:fix": {
-      "cache": true
-    },
     "test": {
-      "cache": true
-    },
-    "test:run": {
-      "cache": true
+      "dependsOn": ["^build"]
     }
   },
   "plugins": [
@@ -35,31 +27,67 @@
         },
         "build": {
           "targetName": "build",
-          "configName": "tsconfig.json",
+          "configName": "tsconfig.lib.json",
           "buildDepsName": "build-deps",
           "watchDepsName": "watch-deps"
         }
       }
+    },
+    {
+      "plugin": "@nx/rollup/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "buildDepsTargetName": "build-deps",
+        "watchDepsTargetName": "watch-deps"
+      }
+    },
+    {
+      "plugin": "@nx/eslint/plugin",
+      "options": {
+        "targetName": "lint"
+      }
+    },
+    {
+      "plugin": "@nx/vite/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "testTargetName": "test",
+        "serveTargetName": "serve",
+        "devTargetName": "dev",
+        "previewTargetName": "preview",
+        "serveStaticTargetName": "serve-static",
+        "typecheckTargetName": "typecheck",
+        "buildDepsTargetName": "build-deps",
+        "watchDepsTargetName": "watch-deps"
+      }
     }
   ],
   "release": {
-    "projects": ["."],
+    "projectsRelationship": "independent",
+    "projects": ["packages/mcp-server", "packages/mcp-tools"],
+    "releaseTagPattern": "{projectName}@{version}",
     "version": {
-      "conventionalCommits": true
-    },
-    "changelog": {
-      "workspaceChangelog": {
-        "createRelease": "github",
-        "file": "{workspaceRoot}/CHANGELOG.md",
-        "renderOptions": {
-          "authors": false
-        }
+      "conventionalCommits": true,
+      "fallbackCurrentVersionResolver": "disk",
+      "git": {
+        "commit": true,
+        "commitMessage": "chore(release): publish v{version} [skip ci]",
+        "tag": true,
+        "tagMessage": "Release {version}"
       }
     },
-    "git": {
-      "commitMessage": "chore(release): publish {version} [skip ci]",
-      "tagMessage": "Release {version}"
-    },
-    "releaseTagPattern": "v{version}"
+    "changelog": {
+      "automaticFromRef": true,
+      "git": {
+        "commit": true,
+        "tag": true
+      },
+      "projectChangelogs": {
+        "renderOptions": {
+          "authors": false
+        },
+        "createRelease": "github"
+      }
+    }
   }
 }

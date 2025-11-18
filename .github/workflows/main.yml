@@ -4,9 +4,9 @@ permissions:
 
 on:
   push:
-    branches: ['*']
+    branches: ['**']
   pull_request:
-    branches: ['*']
+    branches: ['**']
 
 jobs:
   build:
@@ -17,7 +17,7 @@ jobs:
     uses: ./.github/workflows/check.yml
 
   release:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/development')
     needs: [build, check]
     permissions:
       contents: write

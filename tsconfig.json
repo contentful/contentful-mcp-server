@@ -1,16 +1,11 @@
 {
-  "compilerOptions": {
-    "target": "ES2022",
-    "module": "Node16",
-    "moduleResolution": "Node16",
-    "sourceMap": true,
-    "outDir": "./build",
-    "rootDir": "./src",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "build", "src/**/*.test.ts"]
+  "files": [],
+  "references": [
+    {
+      "path": "./packages/mcp-tools"
+    },
+    {
+      "path": "./packages/mcp-server"
+    }
+  ]
 }

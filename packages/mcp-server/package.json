@@ -1,0 +1,58 @@
+{
+  "name": "@contentful/mcp-server",
+  "version": "1.7.0-dev-20250926T1821-3e36310.0",
+  "description": "Contentful MCP Server - Model Context Protocol server for Contentful",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "bin": {
+    "contentful-mcp-server": "./dist/index.js"
+  },
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "@contentful/mcp-server": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "package.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "prebuild": "npm run clean",
+    "build": "tsup",
+    "clean": "rimraf dist",
+    "dev": "tsup --watch",
+    "format": "prettier --check \"**/*.{ts,js,json,md}\"",
+    "format:fix": "prettier --write \"**/*.{ts,js,json,md}\"",
+    "lint": "eslint --ext .ts,.js .",
+    "lint:fix": "eslint --ext .ts,.js . --fix",
+    "test": "vitest",
+    "test:run": "vitest run"
+  },
+  "author": "Contentful GmbH",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/contentful/contentful-mcp-server.git",
+    "directory": "packages/mcp-server"
+  },
+  "dependencies": {
+    "@contentful/mcp-tools": "^0.0.1",
+    "@modelcontextprotocol/sdk": "^1.17.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.16.5",
+    "eslint": "^9.35.0",
+    "prettier": "^3.6.2",
+    "rimraf": "^6.0.1",
+    "tsup": "^8.5.0",
+    "typescript": "^5.8.2",
+    "vitest": "^3.2.4"
+  }
+}
