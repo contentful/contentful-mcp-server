@@ -76,11 +76,11 @@ jobs:
         run: |
           if [ ${{ github.ref_name }} = development ]; then
             npx nx release version --preid dev-$(date +%Y%m%dT%H%M)-$(git rev-parse HEAD | cut -c1-7)
-            npx nx release publish --tag dev
+            npx nx release publish --tag dev --first-release
           else
             npx nx release version
             npx nx release changelog
-            npx nx release publish
+            npx nx release publish --first-release
           fi
         env:
           GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
