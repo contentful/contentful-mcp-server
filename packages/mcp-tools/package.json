@@ -1,6 +1,6 @@
 {
   "name": "@contentful/mcp-tools",
-  "version": "0.0.1",
+  "version": "0.1.0-dev-20251118T1552-4951c6c.0",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
