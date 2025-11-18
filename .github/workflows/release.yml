@@ -61,6 +61,7 @@ jobs:
         with:
           path: |
             build
+            packages/*/dist
             contentful-mcp-server.dxt
           key: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
 
