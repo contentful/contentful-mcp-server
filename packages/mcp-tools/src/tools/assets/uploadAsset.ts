@@ -17,6 +17,12 @@ export const UploadAssetToolParams = BaseToolSchema.extend({
   description: z.string().optional().describe('The description of the asset'),
   file: FileSchema.describe('The file information for the asset'),
   metadata: AssetMetadataSchema,
+  locale: z
+    .string()
+    .optional()
+    .describe(
+      'The locale for the asset fields (e.g., "en-US", "de-DE"). Defaults to "en-US" if not specified.',
+    ),
 });
 
 type Params = z.infer<typeof UploadAssetToolParams>;
@@ -30,11 +36,14 @@ async function tool(args: Params) {
   const contentfulClient = createToolClient(args);
 
   // Prepare asset properties following Contentful's structure
+  const locale = args.locale || 'en-US';
   const assetProps = {
     fields: {
-      title: { 'en-US': args.title },
-      description: args.description ? { 'en-US': args.description } : undefined,
-      file: { 'en-US': args.file },
+      title: { [locale]: args.title },
+      description: args.description
+        ? { [locale]: args.description }
+        : undefined,
+      file: { [locale]: args.file },
     },
     metadata: args.metadata,
   };

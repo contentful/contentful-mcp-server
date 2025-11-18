@@ -215,39 +215,13 @@ describe('uploadAsset', () => {
       }),
     );
   });
-
-  it('should upload an asset with both tags and concepts', async () => {
+  it('should upload an asset with a custom locale', async () => {
     const testArgs = {
       ...mockArgs,
-      title: 'Asset with Tags and Concepts',
+      title: 'Deutsche Testdatei',
+      description: 'Eine deutsche Beschreibung',
       file: mockFile,
-      metadata: {
-        tags: [
-          {
-            sys: {
-              type: 'Link' as const,
-              linkType: 'Tag' as const,
-              id: 'tag1',
-            },
-          },
-        ],
-        concepts: [
-          {
-            sys: {
-              type: 'Link' as const,
-              linkType: 'TaxonomyConcept' as const,
-              id: 'concept1',
-            },
-          },
-          {
-            sys: {
-              type: 'Link' as const,
-              linkType: 'TaxonomyConcept' as const,
-              id: 'concept2',
-            },
-          },
-        ],
-      },
+      locale: 'de-DE',
     };
 
     mockAssetCreate.mockResolvedValue(mockAsset);
@@ -268,36 +242,18 @@ describe('uploadAsset', () => {
     });
 
     expect(mockAssetCreate).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.objectContaining({
-        metadata: {
-          tags: [
-            {
-              sys: {
-                type: 'Link',
-                linkType: 'Tag',
-                id: 'tag1',
-              },
-            },
-          ],
-          concepts: [
-            {
-              sys: {
-                type: 'Link',
-                linkType: 'TaxonomyConcept',
-                id: 'concept1',
-              },
-            },
-            {
-              sys: {
-                type: 'Link',
-                linkType: 'TaxonomyConcept',
-                id: 'concept2',
-              },
-            },
-          ],
+      {
+        spaceId: testArgs.spaceId,
+        environmentId: testArgs.environmentId,
+      },
+      {
+        fields: {
+          title: { 'de-DE': 'Deutsche Testdatei' },
+          description: { 'de-DE': 'Eine deutsche Beschreibung' },
+          file: { 'de-DE': mockFile },
         },
-      }),
+        metadata: undefined,
+      },
     );
   });
 });
