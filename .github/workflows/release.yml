@@ -68,7 +68,7 @@ jobs:
 
       - name: Setup npmrc file
         run: |
-          echo -e "//npm.pkg.github.com/:_authToken=${{ steps.vault.outputs.GITHUB_PACKAGES_WRITE_TOKEN }}\n@contentful:registry=https://npm.pkg.github.com" > ./.npmrc
+          echo -e "//npm.pkg.github.com/:_authToken=${{ steps.vault.outputs.GITHUB_TOKEN }}\n@contentful:registry=https://npm.pkg.github.com" > ./.npmrc
 
       - name: NX Release
         run: |
