@@ -29,7 +29,7 @@
     "inspect:watch": "node ./packages/mcp-server/scripts/inspect-watch.mjs",
     "logs:watch": "npx mcps-logger",
     "update-licenses": "node ./scripts/update-licenses.js",
-    "prepare": "husky"
+    "prepare": "npx husky"
   },
   "devDependencies": {
     "@anthropic-ai/dxt": "^0.2.6",
