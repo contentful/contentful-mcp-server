@@ -74,7 +74,7 @@ jobs:
           echo "@contentful:registry=https://npm.pkg.github.com" >> ~/.npmrc
       - name: NX Release
         run: |
-          npx nx release publish --first-release
+          npx nx release -y
         env:
           GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
 
