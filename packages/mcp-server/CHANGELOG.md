@@ -1,3 +1,15 @@
+## 1.7.0 (2025-11-19)
+
+### 🚀 Features
+
+- editor interface tools [DX-481] ([#237](https://github.com/contentful/contentful-mcp-server/pull/237))
+- taxonomy concept CRUD tools [DX-408] ([#212](https://github.com/contentful/contentful-mcp-server/pull/212))
+- refactor local server to use mcp-tools package [DX-414] ([#203](https://github.com/contentful/contentful-mcp-server/pull/203))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.1.0
+
 ## 1.7.0-dev-20250926T1821-3e36310.0 (2025-09-26)
 
 This was a version bump only for mcp-server to align it with other projects, there were no code changes.
