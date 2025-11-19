@@ -16,7 +16,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "nx run-many --target=build",
+    "build": "nx run-many --target=build --verbose",
     "clean": "nx run-many --target=clean",
     "dev": "nx run-many --target=build --watch",
     "format": "nx run-many --target=format",
