@@ -8,11 +8,13 @@ import {
   mockArgs,
 } from './mockClient.js';
 import { createToolClient } from '../../utils/tools.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
-vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
+vi.mock('../../utils/tools.js');
 
 describe('createEntry', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     setupMockClient();
   });
@@ -31,7 +33,8 @@ describe('createEntry', () => {
 
     mockEntryCreate.mockResolvedValue(mockCreatedEntry);
 
-    const result = await createEntryTool(testArgs);
+    const tool = createEntryTool(mockConfig);
+    const result = await tool(testArgs);
 
     const expectedResponse = formatResponse('Entry created successfully', {
       newEntry: mockCreatedEntry,
@@ -58,9 +61,10 @@ describe('createEntry', () => {
 
     mockEntryCreate.mockResolvedValue(mockEntry);
 
-    const result = await createEntryTool(testArgs);
+    const tool = createEntryTool(mockConfig);
+    const result = await tool(testArgs);
 
-    expect(createToolClient).toHaveBeenCalledWith(testArgs);
+    expect(createToolClient).toHaveBeenCalledWith(mockConfig, testArgs);
 
     const expectedResponse = formatResponse('Entry created successfully', {
       newEntry: mockEntry,
@@ -113,7 +117,8 @@ describe('createEntry', () => {
 
     mockEntryCreate.mockResolvedValue(mockCreatedEntry);
 
-    const result = await createEntryTool(testArgs);
+    const tool = createEntryTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(mockEntryCreate).toHaveBeenCalledWith(expect.any(Object), {
       fields: testArgs.fields,
@@ -144,7 +149,8 @@ describe('createEntry', () => {
     const error = new Error('Content type not found');
     mockEntryCreate.mockRejectedValue(error);
 
-    const result = await createEntryTool(testArgs);
+    const tool = createEntryTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       isError: true,

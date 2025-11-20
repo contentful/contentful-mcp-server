@@ -6,11 +6,13 @@ import {
   mockAiActionUnpublish,
   mockArgs,
 } from './mockClient.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
 
 describe('unpublishAiAction', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     setupMockClient();
   });
@@ -18,7 +20,8 @@ describe('unpublishAiAction', () => {
   it('should unpublish an AI action successfully', async () => {
     mockAiActionUnpublish.mockResolvedValue(undefined);
 
-    const result = await unpublishAiActionTool(mockArgs);
+    const tool = unpublishAiActionTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse(
       'AI action unpublished successfully',
@@ -40,7 +43,8 @@ describe('unpublishAiAction', () => {
     const error = new Error('AI action not found');
     mockAiActionUnpublish.mockRejectedValue(error);
 
-    const result = await unpublishAiActionTool(mockArgs);
+    const tool = unpublishAiActionTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse('AI action unpublish failed', {
       status: error,
@@ -60,7 +64,8 @@ describe('unpublishAiAction', () => {
     const error = new Error('AI action is not published');
     mockAiActionUnpublish.mockRejectedValue(error);
 
-    const result = await unpublishAiActionTool(mockArgs);
+    const tool = unpublishAiActionTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse('AI action unpublish failed', {
       status: error,

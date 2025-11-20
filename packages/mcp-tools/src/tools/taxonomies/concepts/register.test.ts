@@ -1,18 +1,28 @@
 import { describe, it, expect } from 'vitest';
-import { conceptTools } from './register.js';
-import { createConceptTool, CreateConceptToolParams } from './createConcept.js';
-import { getConceptTool, GetConceptToolParams } from './getConcept.js';
-import { listConceptsTool, ListConceptsToolParams } from './listConcepts.js';
-import { updateConceptTool, UpdateConceptToolParams } from './updateConcept.js';
-import { deleteConceptTool, DeleteConceptToolParams } from './deleteConcept.js';
+import { createConceptTools } from './register.js';
+import { CreateConceptToolParams } from './createConcept.js';
+import { GetConceptToolParams } from './getConcept.js';
+import { ListConceptsToolParams } from './listConcepts.js';
+import { UpdateConceptToolParams } from './updateConcept.js';
+import { DeleteConceptToolParams } from './deleteConcept.js';
+import { createMockConfig } from '../../../test-helpers/mockConfig.js';
 
 describe('concept tools collection', () => {
-  it('should export conceptTools collection with correct structure', () => {
+  const mockConfig = createMockConfig();
+
+  it('should export createConceptTools factory function', () => {
+    expect(createConceptTools).toBeDefined();
+    expect(typeof createConceptTools).toBe('function');
+  });
+
+  it('should create conceptTools collection with correct structure', () => {
+    const conceptTools = createConceptTools(mockConfig);
     expect(conceptTools).toBeDefined();
     expect(Object.keys(conceptTools)).toHaveLength(5);
   });
 
   it('should have createConcept tool with correct properties', () => {
+    const conceptTools = createConceptTools(mockConfig);
     const { createConcept } = conceptTools;
 
     expect(createConcept.title).toBe('create_concept');
@@ -28,10 +38,12 @@ describe('concept tools collection', () => {
       idempotentHint: false,
       openWorldHint: false,
     });
-    expect(createConcept.tool).toBe(createConceptTool);
+    expect(createConcept.tool).toBeDefined();
+    expect(typeof createConcept.tool).toBe('function');
   });
 
   it('should have getConcept tool with correct properties', () => {
+    const conceptTools = createConceptTools(mockConfig);
     const { getConcept } = conceptTools;
 
     expect(getConcept.title).toBe('get_concept');
@@ -43,10 +55,12 @@ describe('concept tools collection', () => {
       readOnlyHint: true,
       openWorldHint: false,
     });
-    expect(getConcept.tool).toBe(getConceptTool);
+    expect(getConcept.tool).toBeDefined();
+    expect(typeof getConcept.tool).toBe('function');
   });
 
   it('should have listConcepts tool with correct properties', () => {
+    const conceptTools = createConceptTools(mockConfig);
     const { listConcepts } = conceptTools;
 
     expect(listConcepts.title).toBe('list_concepts');
@@ -60,10 +74,12 @@ describe('concept tools collection', () => {
       readOnlyHint: true,
       openWorldHint: false,
     });
-    expect(listConcepts.tool).toBe(listConceptsTool);
+    expect(listConcepts.tool).toBeDefined();
+    expect(typeof listConcepts.tool).toBe('function');
   });
 
   it('should have updateConcept tool with correct properties', () => {
+    const conceptTools = createConceptTools(mockConfig);
     const { updateConcept } = conceptTools;
 
     expect(updateConcept.title).toBe('update_concept');
@@ -79,10 +95,12 @@ describe('concept tools collection', () => {
       idempotentHint: false,
       openWorldHint: false,
     });
-    expect(updateConcept.tool).toBe(updateConceptTool);
+    expect(updateConcept.tool).toBeDefined();
+    expect(typeof updateConcept.tool).toBe('function');
   });
 
   it('should have deleteConcept tool with correct properties', () => {
+    const conceptTools = createConceptTools(mockConfig);
     const { deleteConcept } = conceptTools;
 
     expect(deleteConcept.title).toBe('delete_concept');
@@ -98,6 +116,7 @@ describe('concept tools collection', () => {
       idempotentHint: true,
       openWorldHint: false,
     });
-    expect(deleteConcept.tool).toBe(deleteConceptTool);
+    expect(deleteConcept.tool).toBeDefined();
+    expect(typeof deleteConcept.tool).toBe('function');
   });
 });

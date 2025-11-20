@@ -7,11 +7,13 @@ import {
   mockEntry,
   mockArgs,
 } from './mockClient.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
 
 describe('getEntry', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     setupMockClient();
   });
@@ -19,7 +21,8 @@ describe('getEntry', () => {
   it('should retrieve an entry successfully', async () => {
     mockEntryGet.mockResolvedValue(mockEntry);
 
-    const result = await getEntryTool(mockArgs);
+    const tool = getEntryTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse('Entry retrieved successfully', {
       entry: mockEntry,
@@ -42,7 +45,8 @@ describe('getEntry', () => {
 
     mockEntryGet.mockResolvedValue(mockEmptyEntry);
 
-    const result = await getEntryTool(mockArgs);
+    const tool = getEntryTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse('Entry retrieved successfully', {
       entry: mockEmptyEntry,
@@ -61,7 +65,8 @@ describe('getEntry', () => {
     const error = new Error('Entry not found');
     mockEntryGet.mockRejectedValue(error);
 
-    const result = await getEntryTool(mockArgs);
+    const tool = getEntryTool(mockConfig);
+    const result = await tool(mockArgs);
 
     expect(result).toEqual({
       isError: true,

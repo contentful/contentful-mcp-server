@@ -5,10 +5,13 @@ import {
   mockCreateClient,
 } from './mockClient.js';
 import { getConceptSchemeTool } from './getConceptScheme.js';
-import { getDefaultClientConfig } from '../../../config/contentful.js';
+import { createClientConfig } from '../../../utils/tools.js';
 import { formatResponse } from '../../../utils/formatters.js';
+import { createMockConfig } from '../../../test-helpers/mockConfig.js';
 
 describe('getConceptScheme', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     mockConceptSchemeGet.mockClear();
     mockCreateClient.mockClear();
@@ -22,10 +25,10 @@ describe('getConceptScheme', () => {
   it('should retrieve a concept scheme successfully', async () => {
     mockConceptSchemeGet.mockResolvedValue(testConceptScheme);
 
-    const result = await getConceptSchemeTool(testArgs);
+    const tool = getConceptSchemeTool(mockConfig);
+    const result = await tool(testArgs);
 
-    const clientConfig = getDefaultClientConfig();
-    delete clientConfig.space;
+    const clientConfig = createClientConfig(mockConfig);
     expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
       type: 'plain',
     });
@@ -55,7 +58,8 @@ describe('getConceptScheme', () => {
     const error = new Error('Test error');
     mockConceptSchemeGet.mockRejectedValue(error);
 
-    const result = await getConceptSchemeTool(testArgs);
+    const tool = getConceptSchemeTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       content: [
@@ -103,7 +107,8 @@ describe('getConceptScheme', () => {
 
     mockConceptSchemeGet.mockResolvedValue(complexConceptScheme);
 
-    const result = await getConceptSchemeTool(testArgs);
+    const tool = getConceptSchemeTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(mockConceptSchemeGet).toHaveBeenCalledWith({
       organizationId: 'test-org-id',

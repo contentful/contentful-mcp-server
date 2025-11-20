@@ -8,15 +8,17 @@ import {
 
 import { getSpaceTool } from './getSpace.js';
 import { formatResponse } from '../../utils/formatters.js';
-import { getDefaultClientConfig } from '../../config/contentful.js';
+import { createClientConfig } from '../../utils/tools.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('getSpace', () => {
+  const mockConfig = createMockConfig();
   it('should get a space successfully', async () => {
     mockSpaceGet.mockResolvedValue(testSpace);
 
-    const result = await getSpaceTool(mockArgs);
-    const clientConfig = getDefaultClientConfig();
-    delete clientConfig.space;
+    const tool = getSpaceTool(mockConfig);
+    const result = await tool(mockArgs);
+    const clientConfig = createClientConfig(mockConfig);
     expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
       type: 'plain',
     });
@@ -41,7 +43,8 @@ describe('getSpace', () => {
     const error = new Error('Retrieval failed');
     mockSpaceGet.mockRejectedValue(error);
 
-    const result = await getSpaceTool(mockArgs);
+    const tool = getSpaceTool(mockConfig);
+    const result = await tool(mockArgs);
 
     expect(result).toEqual({
       isError: true,

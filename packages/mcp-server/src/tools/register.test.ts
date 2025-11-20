@@ -1,21 +1,23 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { registerAllTools } from './register.js';
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import {
-  aiActionTools,
-  assetTools,
-  contentTypeTools,
-  contextTools,
-  editorInterfaceTools,
-  entryTools,
-  environmentTools,
-  jobTools,
-  localeTools,
-  orgTools,
-  spaceTools,
-  tagTools,
-  taxonomyTools,
-} from '@contentful/mcp-tools';
+import { ContentfulMcpTools } from '@contentful/mcp-tools';
+import { env } from '../config/env.js';
+
+// Mock the env module
+vi.mock('../config/env.js', () => ({
+  env: {
+    success: true,
+    data: {
+      CONTENTFUL_MANAGEMENT_ACCESS_TOKEN: 'test-token',
+      CONTENTFUL_HOST: 'api.contentful.com',
+      SPACE_ID: 'test-space-id',
+      ENVIRONMENT_ID: 'master',
+      ORGANIZATION_ID: 'test-org-id',
+      APP_ID: 'test-app-id',
+    },
+  },
+}));
 
 describe('registerAllTools', () => {
   let mockServer: McpServer;
@@ -38,20 +40,30 @@ describe('registerAllTools', () => {
   it('should register all standard tool collections', () => {
     registerAllTools(mockServer);
 
+    // Create a ContentfulMcpTools instance to count tools
+    const mcpTools = new ContentfulMcpTools({
+      accessToken: env.data!.CONTENTFUL_MANAGEMENT_ACCESS_TOKEN,
+      host: env.data!.CONTENTFUL_HOST,
+      spaceId: env.data!.SPACE_ID,
+      environmentId: env.data!.ENVIRONMENT_ID,
+      organizationId: env.data!.ORGANIZATION_ID,
+      appId: env.data!.APP_ID,
+    });
+
     // Count expected tool registrations from standard collections
     const standardToolCollections = [
-      aiActionTools,
-      assetTools,
-      contentTypeTools,
-      contextTools,
-      editorInterfaceTools,
-      entryTools,
-      environmentTools,
-      localeTools,
-      orgTools,
-      spaceTools,
-      tagTools,
-      taxonomyTools,
+      mcpTools.getAiActionTools(),
+      mcpTools.getAssetTools(),
+      mcpTools.getContentTypeTools(),
+      mcpTools.getContextTools(),
+      mcpTools.getEditorInterfaceTools(),
+      mcpTools.getEntryTools(),
+      mcpTools.getEnvironmentTools(),
+      mcpTools.getLocaleTools(),
+      mcpTools.getOrgTools(),
+      mcpTools.getSpaceTools(),
+      mcpTools.getTagTools(),
+      mcpTools.getTaxonomyTools(),
     ];
 
     const expectedStandardToolCount = standardToolCollections.reduce(
@@ -90,7 +102,15 @@ describe('registerAllTools', () => {
   it('should register spaceToSpaceMigrationHandler with workflow tools', () => {
     registerAllTools(mockServer);
 
-    const handlerConfig = jobTools.spaceToSpaceMigrationHandler;
+    const mcpTools = new ContentfulMcpTools({
+      accessToken: env.data!.CONTENTFUL_MANAGEMENT_ACCESS_TOKEN,
+      host: env.data!.CONTENTFUL_HOST,
+      spaceId: env.data!.SPACE_ID,
+      environmentId: env.data!.ENVIRONMENT_ID,
+      organizationId: env.data!.ORGANIZATION_ID,
+      appId: env.data!.APP_ID,
+    });
+    const handlerConfig = mcpTools.getJobTools().spaceToSpaceMigrationHandler;
 
     // Find the call for the migration handler
     const handlerCall = registerToolSpy.mock.calls.find(

@@ -8,9 +8,11 @@ import {
 } from './mockClient.js';
 
 vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('listAssets', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     setupMockClient();
     vi.clearAllMocks();
@@ -19,7 +21,8 @@ describe('listAssets', () => {
   it('should list assets successfully with default parameters', async () => {
     mockAssetGetMany.mockResolvedValue(mockAssetsResponse);
 
-    const result = await listAssetsTool(mockArgs);
+    const tool = listAssetsTool(mockConfig);
+    const result = await tool(mockArgs);
 
     expect(result).toEqual({
       content: [
@@ -53,7 +56,8 @@ describe('listAssets', () => {
       skip: 5,
     });
 
-    await listAssetsTool(testArgs);
+    const tool = listAssetsTool(mockConfig);
+    await tool(testArgs);
 
     expect(mockAssetGetMany).toHaveBeenCalledWith({
       spaceId: mockArgs.spaceId,
@@ -73,7 +77,8 @@ describe('listAssets', () => {
 
     mockAssetGetMany.mockResolvedValue(mockAssetsResponse);
 
-    await listAssetsTool(testArgs);
+    const tool = listAssetsTool(mockConfig);
+    await tool(testArgs);
 
     expect(mockAssetGetMany).toHaveBeenCalledWith({
       spaceId: mockArgs.spaceId,
@@ -96,7 +101,8 @@ describe('listAssets', () => {
 
     mockAssetGetMany.mockResolvedValue(mockAssetsResponse);
 
-    await listAssetsTool(testArgs);
+    const tool = listAssetsTool(mockConfig);
+    await tool(testArgs);
 
     expect(mockAssetGetMany).toHaveBeenCalledWith({
       spaceId: mockArgs.spaceId,
@@ -122,7 +128,8 @@ describe('listAssets', () => {
 
     mockAssetGetMany.mockResolvedValue(emptyResponse);
 
-    const result = await listAssetsTool(mockArgs);
+    const tool = listAssetsTool(mockConfig);
+    const result = await tool(mockArgs);
 
     expect(result).toEqual({
       content: [
@@ -138,7 +145,8 @@ describe('listAssets', () => {
     const error = new Error('Failed to fetch assets');
     mockAssetGetMany.mockRejectedValue(error);
 
-    const result = await listAssetsTool(mockArgs);
+    const tool = listAssetsTool(mockConfig);
+    const result = await tool(mockArgs);
 
     expect(result).toEqual({
       isError: true,
@@ -170,7 +178,8 @@ describe('listAssets', () => {
 
     mockAssetGetMany.mockResolvedValue(assetsWithMissingFields);
 
-    const result = await listAssetsTool(mockArgs);
+    const tool = listAssetsTool(mockConfig);
+    const result = await tool(mockArgs);
 
     expect(result).toEqual({
       content: [
@@ -223,7 +232,8 @@ describe('listAssets', () => {
       locale: 'de-DE',
     };
 
-    const result = await listAssetsTool(testArgs);
+    const tool = listAssetsTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       content: [

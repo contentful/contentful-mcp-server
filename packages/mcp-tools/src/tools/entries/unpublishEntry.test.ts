@@ -10,12 +10,14 @@ import {
   mockArgs,
   mockBulkArgs,
 } from './mockClient.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
 vi.mock('../../../src/utils/bulkOperations.js');
 
 describe('unpublishEntry', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     setupMockClient();
   });
@@ -42,7 +44,8 @@ describe('unpublishEntry', () => {
     mockEntryGet.mockResolvedValue(mockPublishedEntry);
     mockEntryUnpublish.mockResolvedValue(mockUnpublishedEntry);
 
-    const result = await unpublishEntryTool(mockArgs);
+    const tool = unpublishEntryTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse('Entry unpublished successfully', {
       status: mockUnpublishedEntry.sys.status,
@@ -63,7 +66,8 @@ describe('unpublishEntry', () => {
     mockEntryGet.mockResolvedValue(mockEntry);
     mockEntryUnpublish.mockRejectedValue(unpublishError);
 
-    const result = await unpublishEntryTool(mockArgs);
+    const tool = unpublishEntryTool(mockConfig);
+    const result = await tool(mockArgs);
 
     expect(result).toEqual({
       isError: true,
@@ -117,7 +121,8 @@ describe('unpublishEntry', () => {
     );
     mockBulkActionUnpublish.mockResolvedValue(mockBulkAction);
 
-    const result = await unpublishEntryTool(mockBulkArgs);
+    const tool = unpublishEntryTool(mockConfig);
+    const result = await tool(mockBulkArgs);
 
     const expectedResponse = formatResponse(
       'Entry(s) unpublished successfully',
@@ -140,7 +145,8 @@ describe('unpublishEntry', () => {
     const error = new Error('Entry not found');
     mockEntryGet.mockRejectedValue(error);
 
-    const result = await unpublishEntryTool(mockArgs);
+    const tool = unpublishEntryTool(mockConfig);
+    const result = await tool(mockArgs);
 
     expect(result).toEqual({
       isError: true,

@@ -9,11 +9,13 @@ import {
   mockPublishedAiAction,
   mockArgs,
 } from './mockClient.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
 
 describe('publishAiAction', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     setupMockClient();
   });
@@ -22,7 +24,8 @@ describe('publishAiAction', () => {
     mockAiActionGet.mockResolvedValue(mockAiAction);
     mockAiActionPublish.mockResolvedValue(mockPublishedAiAction);
 
-    const result = await publishAiActionTool(mockArgs);
+    const tool = publishAiActionTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse(
       'AI action published successfully',
@@ -45,7 +48,8 @@ describe('publishAiAction', () => {
     const error = new Error('AI action not found');
     mockAiActionGet.mockRejectedValue(error);
 
-    const result = await publishAiActionTool(mockArgs);
+    const tool = publishAiActionTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse('AI action publish failed', {
       status: error,
@@ -66,7 +70,8 @@ describe('publishAiAction', () => {
     mockAiActionGet.mockResolvedValue(mockAiAction);
     mockAiActionPublish.mockResolvedValue(mockPublishedAiAction);
 
-    const result = await publishAiActionTool(mockArgs);
+    const tool = publishAiActionTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse(
       'AI action published successfully',

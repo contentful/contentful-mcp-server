@@ -9,9 +9,11 @@ import {
 } from './mockClient.js';
 
 vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('archiveAsset', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     setupMockClient();
     vi.clearAllMocks();
@@ -26,7 +28,8 @@ describe('archiveAsset', () => {
 
       mockAssetArchive.mockResolvedValue(mockArchivedAsset);
 
-      const result = await archiveAssetTool(testArgs);
+      const tool = archiveAssetTool(mockConfig);
+      const result = await tool(testArgs);
 
       // Verify client was called correctly
       expect(mockAssetArchive).toHaveBeenCalledWith({
@@ -59,7 +62,8 @@ describe('archiveAsset', () => {
       const error = new Error('Asset must be unpublished before archiving');
       mockAssetArchive.mockRejectedValue(error);
 
-      const result = await archiveAssetTool(testArgs);
+      const tool = archiveAssetTool(mockConfig);
+      const result = await tool(testArgs);
 
       // withErrorHandling wraps the error in a formatted response
       expect(result).toEqual({
@@ -86,7 +90,8 @@ describe('archiveAsset', () => {
 
       mockAssetArchive.mockResolvedValue(mockArchivedAsset);
 
-      const result = await archiveAssetTool(testArgs);
+      const tool = archiveAssetTool(mockConfig);
+      const result = await tool(testArgs);
 
       // Verify each asset was processed
       expect(mockAssetArchive).toHaveBeenCalledTimes(3);
@@ -112,7 +117,8 @@ describe('archiveAsset', () => {
         .mockResolvedValueOnce(mockArchivedAsset)
         .mockRejectedValueOnce(new Error('Must be unpublished'));
 
-      const result = await archiveAssetTool(testArgs);
+      const tool = archiveAssetTool(mockConfig);
+      const result = await tool(testArgs);
 
       // Should only process first two assets before stopping
       expect(mockAssetArchive).toHaveBeenCalledTimes(2);

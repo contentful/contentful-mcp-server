@@ -9,11 +9,13 @@ import {
   mockArgs,
   mockComplexAiAction,
 } from './mockClient.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
-vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
+vi.mock('../../utils/tools.js');
 
 describe('createAiAction', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     setupMockClient();
   });
@@ -51,7 +53,8 @@ describe('createAiAction', () => {
 
     mockAiActionCreate.mockResolvedValue(mockAiAction);
 
-    const result = await createAiActionTool(testArgs);
+    const tool = createAiActionTool(mockConfig);
+    const result = await tool(testArgs);
 
     const expectedResponse = formatResponse('AI action created successfully', {
       aiAction: mockAiAction,
@@ -101,15 +104,16 @@ describe('createAiAction', () => {
       },
       testCases: [
         {
-          name: 'Test case 1',
-          variables: {},
+          type: 'Text' as const,
+          value: 'Test input',
         },
       ],
     };
 
     mockAiActionCreate.mockResolvedValue(mockComplexAiAction);
 
-    const result = await createAiActionTool(testArgs);
+    const tool = createAiActionTool(mockConfig);
+    const result = await tool(testArgs);
 
     const expectedResponse = formatResponse('AI action created successfully', {
       aiAction: mockComplexAiAction,
@@ -147,7 +151,8 @@ describe('createAiAction', () => {
     const error = new Error('Invalid model configuration');
     mockAiActionCreate.mockRejectedValue(error);
 
-    const result = await createAiActionTool(testArgs);
+    const tool = createAiActionTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       isError: true,

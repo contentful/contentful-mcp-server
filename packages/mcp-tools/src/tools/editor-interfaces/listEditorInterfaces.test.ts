@@ -6,12 +6,16 @@ import {
 } from './mockClient.js';
 import { listEditorInterfacesTool } from './listEditorInterfaces.js';
 import { formatResponse } from '../../utils/formatters.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('listEditorInterfaces', () => {
+  const mockConfig = createMockConfig();
+
   it('should list editor interfaces successfully', async () => {
     mockEditorInterfaceGetMany.mockResolvedValue(mockEditorInterfacesResponse);
 
-    const result = await listEditorInterfacesTool({
+    const tool = listEditorInterfacesTool(mockConfig);
+    const result = await tool({
       spaceId: mockArgs.spaceId,
       environmentId: mockArgs.environmentId,
     });
@@ -64,7 +68,8 @@ describe('listEditorInterfaces', () => {
 
     mockEditorInterfaceGetMany.mockResolvedValue(emptyResponse);
 
-    const result = await listEditorInterfacesTool({
+    const tool = listEditorInterfacesTool(mockConfig);
+    const result = await tool({
       spaceId: mockArgs.spaceId,
       environmentId: mockArgs.environmentId,
     });
@@ -100,7 +105,8 @@ describe('listEditorInterfaces', () => {
     const error = new Error('Failed to retrieve editor interfaces');
     mockEditorInterfaceGetMany.mockRejectedValue(error);
 
-    const result = await listEditorInterfacesTool({
+    const tool = listEditorInterfacesTool(mockConfig);
+    const result = await tool({
       spaceId: mockArgs.spaceId,
       environmentId: mockArgs.environmentId,
     });

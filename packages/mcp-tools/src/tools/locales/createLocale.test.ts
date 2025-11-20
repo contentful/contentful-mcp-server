@@ -4,8 +4,10 @@ import { mockArgs, testLocale, mockLocaleCreate } from './mockClient.js';
 import { createLocaleTool } from './createLocale.js';
 import { createToolClient } from '../../utils/tools.js';
 import { formatResponse } from '../../utils/formatters.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('createLocale', () => {
+  const mockConfig = createMockConfig();
   it('should create a locale successfully with default values', async () => {
     const testArgs = {
       ...mockArgs,
@@ -19,8 +21,9 @@ describe('createLocale', () => {
     };
     mockLocaleCreate.mockResolvedValue(testLocale);
 
-    const result = await createLocaleTool(testArgs);
-    expect(createToolClient).toHaveBeenCalledWith(testArgs);
+    const tool = createLocaleTool(mockConfig);
+    const result = await tool(testArgs);
+    expect(createToolClient).toHaveBeenCalledWith(mockConfig, testArgs);
     expect(mockLocaleCreate).toHaveBeenCalledWith(
       {
         spaceId: testArgs.spaceId,
@@ -72,9 +75,10 @@ describe('createLocale', () => {
 
     mockLocaleCreate.mockResolvedValue(mockCreatedLocale);
 
-    const result = await createLocaleTool(testArgs);
+    const tool = createLocaleTool(mockConfig);
+    const result = await tool(testArgs);
 
-    expect(createToolClient).toHaveBeenCalledWith(testArgs);
+    expect(createToolClient).toHaveBeenCalledWith(mockConfig, testArgs);
     expect(mockLocaleCreate).toHaveBeenCalledWith(
       {
         spaceId: testArgs.spaceId,
@@ -118,7 +122,8 @@ describe('createLocale', () => {
     const error = new Error('Validation error');
     mockLocaleCreate.mockRejectedValue(error);
 
-    const result = await createLocaleTool(testArgs);
+    const tool = createLocaleTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       isError: true,

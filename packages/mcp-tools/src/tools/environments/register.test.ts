@@ -1,25 +1,26 @@
 import { describe, it, expect } from 'vitest';
-import { environmentTools } from './register.js';
-import {
-  createEnvironmentTool,
-  CreateEnvironmentToolParams,
-} from './createEnvironment.js';
-import {
-  listEnvironmentsTool,
-  ListEnvironmentsToolParams,
-} from './listEnvironments.js';
-import {
-  deleteEnvironmentTool,
-  DeleteEnvironmentToolParams,
-} from './deleteEnvironment.js';
+import { createEnvironmentTools } from './register.js';
+import { CreateEnvironmentToolParams } from './createEnvironment.js';
+import { ListEnvironmentsToolParams } from './listEnvironments.js';
+import { DeleteEnvironmentToolParams } from './deleteEnvironment.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('environment tools collection', () => {
-  it('should export environmentTools collection with correct structure', () => {
+  const mockConfig = createMockConfig();
+
+  it('should export createEnvironmentTools factory function', () => {
+    expect(createEnvironmentTools).toBeDefined();
+    expect(typeof createEnvironmentTools).toBe('function');
+  });
+
+  it('should create environmentTools collection with correct structure', () => {
+    const environmentTools = createEnvironmentTools(mockConfig);
     expect(environmentTools).toBeDefined();
     expect(Object.keys(environmentTools)).toHaveLength(3);
   });
 
   it('should have createEnvironment tool with correct properties', () => {
+    const environmentTools = createEnvironmentTools(mockConfig);
     const { createEnvironment } = environmentTools;
 
     expect(createEnvironment.title).toBe('create_environment');
@@ -33,10 +34,12 @@ describe('environment tools collection', () => {
       idempotentHint: false,
       openWorldHint: false,
     });
-    expect(createEnvironment.tool).toBe(createEnvironmentTool);
+    expect(createEnvironment.tool).toBeDefined();
+    expect(typeof createEnvironment.tool).toBe('function');
   });
 
   it('should have listEnvironments tool with correct properties', () => {
+    const environmentTools = createEnvironmentTools(mockConfig);
     const { listEnvironments } = environmentTools;
 
     expect(listEnvironments.title).toBe('list_environments');
@@ -50,10 +53,12 @@ describe('environment tools collection', () => {
       readOnlyHint: true,
       openWorldHint: false,
     });
-    expect(listEnvironments.tool).toBe(listEnvironmentsTool);
+    expect(listEnvironments.tool).toBeDefined();
+    expect(typeof listEnvironments.tool).toBe('function');
   });
 
   it('should have deleteEnvironment tool with correct properties', () => {
+    const environmentTools = createEnvironmentTools(mockConfig);
     const { deleteEnvironment } = environmentTools;
 
     expect(deleteEnvironment.title).toBe('delete_environment');
@@ -67,6 +72,7 @@ describe('environment tools collection', () => {
       idempotentHint: true,
       openWorldHint: false,
     });
-    expect(deleteEnvironment.tool).toBe(deleteEnvironmentTool);
+    expect(deleteEnvironment.tool).toBeDefined();
+    expect(typeof deleteEnvironment.tool).toBe('function');
   });
 });

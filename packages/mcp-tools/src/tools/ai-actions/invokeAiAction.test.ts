@@ -10,11 +10,13 @@ import {
   mockInvocationFields,
   mockInvocationStatusResponse,
 } from './mockClient.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
-vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
+vi.mock('../../utils/tools.js');
 
 describe('invokeAiAction', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     setupMockClient();
     // Use fake timers to simulate time passage
@@ -45,7 +47,8 @@ describe('invokeAiAction', () => {
     mockAiActionInvocationGet.mockResolvedValue(mockInvocationStatusResponse);
 
     // Start the invocation and immediately advance timers
-    const resultPromise = invokeAiActionTool(testArgs);
+    const tool = invokeAiActionTool(mockConfig);
+    const resultPromise = tool(testArgs);
 
     // Fast-forward through the polling interval (30 seconds)
     await vi.advanceTimersByTimeAsync(30000);
@@ -122,7 +125,8 @@ describe('invokeAiAction', () => {
       });
 
     // Start the invocation and advance timers
-    const resultPromise = invokeAiActionTool(testArgs);
+    const tool = invokeAiActionTool(mockConfig);
+    const resultPromise = tool(testArgs);
 
     // Fast-forward through the polling interval
     await vi.advanceTimersByTimeAsync(30000);
@@ -179,7 +183,8 @@ describe('invokeAiAction', () => {
     });
 
     // Start the invocation
-    const resultPromise = invokeAiActionTool(testArgs);
+    const tool = invokeAiActionTool(mockConfig);
+    const resultPromise = tool(testArgs);
 
     // Fast-forward through all 10 polling attempts
     await vi.advanceTimersByTimeAsync(10 * 30000);
@@ -220,7 +225,8 @@ describe('invokeAiAction', () => {
     });
 
     // Start the invocation
-    const resultPromise = invokeAiActionTool(testArgs);
+    const tool = invokeAiActionTool(mockConfig);
+    const resultPromise = tool(testArgs);
 
     // Fast-forward through all polling attempts since FAILED status never completes
     await vi.advanceTimersByTimeAsync(10 * 30000);
@@ -261,7 +267,8 @@ describe('invokeAiAction', () => {
     });
 
     // Start the invocation
-    const resultPromise = invokeAiActionTool(testArgs);
+    const tool = invokeAiActionTool(mockConfig);
+    const resultPromise = tool(testArgs);
 
     // Fast-forward through all polling attempts since CANCELLED status never completes
     await vi.advanceTimersByTimeAsync(10 * 30000);
@@ -288,7 +295,8 @@ describe('invokeAiAction', () => {
     const error = new Error('AI action not found');
     mockAiActionInvoke.mockRejectedValue(error);
 
-    const result = await invokeAiActionTool(testArgs);
+    const tool = invokeAiActionTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       isError: true,

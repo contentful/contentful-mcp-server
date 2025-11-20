@@ -8,6 +8,7 @@ import { listEnvironmentsTool } from './listEnvironments.js';
 import { createToolClient } from '../../utils/tools.js';
 import { formatResponse } from '../../utils/formatters.js';
 import { summarizeData } from '../../utils/summarizer.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 const mockEnvironments = {
   items: [
@@ -23,6 +24,8 @@ const mockEnvironments = {
 };
 
 describe('listEnvironmentsTool', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -30,14 +33,15 @@ describe('listEnvironmentsTool', () => {
   it('should list environments successfully', async () => {
     mockEnvironmentGetMany.mockResolvedValue(mockEnvironments);
 
-    const result = await listEnvironmentsTool(mockArgs);
+    const tool = listEnvironmentsTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const clientArgs = {
       spaceId: mockArgs.spaceId,
       environmentId: mockArgs.environmentId,
     };
 
-    expect(createToolClient).toHaveBeenCalledWith(clientArgs);
+    expect(createToolClient).toHaveBeenCalledWith(mockConfig, clientArgs);
     expect(mockEnvironmentGetMany).toHaveBeenCalledWith({
       spaceId: mockArgs.spaceId,
       query: {
@@ -92,7 +96,8 @@ describe('listEnvironmentsTool', () => {
     const error = new Error('Listing failed');
     mockEnvironmentGetMany.mockRejectedValue(error);
 
-    const result = await listEnvironmentsTool(mockArgs);
+    const tool = listEnvironmentsTool(mockConfig);
+    const result = await tool(mockArgs);
 
     expect(result).toEqual({
       isError: true,

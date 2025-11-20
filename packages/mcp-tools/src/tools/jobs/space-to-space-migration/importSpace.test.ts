@@ -16,16 +16,11 @@ vi.mock('module', () => ({
   createRequire: vi.fn(() => vi.fn(() => mockContentfulImport)),
 }));
 
-// Mock the config module
-vi.mock('../../../config/contentful.js', () => ({
-  getDefaultClientConfig: vi.fn(() => ({
-    accessToken: 'test-management-token',
-    space: 'test-space-id',
-    environment: 'test-environment',
-  })),
-}));
+import { createMockConfig } from '../../../test-helpers/mockConfig.js';
 
 describe('importSpace', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     vi.clearAllMocks();
     // Reset the mock to return successful result by default
@@ -37,11 +32,12 @@ describe('importSpace', () => {
       content: { contentTypes: [], entries: [] },
     });
 
-    const result = await createImportSpaceTool(testArgs);
+    const tool = createImportSpaceTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(mockContentfulImport).toHaveBeenCalledWith({
       ...testArgs,
-      managementToken: 'test-management-token',
+      managementToken: mockConfig.accessToken,
       environmentId: 'test-environment',
     });
 
@@ -106,11 +102,12 @@ describe('importSpace', () => {
       config: '/config/import.json',
     });
 
-    const result = await createImportSpaceTool(testArgs);
+    const tool = createImportSpaceTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(mockContentfulImport).toHaveBeenCalledWith({
       ...testArgs,
-      managementToken: 'test-management-token',
+      managementToken: mockConfig.accessToken,
     });
 
     expect(result.content[0].text).toContain('Space imported successfully');
@@ -125,7 +122,8 @@ describe('importSpace', () => {
       content: { contentTypes: [], entries: [] },
     });
 
-    const result = await createImportSpaceTool(testArgs);
+    const tool = createImportSpaceTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       isError: true,

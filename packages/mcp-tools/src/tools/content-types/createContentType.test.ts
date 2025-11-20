@@ -9,8 +9,11 @@ import {
 } from './mockClient.js';
 import { createContentTypeTool } from './createContentType.js';
 import { formatResponse } from '../../utils/formatters.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('createContentType', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -27,7 +30,8 @@ describe('createContentType', () => {
 
     mockContentTypeCreate.mockResolvedValue(mockContentType);
 
-    const result = await createContentTypeTool(testArgs);
+    const tool = createContentTypeTool(mockConfig);
+    const result = await tool(testArgs);
 
     const expectedResponse = formatResponse(
       'Content type created successfully',
@@ -60,7 +64,8 @@ describe('createContentType', () => {
       description: undefined,
     });
 
-    const result = await createContentTypeTool(testArgs);
+    const tool = createContentTypeTool(mockConfig);
+    const result = await tool(testArgs);
 
     const expectedResponse = formatResponse(
       'Content type created successfully',
@@ -124,7 +129,8 @@ describe('createContentType', () => {
 
     mockContentTypeCreate.mockResolvedValue(mockComplexContentType);
 
-    const result = await createContentTypeTool(testArgs);
+    const tool = createContentTypeTool(mockConfig);
+    const result = await tool(testArgs);
 
     const expectedResponse = formatResponse(
       'Content type created successfully',
@@ -186,7 +192,8 @@ describe('createContentType', () => {
 
     mockContentTypeCreateWithId.mockResolvedValue(mockContentTypeWithDefaults);
 
-    const result = await createContentTypeTool(testArgs);
+    const tool = createContentTypeTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(mockContentTypeCreateWithId).toHaveBeenCalledWith(
       {
@@ -238,7 +245,8 @@ describe('createContentType', () => {
 
     mockContentTypeCreateWithId.mockResolvedValue(mockContentTypeWithId);
 
-    const result = await createContentTypeTool(testArgs);
+    const tool = createContentTypeTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(mockContentTypeCreateWithId).toHaveBeenCalledWith(
       {
@@ -312,7 +320,8 @@ describe('createContentType', () => {
 
     mockContentTypeCreate.mockResolvedValue(mockContentTypeWithTaxonomy);
 
-    const result = await createContentTypeTool(testArgs);
+    const tool = createContentTypeTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(mockContentTypeCreate).toHaveBeenCalledWith(
       {
@@ -356,7 +365,8 @@ describe('createContentType', () => {
     const error = new Error('Display field does not exist in fields');
     mockContentTypeCreate.mockRejectedValue(error);
 
-    const result = await createContentTypeTool(testArgs);
+    const tool = createContentTypeTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       isError: true,

@@ -4,8 +4,10 @@ import { mockArgs, testTag, mockTagCreateWithId } from './mockClient.js';
 import { createTagTool } from './createTag.js';
 import { createToolClient } from '../../utils/tools.js';
 import { formatResponse } from '../../utils/formatters.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('createTag', () => {
+  const mockConfig = createMockConfig();
   it('should create a tag successfully', async () => {
     const testArgs = {
       ...mockArgs,
@@ -15,8 +17,9 @@ describe('createTag', () => {
     };
     mockTagCreateWithId.mockResolvedValue(testTag);
 
-    const result = await createTagTool(testArgs);
-    expect(createToolClient).toHaveBeenCalledWith(testArgs);
+    const tool = createTagTool(mockConfig);
+    const result = await tool(testArgs);
+    expect(createToolClient).toHaveBeenCalledWith(mockConfig, testArgs);
     expect(mockTagCreateWithId).toHaveBeenCalledWith(
       {
         spaceId: testArgs.spaceId,
@@ -53,7 +56,8 @@ describe('createTag', () => {
     const error = new Error('Validation error');
     mockTagCreateWithId.mockRejectedValue(error);
 
-    const result = await createTagTool(testArgs);
+    const tool = createTagTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       isError: true,

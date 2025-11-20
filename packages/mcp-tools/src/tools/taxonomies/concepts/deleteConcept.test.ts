@@ -7,9 +7,12 @@ import {
 } from './mockClient.js';
 import { deleteConceptTool } from './deleteConcept.js';
 import { formatResponse } from '../../../utils/formatters.js';
-import { getDefaultClientConfig } from '../../../config/contentful.js';
+import { createClientConfig } from '../../../utils/tools.js';
+import { createMockConfig } from '../../../test-helpers/mockConfig.js';
 
 describe('deleteConcept', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     mockConceptGet.mockClear();
     mockConceptDelete.mockClear();
@@ -25,10 +28,10 @@ describe('deleteConcept', () => {
     mockConceptGet.mockResolvedValue(testConcept);
     mockConceptDelete.mockResolvedValue(undefined);
 
-    const result = await deleteConceptTool(testArgs);
+    const tool = deleteConceptTool(mockConfig);
+    const result = await tool(testArgs);
 
-    const clientConfig = getDefaultClientConfig();
-    delete clientConfig.space;
+    const clientConfig = createClientConfig(mockConfig);
     expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
       type: 'plain',
     });
@@ -57,7 +60,8 @@ describe('deleteConcept', () => {
     mockConceptGet.mockResolvedValue(testConcept);
     mockConceptDelete.mockRejectedValue(error);
 
-    const result = await deleteConceptTool(testArgs);
+    const tool = deleteConceptTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(mockConceptDelete).toHaveBeenCalledWith({
       organizationId: 'test-org-id',

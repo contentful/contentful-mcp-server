@@ -7,11 +7,13 @@ import {
   mockAiActionsResponse,
   mockArgs,
 } from './mockClient.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
-vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
+vi.mock('../../utils/tools.js');
 
 describe('listAiActions', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     setupMockClient();
   });
@@ -19,7 +21,8 @@ describe('listAiActions', () => {
   it('should list AI actions successfully with default parameters', async () => {
     mockAiActionGetMany.mockResolvedValue(mockAiActionsResponse);
 
-    const result = await listAiActionTool(mockArgs);
+    const tool = listAiActionTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse(
       'AI actions retrieved successfully',
@@ -61,7 +64,8 @@ describe('listAiActions', () => {
 
     mockAiActionGetMany.mockResolvedValue(mockAiActionsResponse);
 
-    await listAiActionTool(testArgs);
+    const tool = listAiActionTool(mockConfig);
+    await tool(testArgs);
 
     expect(mockAiActionGetMany).toHaveBeenCalledWith({
       spaceId: 'test-space-id',
@@ -81,7 +85,8 @@ describe('listAiActions', () => {
 
     mockAiActionGetMany.mockResolvedValue(mockAiActionsResponse);
 
-    await listAiActionTool(testArgs);
+    const tool = listAiActionTool(mockConfig);
+    await tool(testArgs);
 
     expect(mockAiActionGetMany).toHaveBeenCalledWith({
       spaceId: 'test-space-id',
@@ -102,7 +107,8 @@ describe('listAiActions', () => {
 
     mockAiActionGetMany.mockResolvedValue(mockAiActionsResponse);
 
-    await listAiActionTool(testArgs);
+    const tool = listAiActionTool(mockConfig);
+    await tool(testArgs);
 
     expect(mockAiActionGetMany).toHaveBeenCalledWith({
       spaceId: 'test-space-id',
@@ -123,7 +129,8 @@ describe('listAiActions', () => {
 
     mockAiActionGetMany.mockResolvedValue(mockAiActionsResponse);
 
-    await listAiActionTool(testArgs);
+    const tool = listAiActionTool(mockConfig);
+    await tool(testArgs);
 
     expect(mockAiActionGetMany).toHaveBeenCalledWith({
       spaceId: 'test-space-id',
@@ -146,7 +153,8 @@ describe('listAiActions', () => {
 
     mockAiActionGetMany.mockResolvedValue(emptyResponse);
 
-    const result = await listAiActionTool(mockArgs);
+    const tool = listAiActionTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse(
       'AI actions retrieved successfully',
@@ -174,7 +182,8 @@ describe('listAiActions', () => {
     const error = new Error('Access denied');
     mockAiActionGetMany.mockRejectedValue(error);
 
-    const result = await listAiActionTool(mockArgs);
+    const tool = listAiActionTool(mockConfig);
+    const result = await tool(mockArgs);
 
     expect(result).toEqual({
       isError: true,

@@ -10,9 +10,11 @@ import {
 } from './mockClient.js';
 
 vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('deleteAsset', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     setupMockClient();
     vi.clearAllMocks();
@@ -22,7 +24,8 @@ describe('deleteAsset', () => {
     mockAssetGet.mockResolvedValue(mockAsset);
     mockAssetDelete.mockResolvedValue(undefined);
 
-    const result = await deleteAssetTool(mockArgs);
+    const tool = deleteAssetTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse('Asset deleted successfully', {
       asset: mockAsset,
@@ -53,7 +56,8 @@ describe('deleteAsset', () => {
     const error = new Error('Asset not found');
     mockAssetGet.mockRejectedValue(error);
 
-    const result = await deleteAssetTool(mockArgs);
+    const tool = deleteAssetTool(mockConfig);
+    const result = await tool(mockArgs);
 
     expect(result).toEqual({
       isError: true,
@@ -73,7 +77,8 @@ describe('deleteAsset', () => {
     const deletionError = new Error('Asset deletion failed');
     mockAssetDelete.mockRejectedValue(deletionError);
 
-    const result = await deleteAssetTool(mockArgs);
+    const tool = deleteAssetTool(mockConfig);
+    const result = await tool(mockArgs);
 
     expect(result).toEqual({
       isError: true,

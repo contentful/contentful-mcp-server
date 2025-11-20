@@ -8,11 +8,13 @@ import {
   mockAiAction,
   mockArgs,
 } from './mockClient.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
 
 describe('updateAiAction', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     setupMockClient();
   });
@@ -58,7 +60,8 @@ describe('updateAiAction', () => {
 
     mockAiActionUpdate.mockResolvedValue(updatedAiAction);
 
-    const result = await updateAiActionTool(testArgs);
+    const tool = updateAiActionTool(mockConfig);
+    const result = await tool(testArgs);
 
     const expectedResponse = formatResponse('AI action updated successfully', {
       updatedAiAction: updatedAiAction,
@@ -86,7 +89,8 @@ describe('updateAiAction', () => {
 
     mockAiActionUpdate.mockResolvedValue(updatedAiAction);
 
-    const result = await updateAiActionTool(testArgs);
+    const tool = updateAiActionTool(mockConfig);
+    const result = await tool(testArgs);
 
     const expectedResponse = formatResponse('AI action updated successfully', {
       updatedAiAction: updatedAiAction,
@@ -110,7 +114,8 @@ describe('updateAiAction', () => {
     const error = new Error('AI action not found');
     mockAiActionUpdate.mockRejectedValue(error);
 
-    const result = await updateAiActionTool(testArgs);
+    const tool = updateAiActionTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       isError: true,

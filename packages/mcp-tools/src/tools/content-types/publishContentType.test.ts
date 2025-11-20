@@ -7,8 +7,10 @@ import {
 } from './mockClient.js';
 import { publishContentTypeTool } from './publishContentType.js';
 import { formatResponse } from '../../utils/formatters.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('publishContentType', () => {
+  const mockConfig = createMockConfig();
   it('should publish a content type successfully', async () => {
     const unpublishedContentType = {
       ...mockContentType,
@@ -30,7 +32,8 @@ describe('publishContentType', () => {
     mockContentTypeGet.mockResolvedValue(unpublishedContentType);
     mockContentTypePublish.mockResolvedValue(publishedContentType);
 
-    const result = await publishContentTypeTool(mockArgs);
+    const tool = publishContentTypeTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse(
       'Content type published successfully',
@@ -70,7 +73,8 @@ describe('publishContentType', () => {
     mockContentTypeGet.mockResolvedValue(alreadyPublishedContentType);
     mockContentTypePublish.mockResolvedValue(republishedContentType);
 
-    const result = await publishContentTypeTool(mockArgs);
+    const tool = publishContentTypeTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse(
       'Content type published successfully',
@@ -101,7 +105,8 @@ describe('publishContentType', () => {
     const publishError = new Error('Validation failed');
     mockContentTypePublish.mockRejectedValue(publishError);
 
-    const result = await publishContentTypeTool(mockArgs);
+    const tool = publishContentTypeTool(mockConfig);
+    const result = await tool(mockArgs);
 
     expect(result).toEqual({
       isError: true,

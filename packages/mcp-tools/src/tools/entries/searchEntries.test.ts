@@ -10,10 +10,12 @@ import {
 } from './mockClient.js';
 
 vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
 vi.mock('../../../src/utils/summarizer.js');
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('searchEntries', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     setupMockClient();
   });
@@ -50,7 +52,8 @@ describe('searchEntries', () => {
     mockEntryGetMany.mockResolvedValue(mockEntries);
     vi.mocked(summarizeData).mockReturnValue(mockSummarized);
 
-    const result = await searchEntriesTool(testArgs);
+    const tool = searchEntriesTool(mockConfig);
+    const result = await tool(testArgs);
 
     const expectedResponse = formatResponse('Entries retrieved successfully', {
       entries: mockSummarized,
@@ -100,7 +103,8 @@ describe('searchEntries', () => {
     mockEntryGetMany.mockResolvedValue(mockEntries);
     vi.mocked(summarizeData).mockReturnValue(mockSummarized);
 
-    const result = await searchEntriesTool(testArgs);
+    const tool = searchEntriesTool(mockConfig);
+    const result = await tool(testArgs);
 
     const expectedResponse = formatResponse('Entries retrieved successfully', {
       entries: mockSummarized,
@@ -137,7 +141,8 @@ describe('searchEntries', () => {
       displayed: 0,
     });
 
-    await searchEntriesTool(testArgs);
+    const tool = searchEntriesTool(mockConfig);
+    await tool(testArgs);
 
     expect(mockEntryGetMany).toHaveBeenCalledWith({
       spaceId: testArgs.spaceId,
@@ -160,14 +165,15 @@ describe('searchEntries', () => {
     const error = new Error('Content type not found');
     mockEntryGetMany.mockRejectedValue(error);
 
-    const result = await searchEntriesTool(testArgs);
+    const tool = searchEntriesTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       isError: true,
       content: [
         {
           type: 'text',
-          text: 'Error deleting dataset: Content type not found',
+          text: 'Error searching entries: Content type not found',
         },
       ],
     });

@@ -6,7 +6,8 @@ import {
   mockCreateClient,
 } from './mockClient.js';
 import { listConceptSchemesTool } from './listConceptSchemes.js';
-import { getDefaultClientConfig } from '../../../config/contentful.js';
+import { createClientConfig } from '../../../utils/tools.js';
+import { createMockConfig } from '../../../test-helpers/mockConfig.js';
 
 const mockConceptSchemesResponse = {
   sys: {
@@ -19,6 +20,8 @@ const mockConceptSchemesResponse = {
 };
 
 describe('listConceptSchemes', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     mockConceptSchemeGetMany.mockClear();
     mockCreateClient.mockClear();
@@ -31,10 +34,10 @@ describe('listConceptSchemes', () => {
   it('should list concept schemes successfully with default parameters', async () => {
     mockConceptSchemeGetMany.mockResolvedValue(mockConceptSchemesResponse);
 
-    const result = await listConceptSchemesTool(testArgs);
+    const tool = listConceptSchemesTool(mockConfig);
+    const result = await tool(testArgs);
 
-    const clientConfig = getDefaultClientConfig();
-    delete clientConfig.space;
+    const clientConfig = createClientConfig(mockConfig);
     expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
       type: 'plain',
     });
@@ -74,7 +77,8 @@ describe('listConceptSchemes', () => {
       skip: 2,
     });
 
-    const result = await listConceptSchemesTool(customArgs);
+    const tool = listConceptSchemesTool(mockConfig);
+    const result = await tool(customArgs);
 
     expect(mockConceptSchemeGetMany).toHaveBeenCalledWith({
       organizationId: 'test-org-id',
@@ -102,7 +106,8 @@ describe('listConceptSchemes', () => {
     const errorMessage = 'Failed to retrieve concept schemes';
     mockConceptSchemeGetMany.mockRejectedValue(new Error(errorMessage));
 
-    const result = await listConceptSchemesTool(testArgs);
+    const tool = listConceptSchemesTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       content: [
@@ -134,7 +139,8 @@ describe('listConceptSchemes', () => {
 
     mockConceptSchemeGetMany.mockResolvedValue(paginatedResponse);
 
-    const result = await listConceptSchemesTool(paginatedArgs);
+    const tool = listConceptSchemesTool(mockConfig);
+    const result = await tool(paginatedArgs);
 
     expect(mockConceptSchemeGetMany).toHaveBeenCalledWith({
       organizationId: 'test-org-id',
@@ -164,7 +170,8 @@ describe('listConceptSchemes', () => {
 
     mockConceptSchemeGetMany.mockResolvedValue(mockConceptSchemesResponse);
 
-    const result = await listConceptSchemesTool(argsWithInclude);
+    const tool = listConceptSchemesTool(mockConfig);
+    const result = await tool(argsWithInclude);
 
     expect(mockConceptSchemeGetMany).toHaveBeenCalledWith({
       organizationId: 'test-org-id',

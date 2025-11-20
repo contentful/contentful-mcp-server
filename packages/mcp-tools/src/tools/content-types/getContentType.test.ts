@@ -2,12 +2,15 @@ import { describe, it, expect } from 'vitest';
 import { mockContentTypeGet, mockContentType, mockArgs } from './mockClient.js';
 import { getContentTypeTool } from './getContentType.js';
 import { formatResponse } from '../../utils/formatters.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('getContentType', () => {
+  const mockConfig = createMockConfig();
   it('should retrieve a content type successfully', async () => {
     mockContentTypeGet.mockResolvedValue(mockContentType);
 
-    const result = await getContentTypeTool(mockArgs);
+    const tool = getContentTypeTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse(
       'Content type retrieved successfully',
@@ -63,7 +66,8 @@ describe('getContentType', () => {
 
     mockContentTypeGet.mockResolvedValue(complexContentType);
 
-    const result = await getContentTypeTool(mockArgs);
+    const tool = getContentTypeTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse(
       'Content type retrieved successfully',
@@ -85,7 +89,8 @@ describe('getContentType', () => {
     const error = new Error('Content type not found');
     mockContentTypeGet.mockRejectedValue(error);
 
-    const result = await getContentTypeTool(mockArgs);
+    const tool = getContentTypeTool(mockConfig);
+    const result = await tool(mockArgs);
 
     expect(result).toEqual({
       isError: true,

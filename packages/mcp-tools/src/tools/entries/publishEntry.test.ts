@@ -10,12 +10,14 @@ import {
   mockArgs,
   mockBulkArgs,
 } from './mockClient.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
 vi.mock('../../../src/utils/bulkOperations.js');
 
 describe('publishEntry', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     setupMockClient();
   });
@@ -33,7 +35,8 @@ describe('publishEntry', () => {
     mockEntryGet.mockResolvedValue(mockEntry);
     mockEntryPublish.mockResolvedValue(mockPublishedEntry);
 
-    const result = await publishEntryTool(mockArgs);
+    const tool = publishEntryTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse('Entry published successfully', {
       status: mockPublishedEntry.sys.status,
@@ -54,7 +57,8 @@ describe('publishEntry', () => {
     mockEntryGet.mockResolvedValue(mockEntry);
     mockEntryPublish.mockRejectedValue(publishError);
 
-    const result = await publishEntryTool(mockArgs);
+    const tool = publishEntryTool(mockConfig);
+    const result = await tool(mockArgs);
 
     expect(result).toEqual({
       isError: true,
@@ -110,7 +114,8 @@ describe('publishEntry', () => {
     );
     mockBulkActionPublish.mockResolvedValue(mockBulkAction);
 
-    const result = await publishEntryTool(mockBulkArgs);
+    const tool = publishEntryTool(mockConfig);
+    const result = await tool(mockBulkArgs);
 
     const expectedResponse = formatResponse('Entry(s) published successfully', {
       status: mockCompletedAction.sys.status,
@@ -135,7 +140,8 @@ describe('publishEntry', () => {
     const error = new Error('Entry not found');
     mockEntryGet.mockRejectedValue(error);
 
-    const result = await publishEntryTool(testArgs);
+    const tool = publishEntryTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       isError: true,

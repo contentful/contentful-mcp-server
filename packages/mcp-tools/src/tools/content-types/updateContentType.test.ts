@@ -10,8 +10,10 @@ import {
 } from './mockClient.js';
 import { updateContentTypeTool } from './updateContentType.js';
 import { formatResponse } from '../../utils/formatters.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('updateContentType', () => {
+  const mockConfig = createMockConfig();
   it('should update a content type with new name only', async () => {
     const testArgs = {
       ...mockArgs,
@@ -27,7 +29,8 @@ describe('updateContentType', () => {
     mockContentTypeGet.mockResolvedValue(mockContentType);
     mockContentTypeUpdate.mockResolvedValue(updatedContentType);
 
-    const result = await updateContentTypeTool(testArgs);
+    const tool = updateContentTypeTool(mockConfig);
+    const result = await tool(testArgs);
 
     const expectedResponse = formatResponse(
       'Content type updated successfully',
@@ -62,7 +65,8 @@ describe('updateContentType', () => {
     mockContentTypeGet.mockResolvedValue(mockContentType);
     mockContentTypeUpdate.mockResolvedValue(updatedContentType);
 
-    const result = await updateContentTypeTool(testArgs);
+    const tool = updateContentTypeTool(mockConfig);
+    const result = await tool(testArgs);
 
     const expectedResponse = formatResponse(
       'Content type updated successfully',
@@ -97,7 +101,8 @@ describe('updateContentType', () => {
     mockContentTypeGet.mockResolvedValue(mockContentType);
     mockContentTypeUpdate.mockResolvedValue(updatedContentType);
 
-    const result = await updateContentTypeTool(testArgs);
+    const tool = updateContentTypeTool(mockConfig);
+    const result = await tool(testArgs);
 
     const expectedResponse = formatResponse(
       'Content type updated successfully',
@@ -188,7 +193,8 @@ describe('updateContentType', () => {
     mockContentTypeGet.mockResolvedValue(currentContentType);
     mockContentTypeUpdate.mockResolvedValue(updatedContentType);
 
-    const result = await updateContentTypeTool(testArgs);
+    const tool = updateContentTypeTool(mockConfig);
+    const result = await tool(testArgs);
 
     const expectedResponse = formatResponse(
       'Content type updated successfully',
@@ -217,7 +223,8 @@ describe('updateContentType', () => {
     mockContentTypeGet.mockResolvedValue(mockContentType);
     mockContentTypeUpdate.mockRejectedValue(updateError);
 
-    const result = await updateContentTypeTool(testArgs);
+    const tool = updateContentTypeTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       isError: true,
@@ -268,7 +275,8 @@ describe('updateContentType', () => {
     mockContentTypeGet.mockResolvedValue(currentContentType);
     mockContentTypeUpdate.mockResolvedValue(updatedContentType);
 
-    const result = await updateContentTypeTool(testArgs);
+    const tool = updateContentTypeTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(mockContentTypeUpdate).toHaveBeenCalledWith(
       {
@@ -307,7 +315,8 @@ describe('updateContentType', () => {
     mockContentTypeGet.mockResolvedValue(currentContentType);
     mockContentTypeUpdate.mockResolvedValue(updatedContentType);
 
-    const result = await updateContentTypeTool(mockArgs);
+    const tool = updateContentTypeTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse(
       'Content type updated successfully',
