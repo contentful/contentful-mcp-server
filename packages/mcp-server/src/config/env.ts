@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const EnvSchema = z.object({
   CONTENTFUL_MANAGEMENT_ACCESS_TOKEN: z
@@ -9,6 +11,7 @@ const EnvSchema = z.object({
     .optional()
     .default('api.contentful.com')
     .describe('Contentful API host'),
+  APP_ID: z.string().optional().describe('Contentful App ID'),
   SPACE_ID: z.string().optional().describe('Contentful Space ID'),
   ENVIRONMENT_ID: z
     .string()
@@ -16,7 +19,6 @@ const EnvSchema = z.object({
     .default('master')
     .describe('Contentful environment ID'),
   ORGANIZATION_ID: z.string().optional().describe('Contentful organization ID'),
-  APP_ID: z.string().optional().describe('Contentful App ID'),
 });
 
 export const env = EnvSchema.safeParse(process.env);
