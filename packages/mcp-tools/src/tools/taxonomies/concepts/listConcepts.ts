@@ -52,36 +52,98 @@ export function listConceptsTool(config: ContentfulConfig) {
     delete clientConfig.space;
     const contentfulClient = ctfl.createClient(clientConfig, { type: 'plain' });
 
-  // Validate required parameters for specific operations
-  if ((args.getDescendants || args.getAncestors) && !args.conceptId) {
-    throw new Error(
-      'conceptId is required when getting descendants or ancestors',
-    );
-  }
+    // Validate required parameters for specific operations
+    if ((args.getDescendants || args.getAncestors) && !args.conceptId) {
+      throw new Error(
+        'conceptId is required when getting descendants or ancestors',
+      );
+    }
 
-  // Handle getTotalOnly - return just the total count
-  if (args.getTotalOnly) {
-    const total = await contentfulClient.concept.getTotal({
+    // Handle getTotalOnly - return just the total count
+    if (args.getTotalOnly) {
+      const total = await contentfulClient.concept.getTotal({
+        organizationId: args.organizationId,
+      });
+      return createSuccessResponse('Total concepts retrieved successfully', {
+        total,
+      });
+    }
+
+    // Handle getDescendants
+    if (args.getDescendants && args.conceptId) {
+      const descendants = await contentfulClient.concept.getDescendants({
+        organizationId: args.organizationId,
+        conceptId: args.conceptId,
+        ...(args.limit && { limit: args.limit }),
+        ...(args.skip && { skip: args.skip }),
+        ...(args.select && { select: args.select }),
+        ...(args.include && { include: args.include }),
+        ...(args.order && { order: args.order }),
+      });
+
+      const summarizedDescendants = descendants.items.map((concept) => ({
+        sys: concept.sys,
+        prefLabel: concept.prefLabel,
+        uri: concept.uri,
+        broader: concept.broader,
+        related: concept.related,
+      }));
+
+      const responseData = summarizeData({
+        ...descendants,
+        items: summarizedDescendants,
+      });
+
+      return createSuccessResponse(
+        'Concept descendants retrieved successfully',
+        responseData as Record<string, unknown>,
+      );
+    }
+
+    // Handle getAncestors
+    if (args.getAncestors && args.conceptId) {
+      const ancestors = await contentfulClient.concept.getAncestors({
+        organizationId: args.organizationId,
+        conceptId: args.conceptId,
+        ...(args.limit && { limit: args.limit }),
+        ...(args.skip && { skip: args.skip }),
+        ...(args.select && { select: args.select }),
+        ...(args.include && { include: args.include }),
+        ...(args.order && { order: args.order }),
+      });
+
+      const summarizedAncestors = ancestors.items.map((concept) => ({
+        sys: concept.sys,
+        prefLabel: concept.prefLabel,
+        uri: concept.uri,
+        broader: concept.broader,
+        related: concept.related,
+      }));
+
+      const responseData = summarizeData({
+        ...ancestors,
+        items: summarizedAncestors,
+      });
+
+      return createSuccessResponse(
+        'Concept ancestors retrieved successfully',
+        responseData as Record<string, unknown>,
+      );
+    }
+
+    // Default behavior - get all concepts
+    const concepts = await contentfulClient.concept.getMany({
       organizationId: args.organizationId,
-    });
-    return createSuccessResponse('Total concepts retrieved successfully', {
-      total,
-    });
-  }
-
-  // Handle getDescendants
-  if (args.getDescendants) {
-    const descendants = await contentfulClient.concept.getDescendants({
-      organizationId: args.organizationId,
-      conceptId: args.conceptId!,
-      ...(args.limit && { limit: args.limit }),
-      ...(args.skip && { skip: args.skip }),
-      ...(args.select && { select: args.select }),
-      ...(args.include && { include: args.include }),
-      ...(args.order && { order: args.order }),
+      query: {
+        limit: args.limit || 10,
+        skip: args.skip || 0,
+        ...(args.select && { select: args.select }),
+        ...(args.include && { include: args.include }),
+        ...(args.order && { order: args.order }),
+      },
     });
 
-    const summarizedDescendants = descendants.items.map((concept) => ({
+    const summarizedConcepts = concepts.items.map((concept) => ({
       sys: concept.sys,
       prefLabel: concept.prefLabel,
       uri: concept.uri,
@@ -90,71 +152,9 @@ export function listConceptsTool(config: ContentfulConfig) {
     }));
 
     const responseData = summarizeData({
-      ...descendants,
-      items: summarizedDescendants,
+      ...concepts,
+      items: summarizedConcepts,
     });
-
-    return createSuccessResponse(
-      'Concept descendants retrieved successfully',
-      responseData as Record<string, unknown>,
-    );
-  }
-
-  // Handle getAncestors
-  if (args.getAncestors) {
-    const ancestors = await contentfulClient.concept.getAncestors({
-      organizationId: args.organizationId,
-      conceptId: args.conceptId!,
-      ...(args.limit && { limit: args.limit }),
-      ...(args.skip && { skip: args.skip }),
-      ...(args.select && { select: args.select }),
-      ...(args.include && { include: args.include }),
-      ...(args.order && { order: args.order }),
-    });
-
-    const summarizedAncestors = ancestors.items.map((concept) => ({
-      sys: concept.sys,
-      prefLabel: concept.prefLabel,
-      uri: concept.uri,
-      broader: concept.broader,
-      related: concept.related,
-    }));
-
-    const responseData = summarizeData({
-      ...ancestors,
-      items: summarizedAncestors,
-    });
-
-    return createSuccessResponse(
-      'Concept ancestors retrieved successfully',
-      responseData as Record<string, unknown>,
-    );
-  }
-
-  // Default behavior - get all concepts
-  const concepts = await contentfulClient.concept.getMany({
-    organizationId: args.organizationId,
-    query: {
-      limit: args.limit || 10,
-      skip: args.skip || 0,
-      ...(args.select && { select: args.select }),
-      ...(args.include && { include: args.include }),
-      ...(args.order && { order: args.order }),
-    },
-  });
-
-  const summarizedConcepts = concepts.items.map((concept) => ({
-    sys: concept.sys,
-    prefLabel: concept.prefLabel,
-    uri: concept.uri,
-    broader: concept.broader,
-    related: concept.related,
-  }));
-
-  const responseData = summarizeData({
-    ...concepts,
-    items: summarizedConcepts,
-  });
 
     return createSuccessResponse(
       'Concepts retrieved successfully',

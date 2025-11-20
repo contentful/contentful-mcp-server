@@ -2,11 +2,8 @@ import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { createParamCollectionTool } from './paramCollection.js';
 import { formatResponse } from '../../../utils/formatters.js';
 import { mockParamCollectionArgs, mockArgs } from './mockClient.js';
-import { createMockConfig } from '../../../test-helpers/mockConfig.js';
 
 describe('paramCollection', () => {
-  const mockConfig = createMockConfig();
-
   beforeEach(() => {
     vi.clearAllMocks();
   });
