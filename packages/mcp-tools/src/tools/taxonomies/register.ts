@@ -1,7 +1,13 @@
-import { conceptSchemeTools } from './concept-schemes/register.js';
-import { conceptTools } from './concepts/register.js';
+import { createConceptSchemeTools } from './concept-schemes/register.js';
+import { createConceptTools } from './concepts/register.js';
+import type { ContentfulConfig } from '../../config/types.js';
 
-export const taxonomyTools = {
-  ...conceptSchemeTools,
-  ...conceptTools,
-};
+export function createTaxonomyTools(config: ContentfulConfig) {
+  const conceptSchemeTools = createConceptSchemeTools(config);
+  const conceptTools = createConceptTools(config);
+
+  return {
+    ...conceptSchemeTools,
+    ...conceptTools,
+  };
+}

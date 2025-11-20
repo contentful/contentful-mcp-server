@@ -10,6 +10,7 @@ import {
   createEntitiesCollection,
   waitForBulkActionCompletion,
 } from '../../utils/bulkOperations.js';
+import type { ContentfulConfig } from '../../config/types.js';
 
 export const UnpublishEntryToolParams = BaseToolSchema.extend({
   entryId: z
@@ -21,13 +22,14 @@ export const UnpublishEntryToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof UnpublishEntryToolParams>;
 
-async function tool(args: Params) {
-  const baseParams: BulkOperationParams = {
-    spaceId: args.spaceId,
-    environmentId: args.environmentId,
-  };
+export function unpublishEntryTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    const baseParams: BulkOperationParams = {
+      spaceId: args.spaceId,
+      environmentId: args.environmentId,
+    };
 
-  const contentfulClient = createToolClient(args);
+    const contentfulClient = createToolClient(config, args);
 
   // Normalize input to always be an array
   const entryIds = Array.isArray(args.entryId) ? args.entryId : [args.entryId];
@@ -82,9 +84,7 @@ async function tool(args: Params) {
     status: action.sys.status,
     entryIds,
   });
-}
+  }
 
-export const unpublishEntryTool = withErrorHandling(
-  tool,
-  'Error unpublishing entry',
-);
+  return withErrorHandling(tool, 'Error unpublishing entry');
+}

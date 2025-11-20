@@ -44,7 +44,6 @@
     "contentful-export": "^7.21.78",
     "contentful-import": "^9.4.111",
     "contentful-management": "^11.54.3",
-    "dotenv": "^16.4.7",
     "fast-xml-parser": "^5.2.5",
     "outdent": "^0.8.0",
     "@contentful/rich-text-types": "^16.8.5",

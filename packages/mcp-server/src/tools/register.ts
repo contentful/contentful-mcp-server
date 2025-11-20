@@ -1,19 +1,6 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import {
-  aiActionTools,
-  assetTools,
-  contentTypeTools,
-  contextTools,
-  editorInterfaceTools,
-  entryTools,
-  environmentTools,
-  jobTools,
-  localeTools,
-  orgTools,
-  spaceTools,
-  tagTools,
-  taxonomyTools,
-} from '@contentful/mcp-tools';
+import { ContentfulMcpTools } from '@contentful/mcp-tools';
+import { env } from '../config/env.js';
 
 /**
  * Registers all Contentful MCP tools with the server.
@@ -24,6 +11,34 @@ import {
  * - The migration handler controls their enable/disable state
  */
 export function registerAllTools(server: McpServer): void {
+  if (!env.success || !env.data) {
+    throw new Error('Environment variables are not properly configured');
+  }
+
+  // Initialize tools with configuration from environment variables
+  const tools = new ContentfulMcpTools({
+    accessToken: env.data.CONTENTFUL_MANAGEMENT_ACCESS_TOKEN,
+    host: env.data.CONTENTFUL_HOST,
+    spaceId: env.data.SPACE_ID,
+    environmentId: env.data.ENVIRONMENT_ID,
+    organizationId: env.data.ORGANIZATION_ID,
+    appId: env.data.APP_ID,
+  });
+
+  // Get tool collections
+  const aiActionTools = tools.getAiActionTools();
+  const assetTools = tools.getAssetTools();
+  const contentTypeTools = tools.getContentTypeTools();
+  const contextTools = tools.getContextTools();
+  const editorInterfaceTools = tools.getEditorInterfaceTools();
+  const entryTools = tools.getEntryTools();
+  const environmentTools = tools.getEnvironmentTools();
+  const localeTools = tools.getLocaleTools();
+  const orgTools = tools.getOrgTools();
+  const spaceTools = tools.getSpaceTools();
+  const tagTools = tools.getTagTools();
+  const taxonomyTools = tools.getTaxonomyTools();
+
   // Combine standard tool collections
   const allToolCollections = [
     aiActionTools,
@@ -54,9 +69,7 @@ export function registerAllTools(server: McpServer): void {
       );
     });
   });
-
-  // Handle migration tools specially
-  // These tools should be disabled by default and controlled by the handler
+  const jobTools = tools.getJobTools();
   const workflowToolsToDisable = [
     'spaceToSpaceParamCollection',
     'exportSpace',

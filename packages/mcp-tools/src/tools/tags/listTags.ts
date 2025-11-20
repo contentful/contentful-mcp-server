@@ -5,6 +5,7 @@ import {
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
 import { summarizeData } from '../../utils/summarizer.js';
+import type { ContentfulConfig } from '../../config/types.js';
 
 export const ListTagsToolParams = BaseToolSchema.extend({
   limit: z.number().optional().describe('Maximum number of tags to return'),
@@ -18,13 +19,14 @@ export const ListTagsToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof ListTagsToolParams>;
 
-async function tool(args: Params) {
-  const params = {
-    spaceId: args.spaceId,
-    environmentId: args.environmentId,
-  };
+export function listTagsTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    const params = {
+      spaceId: args.spaceId,
+      environmentId: args.environmentId,
+    };
 
-  const contentfulClient = createToolClient(args);
+    const contentfulClient = createToolClient(config, args);
 
   const tags = await contentfulClient.tag.getMany({
     ...params,
@@ -62,6 +64,7 @@ async function tool(args: Params) {
     limit: tags.limit,
     skip: tags.skip,
   });
-}
+  }
 
-export const listTagsTool = withErrorHandling(tool, 'Error listing tags');
+  return withErrorHandling(tool, 'Error listing tags');
+}

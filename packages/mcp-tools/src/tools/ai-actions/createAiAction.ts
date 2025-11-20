@@ -6,6 +6,7 @@ import {
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
 import { VariableType } from '../../utils/ai-actions.js';
 import { AiActionTestCaseSchema } from '../../types/aiActionTestCaseSchema.js';
+import type { ContentfulConfig } from '../../config/types.js';
 
 export const CreateAiActionToolParams = BaseToolSchema.extend({
   name: z.string().describe('The name of the AI action'),
@@ -44,29 +45,28 @@ export const CreateAiActionToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof CreateAiActionToolParams>;
 
-async function tool(args: Params) {
-  const params = {
-    spaceId: args.spaceId,
-    environmentId: args.environmentId || 'master',
-  };
+export function createAiActionTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    const params = {
+      spaceId: args.spaceId,
+      environmentId: args.environmentId || 'master',
+    };
 
-  const contentfulClient = createToolClient({
-    ...args,
-    environmentId: args.environmentId || 'master',
-  });
+    const contentfulClient = createToolClient(config, {
+      ...args,
+      environmentId: args.environmentId || 'master',
+    });
 
-  const aiAction = await contentfulClient.aiAction.create(params, {
-    name: args.name,
-    description: args.description,
-    instruction: args.instruction,
-    configuration: args.configuration,
-    testCases: args.testCases,
-  });
+    const aiAction = await contentfulClient.aiAction.create(params, {
+      name: args.name,
+      description: args.description,
+      instruction: args.instruction,
+      configuration: args.configuration,
+      testCases: args.testCases,
+    });
 
-  return createSuccessResponse('AI action created successfully', { aiAction });
+    return createSuccessResponse('AI action created successfully', { aiAction });
+  }
+
+  return withErrorHandling(tool, 'Error creating AI action');
 }
-
-export const createAiActionTool = withErrorHandling(
-  tool,
-  'Error creating AI action',
-);

@@ -4,7 +4,8 @@ import {
   withErrorHandling,
 } from '../../../utils/response.js';
 import ctfl from 'contentful-management';
-import { getDefaultClientConfig } from '../../../config/contentful.js';
+import { createClientConfig } from '../../../utils/tools.js';
+import type { ContentfulConfig } from '../../../config/types.js';
 import { summarizeData } from '../../../utils/summarizer.js';
 
 export const ListConceptSchemesToolParams = z.object({
@@ -30,12 +31,13 @@ export const ListConceptSchemesToolParams = z.object({
 
 type Params = z.infer<typeof ListConceptSchemesToolParams>;
 
-async function tool(args: Params) {
-  // Create a client without space-specific configuration for concept scheme operations
-  const clientConfig = getDefaultClientConfig();
-  // Remove space from config since we're working at the organization level
-  delete clientConfig.space;
-  const contentfulClient = ctfl.createClient(clientConfig, { type: 'plain' });
+export function listConceptSchemesTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    // Create a client without space-specific configuration for concept scheme operations
+    const clientConfig = createClientConfig(config);
+    // Remove space from config since we're working at the organization level
+    delete clientConfig.space;
+    const contentfulClient = ctfl.createClient(clientConfig, { type: 'plain' });
 
   const conceptSchemes = await contentfulClient.conceptScheme.getMany({
     organizationId: args.organizationId,
@@ -81,9 +83,7 @@ async function tool(args: Params) {
     limit: (conceptSchemes as { limit?: number }).limit || args.limit || 10,
     skip: (conceptSchemes as { skip?: number }).skip || args.skip || 0,
   });
-}
+  }
 
-export const listConceptSchemesTool = withErrorHandling(
-  tool,
-  'Error listing concept schemes',
-);
+  return withErrorHandling(tool, 'Error listing concept schemes');
+}

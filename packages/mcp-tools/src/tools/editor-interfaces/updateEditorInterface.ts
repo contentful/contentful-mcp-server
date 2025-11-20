@@ -5,6 +5,7 @@ import {
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
 import { EditorInterfaceProps } from 'contentful-management';
+import type { ContentfulConfig } from '../../config/types.js';
 
 // Define control schema for editor interface controls
 const ControlSchema = z.object({
@@ -94,14 +95,15 @@ export const UpdateEditorInterfaceToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof UpdateEditorInterfaceToolParams>;
 
-async function tool(args: Params) {
-  const params = {
-    spaceId: args.spaceId,
-    environmentId: args.environmentId,
-    contentTypeId: args.contentTypeId,
-  };
+export function updateEditorInterfaceTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    const params = {
+      spaceId: args.spaceId,
+      environmentId: args.environmentId,
+      contentTypeId: args.contentTypeId,
+    };
 
-  const contentfulClient = createToolClient(args);
+    const contentfulClient = createToolClient(config, args);
 
   // Get the current editor interface
   const currentEditorInterface =
@@ -135,12 +137,10 @@ async function tool(args: Params) {
     updatePayload as EditorInterfaceProps,
   );
 
-  return createSuccessResponse('Editor interface updated successfully', {
-    editorInterface,
-  });
-}
+    return createSuccessResponse('Editor interface updated successfully', {
+      editorInterface,
+    });
+  }
 
-export const updateEditorInterfaceTool = withErrorHandling(
-  tool,
-  'Error updating editor interface',
-);
+  return withErrorHandling(tool, 'Error updating editor interface');
+}

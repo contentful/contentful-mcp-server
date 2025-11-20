@@ -5,6 +5,7 @@ import {
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
 import { AssetMetadataSchema } from '../../types/taxonomySchema.js';
+import type { ContentfulConfig } from '../../config/types.js';
 
 export const UpdateAssetToolParams = BaseToolSchema.extend({
   assetId: z.string().describe('The ID of the asset to update'),
@@ -18,14 +19,15 @@ export const UpdateAssetToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof UpdateAssetToolParams>;
 
-async function tool(args: Params) {
-  const params = {
-    spaceId: args.spaceId,
-    environmentId: args.environmentId,
-    assetId: args.assetId,
-  };
+export function updateAssetTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    const params = {
+      spaceId: args.spaceId,
+      environmentId: args.environmentId,
+      assetId: args.assetId,
+    };
 
-  const contentfulClient = createToolClient(args);
+    const contentfulClient = createToolClient(config, args);
 
   // Get existing asset, merge fields, and update
   const existingAsset = await contentfulClient.asset.get(params);
@@ -49,7 +51,8 @@ async function tool(args: Params) {
     },
   });
 
-  return createSuccessResponse('Asset updated successfully', { updatedAsset });
-}
+    return createSuccessResponse('Asset updated successfully', { updatedAsset });
+  }
 
-export const updateAssetTool = withErrorHandling(tool, 'Error updating asset');
+  return withErrorHandling(tool, 'Error updating asset');
+}

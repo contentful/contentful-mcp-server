@@ -5,6 +5,7 @@ import {
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
 import { summarizeData } from '../../utils/summarizer.js';
+import type { ContentfulConfig } from '../../config/types.js';
 
 export const ListContentTypesToolParams = BaseToolSchema.extend({
   limit: z
@@ -28,13 +29,14 @@ export const ListContentTypesToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof ListContentTypesToolParams>;
 
-async function tool(args: Params) {
-  const params = {
-    spaceId: args.spaceId,
-    environmentId: args.environmentId,
-  };
+export function listContentTypesTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    const params = {
+      spaceId: args.spaceId,
+      environmentId: args.environmentId,
+    };
 
-  const contentfulClient = createToolClient(args);
+    const contentfulClient = createToolClient(config, args);
 
   const contentTypes = await contentfulClient.contentType.getMany({
     ...params,
@@ -71,9 +73,7 @@ async function tool(args: Params) {
     limit: contentTypes.limit,
     skip: contentTypes.skip,
   });
-}
+  }
 
-export const listContentTypesTool = withErrorHandling(
-  tool,
-  'Error listing content types',
-);
+  return withErrorHandling(tool, 'Error listing content types');
+}

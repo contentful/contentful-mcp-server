@@ -4,7 +4,8 @@ import {
   withErrorHandling,
 } from '../../../utils/response.js';
 import ctfl from 'contentful-management';
-import { getDefaultClientConfig } from '../../../config/contentful.js';
+import { createClientConfig } from '../../../utils/tools.js';
+import type { ContentfulConfig } from '../../../config/types.js';
 import { summarizeData } from '../../../utils/summarizer.js';
 
 export const ListConceptsToolParams = z.object({
@@ -43,12 +44,13 @@ export const ListConceptsToolParams = z.object({
 
 type Params = z.infer<typeof ListConceptsToolParams>;
 
-async function tool(args: Params) {
-  // Create a client without space-specific configuration for concept operations
-  const clientConfig = getDefaultClientConfig();
-  // Remove space from config since we're working at the organization level
-  delete clientConfig.space;
-  const contentfulClient = ctfl.createClient(clientConfig, { type: 'plain' });
+export function listConceptsTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    // Create a client without space-specific configuration for concept operations
+    const clientConfig = createClientConfig(config);
+    // Remove space from config since we're working at the organization level
+    delete clientConfig.space;
+    const contentfulClient = ctfl.createClient(clientConfig, { type: 'plain' });
 
   // Validate required parameters for specific operations
   if ((args.getDescendants || args.getAncestors) && !args.conceptId) {
@@ -154,13 +156,11 @@ async function tool(args: Params) {
     items: summarizedConcepts,
   });
 
-  return createSuccessResponse(
-    'Concepts retrieved successfully',
-    responseData as Record<string, unknown>,
-  );
-}
+    return createSuccessResponse(
+      'Concepts retrieved successfully',
+      responseData as Record<string, unknown>,
+    );
+  }
 
-export const listConceptsTool = withErrorHandling(
-  tool,
-  'Error retrieving concepts',
-);
+  return withErrorHandling(tool, 'Error retrieving concepts');
+}

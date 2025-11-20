@@ -10,6 +10,7 @@ import {
   InvocationStatusResponse,
 } from '../../utils/ai-actions.js';
 import { InvocationResult } from 'contentful-management/dist/typings/entities/ai-action-invocation.js';
+import type { ContentfulConfig } from '../../config/types.js';
 
 export const InvokeAiActionToolParams = BaseToolSchema.extend({
   aiActionId: z.string().describe('The ID of the AI action to invoke'),
@@ -89,44 +90,46 @@ async function pollForCompletion(
   }));
 }
 
-async function tool(args: Params) {
-  const params = {
-    spaceId: args.spaceId,
-    environmentId: args.environmentId,
-  };
+export function invokeAiActionTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    const params = {
+      spaceId: args.spaceId,
+      environmentId: args.environmentId,
+    };
 
-  const contentfulClient = createToolClient(args);
-  const aiActions = [];
+    const contentfulClient = createToolClient(config, args);
+    const aiActions = [];
 
-  for (const field of args.fields) {
-    const aiAction = await contentfulClient.aiAction.invoke(
-      {
-        ...params,
-        aiActionId: args.aiActionId,
-      },
-      {
-        outputFormat: field.outputFormat,
-        variables: field.variables,
-      },
+    for (const field of args.fields) {
+      const aiAction = await contentfulClient.aiAction.invoke(
+        {
+          ...params,
+          aiActionId: args.aiActionId,
+        },
+        {
+          outputFormat: field.outputFormat,
+          variables: field.variables,
+        },
+      );
+
+      aiActions.push(aiAction);
+    }
+
+    // Poll for completion
+    const completedActions = await pollForCompletion(
+      contentfulClient,
+      { ...params, aiActionId: args.aiActionId },
+      aiActions,
     );
 
-    aiActions.push(aiAction);
+    return createSuccessResponse(
+      'AI action invoked and completed successfully',
+      {
+        aiActions: completedActions,
+        nextStepsGuidance: `Required next step: Now that the invocation is complete, you will take the next step to complete the workflow. This will involve a CRUD operation that will take action on each of the action returned in the aiActions variable. You will need to use the appropriate tool to do this, choose a tool depending on the type of entity the action was executed on and the description of the Ai Action.`,
+      },
+    );
   }
 
-  // Poll for completion
-  const completedActions = await pollForCompletion(
-    contentfulClient,
-    { ...params, aiActionId: args.aiActionId },
-    aiActions,
-  );
-
-  return createSuccessResponse('AI action invoked and completed successfully', {
-    aiActions: completedActions,
-    nextStepsGuidance: `Required next step: Now that the invocation is complete, you will take the next step to complete the workflow. This will involve a CRUD operation that will take action on each of the action returned in the aiActions variable. You will need to use the appropriate tool to do this, choose a tool depending on the type of entity the action was executed on and the description of the Ai Action.`,
-  });
+  return withErrorHandling(tool, 'Error invoking AI action');
 }
-
-export const invokeAiActionTool = withErrorHandling(
-  tool,
-  'Error invoking AI action',
-);

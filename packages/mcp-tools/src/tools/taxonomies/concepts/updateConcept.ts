@@ -4,7 +4,8 @@ import {
   withErrorHandling,
 } from '../../../utils/response.js';
 import ctfl from 'contentful-management';
-import { getDefaultClientConfig } from '../../../config/contentful.js';
+import { createClientConfig } from '../../../utils/tools.js';
+import type { ContentfulConfig } from '../../../config/types.js';
 import {
   TaxonomyConceptLinkSchema,
   type ConceptPayload,
@@ -67,12 +68,13 @@ export const UpdateConceptToolParams = z.object({
 
 type Params = z.infer<typeof UpdateConceptToolParams>;
 
-async function tool(args: Params) {
-  // Create a client without space-specific configuration for concept operations
-  const clientConfig = getDefaultClientConfig();
-  // Remove space from config since we're working at the organization level
-  delete clientConfig.space;
-  const contentfulClient = ctfl.createClient(clientConfig, { type: 'plain' });
+export function updateConceptTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    // Create a client without space-specific configuration for concept operations
+    const clientConfig = createClientConfig(config);
+    // Remove space from config since we're working at the organization level
+    delete clientConfig.space;
+    const contentfulClient = ctfl.createClient(clientConfig, { type: 'plain' });
 
   // First, get the existing concept
   const existingConcept = await contentfulClient.concept.get({
@@ -107,12 +109,10 @@ async function tool(args: Params) {
     updatedPayload,
   );
 
-  return createSuccessResponse('Concept updated successfully', {
-    updatedConcept,
-  });
-}
+    return createSuccessResponse('Concept updated successfully', {
+      updatedConcept,
+    });
+  }
 
-export const updateConceptTool = withErrorHandling(
-  tool,
-  'Error updating concept',
-);
+  return withErrorHandling(tool, 'Error updating concept');
+}

@@ -4,6 +4,7 @@ import {
   withErrorHandling,
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import type { ContentfulConfig } from '../../config/types.js';
 
 export const ArchiveEntryToolParams = BaseToolSchema.extend({
   entryId: z
@@ -15,13 +16,14 @@ export const ArchiveEntryToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof ArchiveEntryToolParams>;
 
-async function tool(args: Params) {
-  const baseParams = {
-    spaceId: args.spaceId,
-    environmentId: args.environmentId,
-  };
+export function archiveEntryTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    const baseParams = {
+      spaceId: args.spaceId,
+      environmentId: args.environmentId,
+    };
 
-  const contentfulClient = createToolClient(args);
+    const contentfulClient = createToolClient(config, args);
 
   // Normalize input to always be an array
   const entryIds = Array.isArray(args.entryId) ? args.entryId : [args.entryId];
@@ -64,9 +66,7 @@ async function tool(args: Params) {
       },
     );
   }
-}
+  }
 
-export const archiveEntryTool = withErrorHandling(
-  tool,
-  'Error archiving entry',
-);
+  return withErrorHandling(tool, 'Error archiving entry');
+}

@@ -5,6 +5,7 @@ import {
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
 import { summarizeData } from '../../utils/summarizer.js';
+import type { ContentfulConfig } from '../../config/types.js';
 
 export const SearchEntriesToolParams = BaseToolSchema.extend({
   query: z.object({
@@ -32,35 +33,34 @@ export const SearchEntriesToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof SearchEntriesToolParams>;
 
-async function tool(args: Params) {
-  const params = {
-    spaceId: args.spaceId,
-    environmentId: args.environmentId,
-  };
+export function searchEntriesTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    const params = {
+      spaceId: args.spaceId,
+      environmentId: args.environmentId,
+    };
 
-  const contentfulClient = createToolClient(args);
+    const contentfulClient = createToolClient(config, args);
 
-  const entries = await contentfulClient.entry.getMany({
-    ...params,
-    query: {
-      ...args.query,
-      limit: Math.min(args.query.limit || 3, 3),
-      skip: args.query.skip || 0,
-    },
-  });
+    const entries = await contentfulClient.entry.getMany({
+      ...params,
+      query: {
+        ...args.query,
+        limit: Math.min(args.query.limit || 3, 3),
+        skip: args.query.skip || 0,
+      },
+    });
 
-  const summarized = summarizeData(entries, {
-    maxItems: 3,
-    remainingMessage:
-      'To see more entries, please ask me to retrieve the next page.',
-  });
+    const summarized = summarizeData(entries, {
+      maxItems: 3,
+      remainingMessage:
+        'To see more entries, please ask me to retrieve the next page.',
+    });
 
-  return createSuccessResponse('Entries retrieved successfully', {
-    entries: summarized,
-  });
+    return createSuccessResponse('Entries retrieved successfully', {
+      entries: summarized,
+    });
+  }
+
+  return withErrorHandling(tool, 'Error searching entries');
 }
-
-export const searchEntriesTool = withErrorHandling(
-  tool,
-  'Error deleting dataset',
-);

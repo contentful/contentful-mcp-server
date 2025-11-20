@@ -5,6 +5,7 @@ import {
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
 import { AssetMetadataSchema } from '../../types/taxonomySchema.js';
+import type { ContentfulConfig } from '../../config/types.js';
 
 const FileSchema = z.object({
   fileName: z.string().describe('The name of the file'),
@@ -27,13 +28,14 @@ export const UploadAssetToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof UploadAssetToolParams>;
 
-async function tool(args: Params) {
-  const params = {
-    spaceId: args.spaceId,
-    environmentId: args.environmentId,
-  };
+export function uploadAssetTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    const params = {
+      spaceId: args.spaceId,
+      environmentId: args.environmentId,
+    };
 
-  const contentfulClient = createToolClient(args);
+    const contentfulClient = createToolClient(config, args);
 
   // Prepare asset properties following Contentful's structure
   const locale = args.locale || 'en-US';
@@ -64,6 +66,7 @@ async function tool(args: Params) {
   return createSuccessResponse('Asset uploaded successfully', {
     asset: processedAsset,
   });
-}
+  }
 
-export const uploadAssetTool = withErrorHandling(tool, 'Error uploading asset');
+  return withErrorHandling(tool, 'Error uploading asset');
+}

@@ -4,6 +4,7 @@ import {
   withErrorHandling,
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import type { ContentfulConfig } from '../../config/types.js';
 
 export const DeleteLocaleToolParams = BaseToolSchema.extend({
   localeId: z.string().describe('The ID of the locale to delete'),
@@ -11,26 +12,25 @@ export const DeleteLocaleToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof DeleteLocaleToolParams>;
 
-async function tool(args: Params) {
-  const params = {
-    spaceId: args.spaceId,
-    environmentId: args.environmentId,
-    localeId: args.localeId,
-  };
+export function deleteLocaleTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    const params = {
+      spaceId: args.spaceId,
+      environmentId: args.environmentId,
+      localeId: args.localeId,
+    };
 
-  const contentfulClient = createToolClient(args);
+    const contentfulClient = createToolClient(config, args);
 
-  // First, get the locale to check its current state
-  const locale = await contentfulClient.locale.get(params);
+    // First, get the locale to check its current state
+    const locale = await contentfulClient.locale.get(params);
 
-  // Delete the locale
-  await contentfulClient.locale.delete(params);
+    // Delete the locale
+    await contentfulClient.locale.delete(params);
 
-  // Return info about the locale that was deleted
-  return createSuccessResponse('Locale deleted successfully', { locale });
+    // Return info about the locale that was deleted
+    return createSuccessResponse('Locale deleted successfully', { locale });
+  }
+
+  return withErrorHandling(tool, 'Error deleting locale');
 }
-
-export const deleteLocaleTool = withErrorHandling(
-  tool,
-  'Error deleting locale',
-);

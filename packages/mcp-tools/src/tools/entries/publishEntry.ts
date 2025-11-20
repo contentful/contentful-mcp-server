@@ -10,6 +10,7 @@ import {
   createEntitiesCollection,
   waitForBulkActionCompletion,
 } from '../../utils/bulkOperations.js';
+import type { ContentfulConfig } from '../../config/types.js';
 
 export const PublishEntryToolParams = BaseToolSchema.extend({
   entryId: z
@@ -21,13 +22,14 @@ export const PublishEntryToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof PublishEntryToolParams>;
 
-async function tool(args: Params) {
-  const baseParams: BulkOperationParams = {
-    spaceId: args.spaceId,
-    environmentId: args.environmentId,
-  };
+export function publishEntryTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    const baseParams: BulkOperationParams = {
+      spaceId: args.spaceId,
+      environmentId: args.environmentId,
+    };
 
-  const contentfulClient = createToolClient(args);
+    const contentfulClient = createToolClient(config, args);
 
   // Normalize input to always be an array
   const entryIds = Array.isArray(args.entryId) ? args.entryId : [args.entryId];
@@ -79,9 +81,7 @@ async function tool(args: Params) {
     status: action.sys.status,
     entryIds,
   });
-}
+  }
 
-export const publishEntryTool = withErrorHandling(
-  tool,
-  'Error publishing entry',
-);
+  return withErrorHandling(tool, 'Error publishing entry');
+}

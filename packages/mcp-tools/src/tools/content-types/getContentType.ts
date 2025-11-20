@@ -4,6 +4,7 @@ import {
   withErrorHandling,
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import type { ContentfulConfig } from '../../config/types.js';
 
 export const GetContentTypeToolParams = BaseToolSchema.extend({
   contentTypeId: z
@@ -13,26 +14,25 @@ export const GetContentTypeToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof GetContentTypeToolParams>;
 
-async function tool(args: Params) {
-  const params = {
-    spaceId: args.spaceId,
-    environmentId: args.environmentId,
-  };
+export function getContentTypeTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    const params = {
+      spaceId: args.spaceId,
+      environmentId: args.environmentId,
+    };
 
-  const contentfulClient = createToolClient(args);
+    const contentfulClient = createToolClient(config, args);
 
-  // Get the content type details
-  const contentType = await contentfulClient.contentType.get({
-    ...params,
-    contentTypeId: args.contentTypeId,
-  });
+    // Get the content type details
+    const contentType = await contentfulClient.contentType.get({
+      ...params,
+      contentTypeId: args.contentTypeId,
+    });
 
-  return createSuccessResponse('Content type retrieved successfully', {
-    contentType,
-  });
+    return createSuccessResponse('Content type retrieved successfully', {
+      contentType,
+    });
+  }
+
+  return withErrorHandling(tool, 'Error retrieving content type');
 }
-
-export const getContentTypeTool = withErrorHandling(
-  tool,
-  'Error retrieving content type',
-);
