@@ -1,3 +1,9 @@
+## 1.7.1 (2025-11-20)
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.1.1
+
 ## 1.7.0 (2025-11-19)
 
 ### 🚀 Features

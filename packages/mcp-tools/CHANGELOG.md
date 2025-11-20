@@ -1,3 +1,9 @@
+## 0.1.1 (2025-11-20)
+
+### 🩹 Fixes
+
+- emit ts declarations for mcp tools [DX-578] ([#261](https://github.com/contentful/contentful-mcp-server/pull/261))
+
 ## 0.1.0 (2025-11-19)
 
 ### 🚀 Features
