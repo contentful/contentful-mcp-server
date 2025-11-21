@@ -1,3 +1,13 @@
+## 1.7.2 (2025-11-21)
+
+### 🩹 Fixes
+
+- refactor MCP tools to use class-based initialization [DX-579] ([#263](https://github.com/contentful/contentful-mcp-server/pull/263))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.1.2
+
 ## 1.7.1 (2025-11-20)
 
 ### 🧱 Updated Dependencies
