@@ -4,8 +4,9 @@ import {
   withErrorHandling,
 } from '../../utils/response.js';
 import ctfl from 'contentful-management';
-import { getDefaultClientConfig } from '../../config/contentful.js';
+import { createClientConfig } from '../../utils/tools.js';
 import { summarizeData } from '../../utils/summarizer.js';
+import type { ContentfulConfig } from '../../config/types.js';
 
 // For listing organizations, we don't need spaceId or environmentId parameters
 export const ListOrgsToolParams = z.object({
@@ -26,12 +27,13 @@ export const ListOrgsToolParams = z.object({
 
 type Params = z.infer<typeof ListOrgsToolParams>;
 
-async function tool(args: Params) {
-  // Create a client without space-specific configuration for listing all organizations
-  const clientConfig = getDefaultClientConfig();
-  // Remove space from config since we're listing organizations at the account level
-  delete clientConfig.space;
-  const contentfulClient = ctfl.createClient(clientConfig, { type: 'plain' });
+export function listOrgsTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    // Create a client without space-specific configuration for listing all organizations
+    const clientConfig = createClientConfig(config);
+    // Remove space from config since we're listing organizations at the account level
+    delete clientConfig.space;
+    const contentfulClient = ctfl.createClient(clientConfig, { type: 'plain' });
 
   const organizations = await contentfulClient.organization.getAll({
     query: {
@@ -67,9 +69,7 @@ async function tool(args: Params) {
     limit: organizations.limit,
     skip: organizations.skip,
   });
-}
+  }
 
-export const listOrgsTool = withErrorHandling(
-  tool,
-  'Error listing organizations',
-);
+  return withErrorHandling(tool, 'Error listing organizations');
+}

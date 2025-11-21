@@ -1,10 +1,13 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { mockConceptSchemeDelete, mockCreateClient } from './mockClient.js';
 import { deleteConceptSchemeTool } from './deleteConceptScheme.js';
-import { getDefaultClientConfig } from '../../../config/contentful.js';
+import { createClientConfig } from '../../../utils/tools.js';
 import { formatResponse } from '../../../utils/formatters.js';
+import { createMockConfig } from '../../../test-helpers/mockConfig.js';
 
 describe('deleteConceptScheme', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     mockConceptSchemeDelete.mockClear();
     mockCreateClient.mockClear();
@@ -19,10 +22,10 @@ describe('deleteConceptScheme', () => {
   it('should delete a concept scheme successfully', async () => {
     mockConceptSchemeDelete.mockResolvedValue(undefined);
 
-    const result = await deleteConceptSchemeTool(testArgs);
+    const tool = deleteConceptSchemeTool(mockConfig);
+    const result = await tool(testArgs);
 
-    const clientConfig = getDefaultClientConfig();
-    delete clientConfig.space;
+    const clientConfig = createClientConfig(mockConfig);
     expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
       type: 'plain',
     });
@@ -53,7 +56,8 @@ describe('deleteConceptScheme', () => {
     const errorMessage = 'Failed to delete concept scheme';
     mockConceptSchemeDelete.mockRejectedValue(new Error(errorMessage));
 
-    const result = await deleteConceptSchemeTool(testArgs);
+    const tool = deleteConceptSchemeTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       content: [
@@ -70,7 +74,8 @@ describe('deleteConceptScheme', () => {
     const versionMismatchError = new Error('Version mismatch');
     mockConceptSchemeDelete.mockRejectedValue(versionMismatchError);
 
-    const result = await deleteConceptSchemeTool(testArgs);
+    const tool = deleteConceptSchemeTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       content: [

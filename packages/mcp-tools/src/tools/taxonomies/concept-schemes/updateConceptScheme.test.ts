@@ -6,10 +6,13 @@ import {
   mockCreateClient,
 } from './mockClient.js';
 import { updateConceptSchemeTool } from './updateConceptScheme.js';
-import { getDefaultClientConfig } from '../../../config/contentful.js';
+import { createClientConfig } from '../../../utils/tools.js';
 import { formatResponse } from '../../../utils/formatters.js';
+import { createMockConfig } from '../../../test-helpers/mockConfig.js';
 
 describe('updateConceptScheme', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     mockConceptSchemeUpdate.mockClear();
     mockCreateClient.mockClear();
@@ -27,10 +30,10 @@ describe('updateConceptScheme', () => {
   it('should update a concept scheme successfully', async () => {
     mockConceptSchemeUpdate.mockResolvedValue(testUpdatedConceptScheme);
 
-    const result = await updateConceptSchemeTool(testArgs);
+    const tool = updateConceptSchemeTool(mockConfig);
+    const result = await tool(testArgs);
 
-    const clientConfig = getDefaultClientConfig();
-    delete clientConfig.space;
+    const clientConfig = createClientConfig(mockConfig);
     expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
       type: 'plain',
     });
@@ -84,7 +87,8 @@ describe('updateConceptScheme', () => {
 
     mockConceptSchemeUpdate.mockResolvedValue(testUpdatedConceptScheme);
 
-    const result = await updateConceptSchemeTool(multiFieldArgs);
+    const tool = updateConceptSchemeTool(mockConfig);
+    const result = await tool(multiFieldArgs);
 
     expect(mockConceptSchemeUpdate).toHaveBeenCalledWith(
       {
@@ -141,7 +145,8 @@ describe('updateConceptScheme', () => {
 
     mockConceptSchemeUpdate.mockResolvedValue(testConceptScheme);
 
-    const result = await updateConceptSchemeTool(argsWithNullUri);
+    const tool = updateConceptSchemeTool(mockConfig);
+    const result = await tool(argsWithNullUri);
 
     expect(mockConceptSchemeUpdate).toHaveBeenCalledWith(
       {
@@ -177,7 +182,8 @@ describe('updateConceptScheme', () => {
     const errorMessage = 'Failed to update concept scheme';
     mockConceptSchemeUpdate.mockRejectedValue(new Error(errorMessage));
 
-    const result = await updateConceptSchemeTool(testArgs);
+    const tool = updateConceptSchemeTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       content: [
@@ -199,7 +205,8 @@ describe('updateConceptScheme', () => {
 
     mockConceptSchemeUpdate.mockResolvedValue(testConceptScheme);
 
-    const result = await updateConceptSchemeTool(emptyArgs);
+    const tool = updateConceptSchemeTool(mockConfig);
+    const result = await tool(emptyArgs);
 
     expect(mockConceptSchemeUpdate).toHaveBeenCalledWith(
       {

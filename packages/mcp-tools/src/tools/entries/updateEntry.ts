@@ -5,6 +5,7 @@ import {
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
 import { EntryMetadataSchema } from '../../types/taxonomySchema.js';
+import type { ContentfulConfig } from '../../config/types.js';
 
 export const UpdateEntryToolParams = BaseToolSchema.extend({
   entryId: z.string().describe('The ID of the entry to update'),
@@ -18,14 +19,15 @@ export const UpdateEntryToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof UpdateEntryToolParams>;
 
-async function tool(args: Params) {
-  const params = {
-    spaceId: args.spaceId,
-    environmentId: args.environmentId,
-    entryId: args.entryId,
-  };
+export function updateEntryTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    const params = {
+      spaceId: args.spaceId,
+      environmentId: args.environmentId,
+      entryId: args.entryId,
+    };
 
-  const contentfulClient = createToolClient(args);
+    const contentfulClient = createToolClient(config, args);
 
   // First, get the existing entry
   const existingEntry = await contentfulClient.entry.get(params);
@@ -56,8 +58,9 @@ async function tool(args: Params) {
     },
   });
 
-  //return info about the entry that was updated
-  return createSuccessResponse('Entry updated successfully', { updatedEntry });
-}
+    //return info about the entry that was updated
+    return createSuccessResponse('Entry updated successfully', { updatedEntry });
+  }
 
-export const updateEntryTool = withErrorHandling(tool, 'Error updating entry');
+  return withErrorHandling(tool, 'Error updating entry');
+}

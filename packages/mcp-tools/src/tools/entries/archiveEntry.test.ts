@@ -9,9 +9,11 @@ import {
 } from './mockClient.js';
 
 vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('archiveEntry', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     setupMockClient();
     vi.clearAllMocks();
@@ -26,7 +28,8 @@ describe('archiveEntry', () => {
 
       mockEntryArchive.mockResolvedValue(mockArchivedEntry);
 
-      const result = await archiveEntryTool(testArgs);
+      const tool = archiveEntryTool(mockConfig);
+      const result = await tool(testArgs);
 
       // Verify client was called correctly
       expect(mockEntryArchive).toHaveBeenCalledWith({
@@ -59,7 +62,8 @@ describe('archiveEntry', () => {
       const error = new Error('Entry must be unpublished before archiving');
       mockEntryArchive.mockRejectedValue(error);
 
-      const result = await archiveEntryTool(testArgs);
+      const tool = archiveEntryTool(mockConfig);
+      const result = await tool(testArgs);
 
       // withErrorHandling wraps the error in a formatted response
       expect(result).toEqual({
@@ -86,7 +90,8 @@ describe('archiveEntry', () => {
 
       mockEntryArchive.mockResolvedValue(mockArchivedEntry);
 
-      const result = await archiveEntryTool(testArgs);
+      const tool = archiveEntryTool(mockConfig);
+      const result = await tool(testArgs);
 
       // Verify each entry was processed
       expect(mockEntryArchive).toHaveBeenCalledTimes(3);
@@ -112,7 +117,8 @@ describe('archiveEntry', () => {
         .mockResolvedValueOnce(mockArchivedEntry)
         .mockRejectedValueOnce(new Error('Must be unpublished'));
 
-      const result = await archiveEntryTool(testArgs);
+      const tool = archiveEntryTool(mockConfig);
+      const result = await tool(testArgs);
 
       // Should only process first two entries before stopping
       expect(mockEntryArchive).toHaveBeenCalledTimes(2);

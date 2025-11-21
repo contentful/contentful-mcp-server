@@ -3,6 +3,7 @@ import { mockArgs, testLocale, mockLocaleGetMany } from './mockClient.js';
 import { listLocaleTool } from './listLocales.js';
 import { createToolClient } from '../../utils/tools.js';
 import { formatResponse } from '../../utils/formatters.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 const mockLocales = {
   items: [
@@ -15,6 +16,8 @@ const mockLocales = {
 };
 
 describe('listLocaleTool', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -22,9 +25,10 @@ describe('listLocaleTool', () => {
   it('should list locales successfully', async () => {
     mockLocaleGetMany.mockResolvedValue(mockLocales);
 
-    const result = await listLocaleTool(mockArgs);
+    const tool = listLocaleTool(mockConfig);
+    const result = await tool(mockArgs);
 
-    expect(createToolClient).toHaveBeenCalledWith(mockArgs);
+    expect(createToolClient).toHaveBeenCalledWith(mockConfig, mockArgs);
     expect(mockLocaleGetMany).toHaveBeenCalledWith({
       spaceId: mockArgs.spaceId,
       environmentId: mockArgs.environmentId,
@@ -72,7 +76,8 @@ describe('listLocaleTool', () => {
     const error = new Error('Listing failed');
     mockLocaleGetMany.mockRejectedValue(error);
 
-    const result = await listLocaleTool(mockArgs);
+    const tool = listLocaleTool(mockConfig);
+    const result = await tool(mockArgs);
 
     expect(result).toEqual({
       isError: true,

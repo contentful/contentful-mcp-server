@@ -4,6 +4,7 @@ import {
   withErrorHandling,
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import type { ContentfulConfig } from '../../config/types.js';
 
 export const CreateLocaleToolParams = BaseToolSchema.extend({
   name: z.string().describe('The name of the locale'),
@@ -42,13 +43,14 @@ export const CreateLocaleToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof CreateLocaleToolParams>;
 
-async function tool(args: Params) {
-  const params = {
-    spaceId: args.spaceId,
-    environmentId: args.environmentId,
-  };
+export function createLocaleTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    const params = {
+      spaceId: args.spaceId,
+      environmentId: args.environmentId,
+    };
 
-  const contentfulClient = createToolClient(args);
+    const contentfulClient = createToolClient(config, args);
 
   // Create the locale
   const newLocale = await contentfulClient.locale.create(params, {
@@ -60,10 +62,8 @@ async function tool(args: Params) {
     optional: args.optional,
   });
 
-  return createSuccessResponse('Locale created successfully', { newLocale });
-}
+    return createSuccessResponse('Locale created successfully', { newLocale });
+  }
 
-export const createLocaleTool = withErrorHandling(
-  tool,
-  'Error creating locale',
-);
+  return withErrorHandling(tool, 'Error creating locale');
+}

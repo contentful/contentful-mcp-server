@@ -8,11 +8,13 @@ import {
   mockEntry,
   mockArgs,
 } from './mockClient.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
 
 describe('updateEntry', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     setupMockClient();
   });
@@ -53,7 +55,8 @@ describe('updateEntry', () => {
     mockEntryGet.mockResolvedValue(mockExistingEntry);
     mockEntryUpdate.mockResolvedValue(mockUpdatedEntry);
 
-    const result = await updateEntryTool(testArgs);
+    const tool = updateEntryTool(mockConfig);
+    const result = await tool(testArgs);
 
     const expectedResponse = formatResponse('Entry updated successfully', {
       updatedEntry: mockUpdatedEntry,
@@ -166,7 +169,8 @@ describe('updateEntry', () => {
     mockEntryGet.mockResolvedValue(mockExistingEntry);
     mockEntryUpdate.mockResolvedValue(mockUpdatedEntry);
 
-    const result = await updateEntryTool(testArgs);
+    const tool = updateEntryTool(mockConfig);
+    const result = await tool(testArgs);
 
     const expectedResponse = formatResponse('Entry updated successfully', {
       updatedEntry: mockUpdatedEntry,
@@ -248,7 +252,8 @@ describe('updateEntry', () => {
     mockEntryGet.mockResolvedValue(mockExistingEntry);
     mockEntryUpdate.mockResolvedValue(mockUpdatedEntry);
 
-    const result = await updateEntryTool(testArgs);
+    const tool = updateEntryTool(mockConfig);
+    const result = await tool(testArgs);
 
     const expectedResponse = formatResponse('Entry updated successfully', {
       updatedEntry: mockUpdatedEntry,
@@ -275,7 +280,8 @@ describe('updateEntry', () => {
     const error = new Error('Entry not found');
     mockEntryGet.mockRejectedValue(error);
 
-    const result = await updateEntryTool(testArgs);
+    const tool = updateEntryTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       isError: true,
@@ -306,7 +312,8 @@ describe('updateEntry', () => {
     mockEntryGet.mockResolvedValue(mockExistingEntry);
     mockEntryUpdate.mockRejectedValue(updateError);
 
-    const result = await updateEntryTool(testArgs);
+    const tool = updateEntryTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       isError: true,

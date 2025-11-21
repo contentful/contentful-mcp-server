@@ -1,33 +1,28 @@
 import { describe, it, expect } from 'vitest';
-import { conceptSchemeTools } from './register.js';
-import {
-  createConceptSchemeTool,
-  CreateConceptSchemeToolParams,
-} from './createConceptScheme.js';
-import {
-  getConceptSchemeTool,
-  GetConceptSchemeToolParams,
-} from './getConceptScheme.js';
-import {
-  listConceptSchemesTool,
-  ListConceptSchemesToolParams,
-} from './listConceptSchemes.js';
-import {
-  updateConceptSchemeTool,
-  UpdateConceptSchemeToolParams,
-} from './updateConceptScheme.js';
-import {
-  deleteConceptSchemeTool,
-  DeleteConceptSchemeToolParams,
-} from './deleteConceptScheme.js';
+import { createConceptSchemeTools } from './register.js';
+import { CreateConceptSchemeToolParams } from './createConceptScheme.js';
+import { GetConceptSchemeToolParams } from './getConceptScheme.js';
+import { ListConceptSchemesToolParams } from './listConceptSchemes.js';
+import { UpdateConceptSchemeToolParams } from './updateConceptScheme.js';
+import { DeleteConceptSchemeToolParams } from './deleteConceptScheme.js';
+import { createMockConfig } from '../../../test-helpers/mockConfig.js';
 
 describe('concept scheme tools collection', () => {
-  it('should export conceptSchemeTools collection with correct structure', () => {
+  const mockConfig = createMockConfig();
+
+  it('should export createConceptSchemeTools factory function', () => {
+    expect(createConceptSchemeTools).toBeDefined();
+    expect(typeof createConceptSchemeTools).toBe('function');
+  });
+
+  it('should create conceptSchemeTools collection with correct structure', () => {
+    const conceptSchemeTools = createConceptSchemeTools(mockConfig);
     expect(conceptSchemeTools).toBeDefined();
     expect(Object.keys(conceptSchemeTools)).toHaveLength(5);
   });
 
   it('should have createConceptScheme tool with correct properties', () => {
+    const conceptSchemeTools = createConceptSchemeTools(mockConfig);
     const { createConceptScheme } = conceptSchemeTools;
 
     expect(createConceptScheme.title).toBe('create_concept_scheme');
@@ -43,10 +38,12 @@ describe('concept scheme tools collection', () => {
       idempotentHint: false,
       openWorldHint: false,
     });
-    expect(createConceptScheme.tool).toBe(createConceptSchemeTool);
+    expect(createConceptScheme.tool).toBeDefined();
+    expect(typeof createConceptScheme.tool).toBe('function');
   });
 
   it('should have getConceptScheme tool with correct properties', () => {
+    const conceptSchemeTools = createConceptSchemeTools(mockConfig);
     const { getConceptScheme } = conceptSchemeTools;
 
     expect(getConceptScheme.title).toBe('get_concept_scheme');
@@ -60,10 +57,12 @@ describe('concept scheme tools collection', () => {
       readOnlyHint: true,
       openWorldHint: false,
     });
-    expect(getConceptScheme.tool).toBe(getConceptSchemeTool);
+    expect(getConceptScheme.tool).toBeDefined();
+    expect(typeof getConceptScheme.tool).toBe('function');
   });
 
   it('should have listConceptSchemes tool with correct properties', () => {
+    const conceptSchemeTools = createConceptSchemeTools(mockConfig);
     const { listConceptSchemes } = conceptSchemeTools;
 
     expect(listConceptSchemes.title).toBe('list_concept_schemes');
@@ -77,10 +76,12 @@ describe('concept scheme tools collection', () => {
       readOnlyHint: true,
       openWorldHint: false,
     });
-    expect(listConceptSchemes.tool).toBe(listConceptSchemesTool);
+    expect(listConceptSchemes.tool).toBeDefined();
+    expect(typeof listConceptSchemes.tool).toBe('function');
   });
 
   it('should have updateConceptScheme tool with correct properties', () => {
+    const conceptSchemeTools = createConceptSchemeTools(mockConfig);
     const { updateConceptScheme } = conceptSchemeTools;
 
     expect(updateConceptScheme.title).toBe('update_concept_scheme');
@@ -96,10 +97,12 @@ describe('concept scheme tools collection', () => {
       idempotentHint: false,
       openWorldHint: false,
     });
-    expect(updateConceptScheme.tool).toBe(updateConceptSchemeTool);
+    expect(updateConceptScheme.tool).toBeDefined();
+    expect(typeof updateConceptScheme.tool).toBe('function');
   });
 
   it('should have deleteConceptScheme tool with correct properties', () => {
+    const conceptSchemeTools = createConceptSchemeTools(mockConfig);
     const { deleteConceptScheme } = conceptSchemeTools;
 
     expect(deleteConceptScheme.title).toBe('delete_concept_scheme');
@@ -115,6 +118,7 @@ describe('concept scheme tools collection', () => {
       idempotentHint: true,
       openWorldHint: false,
     });
-    expect(deleteConceptScheme.tool).toBe(deleteConceptSchemeTool);
+    expect(deleteConceptScheme.tool).toBeDefined();
+    expect(typeof deleteConceptScheme.tool).toBe('function');
   });
 });

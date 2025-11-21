@@ -1,15 +1,25 @@
 import { describe, it, expect } from 'vitest';
-import { tagTools } from './register.js';
-import { listTagsTool, ListTagsToolParams } from './listTags.js';
-import { createTagTool, CreateTagToolParams } from './createTag.js';
+import { createTagTools } from './register.js';
+import { ListTagsToolParams } from './listTags.js';
+import { CreateTagToolParams } from './createTag.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('tag tools collection', () => {
-  it('should export tagTools collection with correct structure', () => {
+  const mockConfig = createMockConfig();
+
+  it('should export createTagTools factory function', () => {
+    expect(createTagTools).toBeDefined();
+    expect(typeof createTagTools).toBe('function');
+  });
+
+  it('should create tagTools collection with correct structure', () => {
+    const tagTools = createTagTools(mockConfig);
     expect(tagTools).toBeDefined();
     expect(Object.keys(tagTools)).toHaveLength(2);
   });
 
   it('should have listTags tool with correct properties', () => {
+    const tagTools = createTagTools(mockConfig);
     const { listTags } = tagTools;
 
     expect(listTags.title).toBe('list_tags');
@@ -21,10 +31,12 @@ describe('tag tools collection', () => {
       readOnlyHint: true,
       openWorldHint: false,
     });
-    expect(listTags.tool).toBe(listTagsTool);
+    expect(listTags.tool).toBeDefined();
+    expect(typeof listTags.tool).toBe('function');
   });
 
   it('should have createTag tool with correct properties', () => {
+    const tagTools = createTagTools(mockConfig);
     const { createTag } = tagTools;
 
     expect(createTag.title).toBe('create_tag');
@@ -38,6 +50,7 @@ describe('tag tools collection', () => {
       idempotentHint: false,
       openWorldHint: false,
     });
-    expect(createTag.tool).toBe(createTagTool);
+    expect(createTag.tool).toBeDefined();
+    expect(typeof createTag.tool).toBe('function');
   });
 });

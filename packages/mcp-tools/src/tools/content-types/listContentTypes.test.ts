@@ -6,12 +6,15 @@ import {
 } from './mockClient.js';
 import { listContentTypesTool } from './listContentTypes.js';
 import { formatResponse } from '../../utils/formatters.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('listContentTypes', () => {
+  const mockConfig = createMockConfig();
   it('should list content types with default parameters', async () => {
     mockContentTypeGetMany.mockResolvedValue(mockContentTypesResponse);
 
-    const result = await listContentTypesTool(mockArgs);
+    const tool = listContentTypesTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedItems = mockContentTypesResponse.items.map((contentType) => ({
       ...contentType,
@@ -57,7 +60,8 @@ describe('listContentTypes', () => {
 
     mockContentTypeGetMany.mockResolvedValue(customResponse);
 
-    const result = await listContentTypesTool(testArgs);
+    const tool = listContentTypesTool(mockConfig);
+    const result = await tool(testArgs);
 
     const expectedItems = customResponse.items.map((contentType) => ({
       ...contentType,
@@ -94,11 +98,10 @@ describe('listContentTypes', () => {
       limit: 50, // Will be capped at 10
     };
 
-    await listContentTypesTool(testArgs);
-
     mockContentTypeGetMany.mockResolvedValue(mockContentTypesResponse);
 
-    await listContentTypesTool(testArgs);
+    const tool = listContentTypesTool(mockConfig);
+    await tool(testArgs);
 
     expect(mockContentTypeGetMany).toHaveBeenCalledWith({
       spaceId: testArgs.spaceId,
@@ -120,7 +123,8 @@ describe('listContentTypes', () => {
 
     mockContentTypeGetMany.mockResolvedValue(emptyResponse);
 
-    const result = await listContentTypesTool(mockArgs);
+    const tool = listContentTypesTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse(
       'Content types retrieved successfully',
@@ -146,7 +150,8 @@ describe('listContentTypes', () => {
     const error = new Error('Space not found');
     mockContentTypeGetMany.mockRejectedValue(error);
 
-    const result = await listContentTypesTool(mockArgs);
+    const tool = listContentTypesTool(mockConfig);
+    const result = await tool(mockArgs);
 
     expect(result).toEqual({
       isError: true,

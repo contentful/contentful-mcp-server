@@ -6,10 +6,13 @@ import {
   mockCreateClient,
 } from './mockClient.js';
 import { createConceptSchemeTool } from './createConceptScheme.js';
-import { getDefaultClientConfig } from '../../../config/contentful.js';
+import { createClientConfig } from '../../../utils/tools.js';
 import { formatResponse } from '../../../utils/formatters.js';
+import { createMockConfig } from '../../../test-helpers/mockConfig.js';
 
 describe('createConceptScheme', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     mockConceptSchemeCreate.mockClear();
     mockConceptSchemeCreateWithId.mockClear();
@@ -25,10 +28,10 @@ describe('createConceptScheme', () => {
   it('should create a concept scheme successfully with minimal required fields', async () => {
     mockConceptSchemeCreate.mockResolvedValue(testConceptScheme);
 
-    const result = await createConceptSchemeTool(testArgs);
+    const tool = createConceptSchemeTool(mockConfig);
+    const result = await tool(testArgs);
 
-    const clientConfig = getDefaultClientConfig();
-    delete clientConfig.space;
+    const clientConfig = createClientConfig(mockConfig);
     expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
       type: 'plain',
     });
@@ -66,7 +69,8 @@ describe('createConceptScheme', () => {
     };
     mockConceptSchemeCreateWithId.mockResolvedValue(testConceptScheme);
 
-    const result = await createConceptSchemeTool(argsWithId);
+    const tool = createConceptSchemeTool(mockConfig);
+    const result = await tool(argsWithId);
 
     expect(mockConceptSchemeCreateWithId).toHaveBeenCalledWith(
       {
@@ -142,7 +146,8 @@ describe('createConceptScheme', () => {
 
     mockConceptSchemeCreate.mockResolvedValue(testConceptScheme);
 
-    const result = await createConceptSchemeTool(fullArgs);
+    const tool = createConceptSchemeTool(mockConfig);
+    const result = await tool(fullArgs);
 
     expect(mockConceptSchemeCreate).toHaveBeenCalledWith(
       {
@@ -211,7 +216,8 @@ describe('createConceptScheme', () => {
     const errorMessage = 'Failed to create concept scheme';
     mockConceptSchemeCreate.mockRejectedValue(new Error(errorMessage));
 
-    const result = await createConceptSchemeTool(testArgs);
+    const tool = createConceptSchemeTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       content: [

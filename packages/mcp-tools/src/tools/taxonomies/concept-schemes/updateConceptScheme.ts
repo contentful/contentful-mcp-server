@@ -4,7 +4,8 @@ import {
   withErrorHandling,
 } from '../../../utils/response.js';
 import ctfl from 'contentful-management';
-import { getDefaultClientConfig } from '../../../config/contentful.js';
+import { createClientConfig } from '../../../utils/tools.js';
+import type { ContentfulConfig } from '../../../config/types.js';
 import { TaxonomyConceptLinkSchema } from '../../../types/conceptPayloadTypes.js';
 
 export const UpdateConceptSchemeToolParams = z.object({
@@ -60,12 +61,13 @@ export const UpdateConceptSchemeToolParams = z.object({
 
 type Params = z.infer<typeof UpdateConceptSchemeToolParams>;
 
-async function tool(args: Params) {
-  // Create a client without space-specific configuration for concept scheme operations
-  const clientConfig = getDefaultClientConfig();
-  // Remove space from config since we're working at the organization level
-  delete clientConfig.space;
-  const contentfulClient = ctfl.createClient(clientConfig, { type: 'plain' });
+export function updateConceptSchemeTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    // Create a client without space-specific configuration for concept scheme operations
+    const clientConfig = createClientConfig(config);
+    // Remove space from config since we're working at the organization level
+    delete clientConfig.space;
+    const contentfulClient = ctfl.createClient(clientConfig, { type: 'plain' });
 
   const params = {
     organizationId: args.organizationId,
@@ -143,12 +145,10 @@ async function tool(args: Params) {
     patchOperations,
   );
 
-  return createSuccessResponse('Concept scheme updated successfully', {
-    updatedConceptScheme,
-  });
-}
+    return createSuccessResponse('Concept scheme updated successfully', {
+      updatedConceptScheme,
+    });
+  }
 
-export const updateConceptSchemeTool = withErrorHandling(
-  tool,
-  'Error updating concept scheme',
-);
+  return withErrorHandling(tool, 'Error updating concept scheme');
+}

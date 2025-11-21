@@ -3,7 +3,8 @@ import { testOrg, mockOrgGetAll, mockCreateClient } from './mockClient.js';
 import { listOrgsTool } from './listOrgs.js';
 import { formatResponse } from '../../utils/formatters.js';
 import { summarizeData } from '../../utils/summarizer.js';
-import { getDefaultClientConfig } from '../../config/contentful.js';
+import { createClientConfig } from '../../utils/tools.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 const mockOrgs = {
   items: [
@@ -16,6 +17,8 @@ const mockOrgs = {
 };
 
 describe('listOrgsTool', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -23,10 +26,10 @@ describe('listOrgsTool', () => {
   it('should list organizations successfully', async () => {
     mockOrgGetAll.mockResolvedValue(mockOrgs);
 
-    const result = await listOrgsTool({});
+    const tool = listOrgsTool(mockConfig);
+    const result = await tool({});
 
-    const clientConfig = getDefaultClientConfig();
-    delete clientConfig.space;
+    const clientConfig = createClientConfig(mockConfig);
     expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
       type: 'plain',
     });
@@ -80,7 +83,8 @@ describe('listOrgsTool', () => {
     const error = new Error('Listing failed');
     mockOrgGetAll.mockRejectedValue(error);
 
-    const result = await listOrgsTool({});
+    const tool = listOrgsTool(mockConfig);
+    const result = await tool({});
 
     expect(result).toEqual({
       isError: true,

@@ -7,6 +7,7 @@ import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
 import { FieldSchema } from '../../types/fieldSchema.js';
 import { ContentTypeMetadataSchema } from '../../types/taxonomySchema.js';
 import { ContentFields } from 'contentful-management';
+import type { ContentfulConfig } from '../../config/types.js';
 
 export const UpdateContentTypeToolParams = BaseToolSchema.extend({
   contentTypeId: z.string().describe('The ID of the content type to update'),
@@ -30,14 +31,15 @@ export const UpdateContentTypeToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof UpdateContentTypeToolParams>;
 
-async function tool(args: Params) {
-  const params = {
-    spaceId: args.spaceId,
-    environmentId: args.environmentId,
-    contentTypeId: args.contentTypeId,
-  };
+export function updateContentTypeTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    const params = {
+      spaceId: args.spaceId,
+      environmentId: args.environmentId,
+      contentTypeId: args.contentTypeId,
+    };
 
-  const contentfulClient = createToolClient(args);
+    const contentfulClient = createToolClient(config, args);
 
   // Get the current content type
   const currentContentType = await contentfulClient.contentType.get(params);
@@ -98,12 +100,10 @@ async function tool(args: Params) {
     metadata: args.metadata || currentContentType.metadata,
   });
 
-  return createSuccessResponse('Content type updated successfully', {
-    contentType,
-  });
-}
+    return createSuccessResponse('Content type updated successfully', {
+      contentType,
+    });
+  }
 
-export const updateContentTypeTool = withErrorHandling(
-  tool,
-  'Error updating content type',
-);
+  return withErrorHandling(tool, 'Error updating content type');
+}

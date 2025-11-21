@@ -10,11 +10,13 @@ import {
   mockAsset,
   mockProcessedAsset,
 } from './mockClient.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
 
 describe('uploadAsset', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     setupMockClient();
     vi.clearAllMocks();
@@ -31,7 +33,8 @@ describe('uploadAsset', () => {
     mockAssetCreate.mockResolvedValue(mockAsset);
     mockAssetProcessForAllLocales.mockResolvedValue(mockProcessedAsset);
 
-    const result = await uploadAssetTool(testArgs);
+    const tool = uploadAssetTool(mockConfig);
+    const result = await tool(testArgs);
 
     const expectedResponse = formatResponse('Asset uploaded successfully', {
       asset: mockProcessedAsset,
@@ -79,7 +82,8 @@ describe('uploadAsset', () => {
     mockAssetCreate.mockResolvedValue(assetWithoutDescription);
     mockAssetProcessForAllLocales.mockResolvedValue(assetWithoutDescription);
 
-    const result = await uploadAssetTool(testArgs);
+    const tool = uploadAssetTool(mockConfig);
+    const result = await tool(testArgs);
 
     const expectedResponse = formatResponse('Asset uploaded successfully', {
       asset: assetWithoutDescription,
@@ -124,7 +128,8 @@ describe('uploadAsset', () => {
     mockAssetCreate.mockResolvedValue(mockAsset);
     mockAssetProcessForAllLocales.mockResolvedValue(mockProcessedAsset);
 
-    await uploadAssetTool(testArgs);
+    const tool = uploadAssetTool(mockConfig);
+    await tool(testArgs);
 
     expect(mockAssetCreate).toHaveBeenCalledWith(
       expect.anything(),
@@ -147,7 +152,8 @@ describe('uploadAsset', () => {
     const error = new Error('Invalid file format');
     mockAssetCreate.mockRejectedValue(error);
 
-    const result = await uploadAssetTool(testArgs);
+    const tool = uploadAssetTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       isError: true,
@@ -171,7 +177,8 @@ describe('uploadAsset', () => {
     const processingError = new Error('Asset processing failed');
     mockAssetProcessForAllLocales.mockRejectedValue(processingError);
 
-    const result = await uploadAssetTool(testArgs);
+    const tool = uploadAssetTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       isError: true,
@@ -206,7 +213,8 @@ describe('uploadAsset', () => {
     mockAssetCreate.mockResolvedValue(mockAsset);
     mockAssetProcessForAllLocales.mockResolvedValue(mockProcessedAsset);
 
-    await uploadAssetTool(testArgs);
+    const tool = uploadAssetTool(mockConfig);
+    await tool(testArgs);
 
     expect(mockAssetCreate).toHaveBeenCalledWith(
       expect.anything(),
@@ -227,7 +235,8 @@ describe('uploadAsset', () => {
     mockAssetCreate.mockResolvedValue(mockAsset);
     mockAssetProcessForAllLocales.mockResolvedValue(mockProcessedAsset);
 
-    const result = await uploadAssetTool(testArgs);
+    const tool = uploadAssetTool(mockConfig);
+    const result = await tool(testArgs);
 
     const expectedResponse = formatResponse('Asset uploaded successfully', {
       asset: mockProcessedAsset,

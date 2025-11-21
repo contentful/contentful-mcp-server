@@ -8,15 +8,17 @@ import {
 
 import { getOrgTool } from './getOrg.js';
 import { formatResponse } from '../../utils/formatters.js';
-import { getDefaultClientConfig } from '../../config/contentful.js';
+import { createClientConfig } from '../../utils/tools.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('getOrg', () => {
+  const mockConfig = createMockConfig();
   it('should get an organization successfully', async () => {
     mockOrgGet.mockResolvedValue(testOrg);
 
-    const result = await getOrgTool(mockArgs);
-    const clientConfig = getDefaultClientConfig();
-    delete clientConfig.space;
+    const tool = getOrgTool(mockConfig);
+    const result = await tool(mockArgs);
+    const clientConfig = createClientConfig(mockConfig);
     expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
       type: 'plain',
     });
@@ -44,7 +46,8 @@ describe('getOrg', () => {
     const error = new Error('Retrieval failed');
     mockOrgGet.mockRejectedValue(error);
 
-    const result = await getOrgTool(mockArgs);
+    const tool = getOrgTool(mockConfig);
+    const result = await tool(mockArgs);
 
     expect(result).toEqual({
       isError: true,

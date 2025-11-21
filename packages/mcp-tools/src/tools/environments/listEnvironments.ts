@@ -5,6 +5,7 @@ import {
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
 import { summarizeData } from '../../utils/summarizer.js';
+import type { ContentfulConfig } from '../../config/types.js';
 
 // Extend BaseToolSchema but make environmentId optional since it's not needed for listing
 export const ListEnvironmentsToolParams = BaseToolSchema.extend({
@@ -31,13 +32,14 @@ export const ListEnvironmentsToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof ListEnvironmentsToolParams>;
 
-async function tool(args: Params) {
-  const clientArgs = {
-    spaceId: args.spaceId,
-    environmentId: args.environmentId || 'master',
-  };
+export function listEnvironmentsTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    const clientArgs = {
+      spaceId: args.spaceId,
+      environmentId: args.environmentId || 'master',
+    };
 
-  const contentfulClient = createToolClient(clientArgs);
+    const contentfulClient = createToolClient(config, clientArgs);
 
   const environments = await contentfulClient.environment.getMany({
     spaceId: args.spaceId,
@@ -75,9 +77,7 @@ async function tool(args: Params) {
     limit: environments.limit,
     skip: environments.skip,
   });
-}
+  }
 
-export const listEnvironmentsTool = withErrorHandling(
-  tool,
-  'Error listing environments',
-);
+  return withErrorHandling(tool, 'Error listing environments');
+}

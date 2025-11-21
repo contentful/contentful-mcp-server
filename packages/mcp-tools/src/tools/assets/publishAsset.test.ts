@@ -18,9 +18,11 @@ vi.mock('../../utils/bulkOperations.js', () => ({
 }));
 
 vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('publishAsset', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(async () => {
     setupMockClient();
     vi.clearAllMocks();
@@ -88,7 +90,8 @@ describe('publishAsset', () => {
     mockAssetGet.mockResolvedValue(mockAsset);
     mockAssetPublish.mockResolvedValue(publishedAsset);
 
-    const result = await publishAssetTool(mockArgs);
+    const tool = publishAssetTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse('Asset published successfully', {
       status: publishedAsset.sys.status,
@@ -127,7 +130,8 @@ describe('publishAsset', () => {
 
     mockBulkActionPublish.mockResolvedValue(mockBulkAction);
 
-    const result = await publishAssetTool(testArgs);
+    const tool = publishAssetTool(mockConfig);
+    const result = await tool(testArgs);
 
     const expectedResponse = formatResponse('Asset(s) published successfully', {
       status: mockBulkAction.sys.status,
@@ -150,7 +154,8 @@ describe('publishAsset', () => {
     const publishError = new Error('Asset cannot be published');
     mockAssetPublish.mockRejectedValue(publishError);
 
-    const result = await publishAssetTool(mockArgs);
+    const tool = publishAssetTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse('Asset publish failed', {
       status: publishError,
@@ -170,7 +175,8 @@ describe('publishAsset', () => {
     const error = new Error('Asset not found');
     mockAssetGet.mockRejectedValue(error);
 
-    const result = await publishAssetTool(mockArgs);
+    const tool = publishAssetTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse('Asset publish failed', {
       status: error,
@@ -195,7 +201,8 @@ describe('publishAsset', () => {
     const bulkError = new Error('Bulk publish failed');
     mockBulkActionPublish.mockRejectedValue(bulkError);
 
-    const result = await publishAssetTool(testArgs);
+    const tool = publishAssetTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       isError: true,
@@ -232,7 +239,8 @@ describe('publishAsset', () => {
     // Ensure bulk action succeeds for empty array
     mockBulkActionPublish.mockResolvedValue(mockBulkAction);
 
-    const result = await publishAssetTool(testArgs);
+    const tool = publishAssetTool(mockConfig);
+    const result = await tool(testArgs);
 
     const expectedResponse = formatResponse('Asset(s) published successfully', {
       status: mockBulkAction.sys.status,
@@ -257,7 +265,8 @@ describe('publishAsset', () => {
 
     mockBulkActionPublish.mockResolvedValue(mockBulkAction);
 
-    const result = await publishAssetTool(testArgs);
+    const tool = publishAssetTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       content: [

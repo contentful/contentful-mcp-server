@@ -4,6 +4,7 @@ import {
   withErrorHandling,
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import type { ContentfulConfig } from '../../config/types.js';
 
 export const ArchiveAssetToolParams = BaseToolSchema.extend({
   assetId: z
@@ -15,13 +16,14 @@ export const ArchiveAssetToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof ArchiveAssetToolParams>;
 
-async function tool(args: Params) {
-  const baseParams = {
-    spaceId: args.spaceId,
-    environmentId: args.environmentId,
-  };
+export function archiveAssetTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    const baseParams = {
+      spaceId: args.spaceId,
+      environmentId: args.environmentId,
+    };
 
-  const contentfulClient = createToolClient(args);
+    const contentfulClient = createToolClient(config, args);
 
   // Normalize input to always be an array
   const assetIds = Array.isArray(args.assetId) ? args.assetId : [args.assetId];
@@ -64,9 +66,7 @@ async function tool(args: Params) {
       },
     );
   }
-}
+  }
 
-export const archiveAssetTool = withErrorHandling(
-  tool,
-  'Error archiving asset',
-);
+  return withErrorHandling(tool, 'Error archiving asset');
+}

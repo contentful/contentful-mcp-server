@@ -7,8 +7,11 @@ import {
 } from './mockClient.js';
 import { updateEditorInterfaceTool } from './updateEditorInterface.js';
 import { formatResponse } from '../../utils/formatters.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('updateEditorInterface', () => {
+  const mockConfig = createMockConfig();
+
   it('should update an editor interface successfully', async () => {
     const updatedControls = [
       {
@@ -35,7 +38,8 @@ describe('updateEditorInterface', () => {
     mockEditorInterfaceGet.mockResolvedValue(mockEditorInterface);
     mockEditorInterfaceUpdate.mockResolvedValue(updatedEditorInterface);
 
-    const result = await updateEditorInterfaceTool({
+    const tool = updateEditorInterfaceTool(mockConfig);
+    const result = await tool({
       ...mockArgs,
       controls: updatedControls,
     });
@@ -62,7 +66,8 @@ describe('updateEditorInterface', () => {
     mockEditorInterfaceGet.mockResolvedValue(mockEditorInterface);
     mockEditorInterfaceUpdate.mockRejectedValue(error);
 
-    const result = await updateEditorInterfaceTool({
+    const tool = updateEditorInterfaceTool(mockConfig);
+    const result = await tool({
       ...mockArgs,
       controls: [
         {
@@ -106,7 +111,8 @@ describe('updateEditorInterface', () => {
     mockEditorInterfaceGet.mockResolvedValue(mockEditorInterface);
     mockEditorInterfaceUpdate.mockResolvedValue(updatedEditorInterface);
 
-    const result = await updateEditorInterfaceTool({
+    const tool = updateEditorInterfaceTool(mockConfig);
+    const result = await tool({
       ...mockArgs,
       controls: updatedControls,
       // Not providing sidebar should preserve existing sidebar

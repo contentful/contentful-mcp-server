@@ -8,8 +8,11 @@ import {
 import { updateLocaleTool } from './updateLocale.js';
 import { createToolClient } from '../../utils/tools.js';
 import { formatResponse } from '../../utils/formatters.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('updateLocaleTool', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -30,9 +33,10 @@ describe('updateLocaleTool', () => {
     mockLocaleGet.mockResolvedValue(testLocale);
     mockLocaleUpdate.mockResolvedValue(updatedLocale);
 
-    const result = await updateLocaleTool(testArgs);
+    const tool = updateLocaleTool(mockConfig);
+    const result = await tool(testArgs);
 
-    expect(createToolClient).toHaveBeenCalledWith(testArgs);
+    expect(createToolClient).toHaveBeenCalledWith(mockConfig, testArgs);
     expect(mockLocaleGet).toHaveBeenCalledWith({
       spaceId: testArgs.spaceId,
       environmentId: testArgs.environmentId,
@@ -72,7 +76,8 @@ describe('updateLocaleTool', () => {
     mockLocaleGet.mockResolvedValue(testLocale);
     mockLocaleUpdate.mockRejectedValue(error);
 
-    const result = await updateLocaleTool(testArgs);
+    const tool = updateLocaleTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       isError: true,

@@ -10,9 +10,11 @@ import {
 } from './mockClient.js';
 
 vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('updateAsset', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     setupMockClient();
     vi.clearAllMocks();
@@ -39,7 +41,8 @@ describe('updateAsset', () => {
     mockAssetGet.mockResolvedValue(mockAsset);
     mockAssetUpdate.mockResolvedValue(updatedAsset);
 
-    const result = await updateAssetTool(testArgs);
+    const tool = updateAssetTool(mockConfig);
+    const result = await tool(testArgs);
 
     const expectedResponse = formatResponse('Asset updated successfully', {
       updatedAsset,
@@ -145,7 +148,8 @@ describe('updateAsset', () => {
     mockAssetGet.mockResolvedValue(assetWithExistingTags);
     mockAssetUpdate.mockResolvedValue(updatedAsset);
 
-    await updateAssetTool(testArgs);
+    const tool = updateAssetTool(mockConfig);
+    await tool(testArgs);
 
     expect(mockAssetUpdate).toHaveBeenCalledWith(
       expect.anything(),
@@ -192,7 +196,8 @@ describe('updateAsset', () => {
     mockAssetGet.mockResolvedValue(mockAsset);
     mockAssetUpdate.mockResolvedValue(updatedAsset);
 
-    await updateAssetTool(testArgs);
+    const tool = updateAssetTool(mockConfig);
+    await tool(testArgs);
 
     expect(mockAssetUpdate).toHaveBeenCalledWith(
       expect.anything(),
@@ -216,7 +221,8 @@ describe('updateAsset', () => {
     const error = new Error('Asset not found');
     mockAssetGet.mockRejectedValue(error);
 
-    const result = await updateAssetTool(testArgs);
+    const tool = updateAssetTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       isError: true,
@@ -241,7 +247,8 @@ describe('updateAsset', () => {
     const updateError = new Error('Validation failed');
     mockAssetUpdate.mockRejectedValue(updateError);
 
-    const result = await updateAssetTool(testArgs);
+    const tool = updateAssetTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       isError: true,
@@ -276,7 +283,8 @@ describe('updateAsset', () => {
       },
     });
 
-    await updateAssetTool(testArgs);
+    const tool = updateAssetTool(mockConfig);
+    await tool(testArgs);
 
     expect(mockAssetUpdate).toHaveBeenCalledWith(
       expect.anything(),
@@ -355,7 +363,8 @@ describe('updateAsset', () => {
     mockAssetGet.mockResolvedValue(assetWithExistingConcepts);
     mockAssetUpdate.mockResolvedValue(updatedAsset);
 
-    await updateAssetTool(testArgs);
+    const tool = updateAssetTool(mockConfig);
+    await tool(testArgs);
 
     expect(mockAssetUpdate).toHaveBeenCalledWith(
       expect.anything(),
@@ -444,7 +453,8 @@ describe('updateAsset', () => {
       },
     });
 
-    await updateAssetTool(testArgs);
+    const tool = updateAssetTool(mockConfig);
+    await tool(testArgs);
 
     expect(mockAssetUpdate).toHaveBeenCalledWith(
       expect.anything(),

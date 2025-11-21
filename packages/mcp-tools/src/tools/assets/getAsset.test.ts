@@ -9,9 +9,11 @@ import {
 } from './mockClient.js';
 
 vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('getAsset', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     setupMockClient();
     vi.clearAllMocks();
@@ -20,7 +22,8 @@ describe('getAsset', () => {
   it('should retrieve an asset successfully', async () => {
     mockAssetGet.mockResolvedValue(mockAsset);
 
-    const result = await getAssetTool(mockArgs);
+    const tool = getAssetTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse('Asset retrieved successfully', {
       asset: mockAsset,
@@ -45,7 +48,8 @@ describe('getAsset', () => {
     const error = new Error('Asset not found');
     mockAssetGet.mockRejectedValue(error);
 
-    const result = await getAssetTool(mockArgs);
+    const tool = getAssetTool(mockConfig);
+    const result = await tool(mockArgs);
 
     expect(result).toEqual({
       isError: true,

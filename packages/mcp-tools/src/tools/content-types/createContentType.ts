@@ -6,6 +6,7 @@ import {
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
 import { FieldSchema } from '../../types/fieldSchema.js';
 import { ContentTypeMetadataSchema } from '../../types/taxonomySchema.js';
+import type { ContentfulConfig } from '../../config/types.js';
 
 export const CreateContentTypeToolParams = BaseToolSchema.extend({
   name: z.string().describe('The name of the content type'),
@@ -28,13 +29,14 @@ export const CreateContentTypeToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof CreateContentTypeToolParams>;
 
-async function tool(args: Params) {
-  const params = {
-    spaceId: args.spaceId,
-    environmentId: args.environmentId,
-  };
+export function createContentTypeTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    const params = {
+      spaceId: args.spaceId,
+      environmentId: args.environmentId,
+    };
 
-  const contentfulClient = createToolClient(args);
+    const contentfulClient = createToolClient(config, args);
 
   const contentTypeData = {
     name: args.name,
@@ -52,12 +54,10 @@ async function tool(args: Params) {
       )
     : await contentfulClient.contentType.create(params, contentTypeData);
 
-  return createSuccessResponse('Content type created successfully', {
-    contentType,
-  });
-}
+    return createSuccessResponse('Content type created successfully', {
+      contentType,
+    });
+  }
 
-export const createContentTypeTool = withErrorHandling(
-  tool,
-  'Error creating content type',
-);
+  return withErrorHandling(tool, 'Error creating content type');
+}

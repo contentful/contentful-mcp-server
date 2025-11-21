@@ -10,6 +10,7 @@ import {
   createEntitiesCollection,
   waitForBulkActionCompletion,
 } from '../../utils/bulkOperations.js';
+import type { ContentfulConfig } from '../../config/types.js';
 
 export const PublishAssetToolParams = BaseToolSchema.extend({
   assetId: z
@@ -21,13 +22,14 @@ export const PublishAssetToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof PublishAssetToolParams>;
 
-async function tool(args: Params) {
-  const baseParams: BulkOperationParams = {
-    spaceId: args.spaceId,
-    environmentId: args.environmentId,
-  };
+export function publishAssetTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    const baseParams: BulkOperationParams = {
+      spaceId: args.spaceId,
+      environmentId: args.environmentId,
+    };
 
-  const contentfulClient = createToolClient(args);
+    const contentfulClient = createToolClient(config, args);
 
   // Normalize input to always be an array
   const assetIds = Array.isArray(args.assetId) ? args.assetId : [args.assetId];
@@ -89,9 +91,7 @@ async function tool(args: Params) {
     status: action.sys.status,
     assetIds,
   });
-}
+  }
 
-export const publishAssetTool = withErrorHandling(
-  tool,
-  'Error publishing asset',
-);
+  return withErrorHandling(tool, 'Error publishing asset');
+}

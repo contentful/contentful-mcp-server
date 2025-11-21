@@ -8,9 +8,12 @@ import {
   mockCreateClient,
 } from './mockClient.js';
 import { listConceptsTool } from './listConcepts.js';
-import { getDefaultClientConfig } from '../../../config/contentful.js';
+import { createClientConfig } from '../../../utils/tools.js';
+import { createMockConfig } from '../../../test-helpers/mockConfig.js';
 
 describe('listConcepts', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     mockConceptGetMany.mockClear();
     mockConceptGetDescendants.mockClear();
@@ -32,10 +35,10 @@ describe('listConcepts', () => {
   it('should list concepts successfully with default parameters', async () => {
     mockConceptGetMany.mockResolvedValue(mockConceptsResponse);
 
-    const result = await listConceptsTool(testArgs);
+    const tool = listConceptsTool(mockConfig);
+    const result = await tool(testArgs);
 
-    const clientConfig = getDefaultClientConfig();
-    delete clientConfig.space;
+    const clientConfig = createClientConfig(mockConfig);
     expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
       type: 'plain',
     });
@@ -65,7 +68,8 @@ describe('listConcepts', () => {
 
     mockConceptGetMany.mockResolvedValue(mockConceptsResponse);
 
-    const result = await listConceptsTool(fullArgs);
+    const tool = listConceptsTool(mockConfig);
+    const result = await tool(fullArgs);
 
     expect(mockConceptGetMany).toHaveBeenCalledWith({
       organizationId: 'test-org-id',
@@ -86,7 +90,8 @@ describe('listConcepts', () => {
     const error = new Error('Failed to fetch concepts');
     mockConceptGetMany.mockRejectedValue(error);
 
-    const result = await listConceptsTool(testArgs);
+    const tool = listConceptsTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(mockConceptGetMany).toHaveBeenCalledWith({
       organizationId: 'test-org-id',
@@ -109,7 +114,8 @@ describe('listConcepts', () => {
 
     mockConceptGetTotal.mockResolvedValue(42);
 
-    const result = await listConceptsTool(totalOnlyArgs);
+    const tool = listConceptsTool(mockConfig);
+    const result = await tool(totalOnlyArgs);
 
     expect(mockConceptGetTotal).toHaveBeenCalledWith({
       organizationId: 'test-org-id',
@@ -138,7 +144,8 @@ describe('listConcepts', () => {
 
     mockConceptGetDescendants.mockResolvedValue(mockDescendantsResponse);
 
-    const result = await listConceptsTool(descendantsArgs);
+    const tool = listConceptsTool(mockConfig);
+    const result = await tool(descendantsArgs);
 
     expect(mockConceptGetDescendants).toHaveBeenCalledWith({
       organizationId: 'test-org-id',
@@ -168,7 +175,8 @@ describe('listConcepts', () => {
 
     mockConceptGetAncestors.mockResolvedValue(mockAncestorsResponse);
 
-    const result = await listConceptsTool(ancestorsArgs);
+    const tool = listConceptsTool(mockConfig);
+    const result = await tool(ancestorsArgs);
 
     expect(mockConceptGetAncestors).toHaveBeenCalledWith({
       organizationId: 'test-org-id',

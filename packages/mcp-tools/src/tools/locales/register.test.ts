@@ -1,18 +1,28 @@
 import { describe, it, expect } from 'vitest';
-import { localeTools } from './register.js';
-import { getLocaleTool, GetLocaleToolParams } from './getLocale.js';
-import { createLocaleTool, CreateLocaleToolParams } from './createLocale.js';
-import { listLocaleTool, ListLocaleToolParams } from './listLocales.js';
-import { updateLocaleTool, UpdateLocaleToolParams } from './updateLocale.js';
-import { deleteLocaleTool, DeleteLocaleToolParams } from './deleteLocale.js';
+import { createLocaleTools } from './register.js';
+import { GetLocaleToolParams } from './getLocale.js';
+import { CreateLocaleToolParams } from './createLocale.js';
+import { ListLocaleToolParams } from './listLocales.js';
+import { UpdateLocaleToolParams } from './updateLocale.js';
+import { DeleteLocaleToolParams } from './deleteLocale.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('locale tools collection', () => {
-  it('should export localeTools collection with correct structure', () => {
+  const mockConfig = createMockConfig();
+
+  it('should export createLocaleTools factory function', () => {
+    expect(createLocaleTools).toBeDefined();
+    expect(typeof createLocaleTools).toBe('function');
+  });
+
+  it('should create localeTools collection with correct structure', () => {
+    const localeTools = createLocaleTools(mockConfig);
     expect(localeTools).toBeDefined();
     expect(Object.keys(localeTools)).toHaveLength(5);
   });
 
   it('should have getLocale tool with correct properties', () => {
+    const localeTools = createLocaleTools(mockConfig);
     const { getLocale } = localeTools;
 
     expect(getLocale.title).toBe('get_locale');
@@ -24,10 +34,12 @@ describe('locale tools collection', () => {
       readOnlyHint: true,
       openWorldHint: false,
     });
-    expect(getLocale.tool).toBe(getLocaleTool);
+    expect(getLocale.tool).toBeDefined();
+    expect(typeof getLocale.tool).toBe('function');
   });
 
   it('should have createLocale tool with correct properties', () => {
+    const localeTools = createLocaleTools(mockConfig);
     const { createLocale } = localeTools;
 
     expect(createLocale.title).toBe('create_locale');
@@ -40,10 +52,12 @@ describe('locale tools collection', () => {
       idempotentHint: false,
       openWorldHint: false,
     });
-    expect(createLocale.tool).toBe(createLocaleTool);
+    expect(createLocale.tool).toBeDefined();
+    expect(typeof createLocale.tool).toBe('function');
   });
 
   it('should have listLocales tool with correct properties', () => {
+    const localeTools = createLocaleTools(mockConfig);
     const { listLocales } = localeTools;
 
     expect(listLocales.title).toBe('list_locales');
@@ -52,10 +66,12 @@ describe('locale tools collection', () => {
       readOnlyHint: true,
       openWorldHint: false,
     });
-    expect(listLocales.tool).toBe(listLocaleTool);
+    expect(listLocales.tool).toBeDefined();
+    expect(typeof listLocales.tool).toBe('function');
   });
 
   it('should have updateLocale tool with correct properties', () => {
+    const localeTools = createLocaleTools(mockConfig);
     const { updateLocale } = localeTools;
 
     expect(updateLocale.title).toBe('update_locale');
@@ -68,10 +84,12 @@ describe('locale tools collection', () => {
       idempotentHint: false,
       openWorldHint: false,
     });
-    expect(updateLocale.tool).toBe(updateLocaleTool);
+    expect(updateLocale.tool).toBeDefined();
+    expect(typeof updateLocale.tool).toBe('function');
   });
 
   it('should have deleteLocale tool with correct properties', () => {
+    const localeTools = createLocaleTools(mockConfig);
     const { deleteLocale } = localeTools;
 
     expect(deleteLocale.title).toBe('delete_locale');
@@ -84,6 +102,7 @@ describe('locale tools collection', () => {
       idempotentHint: true,
       openWorldHint: false,
     });
-    expect(deleteLocale.tool).toBe(deleteLocaleTool);
+    expect(deleteLocale.tool).toBeDefined();
+    expect(typeof deleteLocale.tool).toBe('function');
   });
 });

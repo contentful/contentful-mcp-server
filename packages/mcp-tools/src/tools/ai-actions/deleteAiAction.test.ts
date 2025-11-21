@@ -8,11 +8,13 @@ import {
   mockAiAction,
   mockAiActionGet,
 } from './mockClient.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
 
 describe('deleteAiAction', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     setupMockClient();
   });
@@ -21,7 +23,8 @@ describe('deleteAiAction', () => {
     mockAiActionGet.mockResolvedValue(mockAiAction);
     mockAiActionDelete.mockResolvedValue(undefined);
 
-    const result = await deleteAiActionTool(mockArgs);
+    const tool = deleteAiActionTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse('AI action deleted successfully', {
       aiAction: mockAiAction,
@@ -40,7 +43,8 @@ describe('deleteAiAction', () => {
     const error = new Error('AI action not found');
     mockAiActionDelete.mockRejectedValue(error);
 
-    const result = await deleteAiActionTool(mockArgs);
+    const tool = deleteAiActionTool(mockConfig);
+    const result = await tool(mockArgs);
 
     expect(result).toEqual({
       isError: true,

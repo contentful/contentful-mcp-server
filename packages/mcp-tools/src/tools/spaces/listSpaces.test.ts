@@ -3,7 +3,8 @@ import { testSpace, mockSpaceGetMany, mockCreateClient } from './mockClient.js';
 import { listSpacesTool } from './listSpaces.js';
 import { formatResponse } from '../../utils/formatters.js';
 import { summarizeData } from '../../utils/summarizer.js';
-import { getDefaultClientConfig } from '../../config/contentful.js';
+import { createClientConfig } from '../../utils/tools.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 const mockSpaces = {
   items: [
@@ -16,6 +17,8 @@ const mockSpaces = {
 };
 
 describe('listSpacesTool', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -23,10 +26,10 @@ describe('listSpacesTool', () => {
   it('should list spaces successfully', async () => {
     mockSpaceGetMany.mockResolvedValue(mockSpaces);
 
-    const result = await listSpacesTool({});
+    const tool = listSpacesTool(mockConfig);
+    const result = await tool({});
 
-    const clientConfig = getDefaultClientConfig();
-    delete clientConfig.space;
+    const clientConfig = createClientConfig(mockConfig);
     expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
       type: 'plain',
     });
@@ -77,7 +80,8 @@ describe('listSpacesTool', () => {
     const error = new Error('Listing failed');
     mockSpaceGetMany.mockRejectedValue(error);
 
-    const result = await listSpacesTool({});
+    const tool = listSpacesTool(mockConfig);
+    const result = await tool({});
 
     expect(result).toEqual({
       isError: true,

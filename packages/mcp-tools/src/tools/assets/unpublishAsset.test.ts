@@ -18,9 +18,11 @@ vi.mock('../../utils/bulkOperations.js', () => ({
 }));
 
 vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('unpublishAsset', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(async () => {
     setupMockClient();
     vi.clearAllMocks();
@@ -86,7 +88,8 @@ describe('unpublishAsset', () => {
     mockAssetGet.mockResolvedValue(mockAsset);
     mockAssetUnpublish.mockResolvedValue(unpublishedAsset);
 
-    const result = await unpublishAssetTool(mockArgs);
+    const tool = unpublishAssetTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse('Asset unpublished successfully', {
       status: unpublishedAsset.sys.status,
@@ -125,7 +128,8 @@ describe('unpublishAsset', () => {
 
     mockBulkActionUnpublish.mockResolvedValue(mockBulkAction);
 
-    const result = await unpublishAssetTool(testArgs);
+    const tool = unpublishAssetTool(mockConfig);
+    const result = await tool(testArgs);
 
     const expectedResponse = formatResponse(
       'Asset(s) unpublished successfully',
@@ -151,7 +155,8 @@ describe('unpublishAsset', () => {
     const unpublishError = new Error('Asset cannot be unpublished');
     mockAssetUnpublish.mockRejectedValue(unpublishError);
 
-    const result = await unpublishAssetTool(mockArgs);
+    const tool = unpublishAssetTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse('Asset unpublish failed', {
       status: unpublishError,
@@ -171,7 +176,8 @@ describe('unpublishAsset', () => {
     const error = new Error('Asset not found');
     mockAssetGet.mockRejectedValue(error);
 
-    const result = await unpublishAssetTool(mockArgs);
+    const tool = unpublishAssetTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse('Asset unpublish failed', {
       status: error,
@@ -196,7 +202,8 @@ describe('unpublishAsset', () => {
     const bulkError = new Error('Bulk unpublish failed');
     mockBulkActionUnpublish.mockRejectedValue(bulkError);
 
-    const result = await unpublishAssetTool(testArgs);
+    const tool = unpublishAssetTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       isError: true,
@@ -233,7 +240,8 @@ describe('unpublishAsset', () => {
     // Ensure bulk action succeeds for empty array
     mockBulkActionUnpublish.mockResolvedValue(mockBulkAction);
 
-    const result = await unpublishAssetTool(testArgs);
+    const tool = unpublishAssetTool(mockConfig);
+    const result = await tool(testArgs);
 
     const expectedResponse = formatResponse(
       'Asset(s) unpublished successfully',
@@ -261,7 +269,8 @@ describe('unpublishAsset', () => {
 
     mockBulkActionUnpublish.mockResolvedValue(mockBulkAction);
 
-    const result = await unpublishAssetTool(testArgs);
+    const tool = unpublishAssetTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       content: [
@@ -286,7 +295,8 @@ describe('unpublishAsset', () => {
     mockAssetGet.mockResolvedValue(draftAsset);
     mockAssetUnpublish.mockResolvedValue(draftAsset);
 
-    const result = await unpublishAssetTool(mockArgs);
+    const tool = unpublishAssetTool(mockConfig);
+    const result = await tool(mockArgs);
 
     expect(result).toEqual({
       content: [

@@ -6,12 +6,15 @@ import {
 } from './mockClient.js';
 import { getEditorInterfaceTool } from './getEditorInterface.js';
 import { formatResponse } from '../../utils/formatters.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('getEditorInterface', () => {
+  const mockConfig = createMockConfig();
   it('should retrieve an editor interface successfully', async () => {
     mockEditorInterfaceGet.mockResolvedValue(mockEditorInterface);
 
-    const result = await getEditorInterfaceTool(mockArgs);
+    const tool = getEditorInterfaceTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse(
       'Editor interface retrieved successfully',
@@ -34,7 +37,8 @@ describe('getEditorInterface', () => {
     const error = new Error('Editor interface not found');
     mockEditorInterfaceGet.mockRejectedValue(error);
 
-    const result = await getEditorInterfaceTool(mockArgs);
+    const tool = getEditorInterfaceTool(mockConfig);
+    const result = await tool(mockArgs);
 
     expect(result).toEqual({
       isError: true,

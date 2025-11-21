@@ -7,9 +7,12 @@ import {
 } from './mockClient.js';
 import { updateConceptTool } from './updateConcept.js';
 import { formatResponse } from '../../../utils/formatters.js';
-import { getDefaultClientConfig } from '../../../config/contentful.js';
+import { createClientConfig } from '../../../utils/tools.js';
+import { createMockConfig } from '../../../test-helpers/mockConfig.js';
 
 describe('updateConcept', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     mockConceptGet.mockClear();
     mockConceptUpdatePut.mockClear();
@@ -70,10 +73,10 @@ describe('updateConcept', () => {
     mockConceptGet.mockResolvedValue(existingConcept);
     mockConceptUpdatePut.mockResolvedValue(updatedConcept);
 
-    const result = await updateConceptTool(updateArgs);
+    const tool = updateConceptTool(mockConfig);
+    const result = await tool(updateArgs);
 
-    const clientConfig = getDefaultClientConfig();
-    delete clientConfig.space;
+    const clientConfig = createClientConfig(mockConfig);
     expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
       type: 'plain',
     });
@@ -191,7 +194,8 @@ describe('updateConcept', () => {
     mockConceptGet.mockResolvedValue(existingConcept);
     mockConceptUpdatePut.mockResolvedValue(fullyUpdatedConcept);
 
-    const result = await updateConceptTool(fullUpdateArgs);
+    const tool = updateConceptTool(mockConfig);
+    const result = await tool(fullUpdateArgs);
 
     expect(mockConceptUpdatePut).toHaveBeenCalledWith(
       {
@@ -234,7 +238,8 @@ describe('updateConcept', () => {
     mockConceptGet.mockResolvedValue(existingConcept);
     mockConceptUpdatePut.mockRejectedValue(error);
 
-    const result = await updateConceptTool(testArgs);
+    const tool = updateConceptTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(mockConceptGet).toHaveBeenCalledWith({
       organizationId: 'test-org-id',
@@ -271,7 +276,8 @@ describe('updateConcept', () => {
     mockConceptGet.mockResolvedValue(existingConcept);
     mockConceptUpdatePut.mockResolvedValue(unchangedConcept);
 
-    const result = await updateConceptTool(minimalUpdateArgs);
+    const tool = updateConceptTool(mockConfig);
+    const result = await tool(minimalUpdateArgs);
 
     expect(mockConceptUpdatePut).toHaveBeenCalledWith(
       {

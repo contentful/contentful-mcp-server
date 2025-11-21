@@ -4,6 +4,7 @@ import {
   withErrorHandling,
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import type { ContentfulConfig } from '../../config/types.js';
 
 export const PublishContentTypeToolParams = BaseToolSchema.extend({
   contentTypeId: z.string().describe('The ID of the content type to publish'),
@@ -11,30 +12,29 @@ export const PublishContentTypeToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof PublishContentTypeToolParams>;
 
-async function tool(args: Params) {
-  const params = {
-    spaceId: args.spaceId,
-    environmentId: args.environmentId,
-    contentTypeId: args.contentTypeId,
-  };
+export function publishContentTypeTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    const params = {
+      spaceId: args.spaceId,
+      environmentId: args.environmentId,
+      contentTypeId: args.contentTypeId,
+    };
 
-  const contentfulClient = createToolClient(args);
+    const contentfulClient = createToolClient(config, args);
 
-  // Get the content type first
-  const currentContentType = await contentfulClient.contentType.get(params);
+    // Get the content type first
+    const currentContentType = await contentfulClient.contentType.get(params);
 
-  // Publish the content type
-  const contentType = await contentfulClient.contentType.publish(
-    params,
-    currentContentType,
-  );
+    // Publish the content type
+    const contentType = await contentfulClient.contentType.publish(
+      params,
+      currentContentType,
+    );
 
-  return createSuccessResponse('Content type published successfully', {
-    contentType,
-  });
+    return createSuccessResponse('Content type published successfully', {
+      contentType,
+    });
+  }
+
+  return withErrorHandling(tool, 'Error publishing content type');
 }
-
-export const publishContentTypeTool = withErrorHandling(
-  tool,
-  'Error publishing content type',
-);

@@ -8,11 +8,13 @@ import {
   mockEntry,
   mockArgs,
 } from './mockClient.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
 
 describe('deleteEntry', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     setupMockClient();
   });
@@ -21,7 +23,8 @@ describe('deleteEntry', () => {
     mockEntryGet.mockResolvedValue(mockEntry);
     mockEntryDelete.mockResolvedValue(undefined);
 
-    const result = await deleteEntryTool(mockArgs);
+    const tool = deleteEntryTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse('Entry deleted successfully', {
       entry: mockEntry,
@@ -40,7 +43,8 @@ describe('deleteEntry', () => {
     const error = new Error('Entry not found');
     mockEntryGet.mockRejectedValue(error);
 
-    const result = await deleteEntryTool(mockArgs);
+    const tool = deleteEntryTool(mockConfig);
+    const result = await tool(mockArgs);
 
     expect(result).toEqual({
       isError: true,
@@ -58,7 +62,8 @@ describe('deleteEntry', () => {
     const deleteError = new Error('Deletion failed');
     mockEntryDelete.mockRejectedValue(deleteError);
 
-    const result = await deleteEntryTool(mockArgs);
+    const tool = deleteEntryTool(mockConfig);
+    const result = await tool(mockArgs);
 
     expect(result).toEqual({
       isError: true,

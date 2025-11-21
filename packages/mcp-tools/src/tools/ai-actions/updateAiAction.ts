@@ -6,6 +6,7 @@ import {
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
 import { VariableType } from '../../utils/ai-actions.js';
 import { AiActionTestCaseSchema } from '../../types/aiActionTestCaseSchema.js';
+import type { ContentfulConfig } from '../../config/types.js';
 
 export const UpdateAiActionToolParams = BaseToolSchema.extend({
   aiActionId: z.string().describe('The ID of the AI action to update'),
@@ -50,32 +51,31 @@ export const UpdateAiActionToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof UpdateAiActionToolParams>;
 
-async function tool(args: Params) {
-  const params = {
-    spaceId: args.spaceId,
-    environmentId: args.environmentId,
-    aiActionId: args.aiActionId,
-  };
+export function updateAiActionTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    const params = {
+      spaceId: args.spaceId,
+      environmentId: args.environmentId,
+      aiActionId: args.aiActionId,
+    };
 
-  const contentfulClient = createToolClient(args);
+    const contentfulClient = createToolClient(config, args);
 
-  // Get existing AI action, merge fields, and update
-  const existingAiAction = await contentfulClient.aiAction.get(params);
-  const updatedAiAction = await contentfulClient.aiAction.update(params, {
-    ...existingAiAction,
-    ...(args.name && { name: args.name }),
-    ...(args.description && { description: args.description }),
-    ...(args.instruction && { instruction: args.instruction }),
-    ...(args.configuration && { configuration: args.configuration }),
-    ...(args.testCases && { testCases: args.testCases }),
-  });
+    // Get existing AI action, merge fields, and update
+    const existingAiAction = await contentfulClient.aiAction.get(params);
+    const updatedAiAction = await contentfulClient.aiAction.update(params, {
+      ...existingAiAction,
+      ...(args.name && { name: args.name }),
+      ...(args.description && { description: args.description }),
+      ...(args.instruction && { instruction: args.instruction }),
+      ...(args.configuration && { configuration: args.configuration }),
+      ...(args.testCases && { testCases: args.testCases }),
+    });
 
-  return createSuccessResponse('AI action updated successfully', {
-    updatedAiAction,
-  });
+    return createSuccessResponse('AI action updated successfully', {
+      updatedAiAction,
+    });
+  }
+
+  return withErrorHandling(tool, 'Error updating AI action');
 }
-
-export const updateAiActionTool = withErrorHandling(
-  tool,
-  'Error updating AI action',
-);

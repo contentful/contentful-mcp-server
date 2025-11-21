@@ -1,15 +1,25 @@
 import { describe, it, expect } from 'vitest';
-import { spaceTools } from './register.js';
-import { listSpacesTool, ListSpacesToolParams } from './listSpaces.js';
-import { getSpaceTool, GetSpaceToolParams } from './getSpace.js';
+import { createSpaceTools } from './register.js';
+import { ListSpacesToolParams } from './listSpaces.js';
+import { GetSpaceToolParams } from './getSpace.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('space tools collection', () => {
-  it('should export spaceTools collection with correct structure', () => {
+  const mockConfig = createMockConfig();
+
+  it('should export createSpaceTools factory function', () => {
+    expect(createSpaceTools).toBeDefined();
+    expect(typeof createSpaceTools).toBe('function');
+  });
+
+  it('should create spaceTools collection with correct structure', () => {
+    const spaceTools = createSpaceTools(mockConfig);
     expect(spaceTools).toBeDefined();
     expect(Object.keys(spaceTools)).toHaveLength(2);
   });
 
   it('should have listSpaces tool with correct properties', () => {
+    const spaceTools = createSpaceTools(mockConfig);
     const { listSpaces } = spaceTools;
 
     expect(listSpaces.title).toBe('list_spaces');
@@ -19,10 +29,12 @@ describe('space tools collection', () => {
       readOnlyHint: true,
       openWorldHint: false,
     });
-    expect(listSpaces.tool).toBe(listSpacesTool);
+    expect(listSpaces.tool).toBeDefined();
+    expect(typeof listSpaces.tool).toBe('function');
   });
 
   it('should have getSpace tool with correct properties', () => {
+    const spaceTools = createSpaceTools(mockConfig);
     const { getSpace } = spaceTools;
 
     expect(getSpace.title).toBe('get_space');
@@ -32,6 +44,7 @@ describe('space tools collection', () => {
       readOnlyHint: true,
       openWorldHint: false,
     });
-    expect(getSpace.tool).toBe(getSpaceTool);
+    expect(getSpace.tool).toBeDefined();
+    expect(typeof getSpace.tool).toBe('function');
   });
 });

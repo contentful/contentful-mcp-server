@@ -4,11 +4,12 @@ import {
   withErrorHandling,
 } from '../../../utils/response.js';
 import ctfl from 'contentful-management';
-import { getDefaultClientConfig } from '../../../config/contentful.js';
+import { createClientConfig } from '../../../utils/tools.js';
 import {
   TaxonomyConceptLinkSchema,
   type ConceptPayload,
 } from '../../../types/conceptPayloadTypes.js';
+import type { ContentfulConfig } from '../../../config/types.js';
 
 export const CreateConceptToolParams = z.object({
   organizationId: z.string().describe('The ID of the Contentful organization'),
@@ -70,12 +71,13 @@ export const CreateConceptToolParams = z.object({
 
 type Params = z.infer<typeof CreateConceptToolParams>;
 
-async function tool(args: Params) {
-  // Create a client without space-specific configuration for concept operations
-  const clientConfig = getDefaultClientConfig();
-  // Remove space from config since we're working at the organization level
-  delete clientConfig.space;
-  const contentfulClient = ctfl.createClient(clientConfig, { type: 'plain' });
+export function createConceptTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    // Create a client without space-specific configuration for concept operations
+    const clientConfig = createClientConfig(config);
+    // Remove space from config since we're working at the organization level
+    delete clientConfig.space;
+    const contentfulClient = ctfl.createClient(clientConfig, { type: 'plain' });
 
   // Build the concept payload using the shared type
   const conceptPayload: ConceptPayload = {
@@ -104,10 +106,8 @@ async function tool(args: Params) {
         conceptPayload,
       );
 
-  return createSuccessResponse('Concept created successfully', { newConcept });
-}
+    return createSuccessResponse('Concept created successfully', { newConcept });
+  }
 
-export const createConceptTool = withErrorHandling(
-  tool,
-  'Error creating concept',
-);
+  return withErrorHandling(tool, 'Error creating concept');
+}

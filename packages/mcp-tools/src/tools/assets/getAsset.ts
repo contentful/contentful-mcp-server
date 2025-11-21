@@ -4,6 +4,7 @@ import {
   withErrorHandling,
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import type { ContentfulConfig } from '../../config/types.js';
 
 export const GetAssetToolParams = BaseToolSchema.extend({
   assetId: z.string().describe('The ID of the asset to retrieve'),
@@ -11,19 +12,21 @@ export const GetAssetToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof GetAssetToolParams>;
 
-async function tool(args: Params) {
-  const params = {
-    spaceId: args.spaceId,
-    environmentId: args.environmentId,
-    assetId: args.assetId,
-  };
+export function getAssetTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    const params = {
+      spaceId: args.spaceId,
+      environmentId: args.environmentId,
+      assetId: args.assetId,
+    };
 
-  const contentfulClient = createToolClient(args);
+    const contentfulClient = createToolClient(config, args);
 
-  // Get the asset
-  const asset = await contentfulClient.asset.get(params);
+    // Get the asset
+    const asset = await contentfulClient.asset.get(params);
 
-  return createSuccessResponse('Asset retrieved successfully', { asset });
+    return createSuccessResponse('Asset retrieved successfully', { asset });
+  }
+
+  return withErrorHandling(tool, 'Error retrieving asset');
 }
-
-export const getAssetTool = withErrorHandling(tool, 'Error retrieving asset');

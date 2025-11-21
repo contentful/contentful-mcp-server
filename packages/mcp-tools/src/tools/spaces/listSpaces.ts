@@ -4,8 +4,9 @@ import {
   withErrorHandling,
 } from '../../utils/response.js';
 import ctfl from 'contentful-management';
-import { getDefaultClientConfig } from '../../config/contentful.js';
+import { createClientConfig } from '../../utils/tools.js';
 import { summarizeData } from '../../utils/summarizer.js';
+import type { ContentfulConfig } from '../../config/types.js';
 
 // For listing spaces, we don't need spaceId or environmentId parameters
 export const ListSpacesToolParams = z.object({
@@ -23,12 +24,13 @@ export const ListSpacesToolParams = z.object({
 
 type Params = z.infer<typeof ListSpacesToolParams>;
 
-async function tool(args: Params) {
-  // Create a client without space-specific configuration for listing all spaces
-  const clientConfig = getDefaultClientConfig();
-  // Remove space from config since we're listing all spaces
-  delete clientConfig.space;
-  const contentfulClient = ctfl.createClient(clientConfig, { type: 'plain' });
+export function listSpacesTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    // Create a client without space-specific configuration for listing all spaces
+    const clientConfig = createClientConfig(config);
+    // Remove space from config since we're listing all spaces
+    delete clientConfig.space;
+    const contentfulClient = ctfl.createClient(clientConfig, { type: 'plain' });
 
   const spaces = await contentfulClient.space.getMany({
     query: {
@@ -64,6 +66,7 @@ async function tool(args: Params) {
     limit: spaces.limit,
     skip: spaces.skip,
   });
-}
+  }
 
-export const listSpacesTool = withErrorHandling(tool, 'Error listing spaces');
+  return withErrorHandling(tool, 'Error listing spaces');
+}

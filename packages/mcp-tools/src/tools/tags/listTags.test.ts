@@ -4,6 +4,7 @@ import { listTagsTool } from './listTags.js';
 import { createToolClient } from '../../utils/tools.js';
 import { formatResponse } from '../../utils/formatters.js';
 import { summarizeData } from '../../utils/summarizer.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 const mockTags = {
   items: [
@@ -16,6 +17,8 @@ const mockTags = {
 };
 
 describe('listTagsTool', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -23,9 +26,10 @@ describe('listTagsTool', () => {
   it('should list tags successfully', async () => {
     mockTagGetMany.mockResolvedValue(mockTags);
 
-    const result = await listTagsTool(mockArgs);
+    const tool = listTagsTool(mockConfig);
+    const result = await tool(mockArgs);
 
-    expect(createToolClient).toHaveBeenCalledWith(mockArgs);
+    expect(createToolClient).toHaveBeenCalledWith(mockConfig, mockArgs);
     expect(mockTagGetMany).toHaveBeenCalledWith({
       spaceId: mockArgs.spaceId,
       environmentId: mockArgs.environmentId,
@@ -76,7 +80,8 @@ describe('listTagsTool', () => {
     const error = new Error('Listing failed');
     mockTagGetMany.mockRejectedValue(error);
 
-    const result = await listTagsTool(mockArgs);
+    const tool = listTagsTool(mockConfig);
+    const result = await tool(mockArgs);
 
     expect(result).toEqual({
       isError: true,

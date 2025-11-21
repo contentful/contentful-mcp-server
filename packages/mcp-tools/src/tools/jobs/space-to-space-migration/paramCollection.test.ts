@@ -14,7 +14,8 @@ describe('paramCollection', () => {
       confirmation: false,
     };
 
-    const result = await createParamCollectionTool(testArgs);
+    const tool = createParamCollectionTool;
+    const result = await tool(testArgs);
 
     expect(result.content[0].text).toContain('Param collection tool');
     expect(result.content[0].text).toContain(
@@ -30,7 +31,8 @@ describe('paramCollection', () => {
       confirmation: undefined,
     };
 
-    const result = await createParamCollectionTool(testArgs);
+    const tool = createParamCollectionTool;
+    const result = await tool(testArgs);
 
     expect(result.content[0].text).toContain('Param collection tool');
     expect(result.content[0].text).toContain('instructions');
@@ -42,7 +44,8 @@ describe('paramCollection', () => {
       confirmation: true,
     };
 
-    const result = await createParamCollectionTool(testArgs);
+    const tool = createParamCollectionTool;
+    const result = await tool(testArgs);
 
     const expectedResponse = formatResponse(
       'User ready to proceed with workflow',
@@ -85,7 +88,8 @@ describe('paramCollection', () => {
       import: {},
     };
 
-    const result = await createParamCollectionTool(testArgs);
+    const tool = createParamCollectionTool;
+    const result = await tool(testArgs);
 
     expect(result.content[0].text).toContain('currentParams');
     expect(result.content[0].text).toContain('<currentParams/>');
@@ -97,7 +101,8 @@ describe('paramCollection', () => {
       confirmation: false,
     };
 
-    const result = await createParamCollectionTool(testArgs);
+    const tool = createParamCollectionTool;
+    const result = await tool(testArgs);
 
     expect(result.content[0].text).toContain('currentParams');
     expect(result.content[0].text).toContain('<currentParams/>');
@@ -136,7 +141,8 @@ describe('paramCollection', () => {
       },
     };
 
-    const result = await createParamCollectionTool(testArgs);
+    const tool = createParamCollectionTool;
+    const result = await tool(testArgs);
 
     const responseText = result.content[0].text;
     expect(responseText).toContain('<spaceId>source-space</spaceId>');
@@ -181,7 +187,8 @@ describe('paramCollection', () => {
       },
     };
 
-    const result = await createParamCollectionTool(testArgs);
+    const tool = createParamCollectionTool;
+    const result = await tool(testArgs);
 
     const responseText = result.content[0].text;
     expect(responseText).toContain('<spaceId>target-space</spaceId>');
@@ -212,7 +219,8 @@ describe('paramCollection', () => {
       },
     };
 
-    const result = await createParamCollectionTool(testArgs);
+    const tool = createParamCollectionTool;
+    const result = await tool(testArgs);
 
     const responseText = result.content[0].text;
     expect(responseText).toContain('queryEntries');

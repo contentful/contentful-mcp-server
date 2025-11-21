@@ -4,7 +4,8 @@ import {
   withErrorHandling,
 } from '../../../utils/response.js';
 import ctfl from 'contentful-management';
-import { getDefaultClientConfig } from '../../../config/contentful.js';
+import { createClientConfig } from '../../../utils/tools.js';
+import type { ContentfulConfig } from '../../../config/types.js';
 
 export const DeleteConceptToolParams = z.object({
   organizationId: z.string().describe('The ID of the Contentful organization'),
@@ -14,12 +15,13 @@ export const DeleteConceptToolParams = z.object({
 
 type Params = z.infer<typeof DeleteConceptToolParams>;
 
-async function tool(args: Params) {
-  // Create a client without space-specific configuration for concept operations
-  const clientConfig = getDefaultClientConfig();
-  // Remove space from config since we're working at the organization level
-  delete clientConfig.space;
-  const contentfulClient = ctfl.createClient(clientConfig, { type: 'plain' });
+export function deleteConceptTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    // Create a client without space-specific configuration for concept operations
+    const clientConfig = createClientConfig(config);
+    // Remove space from config since we're working at the organization level
+    delete clientConfig.space;
+    const contentfulClient = ctfl.createClient(clientConfig, { type: 'plain' });
 
   // Delete the concept
   await contentfulClient.concept.delete({
@@ -28,12 +30,10 @@ async function tool(args: Params) {
     version: args.version,
   });
 
-  return createSuccessResponse('Concept deleted successfully', {
-    conceptId: args.conceptId,
-  });
-}
+    return createSuccessResponse('Concept deleted successfully', {
+      conceptId: args.conceptId,
+    });
+  }
 
-export const deleteConceptTool = withErrorHandling(
-  tool,
-  'Error deleting concept',
-);
+  return withErrorHandling(tool, 'Error deleting concept');
+}

@@ -3,9 +3,9 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../../utils/response.js';
-import { BaseToolSchema } from '../../../utils/tools.js';
+import { BaseToolSchema, createClientConfig } from '../../../utils/tools.js';
 import { createRequire } from 'module';
-import { getDefaultClientConfig } from '../../../config/contentful.js';
+import type { ContentfulConfig } from '../../../config/types.js';
 
 const require = createRequire(import.meta.url);
 const contentfulImport = require('contentful-import');
@@ -101,10 +101,11 @@ export const ImportSpaceToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof ImportSpaceToolParams>;
 
-async function tool(args: Params) {
-  // Get management token from the same config used by other MCP tools
-  const clientConfig = getDefaultClientConfig();
-  const managementToken = clientConfig.accessToken;
+export function createImportSpaceTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    // Get management token from the same config used by other MCP tools
+    const clientConfig = createClientConfig(config);
+    const managementToken = clientConfig.accessToken;
 
   if (!managementToken) {
     throw new Error('Contentful management token is not configured');
@@ -137,9 +138,7 @@ async function tool(args: Params) {
       `Failed to import space: ${error instanceof Error ? error.message : String(error)}`,
     );
   }
-}
+  }
 
-export const createImportSpaceTool = withErrorHandling(
-  tool,
-  'Error importing space',
-);
+  return withErrorHandling(tool, 'Error importing space');
+}

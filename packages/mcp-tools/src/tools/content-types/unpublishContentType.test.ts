@@ -6,8 +6,10 @@ import {
 } from './mockClient.js';
 import { unpublishContentTypeTool } from './unpublishContentType.js';
 import { formatResponse } from '../../utils/formatters.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('unpublishContentType', () => {
+  const mockConfig = createMockConfig();
   it('should unpublish a content type successfully', async () => {
     const unpublishedContentType = {
       ...mockContentType,
@@ -20,7 +22,8 @@ describe('unpublishContentType', () => {
 
     mockContentTypeUnpublish.mockResolvedValue(unpublishedContentType);
 
-    const result = await unpublishContentTypeTool(mockArgs);
+    const tool = unpublishContentTypeTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse(
       'Content type unpublished successfully',
@@ -50,7 +53,8 @@ describe('unpublishContentType', () => {
 
     mockContentTypeUnpublish.mockResolvedValue(alreadyUnpublishedContentType);
 
-    const result = await unpublishContentTypeTool(mockArgs);
+    const tool = unpublishContentTypeTool(mockConfig);
+    const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse(
       'Content type unpublished successfully',
@@ -72,7 +76,8 @@ describe('unpublishContentType', () => {
     const error = new Error('Unpublish failed');
     mockContentTypeUnpublish.mockRejectedValue(error);
 
-    const result = await unpublishContentTypeTool(mockArgs);
+    const tool = unpublishContentTypeTool(mockConfig);
+    const result = await tool(mockArgs);
 
     expect(result).toEqual({
       isError: true,

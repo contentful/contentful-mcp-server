@@ -3,8 +3,8 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../../utils/response.js';
-import { BaseToolSchema } from '../../../utils/tools.js';
-import { getDefaultClientConfig } from '../../../config/contentful.js';
+import { BaseToolSchema, createClientConfig } from '../../../utils/tools.js';
+import type { ContentfulConfig } from '../../../config/types.js';
 import {
   EntryQuerySchema,
   AssetQuerySchema,
@@ -125,10 +125,11 @@ export const ExportSpaceToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof ExportSpaceToolParams>;
 
-async function tool(args: Params) {
-  // Get management token from the same config used by other MCP tools
-  const clientConfig = getDefaultClientConfig();
-  const managementToken = clientConfig.accessToken;
+export function createExportSpaceTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    // Get management token from the same config used by other MCP tools
+    const clientConfig = createClientConfig(config);
+    const managementToken = clientConfig.accessToken;
 
   if (!managementToken) {
     throw new Error('Contentful management token is not configured');
@@ -169,9 +170,7 @@ async function tool(args: Params) {
       `Failed to export space: ${error instanceof Error ? error.message : String(error)}`,
     );
   }
-}
+  }
 
-export const createExportSpaceTool = withErrorHandling(
-  tool,
-  'Error exporting space',
-);
+  return withErrorHandling(tool, 'Error exporting space');
+}

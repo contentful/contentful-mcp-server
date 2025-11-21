@@ -4,8 +4,11 @@ import { getLocaleTool } from './getLocale.js';
 
 import { createToolClient } from '../../utils/tools.js';
 import { formatResponse } from '../../utils/formatters.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('getLocaleTool', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     vi.clearAllMocks();
   });
@@ -18,9 +21,10 @@ describe('getLocaleTool', () => {
 
     mockLocaleGet.mockResolvedValue(testLocale);
 
-    const result = await getLocaleTool(testArgs);
+    const tool = getLocaleTool(mockConfig);
+    const result = await tool(testArgs);
 
-    expect(createToolClient).toHaveBeenCalledWith(testArgs);
+    expect(createToolClient).toHaveBeenCalledWith(mockConfig, testArgs);
     expect(mockLocaleGet).toHaveBeenCalledWith({
       spaceId: testArgs.spaceId,
       environmentId: testArgs.environmentId,
@@ -50,7 +54,8 @@ describe('getLocaleTool', () => {
     const error = new Error('Retrieval failed');
     mockLocaleGet.mockRejectedValue(error);
 
-    const result = await getLocaleTool(testArgs);
+    const tool = getLocaleTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       isError: true,

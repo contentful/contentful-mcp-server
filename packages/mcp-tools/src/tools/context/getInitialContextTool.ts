@@ -3,7 +3,7 @@ import { outdent } from 'outdent';
 import { contextStore } from './store.js';
 import { withErrorHandling } from '../../utils/response.js';
 import { MCP_INSTRUCTIONS } from './instructions.js';
-import { env } from '../../config/env.js';
+import type { ContentfulConfig } from '../../config/types.js';
 
 export const GetInitialContextToolParams = z.object({});
 
@@ -13,21 +13,16 @@ export function hasInitialContext(): boolean {
   return contextStore.hasInitialContext();
 }
 
-async function tool(_params: Params) {
-  const config = {
-    space: env.data?.SPACE_ID,
-    environment: env.data?.ENVIRONMENT_ID,
-    organization: env.data?.ORGANIZATION_ID,
-  };
+export function getInitialContextTool(config: ContentfulConfig) {
+  async function tool(_params: Params) {
+    const configInfo = `Current Contentful Configuration:
+  - Space ID: ${config.spaceId || 'Not set'}
+  - Environment ID: ${config.environmentId || 'master'}
+  - Organization ID: ${config.organizationId || 'Not set'}`;
 
-  const configInfo = `Current Contentful Configuration:
-  - Space ID: ${config.space}
-  - Environment ID: ${config.environment}
-  - Organization ID: ${config.organization}`;
+    const todaysDate = new Date().toLocaleDateString('en-US');
 
-  const todaysDate = new Date().toLocaleDateString('en-US');
-
-  const message = outdent`
+    const message = outdent`
     ${MCP_INSTRUCTIONS}
 
     This is the initial context for your Contentful instance:
@@ -39,19 +34,17 @@ async function tool(_params: Params) {
     <todaysDate>${todaysDate}</todaysDate>
   `;
 
-  contextStore.setInitialContextLoaded();
+    contextStore.setInitialContextLoaded();
 
-  return {
-    content: [
-      {
-        type: 'text' as const,
-        text: message,
-      },
-    ],
-  };
+    return {
+      content: [
+        {
+          type: 'text' as const,
+          text: message,
+        },
+      ],
+    };
+  }
+
+  return withErrorHandling(tool, 'Error getting initial context');
 }
-
-export const getInitialContextTool = withErrorHandling(
-  tool,
-  'Error getting initial context',
-);

@@ -5,6 +5,7 @@ import {
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
 import { summarizeData } from '../../utils/summarizer.js';
+import type { ContentfulConfig } from '../../config/types.js';
 
 export const ListAssetsToolParams = BaseToolSchema.extend({
   limit: z
@@ -35,13 +36,14 @@ export const ListAssetsToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof ListAssetsToolParams>;
 
-async function tool(args: Params) {
-  const params = {
-    spaceId: args.spaceId,
-    environmentId: args.environmentId,
-  };
+export function listAssetsTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    const params = {
+      spaceId: args.spaceId,
+      environmentId: args.environmentId,
+    };
 
-  const contentfulClient = createToolClient(args);
+    const contentfulClient = createToolClient(config, args);
 
   const assets = await contentfulClient.asset.getMany({
     ...params,
@@ -91,6 +93,7 @@ async function tool(args: Params) {
     limit: assets.limit,
     skip: assets.skip,
   });
-}
+  }
 
-export const listAssetsTool = withErrorHandling(tool, 'Error listing assets');
+  return withErrorHandling(tool, 'Error listing assets');
+}

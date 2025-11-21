@@ -7,11 +7,13 @@ import {
   mockAiActionInvocation,
   mockArgs,
 } from './mockClient.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 vi.mock('../../../src/utils/tools.js');
-vi.mock('../../../src/config/contentful.js');
 
 describe('getAiActionInvocation', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     setupMockClient();
   });
@@ -24,7 +26,8 @@ describe('getAiActionInvocation', () => {
 
     mockAiActionInvocationGet.mockResolvedValue(mockAiActionInvocation);
 
-    const result = await getAiActionInvocationTool(testArgs);
+    const tool = getAiActionInvocationTool(mockConfig);
+    const result = await tool(testArgs);
 
     const expectedResponse = formatResponse(
       'AI action invocation retrieved successfully',
@@ -51,7 +54,8 @@ describe('getAiActionInvocation', () => {
     const error = new Error('Invocation not found');
     mockAiActionInvocationGet.mockRejectedValue(error);
 
-    const result = await getAiActionInvocationTool(testArgs);
+    const tool = getAiActionInvocationTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       isError: true,

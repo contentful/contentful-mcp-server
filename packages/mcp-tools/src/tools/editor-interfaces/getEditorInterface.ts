@@ -4,6 +4,7 @@ import {
   withErrorHandling,
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import type { ContentfulConfig } from '../../config/types.js';
 
 export const GetEditorInterfaceToolParams = BaseToolSchema.extend({
   contentTypeId: z
@@ -15,23 +16,22 @@ export const GetEditorInterfaceToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof GetEditorInterfaceToolParams>;
 
-async function tool(args: Params) {
-  const params = {
-    spaceId: args.spaceId,
-    environmentId: args.environmentId,
-    contentTypeId: args.contentTypeId,
-  };
+export function getEditorInterfaceTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    const params = {
+      spaceId: args.spaceId,
+      environmentId: args.environmentId,
+      contentTypeId: args.contentTypeId,
+    };
 
-  const contentfulClient = createToolClient(args);
+    const contentfulClient = createToolClient(config, args);
 
-  const editorInterface = await contentfulClient.editorInterface.get(params);
+    const editorInterface = await contentfulClient.editorInterface.get(params);
 
-  return createSuccessResponse('Editor interface retrieved successfully', {
-    editorInterface,
-  });
+    return createSuccessResponse('Editor interface retrieved successfully', {
+      editorInterface,
+    });
+  }
+
+  return withErrorHandling(tool, 'Error retrieving editor interface');
 }
-
-export const getEditorInterfaceTool = withErrorHandling(
-  tool,
-  'Error retrieving editor interface',
-);

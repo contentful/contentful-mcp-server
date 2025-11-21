@@ -7,9 +7,12 @@ import {
 } from './mockClient.js';
 import { createConceptTool } from './createConcept.js';
 import { formatResponse } from '../../../utils/formatters.js';
-import { getDefaultClientConfig } from '../../../config/contentful.js';
+import { createClientConfig } from '../../../utils/tools.js';
+import { createMockConfig } from '../../../test-helpers/mockConfig.js';
 
 describe('createConcept', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     mockConceptCreate.mockClear();
     mockConceptCreateWithId.mockClear();
@@ -25,10 +28,10 @@ describe('createConcept', () => {
   it('should create a concept successfully with minimal required fields', async () => {
     mockConceptCreate.mockResolvedValue(testConcept);
 
-    const result = await createConceptTool(testArgs);
+    const tool = createConceptTool(mockConfig);
+    const result = await tool(testArgs);
 
-    const clientConfig = getDefaultClientConfig();
-    delete clientConfig.space;
+    const clientConfig = createClientConfig(mockConfig);
     expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
       type: 'plain',
     });
@@ -130,7 +133,8 @@ describe('createConcept', () => {
 
     mockConceptCreate.mockResolvedValue(fullMockConcept);
 
-    const result = await createConceptTool(fullArgs);
+    const tool = createConceptTool(mockConfig);
+    const result = await tool(fullArgs);
 
     expect(mockConceptCreate).toHaveBeenCalledWith(
       {
@@ -170,7 +174,8 @@ describe('createConcept', () => {
     const error = new Error('Failed to create concept');
     mockConceptCreate.mockRejectedValue(error);
 
-    const result = await createConceptTool(testArgs);
+    const tool = createConceptTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       content: [
@@ -199,10 +204,10 @@ describe('createConcept', () => {
 
     mockConceptCreateWithId.mockResolvedValue(conceptWithCustomId);
 
-    const result = await createConceptTool(argsWithId);
+    const tool = createConceptTool(mockConfig);
+    const result = await tool(argsWithId);
 
-    const clientConfig = getDefaultClientConfig();
-    delete clientConfig.space;
+    const clientConfig = createClientConfig(mockConfig);
     expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
       type: 'plain',
     });
@@ -235,7 +240,8 @@ describe('createConcept', () => {
   it('should create a concept without ID using the standard create method', async () => {
     mockConceptCreate.mockResolvedValue(testConcept);
 
-    const result = await createConceptTool(testArgs);
+    const tool = createConceptTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(mockConceptCreate).toHaveBeenCalledWith(
       {

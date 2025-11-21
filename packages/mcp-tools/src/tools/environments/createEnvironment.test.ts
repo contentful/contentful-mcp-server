@@ -8,8 +8,10 @@ import {
 import { createEnvironmentTool } from './createEnvironment.js';
 import { createToolClient } from '../../utils/tools.js';
 import { formatResponse } from '../../utils/formatters.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('createEnvironment', () => {
+  const mockConfig = createMockConfig();
   it('should create an environment successfully', async () => {
     const testArgs = {
       ...mockArgs,
@@ -18,8 +20,9 @@ describe('createEnvironment', () => {
     };
     mockEnvironmentCreateWithId.mockResolvedValue(testEnvironment);
 
-    const result = await createEnvironmentTool(testArgs);
-    expect(createToolClient).toHaveBeenCalledWith(testArgs);
+    const tool = createEnvironmentTool(mockConfig);
+    const result = await tool(testArgs);
+    expect(createToolClient).toHaveBeenCalledWith(mockConfig, testArgs);
     expect(mockEnvironmentCreateWithId).toHaveBeenCalledWith(
       {
         spaceId: testArgs.spaceId,
@@ -56,7 +59,8 @@ describe('createEnvironment', () => {
     const error = new Error('Validation error');
     mockEnvironmentCreateWithId.mockRejectedValue(error);
 
-    const result = await createEnvironmentTool(testArgs);
+    const tool = createEnvironmentTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       isError: true,

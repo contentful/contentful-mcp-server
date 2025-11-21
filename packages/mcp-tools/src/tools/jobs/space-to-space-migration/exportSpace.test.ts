@@ -5,6 +5,13 @@ import { mockExportResult, createExportTestArgs } from './mockClient.js';
 
 // Mock contentful-export at the top level using vi.hoisted
 const mockContentfulExport = vi.hoisted(() => vi.fn());
+const mockDirname = vi.hoisted(() =>
+  vi.fn((path) => {
+    const parts = path.split('/');
+    return parts.slice(0, -1).join('/') || '/';
+  }),
+);
+const mockJoin = vi.hoisted(() => vi.fn((...args) => args.join('/')));
 
 // Mock the entire exportSpace module to replace contentful-export
 vi.mock('contentful-export', () => ({
@@ -16,23 +23,21 @@ vi.mock('module', () => ({
   createRequire: vi.fn(() => vi.fn(() => mockContentfulExport)),
 }));
 
-// Mock the config module
-vi.mock('../../../config/contentful.js', () => ({
-  getDefaultClientConfig: vi.fn(() => ({
-    accessToken: 'test-management-token',
-    space: 'test-space-id',
-    environment: 'test-environment',
-  })),
-}));
-
 // Mock path module
 vi.mock('path', () => ({
   default: {
-    join: vi.fn((...args) => args.join('/')),
+    join: mockJoin,
+    dirname: mockDirname,
   },
+  dirname: mockDirname,
+  join: mockJoin,
 }));
 
+import { createMockConfig } from '../../../test-helpers/mockConfig.js';
+
 describe('exportSpace', () => {
+  const mockConfig = createMockConfig();
+
   beforeEach(() => {
     vi.clearAllMocks();
     // Reset the mock to return successful result by default
@@ -42,11 +47,12 @@ describe('exportSpace', () => {
   it('should export space with minimal options', async () => {
     const testArgs = createExportTestArgs();
 
-    const result = await createExportSpaceTool(testArgs);
+    const tool = createExportSpaceTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(mockContentfulExport).toHaveBeenCalledWith({
       ...testArgs,
-      managementToken: 'test-management-token',
+      managementToken: mockConfig.accessToken,
       environmentId: 'test-environment',
       exportDir: process.cwd(),
       contentFile: 'contentful-export-test-space-id.json',
@@ -129,11 +135,12 @@ describe('exportSpace', () => {
       config: '/config/export.json',
     });
 
-    const result = await createExportSpaceTool(testArgs);
+    const tool = createExportSpaceTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(mockContentfulExport).toHaveBeenCalledWith({
       ...testArgs,
-      managementToken: 'test-management-token',
+      managementToken: mockConfig.accessToken,
     });
 
     expect(result.content[0].text).toContain('Space exported successfully');
@@ -150,7 +157,8 @@ describe('exportSpace', () => {
       spaceId: 'invalid-space-id',
     });
 
-    const result = await createExportSpaceTool(testArgs);
+    const tool = createExportSpaceTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       isError: true,

@@ -4,6 +4,7 @@ import {
   withErrorHandling,
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import type { ContentfulConfig } from '../../config/types.js';
 
 export const UpdateLocaleToolParams = BaseToolSchema.extend({
   localeId: z.string().describe('The ID of the locale to update'),
@@ -38,14 +39,15 @@ export const UpdateLocaleToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof UpdateLocaleToolParams>;
 
-async function tool(args: Params) {
-  const params = {
-    spaceId: args.spaceId,
-    environmentId: args.environmentId,
-    localeId: args.localeId,
-  };
+export function updateLocaleTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    const params = {
+      spaceId: args.spaceId,
+      environmentId: args.environmentId,
+      localeId: args.localeId,
+    };
 
-  const contentfulClient = createToolClient(args);
+    const contentfulClient = createToolClient(config, args);
 
   // First, get the existing locale
   const existingLocale = await contentfulClient.locale.get(params);
@@ -62,12 +64,10 @@ async function tool(args: Params) {
     updateData,
   );
 
-  return createSuccessResponse('Locale updated successfully', {
-    updatedLocale,
-  });
-}
+    return createSuccessResponse('Locale updated successfully', {
+      updatedLocale,
+    });
+  }
 
-export const updateLocaleTool = withErrorHandling(
-  tool,
-  'Error updating locale',
-);
+  return withErrorHandling(tool, 'Error updating locale');
+}

@@ -4,6 +4,7 @@ import {
   withErrorHandling,
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import type { ContentfulConfig } from '../../config/types.js';
 
 export const CreateEnvironmentToolParams = BaseToolSchema.extend({
   environmentId: z.string().describe('The ID of the environment to create'),
@@ -12,8 +13,9 @@ export const CreateEnvironmentToolParams = BaseToolSchema.extend({
 
 type Params = z.infer<typeof CreateEnvironmentToolParams>;
 
-async function tool(args: Params) {
-  const contentfulClient = createToolClient(args);
+export function createEnvironmentTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    const contentfulClient = createToolClient(config, args);
 
   // Create the environment
   const environment = await contentfulClient.environment.createWithId(
@@ -26,12 +28,10 @@ async function tool(args: Params) {
     },
   );
 
-  return createSuccessResponse('Environment created successfully', {
-    environment,
-  });
-}
+    return createSuccessResponse('Environment created successfully', {
+      environment,
+    });
+  }
 
-export const createEnvironmentTool = withErrorHandling(
-  tool,
-  'Error creating environment',
-);
+  return withErrorHandling(tool, 'Error creating environment');
+}

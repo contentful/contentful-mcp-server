@@ -4,8 +4,10 @@ import { mockArgs, mockEnvironmentDelete } from './mockClient.js';
 import { deleteEnvironmentTool } from './deleteEnvironment.js';
 import { createToolClient } from '../../utils/tools.js';
 import { formatResponse } from '../../utils/formatters.js';
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('deleteEnvironment', () => {
+  const mockConfig = createMockConfig();
   it('should delete an environment successfully', async () => {
     const testArgs = {
       ...mockArgs,
@@ -13,8 +15,9 @@ describe('deleteEnvironment', () => {
     };
     mockEnvironmentDelete.mockResolvedValue(undefined);
 
-    const result = await deleteEnvironmentTool(testArgs);
-    expect(createToolClient).toHaveBeenCalledWith(testArgs);
+    const tool = deleteEnvironmentTool(mockConfig);
+    const result = await tool(testArgs);
+    expect(createToolClient).toHaveBeenCalledWith(mockConfig, testArgs);
     expect(mockEnvironmentDelete).toHaveBeenCalledWith({
       spaceId: testArgs.spaceId,
       environmentId: testArgs.environmentId,
@@ -45,7 +48,8 @@ describe('deleteEnvironment', () => {
     const error = new Error('Deletion failed');
     mockEnvironmentDelete.mockRejectedValue(error);
 
-    const result = await deleteEnvironmentTool(testArgs);
+    const tool = deleteEnvironmentTool(mockConfig);
+    const result = await tool(testArgs);
 
     expect(result).toEqual({
       isError: true,
