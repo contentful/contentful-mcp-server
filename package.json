@@ -65,7 +65,7 @@
     "pretty-quick": "^4.2.2",
     "rimraf": "^6.0.1",
     "rollup": "^4.14.0",
-    "swc-loader": "0.1.15",
+    "swc-loader": "0.2.6",
     "ts-node": "^10.9.2",
     "tslib": "^2.3.0",
     "tsup": "^8.5.0",
