@@ -1,7 +1,7 @@
-import { readFileSync, existsSync } from 'node:fs';
-import { join } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { dirname } from 'node:path';
+import { readFileSync, existsSync } from 'fs';
+import { join } from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
 export const getVersion = () => {
   const __filename = fileURLToPath(import.meta.url);
