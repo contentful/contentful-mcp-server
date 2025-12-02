@@ -11,7 +11,9 @@ export const CreateEnvironmentToolParams = BaseToolSchema.extend({
   name: z.string().describe('The name of the environment to create'),
   sourceEnvironmentId: z
     .string()
-    .describe('The ID of the source environment to create')
+    .describe(
+      'The ID of the source environment to clone from (defaults to master)',
+    )
     .optional(),
 });
 
