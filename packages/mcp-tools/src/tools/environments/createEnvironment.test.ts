@@ -31,6 +31,48 @@ describe('createEnvironment', () => {
       {
         name: testArgs.name,
       },
+      undefined,
+    );
+
+    const expectedResponse = formatResponse(
+      'Environment created successfully',
+      {
+        environment: testEnvironment,
+      },
+    );
+    expect(result).toEqual({
+      content: [
+        {
+          type: 'text',
+          text: expectedResponse,
+        },
+      ],
+    });
+  });
+
+  it('should create an environment with sourceEnvironmentId', async () => {
+    const testArgs = {
+      ...mockArgs,
+      environmentId: 'new-test-env-with-source',
+      name: 'New Test Environment With Source',
+      sourceEnvironmentId: 'source-env-id',
+    };
+    mockEnvironmentCreateWithId.mockResolvedValue(testEnvironment);
+
+    const tool = createEnvironmentTool(mockConfig);
+    const result = await tool(testArgs);
+    expect(createToolClient).toHaveBeenCalledWith(mockConfig, testArgs);
+    expect(mockEnvironmentCreateWithId).toHaveBeenCalledWith(
+      {
+        spaceId: testArgs.spaceId,
+        environmentId: testArgs.environmentId,
+      },
+      {
+        name: testArgs.name,
+      },
+      {
+        'X-Contentful-Source-Environment': testArgs.sourceEnvironmentId,
+      },
     );
 
     const expectedResponse = formatResponse(
