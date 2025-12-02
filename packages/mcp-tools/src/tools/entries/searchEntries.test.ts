@@ -119,11 +119,11 @@ describe('searchEntries', () => {
     });
   });
 
-  it('should limit search results to maximum of 3', async () => {
+  it('should limit search results to maximum of 1000', async () => {
     const testArgs = {
       ...mockArgs,
       query: {
-        limit: 10, // Should be capped to 3
+        limit: 1001,
       },
     };
 
@@ -131,7 +131,7 @@ describe('searchEntries', () => {
       items: [],
       total: 0,
       skip: 0,
-      limit: 3,
+      limit: 1000,
     };
 
     mockEntryGetMany.mockResolvedValue(mockEntries);
@@ -148,7 +148,7 @@ describe('searchEntries', () => {
       spaceId: testArgs.spaceId,
       environmentId: testArgs.environmentId,
       query: {
-        limit: 3,
+        limit: 1000,
         skip: 0,
       },
     });
