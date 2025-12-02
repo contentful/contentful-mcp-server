@@ -1,3 +1,13 @@
+## 0.2.0 (2025-12-02)
+
+### 🚀 Features
+
+- **search:** enhanced search entries [] ([#289](https://github.com/contentful/contentful-mcp-server/pull/289), [#263](https://github.com/contentful/contentful-mcp-server/issues/263), [#266](https://github.com/contentful/contentful-mcp-server/issues/266))
+
+### 🩹 Fixes
+
+- use dynamic imports for import and export tools [DX-580] ([#264](https://github.com/contentful/contentful-mcp-server/pull/264), [#286](https://github.com/contentful/contentful-mcp-server/issues/286))
+
 ## 0.1.2 (2025-11-21)
 
 ### 🩹 Fixes
