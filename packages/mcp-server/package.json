@@ -1,6 +1,6 @@
 {
   "name": "@contentful/mcp-server",
-  "version": "1.7.3",
+  "version": "1.7.4",
   "description": "Contentful MCP Server - Model Context Protocol server for Contentful",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -43,7 +43,7 @@
     "directory": "packages/mcp-server"
   },
   "dependencies": {
-    "@contentful/mcp-tools": "0.2.0",
+    "@contentful/mcp-tools": "0.2.1",
     "@modelcontextprotocol/sdk": "^1.17.0",
     "dotenv": "^17.2.3"
   },

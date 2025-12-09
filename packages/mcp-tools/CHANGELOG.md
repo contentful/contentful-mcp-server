@@ -1,3 +1,9 @@
+## 0.2.1 (2025-12-09)
+
+### 🩹 Fixes
+
+- query param changed to match param to support full text search [DX-596] ([#294](https://github.com/contentful/contentful-mcp-server/pull/294))
+
 ## 0.2.0 (2025-12-02)
 
 ### 🚀 Features
