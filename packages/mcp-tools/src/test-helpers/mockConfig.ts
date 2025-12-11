@@ -13,6 +13,7 @@ export function createMockConfig(
     environmentId: 'test-environment',
     organizationId: 'test-org-id',
     appId: 'test-app-id',
+    mcpVersion: '0.0.0',
     ...overrides,
   };
 }

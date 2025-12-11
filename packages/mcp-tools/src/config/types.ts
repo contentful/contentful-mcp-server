@@ -14,4 +14,6 @@ export interface ContentfulConfig {
   organizationId?: string;
   /** Contentful App ID */
   appId?: string;
+  /** Version number to use for MCP tool calls */
+  mcpVersion: string;
 }

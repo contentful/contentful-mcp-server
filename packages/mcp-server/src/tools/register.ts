@@ -1,6 +1,7 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { ContentfulMcpTools } from '@contentful/mcp-tools';
 import { env } from '../config/env.js';
+import { getVersion } from '../getVersion.js';
 
 /**
  * Registers all Contentful MCP tools with the server.
@@ -23,6 +24,7 @@ export function registerAllTools(server: McpServer): void {
     environmentId: env.data.ENVIRONMENT_ID,
     organizationId: env.data.ORGANIZATION_ID,
     appId: env.data.APP_ID,
+    mcpVersion: getVersion(),
   });
 
   // Get tool collections

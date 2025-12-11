@@ -60,6 +60,13 @@
         "command": "node scripts/update-licenses.js",
         "cwd": "packages/mcp-server"
       }
+    },
+    "update-version": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "npm run search-and-replace-mcp-version",
+        "cwd": "packages/mcp-server"
+      }
     }
   },
   "tags": []

@@ -24,16 +24,17 @@
     "LICENSE"
   ],
   "scripts": {
-    "prebuild": "npm run clean",
-    "build": "tsup",
+    "build": "npm run inject-mcp-version && tsup",
     "clean": "rimraf dist",
-    "dev": "tsup --watch",
+    "dev": "npm run inject-mcp-version && tsup --watch",
     "format": "prettier --check \"**/*.{ts,js,json,md}\"",
     "format:fix": "prettier --write \"**/*.{ts,js,json,md}\"",
     "lint": "eslint --ext .ts,.js .",
     "lint:fix": "eslint --ext .ts,.js . --fix",
     "test": "vitest",
-    "test:run": "vitest run"
+    "test:run": "vitest run",
+    "inject-mcp-version": "node scripts/injectMCPVersion.cjs",
+    "search-and-replace-mcp-version": "node scripts/searchAndReplaceMCPVersion.cjs"
   },
   "author": "Contentful GmbH",
   "license": "MIT",

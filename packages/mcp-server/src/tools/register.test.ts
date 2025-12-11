@@ -48,6 +48,7 @@ describe('registerAllTools', () => {
       environmentId: env.data!.ENVIRONMENT_ID,
       organizationId: env.data!.ORGANIZATION_ID,
       appId: env.data!.APP_ID,
+      mcpVersion: '0.0.0',
     });
 
     // Count expected tool registrations from standard collections
@@ -109,6 +110,7 @@ describe('registerAllTools', () => {
       environmentId: env.data!.ENVIRONMENT_ID,
       organizationId: env.data!.ORGANIZATION_ID,
       appId: env.data!.APP_ID,
+      mcpVersion: '0.0.0',
     });
     const handlerConfig = mcpTools.getJobTools().spaceToSpaceMigrationHandler;
 

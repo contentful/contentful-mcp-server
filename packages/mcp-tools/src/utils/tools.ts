@@ -2,7 +2,6 @@ import ctfl from 'contentful-management';
 import { ClientOptions } from 'contentful-management';
 import { z } from 'zod';
 import type { ContentfulConfig } from '../config/types.js';
-import { getVersion } from './getVersion.js';
 
 export const BaseToolSchema = z.object({
   spaceId: z.string().describe('The ID of the Contentful space'),
@@ -25,7 +24,7 @@ export function createToolClient(
     host: config.host ?? 'api.contentful.com',
     space: params.spaceId ?? config.spaceId,
     headers: {
-      'X-Contentful-User-Agent-Tool': `contentful-mcp/${getVersion()}`,
+      'X-Contentful-User-Agent-Tool': `contentful-mcp/${config.mcpVersion}`,
     },
   };
 
@@ -43,7 +42,7 @@ export function createClientConfig(config: ContentfulConfig): ClientOptions {
     accessToken: config.accessToken,
     host: config.host ?? 'api.contentful.com',
     headers: {
-      'X-Contentful-User-Agent-Tool': `contentful-mcp/${getVersion()}`,
+      'X-Contentful-User-Agent-Tool': `contentful-mcp/${config.mcpVersion}`,
     },
   };
 

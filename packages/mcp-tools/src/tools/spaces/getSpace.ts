@@ -21,10 +21,10 @@ export function getSpaceTool(config: ContentfulConfig) {
     delete clientConfig.space;
     const contentfulClient = ctfl.createClient(clientConfig, { type: 'plain' });
 
-  // Get the space
-  const space = await contentfulClient.space.get({
-    spaceId: args.spaceId,
-  });
+    // Get the space
+    const space = await contentfulClient.space.get({
+      spaceId: args.spaceId,
+    });
 
     return createSuccessResponse('Space retrieved successfully', { space });
   }
