@@ -21,7 +21,7 @@
     "test": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "vitest",
+        "command": "npm run test",
         "cwd": "packages/mcp-server"
       }
     },
@@ -29,7 +29,7 @@
       "executor": "nx:run-commands",
       "dependsOn": ["^build"],
       "options": {
-        "command": "vitest run",
+        "command": "npm run test:run",
         "cwd": "packages/mcp-server"
       }
     },

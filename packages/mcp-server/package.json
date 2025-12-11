@@ -31,8 +31,8 @@
     "format:fix": "prettier --write \"**/*.{ts,js,json,md}\"",
     "lint": "eslint --ext .ts,.js .",
     "lint:fix": "eslint --ext .ts,.js . --fix",
-    "test": "vitest",
-    "test:run": "vitest run",
+    "test": "npm run inject-mcp-version && vitest",
+    "test:run": "npm run inject-mcp-version && vitest run",
     "inject-mcp-version": "node scripts/injectMCPVersion.cjs",
     "search-and-replace-mcp-version": "node scripts/searchAndReplaceMCPVersion.cjs"
   },
