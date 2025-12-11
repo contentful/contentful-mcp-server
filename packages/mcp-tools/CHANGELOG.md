@@ -1,3 +1,9 @@
+## 0.2.2 (2025-12-11)
+
+### 🩹 Fixes
+
+- update how mcp version is derived [DX-597] ([#296](https://github.com/contentful/contentful-mcp-server/pull/296))
+
 ## 0.2.1 (2025-12-09)
 
 ### 🩹 Fixes
