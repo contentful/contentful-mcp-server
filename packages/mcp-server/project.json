@@ -8,7 +8,7 @@
       "executor": "nx:run-commands",
       "outputs": ["{workspaceRoot}/packages/mcp-server/dist"],
       "options": {
-        "command": "tsup",
+        "command": "npm run build",
         "cwd": "packages/mcp-server"
       }
     },
