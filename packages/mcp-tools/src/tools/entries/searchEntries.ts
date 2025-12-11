@@ -38,7 +38,7 @@ export const SearchEntriesToolParams = BaseToolSchema.extend({
       order: z.string().optional().describe('Order entries by this field'),
 
       // Full-text search
-      match: z
+      query: z
         .string()
         .optional()
         .describe('Full-text search across all fields'),
