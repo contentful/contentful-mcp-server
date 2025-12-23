@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import dotenv from 'dotenv';
-dotenv.config();
+dotenv.config({ quiet: true });
 
 const EnvSchema = z.object({
   CONTENTFUL_MANAGEMENT_ACCESS_TOKEN: z
