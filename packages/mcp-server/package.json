@@ -30,6 +30,7 @@
     "dev": "tsup --watch",
     "format": "prettier --check \"**/*.{ts,js,json,md}\"",
     "format:fix": "prettier --write \"**/*.{ts,js,json,md}\"",
+    "inspect": "mcp-inspector",
     "lint": "eslint --ext .ts,.js .",
     "lint:fix": "eslint --ext .ts,.js . --fix",
     "test": "vitest",
@@ -48,6 +49,7 @@
     "dotenv": "^17.2.3"
   },
   "devDependencies": {
+    "@modelcontextprotocol/inspector": "^0.18.0",
     "@types/node": "^22.16.5",
     "eslint": "^9.35.0",
     "prettier": "^3.6.2",

@@ -1,4 +1,4 @@
-import ctfl from 'contentful-management';
+import * as ctfl from 'contentful-management';
 import { ClientOptions } from 'contentful-management';
 import { z } from 'zod';
 import type { ContentfulConfig } from '../config/types.js';
