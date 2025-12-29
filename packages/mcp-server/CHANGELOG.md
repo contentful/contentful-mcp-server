@@ -1,3 +1,9 @@
+## 1.7.6 (2025-12-29)
+
+### 🩹 Fixes
+
+- suppress all dotenv logs [DX-629] ([#299](https://github.com/contentful/contentful-mcp-server/pull/299), [#301](https://github.com/contentful/contentful-mcp-server/pull/301))
+
 ## 1.7.5 (2025-12-11)
 
 ### 🩹 Fixes
