@@ -1,7 +1,7 @@
 {
   "dxt_version": "0.1",
   "name": "@contentful/mcp-server",
-  "version": "1.0.5",
+  "version": "1.7.7",
   "description": "MCP (Model Context Protocol) server for the Contentful Management API",
   "author": {
     "name": "Contentful"
@@ -15,10 +15,10 @@
   "icon": "icon.png",
   "server": {
     "type": "node",
-    "entry_point": "build/index.js",
+    "entry_point": "dist/index.js",
     "mcp_config": {
       "command": "node",
-      "args": ["${__dirname}/build/index.js"],
+      "args": ["${__dirname}/dist/index.js"],
       "env": {
         "CONTENTFUL_HOST": "${user_config.CONTENTFUL_HOST}",
         "CONTENTFUL_MANAGEMENT_ACCESS_TOKEN": "${user_config.CMA_TOKEN}",
@@ -89,6 +89,14 @@
       "description": "Remove entries"
     },
     {
+      "name": "archive_entry",
+      "description": "Archive entries that are no longer needed but should be preserved"
+    },
+    {
+      "name": "unarchive_entry",
+      "description": "Restore archived entries for editing and publishing"
+    },
+    {
       "name": "upload_asset",
       "description": "Upload new assets"
     },
@@ -117,6 +125,14 @@
       "description": "Remove assets"
     },
     {
+      "name": "archive_asset",
+      "description": "Archive assets that are no longer needed but should be preserved"
+    },
+    {
+      "name": "unarchive_asset",
+      "description": "Restore archived assets for editing and publishing"
+    },
+    {
       "name": "list_spaces",
       "description": "List available spaces"
     },
@@ -143,6 +159,82 @@
     {
       "name": "create_tag",
       "description": "Create new tags"
+    },
+    {
+      "name": "list_editor_interfaces",
+      "description": "Get all editor interfaces of a space"
+    },
+    {
+      "name": "get_editor_interface",
+      "description": "Get the editor interface for a specific content type"
+    },
+    {
+      "name": "update_editor_interface",
+      "description": "Update the editor interface for a content type"
+    },
+    {
+      "name": "list_orgs",
+      "description": "List all organizations the user has access to"
+    },
+    {
+      "name": "get_org",
+      "description": "Get details of a specific organization"
+    },
+    {
+      "name": "create_concept_scheme",
+      "description": "Create a new taxonomy concept scheme"
+    },
+    {
+      "name": "get_concept_scheme",
+      "description": "Retrieve a specific taxonomy concept scheme"
+    },
+    {
+      "name": "list_concept_schemes",
+      "description": "List taxonomy concept schemes in an organization"
+    },
+    {
+      "name": "update_concept_scheme",
+      "description": "Update a taxonomy concept scheme"
+    },
+    {
+      "name": "delete_concept_scheme",
+      "description": "Delete a taxonomy concept scheme"
+    },
+    {
+      "name": "create_concept",
+      "description": "Create a new taxonomy concept"
+    },
+    {
+      "name": "get_concept",
+      "description": "Retrieve a specific taxonomy concept"
+    },
+    {
+      "name": "list_concepts",
+      "description": "List taxonomy concepts in an organization"
+    },
+    {
+      "name": "update_concept",
+      "description": "Update a taxonomy concept"
+    },
+    {
+      "name": "delete_concept",
+      "description": "Delete a taxonomy concept"
+    },
+    {
+      "name": "space_to_space_param_collection",
+      "description": "Collect parameters for space to space migration workflow"
+    },
+    {
+      "name": "export_space",
+      "description": "Export a space to a file"
+    },
+    {
+      "name": "import_space",
+      "description": "Import a space from a file"
+    },
+    {
+      "name": "space_to_space_migration_handler",
+      "description": "Enable or disable the space to space migration workflow"
     },
     {
       "name": "create_ai_action",
