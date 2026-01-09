@@ -20,7 +20,7 @@ jobs:
         run: npm ci
 
       - name: Restore the build folders
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v5
         with:
           path: build
           key: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
