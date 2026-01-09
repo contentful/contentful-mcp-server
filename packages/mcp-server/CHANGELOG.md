@@ -1,3 +1,13 @@
+## 1.7.7 (2026-01-09)
+
+### 🩹 Fixes
+
+- dxt pack now matches monorepo structure [DX-631] ([8dd4f81](https://github.com/contentful/contentful-mcp-server/commit/8dd4f81))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.2.3
+
 ## 1.7.6 (2025-12-29)
 
 ### 🩹 Fixes
