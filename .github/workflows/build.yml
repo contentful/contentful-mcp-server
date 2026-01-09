@@ -23,7 +23,7 @@ jobs:
         run: npm run build
 
       - name: Build DXT File
-        run: npx dxt pack
+        run: npx dxt pack packages/mcp-server contentful-mcp-server.dxt
 
       - name: Save Build folders
         uses: actions/cache/save@v4
