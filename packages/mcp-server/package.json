@@ -45,7 +45,7 @@
   },
   "dependencies": {
     "@contentful/mcp-tools": "0.2.3",
-    "@modelcontextprotocol/sdk": "^1.17.0",
+    "@modelcontextprotocol/sdk": "^1.25.2",
     "dotenv": "^17.2.3"
   },
   "devDependencies": {
