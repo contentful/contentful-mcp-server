@@ -22,7 +22,7 @@ export function getAiActionInvocationTool(config: ContentfulConfig) {
       invocationId: args.invocationId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
     const aiActionInvocation =
       await contentfulClient.aiActionInvocation.get(params);

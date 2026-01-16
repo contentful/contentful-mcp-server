@@ -30,7 +30,7 @@ export function listLocaleTool(config: ContentfulConfig) {
       environmentId: args.environmentId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
   const locales = await contentfulClient.locale.getMany({
     ...params,

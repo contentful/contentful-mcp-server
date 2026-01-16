@@ -19,7 +19,7 @@ export function deleteEnvironmentTool(config: ContentfulConfig) {
       environmentId: args.environmentId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
   // Delete the environment
   await contentfulClient.environment.delete(params);

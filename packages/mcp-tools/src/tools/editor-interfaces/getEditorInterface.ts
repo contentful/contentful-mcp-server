@@ -24,7 +24,7 @@ export function getEditorInterfaceTool(config: ContentfulConfig) {
       contentTypeId: args.contentTypeId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
     const editorInterface = await contentfulClient.editorInterface.get(params);
 

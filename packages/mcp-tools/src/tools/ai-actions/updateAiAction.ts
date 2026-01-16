@@ -59,7 +59,7 @@ export function updateAiActionTool(config: ContentfulConfig) {
       aiActionId: args.aiActionId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
     // Get existing AI action, merge fields, and update
     const existingAiAction = await contentfulClient.aiAction.get(params);

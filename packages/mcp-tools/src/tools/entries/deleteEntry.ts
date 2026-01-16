@@ -20,7 +20,7 @@ export function deleteEntryTool(config: ContentfulConfig) {
       entryId: args.entryId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
     // First, get the entry to check its status
     const entry = await contentfulClient.entry.get(params);

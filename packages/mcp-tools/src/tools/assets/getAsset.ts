@@ -20,7 +20,7 @@ export function getAssetTool(config: ContentfulConfig) {
       assetId: args.assetId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
     // Get the asset
     const asset = await contentfulClient.asset.get(params);
