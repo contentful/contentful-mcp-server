@@ -36,7 +36,7 @@ export function listContentTypesTool(config: ContentfulConfig) {
       environmentId: args.environmentId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
   const contentTypes = await contentfulClient.contentType.getMany({
     ...params,

@@ -118,7 +118,7 @@ export function searchEntriesTool(config: ContentfulConfig) {
       environmentId: args.environmentId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
     const entries = await contentfulClient.entry.getMany({
       ...params,

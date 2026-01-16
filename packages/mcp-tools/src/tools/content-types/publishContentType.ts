@@ -20,7 +20,7 @@ export function publishContentTypeTool(config: ContentfulConfig) {
       contentTypeId: args.contentTypeId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
     // Get the content type first
     const currentContentType = await contentfulClient.contentType.get(params);

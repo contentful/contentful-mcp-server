@@ -52,7 +52,7 @@ export function createAiActionTool(config: ContentfulConfig) {
       environmentId: args.environmentId || 'master',
     };
 
-    const contentfulClient = createToolClient(config, {
+    const contentfulClient = await createToolClient(config, {
       ...args,
       environmentId: args.environmentId || 'master',
     });

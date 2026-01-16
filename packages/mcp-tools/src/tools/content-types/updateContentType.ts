@@ -39,7 +39,7 @@ export function updateContentTypeTool(config: ContentfulConfig) {
       contentTypeId: args.contentTypeId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
   // Get the current content type
   const currentContentType = await contentfulClient.contentType.get(params);

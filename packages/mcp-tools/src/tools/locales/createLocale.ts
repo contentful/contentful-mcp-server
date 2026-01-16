@@ -50,7 +50,7 @@ export function createLocaleTool(config: ContentfulConfig) {
       environmentId: args.environmentId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
   // Create the locale
   const newLocale = await contentfulClient.locale.create(params, {

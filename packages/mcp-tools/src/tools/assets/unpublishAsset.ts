@@ -29,7 +29,7 @@ export function unpublishAssetTool(config: ContentfulConfig) {
       environmentId: args.environmentId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
   // Normalize input to always be an array
   const assetIds = Array.isArray(args.assetId) ? args.assetId : [args.assetId];

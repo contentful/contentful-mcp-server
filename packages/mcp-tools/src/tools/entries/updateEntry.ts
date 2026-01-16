@@ -27,7 +27,7 @@ export function updateEntryTool(config: ContentfulConfig) {
       entryId: args.entryId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
   // First, get the existing entry
   const existingEntry = await contentfulClient.entry.get(params);
