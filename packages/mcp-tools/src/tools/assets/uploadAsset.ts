@@ -1,4 +1,6 @@
 import { z } from 'zod';
+import fs from 'fs/promises';
+import { fileURLToPath } from 'url';
 import {
   createSuccessResponse,
   withErrorHandling,
@@ -37,18 +39,53 @@ export function uploadAssetTool(config: ContentfulConfig) {
 
     const contentfulClient = createToolClient(config, args);
 
-  // Prepare asset properties following Contentful's structure
-  const locale = args.locale || 'en-US';
-  const assetProps = {
-    fields: {
-      title: { [locale]: args.title },
-      description: args.description
-        ? { [locale]: args.description }
-        : undefined,
-      file: { [locale]: args.file },
-    },
-    metadata: args.metadata,
-  };
+    // Prepare asset properties following Contentful's structure
+    const locale = args.locale || 'en-US';
+
+    const fileField: {
+      fileName: string;
+      contentType: string;
+      upload?: string;
+      uploadFrom?: { sys: { type: 'Link'; linkType: 'Upload'; id: string } };
+    } = {
+      fileName: args.file.fileName,
+      contentType: args.file.contentType,
+    };
+
+    if (args.file.upload) {
+      if (
+        args.file.upload.startsWith('http://') ||
+        args.file.upload.startsWith('https://')
+      ) {
+        fileField.upload = args.file.upload;
+      } else {
+        let filePath = args.file.upload;
+        if (filePath.startsWith('file://')) {
+          filePath = fileURLToPath(filePath);
+        }
+        
+        // Upload the file content first
+        const fileContent = await fs.readFile(filePath);
+        const upload = await contentfulClient.upload.create(params, {
+          file: fileContent,
+        });
+
+        fileField.uploadFrom = {
+          sys: { type: 'Link', linkType: 'Upload', id: upload.sys.id },
+        };
+      }
+    }
+
+    const assetProps = {
+      fields: {
+        title: { [locale]: args.title },
+        description: args.description
+          ? { [locale]: args.description }
+          : undefined,
+        file: { [locale]: fileField },
+      },
+      metadata: args.metadata,
+    };
 
   // Create the asset
   const asset = await contentfulClient.asset.create(params, assetProps);
