@@ -25,8 +25,13 @@ jobs:
       - name: Restore the build folders
         uses: actions/cache/restore@v4
         with:
-          path: build
+          path: |
+            build
+            packages/mcp-server/dist
+            packages/mcp-tools/dist
+            contentful-mcp-server.dxt
           key: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
+          fail-on-cache-miss: true
 
       - name: Run Prettier
         run: npx pretty-quick --check
