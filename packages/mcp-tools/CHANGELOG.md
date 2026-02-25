@@ -1,3 +1,9 @@
+## 0.2.4 (2026-02-25)
+
+### 🩹 Fixes
+
+- entry fields schema [DX-749] ([#326](https://github.com/contentful/contentful-mcp-server/pull/326))
+
 ## 0.2.3 (2026-01-09)
 
 This was a version bump only for mcp-tools to align it with other projects, there were no code changes.
