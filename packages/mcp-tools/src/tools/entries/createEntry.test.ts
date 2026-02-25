@@ -137,6 +137,175 @@ describe('createEntry', () => {
     });
   });
 
+  it('should create an entry with rich text fields in multiple locales', async () => {
+    const richTextEnUS = {
+      nodeType: 'document',
+      data: {},
+      content: [
+        {
+          nodeType: 'paragraph',
+          data: {},
+          content: [
+            {
+              nodeType: 'text',
+              value: 'Hello ',
+              marks: [],
+              data: {},
+            },
+            {
+              nodeType: 'text',
+              value: 'world',
+              marks: [{ type: 'bold' }],
+              data: {},
+            },
+          ],
+        },
+        {
+          nodeType: 'heading-1',
+          data: {},
+          content: [
+            { nodeType: 'text', value: 'A heading', marks: [], data: {} },
+          ],
+        },
+      ],
+    };
+
+    const richTextDe = {
+      nodeType: 'document',
+      data: {},
+      content: [
+        {
+          nodeType: 'paragraph',
+          data: {},
+          content: [
+            {
+              nodeType: 'text',
+              value: 'Hallo ',
+              marks: [],
+              data: {},
+            },
+            {
+              nodeType: 'text',
+              value: 'Welt',
+              marks: [{ type: 'italic' }],
+              data: {},
+            },
+          ],
+        },
+      ],
+    };
+
+    const testArgs = {
+      ...mockArgs,
+      contentTypeId: 'test-content-type',
+      fields: {
+        title: { 'en-US': 'English Title', de: 'Deutscher Titel' },
+        body: { 'en-US': richTextEnUS, de: richTextDe },
+      },
+    };
+
+    const mockCreatedEntry = {
+      ...mockEntry,
+      fields: testArgs.fields,
+    };
+
+    mockEntryCreate.mockResolvedValue(mockCreatedEntry);
+
+    const tool = createEntryTool(mockConfig);
+    const result = await tool(testArgs);
+
+    expect(mockEntryCreate).toHaveBeenCalledWith(
+      expect.objectContaining({ contentTypeId: 'test-content-type' }),
+      expect.objectContaining({ fields: testArgs.fields }),
+    );
+
+    const expectedResponse = formatResponse('Entry created successfully', {
+      newEntry: mockCreatedEntry,
+    });
+    expect(result).toEqual({
+      content: [{ type: 'text', text: expectedResponse }],
+    });
+  });
+
+  it('should create an entry with rich text containing inline and embedded nodes', async () => {
+    const richTextWithInlines = {
+      nodeType: 'document',
+      data: {},
+      content: [
+        {
+          nodeType: 'paragraph',
+          data: {},
+          content: [
+            { nodeType: 'text', value: 'Check out ', marks: [], data: {} },
+            {
+              nodeType: 'hyperlink',
+              data: { uri: 'https://example.com' },
+              content: [
+                { nodeType: 'text', value: 'this link', marks: [], data: {} },
+              ],
+            },
+            { nodeType: 'text', value: ' and ', marks: [], data: {} },
+            {
+              nodeType: 'entry-hyperlink',
+              data: {
+                target: {
+                  sys: { type: 'Link', linkType: 'Entry', id: 'linked-entry' },
+                },
+              },
+              content: [
+                {
+                  nodeType: 'text',
+                  value: 'this entry',
+                  marks: [],
+                  data: {},
+                },
+              ],
+            },
+          ],
+        },
+        {
+          nodeType: 'embedded-entry-block',
+          data: {
+            target: {
+              sys: {
+                type: 'Link',
+                linkType: 'Entry',
+                id: 'embedded-entry-id',
+              },
+            },
+          },
+          content: [],
+        },
+      ],
+    };
+
+    const testArgs = {
+      ...mockArgs,
+      contentTypeId: 'test-content-type',
+      fields: {
+        body: { 'en-US': richTextWithInlines },
+      },
+    };
+
+    const mockCreatedEntry = { ...mockEntry, fields: testArgs.fields };
+    mockEntryCreate.mockResolvedValue(mockCreatedEntry);
+
+    const tool = createEntryTool(mockConfig);
+    const result = await tool(testArgs);
+
+    expect(mockEntryCreate).toHaveBeenCalledWith(
+      expect.objectContaining({ contentTypeId: 'test-content-type' }),
+      expect.objectContaining({ fields: testArgs.fields }),
+    );
+
+    const expectedResponse = formatResponse('Entry created successfully', {
+      newEntry: mockCreatedEntry,
+    });
+    expect(result).toEqual({
+      content: [{ type: 'text', text: expectedResponse }],
+    });
+  });
+
   it('should handle errors when entry creation fails', async () => {
     const testArgs = {
       ...mockArgs,
