@@ -230,6 +230,239 @@ describe('updateEntry', () => {
     );
   });
 
+  it('should update an entry with rich text fields in multiple locales', async () => {
+    const richTextEnUS = {
+      nodeType: 'document',
+      data: {},
+      content: [
+        {
+          nodeType: 'paragraph',
+          data: {},
+          content: [
+            {
+              nodeType: 'text',
+              value: 'Updated ',
+              marks: [],
+              data: {},
+            },
+            {
+              nodeType: 'text',
+              value: 'content',
+              marks: [{ type: 'bold' }, { type: 'underline' }],
+              data: {},
+            },
+          ],
+        },
+      ],
+    };
+
+    const richTextFr = {
+      nodeType: 'document',
+      data: {},
+      content: [
+        {
+          nodeType: 'paragraph',
+          data: {},
+          content: [
+            {
+              nodeType: 'text',
+              value: 'Contenu ',
+              marks: [],
+              data: {},
+            },
+            {
+              nodeType: 'text',
+              value: 'mis à jour',
+              marks: [{ type: 'italic' }],
+              data: {},
+            },
+          ],
+        },
+      ],
+    };
+
+    const testArgs = {
+      ...mockArgs,
+      fields: {
+        title: { 'en-US': 'Updated Title', fr: 'Titre mis à jour' },
+        body: { 'en-US': richTextEnUS, fr: richTextFr },
+      },
+    };
+
+    const mockExistingEntry = {
+      ...mockEntry,
+      fields: {
+        title: { 'en-US': 'Original Title' },
+        body: {
+          'en-US': {
+            nodeType: 'document',
+            data: {},
+            content: [
+              {
+                nodeType: 'paragraph',
+                data: {},
+                content: [
+                  {
+                    nodeType: 'text',
+                    value: 'Old content',
+                    marks: [],
+                    data: {},
+                  },
+                ],
+              },
+            ],
+          },
+        },
+        category: { 'en-US': 'Existing Category' },
+      },
+      metadata: { tags: [] },
+    };
+
+    const mockUpdatedEntry = {
+      ...mockExistingEntry,
+      sys: { ...mockExistingEntry.sys, version: 2 },
+      fields: {
+        ...mockExistingEntry.fields,
+        ...testArgs.fields,
+      },
+    };
+
+    mockEntryGet.mockResolvedValue(mockExistingEntry);
+    mockEntryUpdate.mockResolvedValue(mockUpdatedEntry);
+
+    const tool = updateEntryTool(mockConfig);
+    const result = await tool(testArgs);
+
+    expect(mockEntryUpdate).toHaveBeenCalledWith(
+      {
+        spaceId: 'test-space-id',
+        environmentId: 'test-environment',
+        entryId: 'test-entry-id',
+      },
+      expect.objectContaining({
+        fields: {
+          title: { 'en-US': 'Updated Title', fr: 'Titre mis à jour' },
+          body: { 'en-US': richTextEnUS, fr: richTextFr },
+          category: { 'en-US': 'Existing Category' },
+        },
+      }),
+    );
+
+    const expectedResponse = formatResponse('Entry updated successfully', {
+      updatedEntry: mockUpdatedEntry,
+    });
+    expect(result).toEqual({
+      content: [{ type: 'text', text: expectedResponse }],
+    });
+  });
+
+  it('should update an entry with rich text containing embedded and inline nodes', async () => {
+    const richTextWithEmbeds = {
+      nodeType: 'document',
+      data: {},
+      content: [
+        {
+          nodeType: 'paragraph',
+          data: {},
+          content: [
+            { nodeType: 'text', value: 'See ', marks: [], data: {} },
+            {
+              nodeType: 'embedded-entry-inline',
+              data: {
+                target: {
+                  sys: { type: 'Link', linkType: 'Entry', id: 'inline-entry' },
+                },
+              },
+              content: [],
+            },
+            { nodeType: 'text', value: ' for details.', marks: [], data: {} },
+          ],
+        },
+        {
+          nodeType: 'embedded-asset-block',
+          data: {
+            target: {
+              sys: { type: 'Link', linkType: 'Asset', id: 'hero-image' },
+            },
+          },
+          content: [],
+        },
+        {
+          nodeType: 'ordered-list',
+          data: {},
+          content: [
+            {
+              nodeType: 'list-item',
+              data: {},
+              content: [
+                {
+                  nodeType: 'paragraph',
+                  data: {},
+                  content: [
+                    {
+                      nodeType: 'text',
+                      value: 'First item',
+                      marks: [],
+                      data: {},
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+
+    const testArgs = {
+      ...mockArgs,
+      fields: {
+        body: { 'en-US': richTextWithEmbeds },
+      },
+    };
+
+    const mockExistingEntry = {
+      ...mockEntry,
+      fields: {
+        title: { 'en-US': 'Existing Title' },
+      },
+      metadata: { tags: [] },
+    };
+
+    const mockUpdatedEntry = {
+      ...mockExistingEntry,
+      sys: { ...mockExistingEntry.sys, version: 2 },
+      fields: { ...mockExistingEntry.fields, ...testArgs.fields },
+    };
+
+    mockEntryGet.mockResolvedValue(mockExistingEntry);
+    mockEntryUpdate.mockResolvedValue(mockUpdatedEntry);
+
+    const tool = updateEntryTool(mockConfig);
+    const result = await tool(testArgs);
+
+    expect(mockEntryUpdate).toHaveBeenCalledWith(
+      {
+        spaceId: 'test-space-id',
+        environmentId: 'test-environment',
+        entryId: 'test-entry-id',
+      },
+      expect.objectContaining({
+        fields: {
+          title: { 'en-US': 'Existing Title' },
+          body: { 'en-US': richTextWithEmbeds },
+        },
+      }),
+    );
+
+    const expectedResponse = formatResponse('Entry updated successfully', {
+      updatedEntry: mockUpdatedEntry,
+    });
+    expect(result).toEqual({
+      content: [{ type: 'text', text: expectedResponse }],
+    });
+  });
+
   it('should update an entry with empty fields', async () => {
     const testArgs = {
       ...mockArgs,
