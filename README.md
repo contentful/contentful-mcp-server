@@ -52,6 +52,12 @@ _Note: This requires [Cursor](https://cursor.com/) to be installed. If the link 
 
 Download the .dxt configuration file [here](https://github.com/contentful/contentful-mcp-server/releases) from the latest release and import it into Claude Desktop to automatically configure the MCP server with your environment variables.
 
+**Codex:**
+
+```bash
+codex mcp add contentful --env CONTENTFUL_MANAGEMENT_ACCESS_TOKEN="your-CMA-token" --env SPACE_ID="your-space-id" --env ENVIRONMENT_ID="master" --env CONTENTFUL_HOST="api.contentful.com" -- npx -y @contentful/mcp-server
+```
+
 #### Install from source
 
 ```bash
@@ -73,7 +79,7 @@ npm run build
 
 ### Configuration
 
-Refer to the documentation for your AI tool of choice for how to configure MCP servers. For example, see the documentation for [Cursor](https://docs.cursor.com/context/mcp), [VS Code](https://code.visualstudio.com/docs/copilot/chat/mcp-servers), or [Claude Desktop](https://modelcontextprotocol.io/quickstart/user).
+Refer to the documentation for your AI tool of choice for how to configure MCP servers. For example, see the documentation for [Codex](https://developers.openai.com/codex/mcp), [Cursor](https://docs.cursor.com/context/mcp), [VS Code](https://code.visualstudio.com/docs/copilot/chat/mcp-servers), or [Claude Desktop](https://modelcontextprotocol.io/quickstart/user).
 
 Below is a sample configuration:
 
