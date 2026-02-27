@@ -67,7 +67,7 @@ jobs:
           key: build-cache-${{ github.run_id }}-${{ github.run_attempt }}
           fail-on-cache-miss: true
 
-      - uses: nrwl/nx-set-shas@dbe0650947e5f2c81f59190a38512cf49126fe6b # sets NX_BASE, NX_HEAD env vars
+      - uses: nrwl/nx-set-shas@3e9ad7370203c1e93d109be57f3b72eb0eb511b1 # sets NX_BASE, NX_HEAD env vars
 
       - name: Setup npmrc file
         run: |
