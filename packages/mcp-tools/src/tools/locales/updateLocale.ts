@@ -47,7 +47,7 @@ export function updateLocaleTool(config: ContentfulConfig) {
       localeId: args.localeId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
   // First, get the existing locale
   const existingLocale = await contentfulClient.locale.get(params);

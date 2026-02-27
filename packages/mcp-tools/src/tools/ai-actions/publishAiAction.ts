@@ -20,7 +20,7 @@ export function publishAiActionTool(config: ContentfulConfig) {
       aiActionId: args.aiActionId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
     try {
       // Get the AI action first

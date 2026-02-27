@@ -21,7 +21,7 @@ export function getContentTypeTool(config: ContentfulConfig) {
       environmentId: args.environmentId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
     // Get the content type details
     const contentType = await contentfulClient.contentType.get({

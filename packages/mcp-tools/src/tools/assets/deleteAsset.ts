@@ -20,7 +20,7 @@ export function deleteAssetTool(config: ContentfulConfig) {
       assetId: args.assetId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
     // First, get the asset to store info for return
     const asset = await contentfulClient.asset.get(params);

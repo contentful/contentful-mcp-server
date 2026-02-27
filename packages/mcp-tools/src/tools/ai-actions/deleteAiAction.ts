@@ -20,7 +20,7 @@ export function deleteAiActionTool(config: ContentfulConfig) {
       aiActionId: args.aiActionId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
     // First, get the AI action to store info for return
     const aiAction = await contentfulClient.aiAction.get(params);

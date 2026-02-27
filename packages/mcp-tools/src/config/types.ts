@@ -3,7 +3,7 @@
  */
 export interface ContentfulConfig {
   /** Contentful CMA (Content Management API) access token */
-  accessToken: string;
+  accessToken: (() => Promise<string>) | string;
   /** Contentful API host (default: 'api.contentful.com') */
   host?: string;
   /** Contentful Space ID */

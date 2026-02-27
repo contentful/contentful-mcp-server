@@ -15,12 +15,12 @@ export const BaseToolSchema = z.object({
  * @param params - Tool parameters that may include a resource
  * @returns Configured Contentful client
  */
-export function createToolClient(
+export async function createToolClient(
   config: ContentfulConfig,
   params: z.infer<typeof BaseToolSchema>,
 ) {
   const clientConfig: ClientOptions = {
-    accessToken: config.accessToken,
+    accessToken: typeof config.accessToken === 'function' ? await config.accessToken() : config.accessToken,
     host: config.host ?? 'api.contentful.com',
     space: params.spaceId ?? config.spaceId,
     headers: {
