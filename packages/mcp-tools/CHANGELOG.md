@@ -1,3 +1,9 @@
+## 0.2.5 (2026-03-02)
+
+### 🩹 Fixes
+
+- default values removed to enforce schema shape ([#330](https://github.com/contentful/contentful-mcp-server/pull/330))
+
 ## 0.2.4 (2026-02-25)
 
 ### 🩹 Fixes
