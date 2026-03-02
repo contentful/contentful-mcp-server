@@ -8,8 +8,8 @@ const markSchema = z.object({
 const textNodeSchema = z.object({
   nodeType: z.literal('text'),
   value: z.string(),
-  marks: z.array(markSchema).default([]),
-  data: z.record(z.any()).default({}),
+  marks: z.array(markSchema),
+  data: z.record(z.any()),
 });
 
 const inlineNodeSchema: z.ZodType<unknown> = z.lazy(() =>
@@ -59,7 +59,7 @@ const topLevelBlockNodeSchema: z.ZodType<unknown> = z.lazy(() =>
 const richTextDocumentSchema = z
   .object({
     nodeType: z.literal(BLOCKS.DOCUMENT),
-    data: z.record(z.any()).default({}),
+    data: z.record(z.any()),
     content: z.array(topLevelBlockNodeSchema),
   })
   .describe('Contentful Rich Text document');
@@ -86,17 +86,19 @@ const locationSchema = z.object({
 });
 
 const fieldValueSchema = z.union([
-  z.string(), // Symbol, Text, Date
-  z.number(), // Integer, Number
-  z.boolean(), // Boolean
-  richTextDocumentSchema, // RichText
-  linkSchema, // Link (Entry or Asset)
-  resourceLinkSchema, // ResourceLink
-  locationSchema, // Location
-  z.array(z.string()), // Array<Symbol>
-  z.array(linkSchema), // Array<Link>
-  z.array(resourceLinkSchema), // Array<ResourceLink>
-  z.record(z.any()), // Object (freeform JSON)
+  z.string().describe('Symbol, Text, or Date field'),
+  z.number().describe('Integer or Number field'),
+  z.boolean().describe('Boolean field'),
+  richTextDocumentSchema,
+  linkSchema.describe('Link field (Entry or Asset reference)'),
+  resourceLinkSchema.describe('ResourceLink field'),
+  locationSchema.describe('Location field'),
+  z.array(z.string()).describe('Array field of Symbols'),
+  z.array(linkSchema).describe('Array field of Links'),
+  z.array(resourceLinkSchema).describe('Array field of ResourceLinks'),
+  z
+    .record(z.any())
+    .describe('Object field (freeform JSON, use ONLY for Object-type fields)'),
 ]);
 
 // --- Localized field wrapper ---
