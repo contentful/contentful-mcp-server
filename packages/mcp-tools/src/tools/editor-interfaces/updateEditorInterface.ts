@@ -103,7 +103,7 @@ export function updateEditorInterfaceTool(config: ContentfulConfig) {
       contentTypeId: args.contentTypeId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
   // Get the current editor interface
   const currentEditorInterface =

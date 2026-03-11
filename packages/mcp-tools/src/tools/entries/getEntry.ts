@@ -20,7 +20,7 @@ export function getEntryTool(config: ContentfulConfig) {
       entryId: args.entryId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
     // Get the entry
     const entry = await contentfulClient.entry.get(params);

@@ -27,7 +27,7 @@ export function createEntryTool(config: ContentfulConfig) {
       environmentId: args.environmentId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
     const newEntry = await contentfulClient.entry.create(
       {
         ...params,

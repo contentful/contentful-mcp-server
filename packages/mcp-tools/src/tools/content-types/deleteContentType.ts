@@ -20,7 +20,7 @@ export function deleteContentTypeTool(config: ContentfulConfig) {
       contentTypeId: args.contentTypeId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
     // Delete the content type
     await contentfulClient.contentType.delete(params);

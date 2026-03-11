@@ -24,7 +24,7 @@ export function createTagTool(config: ContentfulConfig) {
       tagId: args.id,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
   const newTag = await contentfulClient.tag.createWithId(params, {
     name: args.name,

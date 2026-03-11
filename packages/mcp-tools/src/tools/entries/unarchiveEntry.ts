@@ -23,7 +23,7 @@ export function unarchiveEntryTool(config: ContentfulConfig) {
       environmentId: args.environmentId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
   // Normalize input to always be an array
   const entryIds = Array.isArray(args.entryId) ? args.entryId : [args.entryId];

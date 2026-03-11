@@ -39,7 +39,7 @@ export function listEnvironmentsTool(config: ContentfulConfig) {
       environmentId: args.environmentId || 'master',
     };
 
-    const contentfulClient = createToolClient(config, clientArgs);
+    const contentfulClient = await createToolClient(config, clientArgs);
 
   const environments = await contentfulClient.environment.getMany({
     spaceId: args.spaceId,

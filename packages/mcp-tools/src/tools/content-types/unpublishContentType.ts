@@ -20,7 +20,7 @@ export function unpublishContentTypeTool(config: ContentfulConfig) {
       contentTypeId: args.contentTypeId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
     // Unpublish the content type
     const contentType = await contentfulClient.contentType.unpublish(params);

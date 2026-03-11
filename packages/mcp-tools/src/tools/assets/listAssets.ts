@@ -43,7 +43,7 @@ export function listAssetsTool(config: ContentfulConfig) {
       environmentId: args.environmentId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
   const assets = await contentfulClient.asset.getMany({
     ...params,
