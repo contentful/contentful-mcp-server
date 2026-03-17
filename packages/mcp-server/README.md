@@ -37,7 +37,7 @@ This MCP server provides a comprehensive set of tools for content management, al
 
 - Node.js
 - npm
-- A Contentful account with a [Space ID](https://www.contentful.com/help/spaces/find-space-id/)
+- A Contentful account with one or more [Spaces](https://www.contentful.com/help/spaces/find-space-id/)
 - [Contentful Management API personal access token](https://www.contentful.com/help/token-management/personal-access-tokens/)
 
 ### Installation
@@ -66,7 +66,7 @@ npm run build
 | Environment Variable                 | Required | Default Value        | Description                                          |
 | ------------------------------------ | -------- | -------------------- | ---------------------------------------------------- |
 | `CONTENTFUL_MANAGEMENT_ACCESS_TOKEN` | ✅ Yes   | -                    | Your Contentful Management API personal access token |
-| `SPACE_ID`                           | ✅ Yes   | -                    | Your Contentful Space ID                             |
+| `SPACE_ID`                           | ❌ No    | -                    | Default Contentful Space ID (can be overridden per tool call) |
 | `ENVIRONMENT_ID`                     | ❌ No    | `master`             | Target environment within your space                 |
 | `CONTENTFUL_HOST`                    | ❌ No    | `api.contentful.com` | Contentful API host                                  |
 | `NODE_ENV`                           | ❌ No    | `production`         | Node Environment to run in                           |
@@ -93,6 +93,28 @@ Below is a sample configuration:
   }
 }
 ```
+
+### Working with Multiple Spaces
+
+The MCP server supports working with multiple Contentful spaces from a single instance. Every tool accepts `spaceId` and `environmentId` as parameters, allowing the AI assistant to target any space accessible by your token on each tool call.
+
+To work with multiple spaces, omit `SPACE_ID` from your configuration and ensure your CMA token has access to all desired spaces:
+
+```json
+{
+  "mcpServers": {
+    "contentful-mcp": {
+      "command": "npx",
+      "args": ["-y", "@contentful/mcp-server"],
+      "env": {
+        "CONTENTFUL_MANAGEMENT_ACCESS_TOKEN": "your-CMA-token"
+      }
+    }
+  }
+}
+```
+
+The AI assistant can use `list_spaces` to discover available spaces and switch between them dynamically. If `SPACE_ID` is provided, it serves as the default but can be overridden on any tool call.
 
 ## 🛠️ Available Tools
 

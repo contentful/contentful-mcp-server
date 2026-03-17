@@ -308,8 +308,8 @@
     "SPACE_ID": {
       "type": "string",
       "title": "SPACE_ID",
-      "description": "Contentful Space ID",
-      "required": true
+      "description": "Default Contentful Space ID (optional — omit to work with multiple spaces)",
+      "required": false
     },
     "ENVIRONMENT_ID": {
       "type": "string",
