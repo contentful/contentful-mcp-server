@@ -96,7 +96,7 @@ Below is a sample configuration:
 
 ### Working with Multiple Spaces
 
-The MCP server supports working with multiple Contentful spaces from a single instance. Every tool accepts `spaceId` and `environmentId` as parameters, allowing the AI assistant to target any space accessible by your token on each tool call.
+The MCP server supports working with multiple Contentful spaces from a single instance. Space-scoped tools (entries, assets, content types, etc.) accept `spaceId` and `environmentId` as parameters, allowing the AI assistant to target any space accessible by your token on each tool call. Organization-level tools like `list_spaces` and `list_orgs` work across all accessible spaces without requiring these parameters.
 
 To work with multiple spaces, omit `SPACE_ID` from your configuration and ensure your CMA token has access to all desired spaces:
 
