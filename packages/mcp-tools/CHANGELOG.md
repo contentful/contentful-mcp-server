@@ -1,3 +1,9 @@
+## 0.2.6 (2026-03-18)
+
+### 🩹 Fixes
+
+- zod entryFieldsSchema supports all valid json ([#338](https://github.com/contentful/contentful-mcp-server/pull/338))
+
 ## 0.2.5 (2026-03-02)
 
 ### 🩹 Fixes
