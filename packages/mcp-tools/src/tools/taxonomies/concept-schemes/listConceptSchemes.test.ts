@@ -14,7 +14,6 @@ const mockConceptSchemesResponse = {
     type: 'Array',
   },
   total: 2,
-  skip: 0,
   limit: 10,
   items: [testConceptScheme1, testConceptScheme2],
 };
@@ -46,7 +45,6 @@ describe('listConceptSchemes', () => {
       organizationId: 'test-org-id',
       query: {
         limit: 10,
-        skip: 0,
       },
     });
 
@@ -66,7 +64,7 @@ describe('listConceptSchemes', () => {
     const customArgs = {
       organizationId: 'test-org-id',
       limit: 5,
-      skip: 2,
+      pageNext: 'cursor-token-1',
       select: 'sys.id,prefLabel',
       order: 'sys.createdAt',
     };
@@ -74,7 +72,6 @@ describe('listConceptSchemes', () => {
     mockConceptSchemeGetMany.mockResolvedValue({
       ...mockConceptSchemesResponse,
       limit: 5,
-      skip: 2,
     });
 
     const tool = listConceptSchemesTool(mockConfig);
@@ -84,7 +81,7 @@ describe('listConceptSchemes', () => {
       organizationId: 'test-org-id',
       query: {
         limit: 5,
-        skip: 2,
+        pageNext: 'cursor-token-1',
         select: 'sys.id,prefLabel',
         order: 'sys.createdAt',
       },
@@ -126,7 +123,6 @@ describe('listConceptSchemes', () => {
         type: 'Array',
       },
       total: 15,
-      skip: 10,
       limit: 10,
       items: [testConceptScheme1],
     };
@@ -134,7 +130,7 @@ describe('listConceptSchemes', () => {
     const paginatedArgs = {
       organizationId: 'test-org-id',
       limit: 10,
-      skip: 10,
+      pageNext: 'cursor-token-2',
     };
 
     mockConceptSchemeGetMany.mockResolvedValue(paginatedResponse);
@@ -146,7 +142,7 @@ describe('listConceptSchemes', () => {
       organizationId: 'test-org-id',
       query: {
         limit: 10,
-        skip: 10,
+        pageNext: 'cursor-token-2',
       },
     });
 
@@ -177,7 +173,6 @@ describe('listConceptSchemes', () => {
       organizationId: 'test-org-id',
       query: {
         limit: 10,
-        skip: 0,
         include: 2,
       },
     });
