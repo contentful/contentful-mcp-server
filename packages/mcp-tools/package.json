@@ -27,6 +27,7 @@
     "dev": "tsup --watch",
     "test": "vitest",
     "test:run": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.lib.json",
     "format": "prettier --check \"**/*.{ts,js,json,md}\"",
     "format:fix": "prettier --write \"**/*.{ts,js,json,md}\"",
     "lint": "eslint --ext .ts,.js .",
