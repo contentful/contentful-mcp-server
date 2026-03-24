@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest';
 
 import { jsonValueSchema } from '../../types/entryFieldSchema.js';
+import { complexRichTextExample } from './mock-data/complex-rich-text-example.js';
+import { richTextDocumentSchema } from '../../types/richTextSchema.js';
 
 describe('entry zod schema ', () => {
   describe('entry fields', () => {
@@ -23,6 +25,14 @@ describe('entry zod schema ', () => {
         ];
 
         expect(jsonValueSchema.parse(json)).toEqual(json);
+      });
+    });
+
+    describe('Rich Text fields', () => {
+      it('should validate a complex Rich Text document', () => {
+        expect(() =>
+          richTextDocumentSchema.parse(complexRichTextExample['en-US']),
+        ).not.toThrow();
       });
     });
   });

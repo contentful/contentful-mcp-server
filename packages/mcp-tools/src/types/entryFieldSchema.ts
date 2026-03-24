@@ -1,68 +1,5 @@
 import { z } from 'zod';
-import { BLOCKS, INLINES, MARKS } from '@contentful/rich-text-types';
-
-const markSchema = z.object({
-  type: z.nativeEnum(MARKS),
-});
-
-const textNodeSchema = z.object({
-  nodeType: z.literal('text'),
-  value: z.string(),
-  marks: z.array(markSchema),
-  data: z.record(z.any()),
-});
-
-const inlineNodeSchema: z.ZodType<unknown> = z.lazy(() =>
-  z.object({
-    nodeType: z.nativeEnum(INLINES),
-    data: z.record(z.any()),
-    content: z.array(z.union([inlineNodeSchema, textNodeSchema])),
-  }),
-);
-
-const blockNodeSchema: z.ZodType<unknown> = z.lazy(() =>
-  z.object({
-    nodeType: z.nativeEnum(BLOCKS),
-    data: z.record(z.any()),
-    content: z.array(
-      z.union([blockNodeSchema, inlineNodeSchema, textNodeSchema]),
-    ),
-  }),
-);
-
-const topLevelBlockNodeSchema: z.ZodType<unknown> = z.lazy(() =>
-  z.object({
-    nodeType: z.enum([
-      BLOCKS.PARAGRAPH,
-      BLOCKS.HEADING_1,
-      BLOCKS.HEADING_2,
-      BLOCKS.HEADING_3,
-      BLOCKS.HEADING_4,
-      BLOCKS.HEADING_5,
-      BLOCKS.HEADING_6,
-      BLOCKS.OL_LIST,
-      BLOCKS.UL_LIST,
-      BLOCKS.HR,
-      BLOCKS.QUOTE,
-      BLOCKS.EMBEDDED_ENTRY,
-      BLOCKS.EMBEDDED_ASSET,
-      BLOCKS.EMBEDDED_RESOURCE,
-      BLOCKS.TABLE,
-    ]),
-    data: z.record(z.any()),
-    content: z.array(
-      z.union([blockNodeSchema, inlineNodeSchema, textNodeSchema]),
-    ),
-  }),
-);
-
-const richTextDocumentSchema = z
-  .object({
-    nodeType: z.literal(BLOCKS.DOCUMENT),
-    data: z.record(z.any()),
-    content: z.array(topLevelBlockNodeSchema),
-  })
-  .describe('Contentful Rich Text document');
+import { richTextDocumentSchema } from './richTextSchema.js';
 
 const linkSchema = z.object({
   sys: z.object({
@@ -116,9 +53,7 @@ const fieldValueSchema = z.union([
   jsonValueSchema,
 ]);
 
-// --- Localized field wrapper ---
 // Every field value is keyed by locale, e.g. { "en-US": "hello" }
-
 const localizedFieldSchema = z.record(fieldValueSchema);
 
 export const entryFieldsSchema = z
