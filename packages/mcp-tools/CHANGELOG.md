@@ -1,3 +1,9 @@
+## 0.3.0 (2026-03-24)
+
+### 🚀 Features
+
+- **tools:** add zod schemas/types for rich text fields ([#347](https://github.com/contentful/contentful-mcp-server/pull/347))
+
 ## 0.2.6 (2026-03-18)
 
 ### 🩹 Fixes
