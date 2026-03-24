@@ -9,6 +9,8 @@ import {
   mockArgs,
 } from './mockClient.js';
 import { createMockConfig } from '../../test-helpers/mockConfig.js';
+import { BLOCKS, INLINES } from '@contentful/rich-text-types';
+import { RichTextDocument } from '../../types/richTextSchema.js';
 
 vi.mock('../../../src/utils/tools.js');
 
@@ -357,17 +359,17 @@ describe('updateEntry', () => {
   });
 
   it('should update an entry with rich text containing embedded and inline nodes', async () => {
-    const richTextWithEmbeds = {
-      nodeType: 'document',
+    const richTextWithEmbeds: RichTextDocument = {
+      nodeType: BLOCKS.DOCUMENT,
       data: {},
       content: [
         {
-          nodeType: 'paragraph',
+          nodeType: BLOCKS.PARAGRAPH,
           data: {},
           content: [
             { nodeType: 'text', value: 'See ', marks: [], data: {} },
             {
-              nodeType: 'embedded-entry-inline',
+              nodeType: INLINES.ENTRY_HYPERLINK,
               data: {
                 target: {
                   sys: { type: 'Link', linkType: 'Entry', id: 'inline-entry' },
@@ -379,7 +381,7 @@ describe('updateEntry', () => {
           ],
         },
         {
-          nodeType: 'embedded-asset-block',
+          nodeType: BLOCKS.EMBEDDED_ASSET,
           data: {
             target: {
               sys: { type: 'Link', linkType: 'Asset', id: 'hero-image' },
@@ -388,15 +390,15 @@ describe('updateEntry', () => {
           content: [],
         },
         {
-          nodeType: 'ordered-list',
+          nodeType: BLOCKS.OL_LIST,
           data: {},
           content: [
             {
-              nodeType: 'list-item',
+              nodeType: BLOCKS.LIST_ITEM,
               data: {},
               content: [
                 {
-                  nodeType: 'paragraph',
+                  nodeType: BLOCKS.PARAGRAPH,
                   data: {},
                   content: [
                     {

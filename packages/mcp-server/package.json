@@ -33,6 +33,7 @@
     "lint:fix": "eslint --ext .ts,.js . --fix",
     "test": "npm run inject-mcp-version && vitest",
     "test:run": "npm run inject-mcp-version && vitest run",
+    "typecheck": "npm run inject-mcp-version && tsc --noEmit -p tsconfig.lib.json",
     "inject-mcp-version": "node scripts/injectMCPVersion.cjs",
     "search-and-replace-mcp-version": "node scripts/searchAndReplaceMCPVersion.cjs"
   },

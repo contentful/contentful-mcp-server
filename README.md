@@ -22,10 +22,8 @@ This MCP server provides a comprehensive set of tools for content management, al
 - [🛠️ Available Tools](#️-available-tools)
 - [🔍 Development](#-development)
   - [Testing with MCP Inspector](#testing-with-mcp-inspector)
-  - [Linting](#linting)
 - [📦 Releases](#-releases)
-- [🤝 Contributing](#-contributing)
-  - [Development Setup](#development-setup)
+- [🤝 Contributing and development](#-contributing)
 - [📚 Documentation](#-documentation)
 - [❓ Help & Support](#-help--support)
 - [📄 License and Notices](#-license-and-notices)
@@ -148,13 +146,15 @@ Below is a sample configuration:
 |                           | `unpublish_ai_action`      | Unpublish AI actions                             |
 |                           | `delete_ai_action`         | Remove AI actions                                |
 
-## 🤝 Contributing
+## 🤝 Contributing and Development
 
 We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for local development setup and contribution guidelines.
 
 ## 📦 Releases
 
 This project uses [Nx Release](https://nx.dev/features/manage-releases) for automated versioning and publishing. Releases are automatically generated based on [Conventional Commits](https://www.conventionalcommits.org/). See [Contributing Guide](CONTRIBUTING.md) for more information on release process.
+
+See [github releases](https://github.com/contentful/contentful-mcp-server/releases) and [npm](https://www.npmjs.com/package/@contentful/mcp-server)
 
 ## 📚 Documentation
 

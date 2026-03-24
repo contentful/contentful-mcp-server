@@ -130,6 +130,12 @@ npm run lint
 npm run lint:fix
 ```
 
+### Type checking
+
+```bash
+npm run typecheck
+```
+
 ## 🏗️ Project Structure
 
 ```
@@ -173,6 +179,7 @@ See github action: [release.yml](https://github.com/contentful/contentful-mcp-se
 
    ```bash
    npm run lint
+   npm run typecheck
    npm run build
    ```
 
