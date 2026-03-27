@@ -8,44 +8,37 @@ import { createClientConfig } from '../../../utils/tools.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 import { summarizeData } from '../../../utils/summarizer.js';
 
-export const ListConceptSchemesToolParams = z
-  .object({
-    organizationId: z
-      .string()
-      .describe('The ID of the Contentful organization'),
-    limit: z
-      .number()
-      .optional()
-      .describe('Maximum number of concept schemes to return'),
-    pageNext: z
-      .string()
-      .optional()
-      .describe('Cursor token for the next page of concept schemes'),
-    pagePrev: z
-      .string()
-      .optional()
-      .describe('Cursor token for the previous page of concept schemes'),
-    pageUrl: z
-      .never()
-      .describe(
-        'Only Cursor-based pagination is supported for concept schemes. Please use pageNext or pagePrev instead.',
-      ),
-    select: z
-      .string()
-      .optional()
-      .describe('Comma-separated list of fields to return'),
-    include: z
-      .number()
-      .optional()
-      .describe('Include this many levels of linked entries'),
-    order: z
-      .string()
-      .optional()
-      .describe('Order concept schemes by this field'),
-  })
-  .describe(
-    'Parameters for listing concept schemes, cursor-based pagination is strictly enforced',
-  );
+export const ListConceptSchemesToolParams = z.object({
+  organizationId: z
+    .string()
+    .describe('The ID of the Contentful organization'),
+  limit: z
+    .number()
+    .optional()
+    .describe('Maximum number of concept schemes to return'),
+  pageNext: z
+    .string()
+    .optional()
+    .describe('Cursor token for the next page of concept schemes'),
+  pagePrev: z
+    .string()
+    .optional()
+    .describe('Cursor token for the previous page of concept schemes'),
+  pageUrl: z
+    .never()
+    .describe(
+      'Only Cursor-based pagination is supported for concept schemes. Please use pageNext or pagePrev instead.',
+    ),
+  select: z
+    .string()
+    .optional()
+    .describe('Comma-separated list of fields to return'),
+  include: z
+    .number()
+    .optional()
+    .describe('Include this many levels of linked entries'),
+  order: z.string().optional().describe('Order concept schemes by this field'),
+}).describe('Parameters for listing concept schemes, cursor-based pagination is strictly enforced');
 
 type Params = z.infer<typeof ListConceptSchemesToolParams>;
 
