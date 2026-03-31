@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { updateAiActionTool } from './updateAiAction.js';
+import { updateAiActionTool, Params } from './updateAiAction.js';
 import { formatResponse } from '../../utils/formatters.js';
 import { VariableType } from '../../utils/ai-actions.js';
 import {
@@ -20,7 +20,7 @@ describe('updateAiAction', () => {
   });
 
   it('should update an AI action successfully with all fields', async () => {
-    const testArgs = {
+    const testArgs: Params = {
       ...mockArgs,
       name: 'Updated AI Action',
       description: 'Updated description',
@@ -41,6 +41,7 @@ describe('updateAiAction', () => {
       },
       testCases: [
         {
+          // @ts-expect-error: fix me
           name: 'Updated test case',
           variables: {
             input: 'test input',

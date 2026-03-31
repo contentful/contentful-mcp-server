@@ -49,7 +49,7 @@ export const UpdateAiActionToolParams = BaseToolSchema.extend({
     .describe('Test cases for the AI action'),
 });
 
-type Params = z.infer<typeof UpdateAiActionToolParams>;
+export type Params = z.infer<typeof UpdateAiActionToolParams>;
 
 export function updateAiActionTool(config: ContentfulConfig) {
   async function tool(args: Params) {

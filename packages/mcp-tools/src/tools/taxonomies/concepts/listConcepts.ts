@@ -15,10 +15,6 @@ export const ListConceptsToolParams = z.object({
     .optional()
     .describe('The ID of the concept (required for descendants/ancestors)'),
   limit: z.number().optional().describe('Maximum number of concepts to return'),
-  skip: z
-    .number()
-    .optional()
-    .describe('Skip this many concepts for pagination'),
   select: z
     .string()
     .optional()
@@ -75,7 +71,6 @@ export function listConceptsTool(config: ContentfulConfig) {
         organizationId: args.organizationId,
         conceptId: args.conceptId,
         ...(args.limit && { limit: args.limit }),
-        ...(args.skip && { skip: args.skip }),
         ...(args.select && { select: args.select }),
         ...(args.include && { include: args.include }),
         ...(args.order && { order: args.order }),
@@ -106,7 +101,6 @@ export function listConceptsTool(config: ContentfulConfig) {
         organizationId: args.organizationId,
         conceptId: args.conceptId,
         ...(args.limit && { limit: args.limit }),
-        ...(args.skip && { skip: args.skip }),
         ...(args.select && { select: args.select }),
         ...(args.include && { include: args.include }),
         ...(args.order && { order: args.order }),
@@ -136,7 +130,6 @@ export function listConceptsTool(config: ContentfulConfig) {
       organizationId: args.organizationId,
       query: {
         limit: args.limit || 10,
-        skip: args.skip || 0,
         ...(args.select && { select: args.select }),
         ...(args.include && { include: args.include }),
         ...(args.order && { order: args.order }),
