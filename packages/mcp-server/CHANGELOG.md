@@ -1,3 +1,13 @@
+## 1.7.12 (2026-03-31)
+
+### 🩹 Fixes
+
+- **typescript:** add typechecking commands and fix a few ts bugs ([#350](https://github.com/contentful/contentful-mcp-server/pull/350))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.3.1
+
 ## 1.7.11 (2026-03-24)
 
 ### 🧱 Updated Dependencies
