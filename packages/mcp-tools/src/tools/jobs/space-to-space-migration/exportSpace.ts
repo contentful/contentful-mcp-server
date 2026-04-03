@@ -1,4 +1,8 @@
 import { z } from 'zod';
+import * as contentfulExportModule from 'contentful-export';
+const contentfulExport =
+  (contentfulExportModule as any).default ?? contentfulExportModule;
+import { join } from 'path';
 import {
   createSuccessResponse,
   withErrorHandling,
@@ -140,12 +144,9 @@ export function createExportSpaceTool(config: ContentfulConfig) {
     } as any;
 
     try {
-      const contentfulExport = await import('contentful-export');
-      const path = await import('path');
+      const result = await contentfulExport(exportOptions);
 
-      const result = await contentfulExport.default(exportOptions);
-
-      const exportPath = path.join(
+      const exportPath = join(
         exportOptions.exportDir,
         exportOptions.contentFile,
       );

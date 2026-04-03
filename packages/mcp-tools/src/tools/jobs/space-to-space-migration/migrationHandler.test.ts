@@ -14,6 +14,7 @@ describe('migrationHandler', () => {
 
   beforeEach(() => {
     // Create mock tools with enable/disable methods
+    // @ts-expect-error, no need to mock entire RegisteredTool interface for this test
     mockTool1 = {
       enable: vi.fn(),
       disable: vi.fn(),
@@ -22,6 +23,7 @@ describe('migrationHandler', () => {
       update: vi.fn(),
       remove: vi.fn(),
     } as RegisteredTool;
+    // @ts-expect-error, no need to mock entire RegisteredTool interface for this test
     mockTool2 = {
       enable: vi.fn(),
       disable: vi.fn(),
@@ -30,6 +32,7 @@ describe('migrationHandler', () => {
       update: vi.fn(),
       remove: vi.fn(),
     } as RegisteredTool;
+    // @ts-expect-error, no need to mock entire RegisteredTool interface for this test
     mockTool3 = {
       enable: vi.fn(),
       disable: vi.fn(),
