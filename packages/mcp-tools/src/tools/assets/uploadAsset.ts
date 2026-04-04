@@ -35,7 +35,7 @@ export function uploadAssetTool(config: ContentfulConfig) {
       environmentId: args.environmentId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
   // Prepare asset properties following Contentful's structure
   const locale = args.locale || 'en-US';

@@ -20,7 +20,7 @@ export function getAiActionTool(config: ContentfulConfig) {
       aiActionId: args.aiActionId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
     // Get the AI action
     const aiAction = await contentfulClient.aiAction.get(params);

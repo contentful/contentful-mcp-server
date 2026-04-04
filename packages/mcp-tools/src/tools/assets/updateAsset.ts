@@ -27,7 +27,7 @@ export function updateAssetTool(config: ContentfulConfig) {
       assetId: args.assetId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
   // Get existing asset, merge fields, and update
   const existingAsset = await contentfulClient.asset.get(params);
