@@ -65,12 +65,7 @@ export function uploadAssetTool(config: ContentfulConfig) {
         );
       }
       const base64 = args.file.upload.slice(commaIndex + 1);
-      const binary = atob(base64);
-      const buffer = new ArrayBuffer(binary.length);
-      const view = new Uint8Array(buffer);
-      for (let i = 0; i < binary.length; i++) {
-        view[i] = binary.charCodeAt(i);
-      }
+      const buffer = Buffer.from(base64, 'base64').buffer;
       const upload = await contentfulClient.upload.create(params, {
         file: buffer,
       });
