@@ -3,7 +3,7 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../../utils/response.js';
-import ctfl from 'contentful-management';
+import { createClient, type OpPatch } from 'contentful-management';
 import { createClientConfig } from '../../../utils/tools.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 import { TaxonomyConceptLinkSchema } from '../../../types/conceptPayloadTypes.js';
@@ -67,7 +67,7 @@ export function updateConceptSchemeTool(config: ContentfulConfig) {
     const clientConfig = createClientConfig(config);
     // Remove space from config since we're working at the organization level
     delete clientConfig.space;
-    const contentfulClient = ctfl.createClient(clientConfig, { type: 'plain' });
+    const contentfulClient = createClient(clientConfig);
 
   const params = {
     organizationId: args.organizationId,
@@ -86,11 +86,7 @@ export function updateConceptSchemeTool(config: ContentfulConfig) {
     topConcepts: '/topConcepts',
   } as const;
 
-  const patchOperations: Array<{
-    op: string;
-    path: string;
-    value?: unknown;
-  }> = [];
+  const patchOperations: OpPatch[] = [];
 
   // Handle regular fields with replace operation
   Object.entries(fieldMappings).forEach(([field, path]) => {
@@ -106,11 +102,11 @@ export function updateConceptSchemeTool(config: ContentfulConfig) {
 
   // Handle URI field specially (can be removed when null)
   if (args.uri !== undefined) {
-    patchOperations.push({
-      op: args.uri === null ? 'remove' : 'replace',
-      path: '/uri',
-      ...(args.uri !== null && { value: args.uri }),
-    });
+    if (args.uri === null) {
+      patchOperations.push({ op: 'remove', path: '/uri' });
+    } else {
+      patchOperations.push({ op: 'replace', path: '/uri', value: args.uri });
+    }
   }
 
   // Handle adding a concept to the scheme
@@ -137,7 +133,7 @@ export function updateConceptSchemeTool(config: ContentfulConfig) {
   }
 
   // Update the concept scheme using JSON Patch
-  const updatedConceptScheme = await contentfulClient.conceptScheme.update(
+  const updatedConceptScheme = await contentfulClient.conceptScheme.patch(
     {
       ...params,
       version: args.version,

@@ -32,9 +32,7 @@ describe('createConcept', () => {
     const result = await tool(testArgs);
 
     const clientConfig = createClientConfig(mockConfig);
-    expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
-      type: 'plain',
-    });
+    expect(mockCreateClient).toHaveBeenCalledWith(clientConfig);
     expect(mockConceptCreate).toHaveBeenCalledWith(
       {
         organizationId: 'test-org-id',
@@ -208,9 +206,7 @@ describe('createConcept', () => {
     const result = await tool(argsWithId);
 
     const clientConfig = createClientConfig(mockConfig);
-    expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
-      type: 'plain',
-    });
+    expect(mockCreateClient).toHaveBeenCalledWith(clientConfig);
     expect(mockConceptCreateWithId).toHaveBeenCalledWith(
       {
         organizationId: 'test-org-id',
