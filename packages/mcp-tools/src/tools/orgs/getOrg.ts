@@ -3,7 +3,7 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../utils/response.js';
-import * as ctfl from 'contentful-management';
+import { createClient } from 'contentful-management';
 import { createClientConfig } from '../../utils/tools.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
@@ -19,7 +19,7 @@ export function getOrgTool(config: ContentfulConfig) {
     const clientConfig = createClientConfig(config);
     // Remove space from config since we're working at the organization level
     delete clientConfig.space;
-    const contentfulClient = ctfl.createClient(clientConfig, { type: 'plain' });
+    const contentfulClient = createClient(clientConfig, { type: 'plain' });
 
   // Get the organization
   const organization = await contentfulClient.organization.get({

@@ -3,7 +3,7 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../utils/response.js';
-import * as ctfl from 'contentful-management';
+import { createClient } from 'contentful-management';
 import { createClientConfig } from '../../utils/tools.js';
 import { summarizeData } from '../../utils/summarizer.js';
 import type { ContentfulConfig } from '../../config/types.js';
@@ -30,7 +30,7 @@ export function listSpacesTool(config: ContentfulConfig) {
     const clientConfig = createClientConfig(config);
     // Remove space from config since we're listing all spaces
     delete clientConfig.space;
-    const contentfulClient = ctfl.createClient(clientConfig, { type: 'plain' });
+    const contentfulClient = createClient(clientConfig, { type: 'plain' });
 
   const spaces = await contentfulClient.space.getMany({
     query: {

@@ -3,7 +3,7 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../../utils/response.js';
-import * as ctfl from 'contentful-management';
+import { createClient } from 'contentful-management';
 import { createClientConfig } from '../../../utils/tools.js';
 import {
   TaxonomyConceptLinkSchema,
@@ -77,7 +77,7 @@ export function createConceptTool(config: ContentfulConfig) {
     const clientConfig = createClientConfig(config);
     // Remove space from config since we're working at the organization level
     delete clientConfig.space;
-    const contentfulClient = ctfl.createClient(clientConfig, { type: 'plain' });
+    const contentfulClient = createClient(clientConfig, { type: 'plain' });
 
   // Build the concept payload using the shared type
   const conceptPayload: ConceptPayload = {
