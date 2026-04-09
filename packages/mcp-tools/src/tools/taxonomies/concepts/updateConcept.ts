@@ -100,7 +100,7 @@ export function updateConceptTool(config: ContentfulConfig) {
   };
 
   // Update the concept using the PUT method
-  const updatedConcept = await contentfulClient.concept.updatePut(
+  const updatedConcept = await contentfulClient.concept.update(
     {
       organizationId: args.organizationId,
       conceptId: args.conceptId,
