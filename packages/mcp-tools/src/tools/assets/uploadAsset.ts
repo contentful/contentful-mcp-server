@@ -58,7 +58,13 @@ export function uploadAssetTool(config: ContentfulConfig) {
     };
 
     if (args.file.upload?.startsWith('data:')) {
-      const base64 = args.file.upload.split(',')[1];
+      const commaIndex = args.file.upload.indexOf(',');
+      if (commaIndex === -1) {
+        throw new Error(
+          'Invalid data URI format. Expected data:<mime>;base64,<data>',
+        );
+      }
+      const base64 = args.file.upload.slice(commaIndex + 1);
       const binary = atob(base64);
       const buffer = new ArrayBuffer(binary.length);
       const view = new Uint8Array(buffer);

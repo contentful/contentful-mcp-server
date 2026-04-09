@@ -274,6 +274,32 @@ describe('uploadAsset', () => {
     });
   });
 
+  it('should return a clear error when the data URI is malformed (no comma)', async () => {
+    const testArgs = {
+      ...mockArgs,
+      title: 'Bad Upload',
+      file: {
+        fileName: 'photo.jpg',
+        contentType: 'image/jpeg',
+        upload: 'data:image/jpeg;base64',
+      },
+    };
+
+    const tool = uploadAssetTool(mockConfig);
+    const result = await tool(testArgs);
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: 'Error uploading asset: Invalid data URI format. Expected data:<mime>;base64,<data>',
+        },
+      ],
+    });
+    expect(mockUploadCreate).not.toHaveBeenCalled();
+  });
+
   it('should upload an asset with a custom locale', async () => {
     const testArgs = {
       ...mockArgs,
