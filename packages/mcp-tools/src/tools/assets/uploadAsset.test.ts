@@ -5,6 +5,7 @@ import {
   setupMockClient,
   mockAssetCreate,
   mockAssetProcessForAllLocales,
+  mockUploadCreate,
   mockArgs,
   mockFile,
   mockAsset,
@@ -223,6 +224,56 @@ describe('uploadAsset', () => {
       }),
     );
   });
+  it('should upload an asset via base64 data URI using the Upload API', async () => {
+    const base64Data = Buffer.from('fake-image-bytes').toString('base64');
+    const testArgs = {
+      ...mockArgs,
+      title: 'Local Image',
+      file: {
+        fileName: 'photo.jpg',
+        contentType: 'image/jpeg',
+        upload: `data:image/jpeg;base64,${base64Data}`,
+      },
+    };
+
+    const mockUpload = { sys: { id: 'upload-123' } };
+    mockUploadCreate.mockResolvedValue(mockUpload);
+    mockAssetCreate.mockResolvedValue(mockAsset);
+    mockAssetProcessForAllLocales.mockResolvedValue(mockProcessedAsset);
+
+    const tool = uploadAssetTool(mockConfig);
+    const result = await tool(testArgs);
+
+    expect(mockUploadCreate).toHaveBeenCalledWith(
+      { spaceId: testArgs.spaceId, environmentId: testArgs.environmentId },
+      { file: expect.any(ArrayBuffer) },
+    );
+
+    expect(mockAssetCreate).toHaveBeenCalledWith(
+      { spaceId: testArgs.spaceId, environmentId: testArgs.environmentId },
+      expect.objectContaining({
+        fields: expect.objectContaining({
+          file: {
+            'en-US': {
+              fileName: 'photo.jpg',
+              contentType: 'image/jpeg',
+              uploadFrom: {
+                sys: { type: 'Link', linkType: 'Upload', id: 'upload-123' },
+              },
+            },
+          },
+        }),
+      }),
+    );
+
+    const expectedResponse = formatResponse('Asset uploaded successfully', {
+      asset: mockProcessedAsset,
+    });
+    expect(result).toEqual({
+      content: [{ type: 'text', text: expectedResponse }],
+    });
+  });
+
   it('should upload an asset with a custom locale', async () => {
     const testArgs = {
       ...mockArgs,
