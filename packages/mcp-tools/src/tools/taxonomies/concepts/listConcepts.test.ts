@@ -44,7 +44,6 @@ describe('listConcepts', () => {
       organizationId: 'test-org-id',
       query: {
         limit: 10,
-        skip: 0,
       },
     });
 
@@ -58,7 +57,6 @@ describe('listConcepts', () => {
     const fullArgs = {
       organizationId: 'test-org-id',
       limit: 20,
-      skip: 5,
       select: 'sys,prefLabel,uri',
       include: 2,
       order: 'sys.createdAt',
@@ -73,7 +71,6 @@ describe('listConcepts', () => {
       organizationId: 'test-org-id',
       query: {
         limit: 20,
-        skip: 5,
         select: 'sys,prefLabel,uri',
         include: 2,
         order: 'sys.createdAt',
@@ -95,7 +92,6 @@ describe('listConcepts', () => {
       organizationId: 'test-org-id',
       query: {
         limit: 10,
-        skip: 0,
       },
     });
 

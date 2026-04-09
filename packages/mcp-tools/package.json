@@ -1,6 +1,6 @@
 {
   "name": "@contentful/mcp-tools",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -27,6 +27,7 @@
     "dev": "tsup --watch",
     "test": "vitest",
     "test:run": "vitest run",
+    "typecheck": "tsc --noEmit -p tsconfig.lib.json && tsc --noEmit -p tsconfig.spec.json",
     "format": "prettier --check \"**/*.{ts,js,json,md}\"",
     "format:fix": "prettier --write \"**/*.{ts,js,json,md}\"",
     "lint": "eslint --ext .ts,.js .",
@@ -46,12 +47,14 @@
     "contentful-import": "^9.4.129",
     "contentful-management": "^12.2.0",
     "fast-xml-parser": "^5.3.8",
+    "lodash-es": "^4.17.23",
     "outdent": "^0.8.0",
     "tsup": "^8.5.0",
     "vitest": "^3.2.4",
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@types/lodash-es": "^4.17.12",
     "@types/node": "^22.16.5",
     "eslint": "^9.35.0",
     "prettier": "^3.6.2",

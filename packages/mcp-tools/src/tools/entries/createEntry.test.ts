@@ -1,3 +1,4 @@
+import { BLOCKS, INLINES } from '@contentful/rich-text-types';
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { createEntryTool } from './createEntry.js';
 import { formatResponse } from '../../utils/formatters.js';
@@ -9,6 +10,7 @@ import {
 } from './mockClient.js';
 import { createToolClient } from '../../utils/tools.js';
 import { createMockConfig } from '../../test-helpers/mockConfig.js';
+import { RichTextDocument } from '../../types/richTextSchema.js';
 
 vi.mock('../../utils/tools.js');
 
@@ -228,17 +230,17 @@ describe('createEntry', () => {
   });
 
   it('should create an entry with rich text containing inline and embedded nodes', async () => {
-    const richTextWithInlines = {
-      nodeType: 'document',
+    const richTextWithInlines: RichTextDocument = {
+      nodeType: BLOCKS.DOCUMENT,
       data: {},
       content: [
         {
-          nodeType: 'paragraph',
+          nodeType: BLOCKS.PARAGRAPH,
           data: {},
           content: [
             { nodeType: 'text', value: 'Check out ', marks: [], data: {} },
             {
-              nodeType: 'hyperlink',
+              nodeType: INLINES.HYPERLINK,
               data: { uri: 'https://example.com' },
               content: [
                 { nodeType: 'text', value: 'this link', marks: [], data: {} },
@@ -246,7 +248,7 @@ describe('createEntry', () => {
             },
             { nodeType: 'text', value: ' and ', marks: [], data: {} },
             {
-              nodeType: 'entry-hyperlink',
+              nodeType: INLINES.ENTRY_HYPERLINK,
               data: {
                 target: {
                   sys: { type: 'Link', linkType: 'Entry', id: 'linked-entry' },
@@ -264,7 +266,7 @@ describe('createEntry', () => {
           ],
         },
         {
-          nodeType: 'embedded-entry-block',
+          nodeType: BLOCKS.EMBEDDED_ENTRY,
           data: {
             target: {
               sys: {

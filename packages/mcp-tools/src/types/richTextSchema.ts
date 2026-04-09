@@ -240,6 +240,7 @@ const listItemNodeSchema: z.ZodTypeAny = z.lazy(() =>
 );
 
 // Union of all BLOCK node types
+// Only these block types can be the direct children of the document.
 const topLevelBlockNodeSchema: z.ZodTypeAny = z.lazy(() =>
   z.union([
     paragraphNodeSchema,
@@ -267,3 +268,5 @@ export const richTextDocumentSchema = z
     content: z.array(topLevelBlockNodeSchema),
   })
   .describe('Contentful Rich Text document');
+
+export type RichTextDocument = z.infer<typeof richTextDocumentSchema>;

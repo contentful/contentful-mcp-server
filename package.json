@@ -25,6 +25,7 @@
     "lint:fix": "nx run-many --target=lint:fix",
     "test": "nx run-many --target=test",
     "test:run": "nx run-many --target=test:run",
+    "typecheck": "nx run-many --target=typecheck",
     "inspect": "node -r dotenv/config ./packages/mcp-server/scripts/inspect.mjs",
     "inspect:watch": "node ./packages/mcp-server/scripts/inspect-watch.mjs",
     "logs:watch": "npx mcps-logger",

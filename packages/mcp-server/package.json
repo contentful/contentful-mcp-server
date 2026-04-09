@@ -1,6 +1,6 @@
 {
   "name": "@contentful/mcp-server",
-  "version": "1.7.11",
+  "version": "1.7.12",
   "description": "Contentful MCP Server - Model Context Protocol server for Contentful",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -33,6 +33,7 @@
     "lint:fix": "eslint --ext .ts,.js . --fix",
     "test": "npm run inject-mcp-version && vitest",
     "test:run": "npm run inject-mcp-version && vitest run",
+    "typecheck": "npm run inject-mcp-version && tsc --noEmit -p tsconfig.lib.json",
     "inject-mcp-version": "node scripts/injectMCPVersion.cjs",
     "search-and-replace-mcp-version": "node scripts/searchAndReplaceMCPVersion.cjs"
   },
@@ -44,7 +45,7 @@
     "directory": "packages/mcp-server"
   },
   "dependencies": {
-    "@contentful/mcp-tools": "0.3.0",
+    "@contentful/mcp-tools": "0.3.1",
     "@modelcontextprotocol/sdk": "^1.26.0",
     "dotenv": "^17.2.3"
   },

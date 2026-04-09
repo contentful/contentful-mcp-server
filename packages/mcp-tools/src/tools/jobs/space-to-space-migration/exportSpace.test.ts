@@ -5,12 +5,6 @@ import { mockExportResult, createExportTestArgs } from './mockClient.js';
 
 // Mock contentful-export at the top level using vi.hoisted
 const mockContentfulExport = vi.hoisted(() => vi.fn());
-const mockDirname = vi.hoisted(() =>
-  vi.fn((path) => {
-    const parts = path.split('/');
-    return parts.slice(0, -1).join('/') || '/';
-  }),
-);
 const mockJoin = vi.hoisted(() => vi.fn((...args) => args.join('/')));
 
 // Mock the entire exportSpace module to replace contentful-export
@@ -25,11 +19,6 @@ vi.mock('module', () => ({
 
 // Mock path module
 vi.mock('path', () => ({
-  default: {
-    join: mockJoin,
-    dirname: mockDirname,
-  },
-  dirname: mockDirname,
   join: mockJoin,
 }));
 
