@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import {
   testConceptScheme,
   testUpdatedConceptScheme,
-  mockConceptSchemeUpdate,
+  mockConceptSchemePatch,
   mockCreateClient,
 } from './mockClient.js';
 import { updateConceptSchemeTool } from './updateConceptScheme.js';
@@ -14,7 +14,7 @@ describe('updateConceptScheme', () => {
   const mockConfig = createMockConfig();
 
   beforeEach(() => {
-    mockConceptSchemeUpdate.mockClear();
+    mockConceptSchemePatch.mockClear();
     mockCreateClient.mockClear();
   });
 
@@ -28,7 +28,7 @@ describe('updateConceptScheme', () => {
   };
 
   it('should update a concept scheme successfully', async () => {
-    mockConceptSchemeUpdate.mockResolvedValue(testUpdatedConceptScheme);
+    mockConceptSchemePatch.mockResolvedValue(testUpdatedConceptScheme);
 
     const tool = updateConceptSchemeTool(mockConfig);
     const result = await tool(testArgs);
@@ -36,7 +36,7 @@ describe('updateConceptScheme', () => {
     const clientConfig = createClientConfig(mockConfig);
     expect(mockCreateClient).toHaveBeenCalledWith(clientConfig);
 
-    expect(mockConceptSchemeUpdate).toHaveBeenCalledWith(
+    expect(mockConceptSchemePatch).toHaveBeenCalledWith(
       {
         organizationId: 'test-org-id',
         conceptSchemeId: 'test-concept-scheme-id',
@@ -83,12 +83,12 @@ describe('updateConceptScheme', () => {
       uri: 'https://example.com/updated',
     };
 
-    mockConceptSchemeUpdate.mockResolvedValue(testUpdatedConceptScheme);
+    mockConceptSchemePatch.mockResolvedValue(testUpdatedConceptScheme);
 
     const tool = updateConceptSchemeTool(mockConfig);
     const result = await tool(multiFieldArgs);
 
-    expect(mockConceptSchemeUpdate).toHaveBeenCalledWith(
+    expect(mockConceptSchemePatch).toHaveBeenCalledWith(
       {
         organizationId: 'test-org-id',
         conceptSchemeId: 'test-concept-scheme-id',
@@ -141,12 +141,12 @@ describe('updateConceptScheme', () => {
       uri: null,
     };
 
-    mockConceptSchemeUpdate.mockResolvedValue(testConceptScheme);
+    mockConceptSchemePatch.mockResolvedValue(testConceptScheme);
 
     const tool = updateConceptSchemeTool(mockConfig);
     const result = await tool(argsWithNullUri);
 
-    expect(mockConceptSchemeUpdate).toHaveBeenCalledWith(
+    expect(mockConceptSchemePatch).toHaveBeenCalledWith(
       {
         organizationId: 'test-org-id',
         conceptSchemeId: 'test-concept-scheme-id',
@@ -178,7 +178,7 @@ describe('updateConceptScheme', () => {
 
   it('should handle errors gracefully', async () => {
     const errorMessage = 'Failed to update concept scheme';
-    mockConceptSchemeUpdate.mockRejectedValue(new Error(errorMessage));
+    mockConceptSchemePatch.mockRejectedValue(new Error(errorMessage));
 
     const tool = updateConceptSchemeTool(mockConfig);
     const result = await tool(testArgs);
@@ -201,12 +201,12 @@ describe('updateConceptScheme', () => {
       version: 1,
     };
 
-    mockConceptSchemeUpdate.mockResolvedValue(testConceptScheme);
+    mockConceptSchemePatch.mockResolvedValue(testConceptScheme);
 
     const tool = updateConceptSchemeTool(mockConfig);
     const result = await tool(emptyArgs);
 
-    expect(mockConceptSchemeUpdate).toHaveBeenCalledWith(
+    expect(mockConceptSchemePatch).toHaveBeenCalledWith(
       {
         organizationId: 'test-org-id',
         conceptSchemeId: 'test-concept-scheme-id',

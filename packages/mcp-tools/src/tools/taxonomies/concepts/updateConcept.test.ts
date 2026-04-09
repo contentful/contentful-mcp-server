@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import {
   testConcept,
   mockConceptGet,
-  mockConceptUpdatePut,
+  mockConceptUpdate,
   mockCreateClient,
 } from './mockClient.js';
 import { updateConceptTool } from './updateConcept.js';
@@ -15,7 +15,7 @@ describe('updateConcept', () => {
 
   beforeEach(() => {
     mockConceptGet.mockClear();
-    mockConceptUpdatePut.mockClear();
+    mockConceptUpdate.mockClear();
   });
 
   const testArgs = {
@@ -71,7 +71,7 @@ describe('updateConcept', () => {
     };
 
     mockConceptGet.mockResolvedValue(existingConcept);
-    mockConceptUpdatePut.mockResolvedValue(updatedConcept);
+    mockConceptUpdate.mockResolvedValue(updatedConcept);
 
     const tool = updateConceptTool(mockConfig);
     const result = await tool(updateArgs);
@@ -84,7 +84,7 @@ describe('updateConcept', () => {
       conceptId: 'test-concept-id',
     });
 
-    expect(mockConceptUpdatePut).toHaveBeenCalledWith(
+    expect(mockConceptUpdate).toHaveBeenCalledWith(
       {
         organizationId: 'test-org-id',
         conceptId: 'test-concept-id',
@@ -190,12 +190,12 @@ describe('updateConcept', () => {
     };
 
     mockConceptGet.mockResolvedValue(existingConcept);
-    mockConceptUpdatePut.mockResolvedValue(fullyUpdatedConcept);
+    mockConceptUpdate.mockResolvedValue(fullyUpdatedConcept);
 
     const tool = updateConceptTool(mockConfig);
     const result = await tool(fullUpdateArgs);
 
-    expect(mockConceptUpdatePut).toHaveBeenCalledWith(
+    expect(mockConceptUpdate).toHaveBeenCalledWith(
       {
         organizationId: 'test-org-id',
         conceptId: 'test-concept-id',
@@ -234,7 +234,7 @@ describe('updateConcept', () => {
   it('should handle errors when concept update fails', async () => {
     const error = new Error('Version mismatch');
     mockConceptGet.mockResolvedValue(existingConcept);
-    mockConceptUpdatePut.mockRejectedValue(error);
+    mockConceptUpdate.mockRejectedValue(error);
 
     const tool = updateConceptTool(mockConfig);
     const result = await tool(testArgs);
@@ -244,7 +244,7 @@ describe('updateConcept', () => {
       conceptId: 'test-concept-id',
     });
 
-    expect(mockConceptUpdatePut).toHaveBeenCalled();
+    expect(mockConceptUpdate).toHaveBeenCalled();
 
     expect(result).toEqual({
       content: [
@@ -272,12 +272,12 @@ describe('updateConcept', () => {
     };
 
     mockConceptGet.mockResolvedValue(existingConcept);
-    mockConceptUpdatePut.mockResolvedValue(unchangedConcept);
+    mockConceptUpdate.mockResolvedValue(unchangedConcept);
 
     const tool = updateConceptTool(mockConfig);
     const result = await tool(minimalUpdateArgs);
 
-    expect(mockConceptUpdatePut).toHaveBeenCalledWith(
+    expect(mockConceptUpdate).toHaveBeenCalledWith(
       {
         organizationId: 'test-org-id',
         conceptId: 'test-concept-id',
