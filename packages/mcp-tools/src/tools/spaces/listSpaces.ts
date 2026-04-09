@@ -30,7 +30,7 @@ export function listSpacesTool(config: ContentfulConfig) {
     const clientConfig = createClientConfig(config);
     // Remove space from config since we're listing all spaces
     delete clientConfig.space;
-    const contentfulClient = createClient(clientConfig, { type: 'plain' });
+    const contentfulClient = createClient(clientConfig);
 
   const spaces = await contentfulClient.space.getMany({
     query: {

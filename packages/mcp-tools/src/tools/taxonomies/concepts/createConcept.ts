@@ -77,7 +77,7 @@ export function createConceptTool(config: ContentfulConfig) {
     const clientConfig = createClientConfig(config);
     // Remove space from config since we're working at the organization level
     delete clientConfig.space;
-    const contentfulClient = createClient(clientConfig, { type: 'plain' });
+    const contentfulClient = createClient(clientConfig);
 
   // Build the concept payload using the shared type
   const conceptPayload: ConceptPayload = {

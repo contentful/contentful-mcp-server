@@ -19,7 +19,7 @@ export function getSpaceTool(config: ContentfulConfig) {
     const clientConfig = createClientConfig(config);
     // Remove space from config since we'll specify it in the get call
     delete clientConfig.space;
-    const contentfulClient = createClient(clientConfig, { type: 'plain' });
+    const contentfulClient = createClient(clientConfig);
 
     // Get the space
     const space = await contentfulClient.space.get({

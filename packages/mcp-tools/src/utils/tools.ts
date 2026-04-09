@@ -27,7 +27,7 @@ export function createToolClient(
     },
   };
 
-  return createClient(clientConfig, { type: 'plain' });
+  return createClient(clientConfig);
 }
 
 /**

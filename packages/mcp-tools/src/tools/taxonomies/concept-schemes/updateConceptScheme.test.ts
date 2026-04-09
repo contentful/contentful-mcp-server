@@ -34,9 +34,7 @@ describe('updateConceptScheme', () => {
     const result = await tool(testArgs);
 
     const clientConfig = createClientConfig(mockConfig);
-    expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
-      type: 'plain',
-    });
+    expect(mockCreateClient).toHaveBeenCalledWith(clientConfig);
 
     expect(mockConceptSchemeUpdate).toHaveBeenCalledWith(
       {

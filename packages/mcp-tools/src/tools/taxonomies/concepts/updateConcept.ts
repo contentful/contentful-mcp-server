@@ -74,7 +74,7 @@ export function updateConceptTool(config: ContentfulConfig) {
     const clientConfig = createClientConfig(config);
     // Remove space from config since we're working at the organization level
     delete clientConfig.space;
-    const contentfulClient = createClient(clientConfig, { type: 'plain' });
+    const contentfulClient = createClient(clientConfig);
 
   // First, get the existing concept
   const existingConcept = await contentfulClient.concept.get({

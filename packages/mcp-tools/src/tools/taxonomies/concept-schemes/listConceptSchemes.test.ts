@@ -38,9 +38,7 @@ describe('listConceptSchemes', () => {
     const result = await tool(testArgs);
 
     const clientConfig = createClientConfig(mockConfig);
-    expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
-      type: 'plain',
-    });
+    expect(mockCreateClient).toHaveBeenCalledWith(clientConfig);
 
     expect(mockConceptSchemeGetMany).toHaveBeenCalledWith({
       organizationId: 'test-org-id',

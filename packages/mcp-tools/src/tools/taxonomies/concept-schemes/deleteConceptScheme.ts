@@ -23,7 +23,7 @@ export function deleteConceptSchemeTool(config: ContentfulConfig) {
     const clientConfig = createClientConfig(config);
     // Remove space from config since we're working at the organization level
     delete clientConfig.space;
-    const contentfulClient = createClient(clientConfig, { type: 'plain' });
+    const contentfulClient = createClient(clientConfig);
 
   // Delete the concept scheme
   await contentfulClient.conceptScheme.delete({

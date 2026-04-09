@@ -33,7 +33,7 @@ export function listOrgsTool(config: ContentfulConfig) {
     const clientConfig = createClientConfig(config);
     // Remove space from config since we're listing organizations at the account level
     delete clientConfig.space;
-    const contentfulClient = createClient(clientConfig, { type: 'plain' });
+    const contentfulClient = createClient(clientConfig);
 
   const organizations = await contentfulClient.organization.getAll({
     query: {

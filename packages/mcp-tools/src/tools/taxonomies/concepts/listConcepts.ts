@@ -50,7 +50,7 @@ export function listConceptsTool(config: ContentfulConfig) {
     const clientConfig = createClientConfig(config);
     // Remove space from config since we're working at the organization level
     delete clientConfig.space;
-    const contentfulClient = createClient(clientConfig, { type: 'plain' });
+    const contentfulClient = createClient(clientConfig);
 
     // Validate required parameters for specific operations
     if ((args.getDescendants || args.getAncestors) && !args.conceptId) {

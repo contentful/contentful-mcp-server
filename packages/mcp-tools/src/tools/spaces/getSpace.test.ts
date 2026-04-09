@@ -19,9 +19,7 @@ describe('getSpace', () => {
     const tool = getSpaceTool(mockConfig);
     const result = await tool(mockArgs);
     const clientConfig = createClientConfig(mockConfig);
-    expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
-      type: 'plain',
-    });
+    expect(mockCreateClient).toHaveBeenCalledWith(clientConfig);
     expect(mockSpaceGet).toHaveBeenCalledWith({
       spaceId: mockArgs.spaceId,
     });
