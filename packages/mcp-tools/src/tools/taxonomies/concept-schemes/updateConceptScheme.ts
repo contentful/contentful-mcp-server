@@ -3,7 +3,7 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../../utils/response.js';
-import ctfl from 'contentful-management';
+import * as ctfl from 'contentful-management';
 import { createClientConfig } from '../../../utils/tools.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 import { TaxonomyConceptLinkSchema } from '../../../types/conceptPayloadTypes.js';
