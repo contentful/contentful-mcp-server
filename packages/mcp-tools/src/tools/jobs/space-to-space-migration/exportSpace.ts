@@ -1,8 +1,4 @@
 import { z } from 'zod';
-import * as contentfulExportModule from 'contentful-export';
-const contentfulExport =
-  (contentfulExportModule as any).default ?? contentfulExportModule;
-import { join } from 'path';
 import {
   createSuccessResponse,
   withErrorHandling,
@@ -144,9 +140,13 @@ export function createExportSpaceTool(config: ContentfulConfig) {
     } as any;
 
     try {
-      const result = await contentfulExport(exportOptions);
+      const contentfulExport = await import('contentful-export');
+      const path = await import('path');
 
-      const exportPath = join(
+      // @ts-ignore The dynamic import is typed differently across project configs, but the runtime default export is callable.
+      const result = await contentfulExport.default(exportOptions);
+
+      const exportPath = path.join(
         exportOptions.exportDir,
         exportOptions.contentFile,
       );
