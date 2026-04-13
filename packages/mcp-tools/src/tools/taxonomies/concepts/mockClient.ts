@@ -9,7 +9,7 @@ const {
   mockConceptGetAncestors,
   mockConceptGetTotal,
   mockConceptDelete,
-  mockConceptUpdatePut,
+  mockConceptUpdate,
   mockCreateClient,
 } = vi.hoisted(() => {
   const mockConceptCreate = vi.fn();
@@ -20,7 +20,7 @@ const {
   const mockConceptGetAncestors = vi.fn();
   const mockConceptGetTotal = vi.fn();
   const mockConceptDelete = vi.fn();
-  const mockConceptUpdatePut = vi.fn();
+  const mockConceptUpdate = vi.fn();
   const mockCreateClient = vi.fn(() => ({
     concept: {
       create: mockConceptCreate,
@@ -31,7 +31,7 @@ const {
       getAncestors: mockConceptGetAncestors,
       getTotal: mockConceptGetTotal,
       delete: mockConceptDelete,
-      updatePut: mockConceptUpdatePut,
+      update: mockConceptUpdate,
     },
   }));
   return {
@@ -43,7 +43,7 @@ const {
     mockConceptGetAncestors,
     mockConceptGetTotal,
     mockConceptDelete,
-    mockConceptUpdatePut,
+    mockConceptUpdate,
     mockCreateClient,
   };
 });
@@ -66,7 +66,7 @@ export {
   mockConceptGetAncestors,
   mockConceptGetTotal,
   mockConceptDelete,
-  mockConceptUpdatePut,
+  mockConceptUpdate,
   mockCreateClient,
 };
 

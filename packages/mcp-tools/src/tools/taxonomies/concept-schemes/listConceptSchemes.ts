@@ -3,7 +3,7 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../../utils/response.js';
-import ctfl from 'contentful-management';
+import { createClient } from 'contentful-management';
 import { cloneDeep } from 'lodash-es';
 import { createClientConfig } from '../../../utils/tools.js';
 import type { ContentfulConfig } from '../../../config/types.js';
@@ -59,7 +59,7 @@ export function listConceptSchemesTool(config: ContentfulConfig) {
     const clientConfig = createClientConfig(config);
     // Remove space from config since we're working at the organization level
     delete clientConfig.space;
-    const contentfulClient = ctfl.createClient(clientConfig, { type: 'plain' });
+    const contentfulClient = createClient(clientConfig);
 
     // Handle the union type for query - it can be either { pageUrl?: string } or a more complex query object
     const query: Record<string, any> = {};

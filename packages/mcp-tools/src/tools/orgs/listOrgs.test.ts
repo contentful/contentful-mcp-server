@@ -30,9 +30,7 @@ describe('listOrgsTool', () => {
     const result = await tool({});
 
     const clientConfig = createClientConfig(mockConfig);
-    expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
-      type: 'plain',
-    });
+    expect(mockCreateClient).toHaveBeenCalledWith(clientConfig);
     expect(mockOrgGetAll).toHaveBeenCalledWith({
       query: {
         limit: 10,

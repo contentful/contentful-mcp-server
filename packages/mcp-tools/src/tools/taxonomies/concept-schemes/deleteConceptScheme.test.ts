@@ -26,9 +26,7 @@ describe('deleteConceptScheme', () => {
     const result = await tool(testArgs);
 
     const clientConfig = createClientConfig(mockConfig);
-    expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
-      type: 'plain',
-    });
+    expect(mockCreateClient).toHaveBeenCalledWith(clientConfig);
 
     expect(mockConceptSchemeDelete).toHaveBeenCalledWith({
       organizationId: 'test-org-id',

@@ -9,7 +9,8 @@ import {
   VariableValue,
   InvocationStatusResponse,
 } from '../../utils/ai-actions.js';
-import { InvocationResult } from 'contentful-management/dist/typings/entities/ai-action-invocation.js';
+import type { Document } from '@contentful/rich-text-types';
+type InvocationContent = string | Document;
 import type { ContentfulConfig } from '../../config/types.js';
 
 export const InvokeAiActionToolParams = BaseToolSchema.extend({
@@ -34,8 +35,8 @@ async function pollForCompletion(
   aiActions: Array<{ sys: { id: string } }>,
   pollInterval = 30000,
   maxAttempts = 10,
-): Promise<{ actionId: string; content: InvocationResult['content'] }[]> {
-  const completedActions = new Map<string, InvocationResult['content']>();
+): Promise<{ actionId: string; content: InvocationContent }[]> {
+  const completedActions = new Map<string, InvocationContent>();
 
   for (
     let attempt = 0;

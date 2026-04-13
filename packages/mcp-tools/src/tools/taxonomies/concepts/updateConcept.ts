@@ -3,7 +3,7 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../../utils/response.js';
-import ctfl from 'contentful-management';
+import { createClient } from 'contentful-management';
 import { createClientConfig } from '../../../utils/tools.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 import {
@@ -74,7 +74,7 @@ export function updateConceptTool(config: ContentfulConfig) {
     const clientConfig = createClientConfig(config);
     // Remove space from config since we're working at the organization level
     delete clientConfig.space;
-    const contentfulClient = ctfl.createClient(clientConfig, { type: 'plain' });
+    const contentfulClient = createClient(clientConfig);
 
   // First, get the existing concept
   const existingConcept = await contentfulClient.concept.get({
@@ -100,7 +100,7 @@ export function updateConceptTool(config: ContentfulConfig) {
   };
 
   // Update the concept using the PUT method
-  const updatedConcept = await contentfulClient.concept.updatePut(
+  const updatedConcept = await contentfulClient.concept.update(
     {
       organizationId: args.organizationId,
       conceptId: args.conceptId,

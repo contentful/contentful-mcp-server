@@ -1,5 +1,4 @@
-import ctfl from 'contentful-management';
-import { ClientOptions } from 'contentful-management';
+import { createClient, ClientOptions } from 'contentful-management';
 import { z } from 'zod';
 import type { ContentfulConfig } from '../config/types.js';
 
@@ -28,7 +27,7 @@ export function createToolClient(
     },
   };
 
-  return ctfl.createClient(clientConfig, { type: 'plain' });
+  return createClient(clientConfig);
 }
 
 /**

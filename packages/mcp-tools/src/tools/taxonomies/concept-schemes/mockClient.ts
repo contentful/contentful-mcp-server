@@ -5,7 +5,7 @@ const {
   mockConceptSchemeCreateWithId,
   mockConceptSchemeGet,
   mockConceptSchemeGetMany,
-  mockConceptSchemeUpdate,
+  mockConceptSchemePatch,
   mockConceptSchemeDelete,
   mockCreateClient,
 } = vi.hoisted(() => {
@@ -13,7 +13,7 @@ const {
   const mockConceptSchemeCreateWithId = vi.fn();
   const mockConceptSchemeGet = vi.fn();
   const mockConceptSchemeGetMany = vi.fn();
-  const mockConceptSchemeUpdate = vi.fn();
+  const mockConceptSchemePatch = vi.fn();
   const mockConceptSchemeDelete = vi.fn();
   const mockCreateClient = vi.fn(() => ({
     conceptScheme: {
@@ -21,7 +21,7 @@ const {
       createWithId: mockConceptSchemeCreateWithId,
       get: mockConceptSchemeGet,
       getMany: mockConceptSchemeGetMany,
-      update: mockConceptSchemeUpdate,
+      patch: mockConceptSchemePatch,
       delete: mockConceptSchemeDelete,
     },
   }));
@@ -30,7 +30,7 @@ const {
     mockConceptSchemeCreateWithId,
     mockConceptSchemeGet,
     mockConceptSchemeGetMany,
-    mockConceptSchemeUpdate,
+    mockConceptSchemePatch,
     mockConceptSchemeDelete,
     mockCreateClient,
   };
@@ -50,7 +50,7 @@ export {
   mockConceptSchemeCreateWithId,
   mockConceptSchemeGet,
   mockConceptSchemeGetMany,
-  mockConceptSchemeUpdate,
+  mockConceptSchemePatch,
   mockConceptSchemeDelete,
   mockCreateClient,
 };

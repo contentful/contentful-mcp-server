@@ -19,9 +19,7 @@ describe('getOrg', () => {
     const tool = getOrgTool(mockConfig);
     const result = await tool(mockArgs);
     const clientConfig = createClientConfig(mockConfig);
-    expect(mockCreateClient).toHaveBeenCalledWith(clientConfig, {
-      type: 'plain',
-    });
+    expect(mockCreateClient).toHaveBeenCalledWith(clientConfig);
     expect(mockOrgGet).toHaveBeenCalledWith({
       organizationId: mockArgs.organizationId,
     });
