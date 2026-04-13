@@ -1,3 +1,9 @@
+## 0.3.2 (2026-04-13)
+
+### 🩹 Fixes
+
+- bump contentful-management to v12 [DX-783] ([#357](https://github.com/contentful/contentful-mcp-server/pull/357))
+
 ## 0.3.1 (2026-03-31)
 
 ### 🩹 Fixes
