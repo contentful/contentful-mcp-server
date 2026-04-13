@@ -1,3 +1,9 @@
+## 0.4.0 (2026-04-13)
+
+### 🚀 Features
+
+- support local file uploads via base64 data URIs in upload_asset [DX-924] ([#356](https://github.com/contentful/contentful-mcp-server/pull/356))
+
 ## 0.3.2 (2026-04-13)
 
 ### 🩹 Fixes
