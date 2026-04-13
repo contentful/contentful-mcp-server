@@ -143,7 +143,8 @@ export function createExportSpaceTool(config: ContentfulConfig) {
       const contentfulExport = await import('contentful-export');
       const path = await import('path');
 
-      // @ts-ignore The dynamic import is typed differently across project configs, but the runtime default export is callable.
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore The runtime default export is callable even though the import is typed as a module namespace here.
       const result = await contentfulExport.default(exportOptions);
 
       const exportPath = path.join(
