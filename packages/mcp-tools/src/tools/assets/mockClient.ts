@@ -17,6 +17,7 @@ export const mockAssetArchive = vi.fn();
 export const mockAssetUnarchive = vi.fn();
 export const mockAssetGetMany = vi.fn();
 export const mockAssetProcessForAllLocales = vi.fn();
+export const mockUploadCreate = vi.fn();
 
 // Mock bulk operations
 export const mockBulkActionPublish = vi.fn();
@@ -38,6 +39,9 @@ export const mockClient = {
     unarchive: mockAssetUnarchive,
     getMany: mockAssetGetMany,
     processForAllLocales: mockAssetProcessForAllLocales,
+  },
+  upload: {
+    create: mockUploadCreate,
   },
   bulkAction: {
     publish: mockBulkActionPublish,

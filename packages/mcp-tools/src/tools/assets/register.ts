@@ -29,7 +29,8 @@ export function createAssetTools(config: ContentfulConfig) {
   return {
     uploadAsset: {
       title: 'upload_asset',
-      description: 'Upload a new asset',
+      description:
+        'Upload a new asset. When uploading local binary files as base64, always re-encode from the source file immediately before the tool call — never re-use base64 from a previous tool output or from context.',
       inputParams: UploadAssetToolParams.shape,
       annotations: {
         readOnlyHint: false,
