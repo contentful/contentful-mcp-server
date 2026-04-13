@@ -46,7 +46,7 @@
     "contentful-export": "^7.21.78",
     "contentful-import": "^9.4.129",
     "contentful-management": "^12.2.0",
-    "fast-xml-parser": "^5.3.8",
+    "fast-xml-parser": "^5.5.7",
     "lodash-es": "^4.17.23",
     "outdent": "^0.8.0",
     "tsup": "^8.5.0",
