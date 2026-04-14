@@ -1,8 +1,4 @@
 import { z } from 'zod';
-import * as contentfulExportModule from 'contentful-export';
-const contentfulExport =
-  (contentfulExportModule as any).default ?? contentfulExportModule;
-import { join } from 'path';
 import {
   createSuccessResponse,
   withErrorHandling,
@@ -144,9 +140,14 @@ export function createExportSpaceTool(config: ContentfulConfig) {
     } as any;
 
     try {
-      const result = await contentfulExport(exportOptions);
+      const contentfulExport = await import('contentful-export');
+      const path = await import('path');
 
-      const exportPath = join(
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore The runtime default export is callable even though the import is typed as a module namespace here.
+      const result = await contentfulExport.default(exportOptions);
+
+      const exportPath = path.join(
         exportOptions.exportDir,
         exportOptions.contentFile,
       );
