@@ -1,3 +1,9 @@
+## 0.4.1 (2026-04-14)
+
+### 🩹 Fixes
+
+- lazy import used for contentful-export ([#359](https://github.com/contentful/contentful-mcp-server/pull/359))
+
 ## 0.4.0 (2026-04-13)
 
 ### 🚀 Features
