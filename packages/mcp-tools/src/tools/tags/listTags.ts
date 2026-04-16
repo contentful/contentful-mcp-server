@@ -26,7 +26,7 @@ export function listTagsTool(config: ContentfulConfig) {
       environmentId: args.environmentId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
   const tags = await contentfulClient.tag.getMany({
     ...params,

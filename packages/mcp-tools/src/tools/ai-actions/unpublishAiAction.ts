@@ -20,7 +20,7 @@ export function unpublishAiActionTool(config: ContentfulConfig) {
       aiActionId: args.aiActionId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
     try {
       // Unpublish the AI action

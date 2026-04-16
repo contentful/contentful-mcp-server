@@ -20,7 +20,7 @@ export function deleteLocaleTool(config: ContentfulConfig) {
       localeId: args.localeId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
     // First, get the locale to check its current state
     const locale = await contentfulClient.locale.get(params);

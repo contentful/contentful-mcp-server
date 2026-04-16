@@ -21,7 +21,7 @@ type Params = z.infer<typeof CreateEnvironmentToolParams>;
 
 export function createEnvironmentTool(config: ContentfulConfig) {
   async function tool(args: Params) {
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
     // Create the environment
     const environment = await contentfulClient.environment.createWithId(

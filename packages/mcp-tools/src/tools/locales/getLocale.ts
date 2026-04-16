@@ -20,7 +20,7 @@ export function getLocaleTool(config: ContentfulConfig) {
       localeId: args.localeId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = await createToolClient(config, args);
 
     // Get the locale
     const locale = await contentfulClient.locale.get(params);
