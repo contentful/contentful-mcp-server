@@ -204,3 +204,38 @@ See github action: [release.yml](https://github.com/contentful/contentful-mcp-se
 2. **Maintainers** will review your code
 3. **Address feedback** by making additional commits
 4. **Squash and merge** once approved
+
+## Pre-Commit Hooks
+
+Husky runs these checks on every commit:
+
+1. `pretty-quick --staged` — formats staged files with Prettier
+2. `npm run test:run` — full test suite
+3. `npm run typecheck` — TypeScript type checking
+
+## Code Style
+
+- **Formatting:** Prettier (enforced by pre-commit hook)
+- **Linting:** ESLint with `@nx/eslint-plugin` flat config (`eslint.config.mjs`)
+- **Imports:** All relative imports must use `.js` extensions (ESM requirement)
+- **Unused variables:** Prefix with `_` to suppress lint error
+
+## CI/CD Pipeline
+
+| Job | Trigger | What it does |
+|---|---|---|
+| Build | All pushes and PRs | `npm ci` → `npm run build` → `npx dxt pack` → cache artifacts |
+| Check | After Build | Prettier → lint → typecheck → test:run |
+| Release | Push to `main` (after Build + Check) | Nx Release → npm publish → GitHub Release + DXT upload |
+
+Workflows: `.github/workflows/main.yml` (orchestrator), `build.yml`, `check.yml`, `release.yml`
+
+## Sensitive Files
+
+| Path | Notes |
+|---|---|
+| `packages/mcp-tools/src/tools/context/instructions.ts` | Agent system prompt — changes affect all AI client behavior |
+| `packages/mcp-server/src/config/env.ts` | Env var validation schema — must match README docs |
+| `packages/mcp-server/scripts/injectMCPVersion.cjs` | Generates `mcpVersion.ts` at build time — do not edit generated file |
+| `.npmrc` | Sets `ignore-scripts=true` and `legacy-peer-deps=true` — do not remove |
+| `nx.json` | Workspace config — release settings, plugins, cache inputs |

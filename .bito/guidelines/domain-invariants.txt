@@ -1,0 +1,46 @@
+Critical technical invariants for the Contentful MCP Server. Flag violations of
+these rules in any PR.
+
+## Tool Registration
+
+- Every tool MUST have a Zod schema defining its input parameters.
+- The `.shape` property of the Zod schema is passed to `registerTool` as `inputSchema`.
+- Tool `title` values are the MCP-visible tool names — changing them is a breaking change.
+- Tool `annotations` (readOnlyHint, destructiveHint, etc.) must accurately reflect behavior.
+
+## ESM & Import Paths
+
+- All relative imports MUST use `.js` extensions (e.g., `import { foo } from './bar.js'`).
+- Both packages output ESM only — no CJS entry points.
+- Dynamic imports (`await import(...)`) for heavy dependencies (contentful-export/import).
+
+## CMA Client Usage
+
+- Always create clients via `createToolClient()` or `createClientConfig()` from `src/utils/tools.ts`.
+- Never hardcode space/environment IDs in tool implementations — read from config or params.
+- All CMA calls must include the `X-Contentful-User-Agent-Tool` header (handled by client factory).
+- Since CMA v12: use namespace imports for type access (`import * as ctfl from 'contentful-management'`).
+
+## Migration Workflow Tools
+
+- `export_space`, `import_space`, and `space_to_space_param_collection` are DISABLED by default.
+- Only `space_to_space_migration_handler` can enable/disable them at runtime.
+- Never register these tools in an always-enabled state.
+
+## Build & Release
+
+- `mcpVersion.ts` is generated at build time by `injectMCPVersion.cjs` — never edit directly.
+- Packages are versioned independently (Nx Release with independent projectsRelationship).
+- `@contentful/mcp-tools` publishes to GitHub Packages (not public npm).
+- `@contentful/mcp-server` publishes to public npm.
+
+## Testing
+
+- Tests use mock clients (`mockClient.ts`) — never make real API calls in unit tests.
+- Pre-commit hook runs full test suite and typecheck — PRs with failing tests won't pass.
+
+## Agent Instructions
+
+- `packages/mcp-tools/src/tools/context/instructions.ts` contains the system prompt for AI clients.
+- Changes to this file affect ALL users' AI assistant behavior — review with extreme care.
+- The `get_initial_context` tool must always be the first tool called in a session.
