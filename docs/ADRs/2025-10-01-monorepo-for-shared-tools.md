@@ -21,7 +21,7 @@ Restructured `contentful-mcp-server` into an Nx-managed monorepo with two packag
 
 The `ContentfulMcpTools` class provides a programmatic API for consumers to get tool collections by category.
 
-Source: RFC "Remote MCP" (DX-425, commit `faf9e23` — "chore: migrate to monorepo")
+Source: RFC "Remote MCP" (DX-412, commit `faf9e23` — "chore: migrate to monorepo")
 
 ## Consequences
 
