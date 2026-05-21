@@ -92,7 +92,7 @@ export function createAssetTools(config: ContentfulConfig) {
       inputParams: PublishAssetToolParams.shape,
       annotations: {
         readOnlyHint: false,
-        destructiveHint: false,
+        destructiveHint: true,
         idempotentHint: true,
         openWorldHint: false,
       },
@@ -105,7 +105,7 @@ export function createAssetTools(config: ContentfulConfig) {
       inputParams: UnpublishAssetToolParams.shape,
       annotations: {
         readOnlyHint: false,
-        destructiveHint: false,
+        destructiveHint: true,
         idempotentHint: true,
         openWorldHint: false,
       },
@@ -118,7 +118,7 @@ export function createAssetTools(config: ContentfulConfig) {
       inputParams: ArchiveAssetToolParams.shape,
       annotations: {
         readOnlyHint: false,
-        destructiveHint: false,
+        destructiveHint: true,
         idempotentHint: true,
         openWorldHint: false,
       },

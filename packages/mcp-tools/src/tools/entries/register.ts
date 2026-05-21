@@ -92,7 +92,7 @@ export function createEntryTools(config: ContentfulConfig) {
       inputParams: PublishEntryToolParams.shape,
       annotations: {
         readOnlyHint: false,
-        destructiveHint: false,
+        destructiveHint: true,
         idempotentHint: true,
         openWorldHint: false,
       },
@@ -105,7 +105,7 @@ export function createEntryTools(config: ContentfulConfig) {
       inputParams: UnpublishEntryToolParams.shape,
       annotations: {
         readOnlyHint: false,
-        destructiveHint: false,
+        destructiveHint: true,
         idempotentHint: true,
         openWorldHint: false,
       },
@@ -118,7 +118,7 @@ export function createEntryTools(config: ContentfulConfig) {
       inputParams: ArchiveEntryToolParams.shape,
       annotations: {
         readOnlyHint: false,
-        destructiveHint: false,
+        destructiveHint: true,
         idempotentHint: true,
         openWorldHint: false,
       },

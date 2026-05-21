@@ -120,7 +120,7 @@ export function createAiActionTools(config: ContentfulConfig) {
       inputParams: PublishAiActionToolParams.shape,
       annotations: {
         readOnlyHint: false,
-        destructiveHint: false,
+        destructiveHint: true,
         idempotentHint: true, // Publishing same item multiple times has same effect
         openWorldHint: false,
       },
@@ -133,7 +133,7 @@ export function createAiActionTools(config: ContentfulConfig) {
       inputParams: UnpublishAiActionToolParams.shape,
       annotations: {
         readOnlyHint: false,
-        destructiveHint: false,
+        destructiveHint: true,
         idempotentHint: true, // Unpublishing same item multiple times has same effect
         openWorldHint: false,
       },
