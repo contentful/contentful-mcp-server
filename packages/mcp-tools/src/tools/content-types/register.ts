@@ -102,7 +102,7 @@ export function createContentTypeTools(config: ContentfulConfig) {
       inputParams: PublishContentTypeToolParams.shape,
       annotations: {
         readOnlyHint: false,
-        destructiveHint: false,
+        destructiveHint: true,
         idempotentHint: true,
         openWorldHint: false,
       },
@@ -114,7 +114,7 @@ export function createContentTypeTools(config: ContentfulConfig) {
       inputParams: UnpublishContentTypeToolParams.shape,
       annotations: {
         readOnlyHint: false,
-        destructiveHint: false,
+        destructiveHint: true,
         idempotentHint: true,
         openWorldHint: false,
       },
