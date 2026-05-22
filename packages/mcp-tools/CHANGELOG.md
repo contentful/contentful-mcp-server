@@ -1,3 +1,9 @@
+## 0.4.2 (2026-05-22)
+
+### 🩹 Fixes
+
+- mark publish/unpublish/archive tools as destructive [DX-1059] ([#371](https://github.com/contentful/contentful-mcp-server/pull/371))
+
 ## 0.4.1 (2026-04-14)
 
 ### 🩹 Fixes
