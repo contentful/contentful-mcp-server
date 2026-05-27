@@ -31,7 +31,6 @@ describe('createEnvironment', () => {
       {
         name: testArgs.name,
       },
-      undefined,
     );
 
     const expectedResponse = formatResponse(
@@ -66,12 +65,10 @@ describe('createEnvironment', () => {
       {
         spaceId: testArgs.spaceId,
         environmentId: testArgs.environmentId,
+        sourceEnvironmentId: testArgs.sourceEnvironmentId,
       },
       {
         name: testArgs.name,
-      },
-      {
-        'X-Contentful-Source-Environment': testArgs.sourceEnvironmentId,
       },
     );
 

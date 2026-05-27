@@ -28,13 +28,13 @@ export function createEnvironmentTool(config: ContentfulConfig) {
       {
         spaceId: args.spaceId,
         environmentId: args.environmentId,
+        ...(args.sourceEnvironmentId && {
+          sourceEnvironmentId: args.sourceEnvironmentId,
+        }),
       },
       {
         name: args.name,
       },
-      args.sourceEnvironmentId
-        ? { 'X-Contentful-Source-Environment': args.sourceEnvironmentId }
-        : undefined,
     );
 
     return createSuccessResponse('Environment created successfully', {
