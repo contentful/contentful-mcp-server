@@ -1,3 +1,9 @@
+## 0.4.3 (2026-05-28)
+
+### 🩹 Fixes
+
+- pass sourceEnvironmentId in params to CMA SDK [DX-984] ([#373](https://github.com/contentful/contentful-mcp-server/pull/373))
+
 ## 0.4.2 (2026-05-22)
 
 ### 🩹 Fixes
