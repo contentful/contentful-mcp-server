@@ -1,3 +1,9 @@
+## 0.4.4 (2026-05-28)
+
+### 🩹 Fixes
+
+- normalize array filters in search_entries to fix CMA 400 [DX-1171] ([#375](https://github.com/contentful/contentful-mcp-server/pull/375))
+
 ## 0.4.3 (2026-05-28)
 
 ### 🩹 Fixes
