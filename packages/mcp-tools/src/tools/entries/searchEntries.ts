@@ -6,6 +6,7 @@ import {
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
 import { summarizeData } from '../../utils/summarizer.js';
 import { searchLimit } from '../../utils/limits.js';
+import { normalizeArrayFilters } from '../../utils/queryParams.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
 export const SearchEntriesToolParams = BaseToolSchema.extend({
@@ -122,11 +123,11 @@ export function searchEntriesTool(config: ContentfulConfig) {
 
     const entries = await contentfulClient.entry.getMany({
       ...params,
-      query: {
+      query: normalizeArrayFilters({
         ...args.query,
         limit: searchLimit(args.query.limit),
         skip: args.query.skip || 0,
-      },
+      }),
     });
 
     const summarized = summarizeData(entries, {

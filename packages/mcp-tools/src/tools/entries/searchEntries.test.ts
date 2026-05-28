@@ -154,6 +154,46 @@ describe('searchEntries', () => {
     });
   });
 
+  it('should normalize array-valued filters into comma-separated strings', async () => {
+    const testArgs = {
+      ...mockArgs,
+      query: {
+        content_type: 'article',
+        'sys.id[in]': ['id-1', 'id-2', 'id-3'],
+        'metadata.tags.sys.id[in]': ['tag-1', 'tag-2'],
+        'fields.tags[nin]': ['archived'],
+      },
+    };
+
+    mockEntryGetMany.mockResolvedValue({
+      items: [],
+      total: 0,
+      skip: 0,
+      limit: 10,
+    });
+    vi.mocked(summarizeData).mockReturnValue({
+      items: [],
+      total: 0,
+      displayed: 0,
+    });
+
+    const tool = searchEntriesTool(mockConfig);
+    await tool(testArgs);
+
+    expect(mockEntryGetMany).toHaveBeenCalledWith({
+      spaceId: testArgs.spaceId,
+      environmentId: testArgs.environmentId,
+      query: {
+        content_type: 'article',
+        'sys.id[in]': 'id-1,id-2,id-3',
+        'metadata.tags.sys.id[in]': 'tag-1,tag-2',
+        'fields.tags[nin]': 'archived',
+        limit: 10,
+        skip: 0,
+      },
+    });
+  });
+
   it('should handle errors when search fails', async () => {
     const testArgs = {
       ...mockArgs,
