@@ -120,6 +120,19 @@ describe('disableContentTypeField', () => {
     const tool = disableContentTypeFieldTool(mockConfig);
     const result = await tool(testArgs);
 
+    expect(mockContentTypeUpdate).toHaveBeenCalledWith(
+      expect.objectContaining({ contentTypeId: mockArgs.contentTypeId }),
+      expect.objectContaining({
+        fields: expect.arrayContaining([
+          expect.objectContaining({
+            id: 'title',
+            disabled: true,
+            omitted: true,
+          }),
+        ]),
+      }),
+    );
+
     const expectedResponse = formatResponse(
       `Field "title" updated (disabled=true, omitted=true) on content type "${mockArgs.contentTypeId}"`,
       { contentType: updatedContentType },
