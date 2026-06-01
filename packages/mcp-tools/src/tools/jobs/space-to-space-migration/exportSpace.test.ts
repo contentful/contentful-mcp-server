@@ -42,6 +42,7 @@ describe('exportSpace', () => {
     expect(mockContentfulExport).toHaveBeenCalledWith({
       ...testArgs,
       managementToken: mockConfig.accessToken,
+      host: 'api.contentful.com',
       environmentId: 'test-environment',
       exportDir: process.cwd(),
       contentFile: 'contentful-export-test-space-id.json',
@@ -108,20 +109,9 @@ describe('exportSpace', () => {
       maxAllowedLimit: 500,
       deliveryToken: 'test-delivery-token',
 
-      // Network options
-      host: 'eu.contentful.com',
-      hostDelivery: 'cdn.contentful.com',
-      proxy: 'user:pass@proxy:8080',
-      rawProxy: true,
-
       // Logging and debugging
-      headers: {
-        'X-Custom': 'value',
-        'User-Agent': 'test-agent',
-      },
       errorLogFile: '/logs/export.log',
       useVerboseRenderer: true,
-      config: '/config/export.json',
     });
 
     const tool = createExportSpaceTool(mockConfig);
@@ -130,12 +120,28 @@ describe('exportSpace', () => {
     expect(mockContentfulExport).toHaveBeenCalledWith({
       ...testArgs,
       managementToken: mockConfig.accessToken,
+      host: 'api.contentful.com',
     });
 
     expect(result.content[0].text).toContain('Space exported successfully');
     expect(result.content[0].text).toContain(
       '/custom/export/dir/custom-export.json',
     );
+  });
+
+  it('should always use config host, ignoring any host provided in args (GHSA-2xhg-73j7-rrgx)', async () => {
+    const customHostConfig = createMockConfig({
+      host: 'eu.api.contentful.com',
+    });
+    const testArgs = createExportTestArgs();
+
+    const tool = createExportSpaceTool(customHostConfig);
+    await tool(testArgs);
+
+    const calledWith = mockContentfulExport.mock.calls[0][0];
+    expect(calledWith.host).toBe('eu.api.contentful.com');
+    expect(calledWith.proxy).toBeUndefined();
+    expect(calledWith.rawProxy).toBeUndefined();
   });
 
   it('should handle contentful-export errors', async () => {

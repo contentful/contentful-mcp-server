@@ -38,6 +38,7 @@ describe('importSpace', () => {
     expect(mockContentfulImport).toHaveBeenCalledWith({
       ...testArgs,
       managementToken: mockConfig.accessToken,
+      host: 'api.contentful.com',
       environmentId: 'test-environment',
     });
 
@@ -87,19 +88,9 @@ describe('importSpace', () => {
       retryLimit: 15,
       rateLimit: 10,
 
-      // Network options
-      host: 'eu.contentful.com',
-      proxy: 'user:pass@proxy:8080',
-      rawProxy: true,
-
       // Logging and debugging
-      headers: {
-        'X-Custom': 'value',
-        'User-Agent': 'test-agent',
-      },
       errorLogFile: '/logs/import.log',
       useVerboseRenderer: true,
-      config: '/config/import.json',
     });
 
     const tool = createImportSpaceTool(mockConfig);
@@ -108,9 +99,27 @@ describe('importSpace', () => {
     expect(mockContentfulImport).toHaveBeenCalledWith({
       ...testArgs,
       managementToken: mockConfig.accessToken,
+      host: 'api.contentful.com',
     });
 
     expect(result.content[0].text).toContain('Space imported successfully');
+  });
+
+  it('should always use config host, ignoring any host provided in args (GHSA-2xhg-73j7-rrgx)', async () => {
+    const customHostConfig = createMockConfig({
+      host: 'eu.api.contentful.com',
+    });
+    const testArgs = createImportTestArgs({
+      content: { contentTypes: [], entries: [] },
+    });
+
+    const tool = createImportSpaceTool(customHostConfig);
+    await tool(testArgs);
+
+    const calledWith = mockContentfulImport.mock.calls[0][0];
+    expect(calledWith.host).toBe('eu.api.contentful.com');
+    expect(calledWith.proxy).toBeUndefined();
+    expect(calledWith.rawProxy).toBeUndefined();
   });
 
   it('should handle contentful-import errors', async () => {

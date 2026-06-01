@@ -135,7 +135,6 @@ export const createExportTestArgs = (
   contentOnly: false,
   downloadAssets: false,
   maxAllowedLimit: 1000,
-  rawProxy: false,
   useVerboseRenderer: false,
   ...overrides,
 });
