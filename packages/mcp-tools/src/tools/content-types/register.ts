@@ -27,9 +27,13 @@ import {
   UnpublishContentTypeToolParams,
 } from './unpublishContentType.js';
 import {
-  omitAndDeleteContentTypeFieldTool,
-  OmitAndDeleteContentTypeFieldToolParams,
-} from './omitAndDeleteContentTypeField.js';
+  omitContentTypeFieldTool,
+  OmitContentTypeFieldToolParams,
+} from './omitContentTypeField.js';
+import {
+  deleteContentTypeFieldTool,
+  DeleteContentTypeFieldToolParams,
+} from './deleteContentTypeField.js';
 import {
   disableContentTypeFieldTool,
   DisableContentTypeFieldToolParams,
@@ -44,8 +48,8 @@ export function createContentTypeTools(config: ContentfulConfig) {
   const deleteContentType = deleteContentTypeTool(config);
   const publishContentType = publishContentTypeTool(config);
   const unpublishContentType = unpublishContentTypeTool(config);
-  const omitAndDeleteContentTypeField =
-    omitAndDeleteContentTypeFieldTool(config);
+  const omitContentTypeField = omitContentTypeFieldTool(config);
+  const deleteContentTypeField = deleteContentTypeFieldTool(config);
   const disableContentTypeField = disableContentTypeFieldTool(config);
 
   return {
@@ -131,28 +135,41 @@ export function createContentTypeTools(config: ContentfulConfig) {
       },
       tool: unpublishContentType,
     },
-    omitAndDeleteContentTypeField: {
-      title: 'omit_and_delete_content_type_field',
+    omitContentTypeField: {
+      title: 'omit_content_type_field',
       description:
-        'Permanently delete a field from a content type by omitting it, publishing the change, then marking it deleted. This is a destructive, irreversible operation. The field must not be required. Use disable_content_type_field to temporarily hide a field instead.',
-      inputParams: OmitAndDeleteContentTypeFieldToolParams.shape,
+        'Mark a single field as omitted (or un-omitted) on a content type. Updates the content type draft only — call publish_content_type afterwards for the change to take effect. Reversible via the same tool with omitted=false. This is a prerequisite for delete_content_type_field: the field must be omitted in the published version before it can be deleted.',
+      inputParams: OmitContentTypeFieldToolParams.shape,
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: false,
+        openWorldHint: false,
+      },
+      tool: omitContentTypeField,
+    },
+    deleteContentTypeField: {
+      title: 'delete_content_type_field',
+      description:
+        'Permanently mark a single field as deleted on a content type. Destructive and irreversible once published. Updates the content type draft only — call publish_content_type afterwards for the deletion to take effect. The field must not be required AND must already be omitted in the published version of the content type. Run omit_content_type_field, then publish_content_type, before calling this. Use disable_content_type_field to temporarily hide a field instead.',
+      inputParams: DeleteContentTypeFieldToolParams.shape,
       annotations: {
         readOnlyHint: false,
         destructiveHint: true,
         idempotentHint: false,
         openWorldHint: false,
       },
-      tool: omitAndDeleteContentTypeField,
+      tool: deleteContentTypeField,
     },
     disableContentTypeField: {
       title: 'disable_content_type_field',
       description:
-        'Disable or omit a single field on a content type without deleting it. Setting disabled=true hides the field in the editor UI. Setting omitted=true removes it from API responses. Both can be set at once. These changes are reversible.',
+        'Toggle the disabled and/or omitted flags on a single field. Setting disabled=true hides the field from the editor UI; setting omitted=true removes it from API responses. Both flags are reversible. Updates the content type draft only — call publish_content_type afterwards for the change to take effect. Use omit_content_type_field when only changing the omitted flag.',
       inputParams: DisableContentTypeFieldToolParams.shape,
       annotations: {
         readOnlyHint: false,
         destructiveHint: false,
-        idempotentHint: true,
+        idempotentHint: false,
         openWorldHint: false,
       },
       tool: disableContentTypeField,

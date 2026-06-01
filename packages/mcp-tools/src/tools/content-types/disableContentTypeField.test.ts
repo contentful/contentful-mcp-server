@@ -49,7 +49,7 @@ describe('disableContentTypeField', () => {
     );
 
     const expectedResponse = formatResponse(
-      `Field "title" updated (disabled=true) on content type "${mockArgs.contentTypeId}"`,
+      `Field "title" updated (disabled=true) on content type "${mockArgs.contentTypeId}". Publish the content type for the change to take effect.`,
       { contentType: updatedContentType },
     );
     expect(result).toEqual({
@@ -89,7 +89,7 @@ describe('disableContentTypeField', () => {
     );
 
     const expectedResponse = formatResponse(
-      `Field "description" updated (omitted=true) on content type "${mockArgs.contentTypeId}"`,
+      `Field "description" updated (omitted=true) on content type "${mockArgs.contentTypeId}". Publish the content type for the change to take effect.`,
       { contentType: updatedContentType },
     );
     expect(result).toEqual({
@@ -134,7 +134,7 @@ describe('disableContentTypeField', () => {
     );
 
     const expectedResponse = formatResponse(
-      `Field "title" updated (disabled=true, omitted=true) on content type "${mockArgs.contentTypeId}"`,
+      `Field "title" updated (disabled=true, omitted=true) on content type "${mockArgs.contentTypeId}". Publish the content type for the change to take effect.`,
       { contentType: updatedContentType },
     );
     expect(result).toEqual({
@@ -173,7 +173,7 @@ describe('disableContentTypeField', () => {
     const result = await tool(testArgs);
 
     const expectedResponse = formatResponse(
-      `Field "title" updated (disabled=false) on content type "${mockArgs.contentTypeId}"`,
+      `Field "title" updated (disabled=false) on content type "${mockArgs.contentTypeId}". Publish the content type for the change to take effect.`,
       { contentType: updatedContentType },
     );
     expect(result).toEqual({

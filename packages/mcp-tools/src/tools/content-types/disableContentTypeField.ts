@@ -15,13 +15,13 @@ export const DisableContentTypeFieldToolParams = BaseToolSchema.extend({
     .boolean()
     .optional()
     .describe(
-      'Set to true to disable the field in the editor UI (editors cannot edit it), false to re-enable',
+      'Set to true to disable the field in the editor UI (editors cannot edit it), false to re-enable. Takes effect once the content type is published.',
     ),
   omitted: z
     .boolean()
     .optional()
     .describe(
-      'Set to true to omit the field from API responses, false to include it again',
+      'Set to true to omit the field from API responses, false to include it again. Takes effect once the content type is published. Prefer omit_content_type_field when only changing the omitted flag.',
     ),
 });
 
@@ -30,15 +30,9 @@ type Params = z.infer<typeof DisableContentTypeFieldToolParams>;
 export function disableContentTypeFieldTool(config: ContentfulConfig) {
   async function tool(args: Params) {
     if (args.disabled === undefined && args.omitted === undefined) {
-      return {
-        isError: true,
-        content: [
-          {
-            type: 'text' as const,
-            text: 'Error updating field: At least one of "disabled" or "omitted" must be provided',
-          },
-        ],
-      };
+      throw new Error(
+        'At least one of "disabled" or "omitted" must be provided',
+      );
     }
 
     const params = {
@@ -53,15 +47,9 @@ export function disableContentTypeFieldTool(config: ContentfulConfig) {
 
     const field = currentContentType.fields.find((f) => f.id === args.fieldId);
     if (!field) {
-      return {
-        isError: true,
-        content: [
-          {
-            type: 'text' as const,
-            text: `Error updating field: Field "${args.fieldId}" not found on content type "${args.contentTypeId}"`,
-          },
-        ],
-      };
+      throw new Error(
+        `Field "${args.fieldId}" not found on content type "${args.contentTypeId}"`,
+      );
     }
 
     const updatedFields = currentContentType.fields.map((f) => {
@@ -83,7 +71,7 @@ export function disableContentTypeFieldTool(config: ContentfulConfig) {
     if (args.omitted !== undefined) changes.push(`omitted=${args.omitted}`);
 
     return createSuccessResponse(
-      `Field "${args.fieldId}" updated (${changes.join(', ')}) on content type "${args.contentTypeId}"`,
+      `Field "${args.fieldId}" updated (${changes.join(', ')}) on content type "${args.contentTypeId}". Publish the content type for the change to take effect.`,
       { contentType: updatedContentType },
     );
   }
