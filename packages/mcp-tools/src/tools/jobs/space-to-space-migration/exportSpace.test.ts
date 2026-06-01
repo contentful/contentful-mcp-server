@@ -108,6 +108,7 @@ describe('exportSpace', () => {
       downloadAssets: true,
       maxAllowedLimit: 500,
       deliveryToken: 'test-delivery-token',
+      hostDelivery: 'cdn.eu.contentful.com',
 
       // Logging and debugging
       errorLogFile: '/logs/export.log',

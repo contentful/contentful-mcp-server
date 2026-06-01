@@ -96,6 +96,12 @@ export const ExportSpaceToolParams = BaseToolSchema.extend({
     .string()
     .optional()
     .describe('CDA token to export only published content (excludes tags)'),
+  hostDelivery: z
+    .string()
+    .optional()
+    .describe(
+      'Delivery API host (used with deliveryToken for custom CDA endpoints)',
+    ),
   errorLogFile: z.string().optional().describe('Path to error log output file'),
   useVerboseRenderer: z
     .boolean()
