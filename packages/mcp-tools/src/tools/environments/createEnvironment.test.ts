@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   mockArgs,
   testEnvironment,
@@ -12,6 +12,11 @@ import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('createEnvironment', () => {
   const mockConfig = createMockConfig();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('should create an environment successfully', async () => {
     const testArgs = {
       ...mockArgs,
@@ -110,5 +115,28 @@ describe('createEnvironment', () => {
         },
       ],
     });
+  });
+
+  it('should return error when environment is protected', async () => {
+    const protectedConfig = createMockConfig({
+      protectedEnvironments: ['master'],
+    });
+    const tool = createEnvironmentTool(protectedConfig);
+    const result = await tool({
+      ...mockArgs,
+      environmentId: 'master',
+      name: 'Master',
+    });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error creating environment: Environment 'master' is protected. Destructive operations are not allowed.",
+        },
+      ],
+    });
+    expect(mockEnvironmentCreateWithId).not.toHaveBeenCalled();
   });
 });

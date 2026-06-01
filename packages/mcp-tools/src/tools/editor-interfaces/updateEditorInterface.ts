@@ -3,7 +3,11 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../utils/response.js';
-import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import {
+  BaseToolSchema,
+  createToolClient,
+  assertEnvironmentNotProtected,
+} from '../../utils/tools.js';
 import { EditorInterfaceProps } from 'contentful-management';
 import type { ContentfulConfig } from '../../config/types.js';
 
@@ -97,6 +101,11 @@ type Params = z.infer<typeof UpdateEditorInterfaceToolParams>;
 
 export function updateEditorInterfaceTool(config: ContentfulConfig) {
   async function tool(args: Params) {
+    assertEnvironmentNotProtected(
+      args.environmentId,
+      config.protectedEnvironments,
+    );
+
     const params = {
       spaceId: args.spaceId,
       environmentId: args.environmentId,
@@ -105,37 +114,37 @@ export function updateEditorInterfaceTool(config: ContentfulConfig) {
 
     const contentfulClient = createToolClient(config, args);
 
-  // Get the current editor interface
-  const currentEditorInterface =
-    await contentfulClient.editorInterface.get(params);
+    // Get the current editor interface
+    const currentEditorInterface =
+      await contentfulClient.editorInterface.get(params);
 
-  // Build the update payload
-  const updatePayload: Record<string, unknown> = {
-    ...currentEditorInterface,
-  };
+    // Build the update payload
+    const updatePayload: Record<string, unknown> = {
+      ...currentEditorInterface,
+    };
 
-  // Update only the fields that are provided
-  if (args.controls !== undefined) {
-    updatePayload['controls'] = args.controls;
-  }
+    // Update only the fields that are provided
+    if (args.controls !== undefined) {
+      updatePayload['controls'] = args.controls;
+    }
 
-  if (args.sidebar !== undefined) {
-    updatePayload['sidebar'] = args.sidebar;
-  }
+    if (args.sidebar !== undefined) {
+      updatePayload['sidebar'] = args.sidebar;
+    }
 
-  if (args.editorLayout !== undefined) {
-    updatePayload['editorLayout'] = args.editorLayout;
-  }
+    if (args.editorLayout !== undefined) {
+      updatePayload['editorLayout'] = args.editorLayout;
+    }
 
-  if (args.groupControls !== undefined) {
-    updatePayload['groupControls'] = args.groupControls;
-  }
+    if (args.groupControls !== undefined) {
+      updatePayload['groupControls'] = args.groupControls;
+    }
 
-  // Update the editor interface
-  const editorInterface = await contentfulClient.editorInterface.update(
-    params,
-    updatePayload as EditorInterfaceProps,
-  );
+    // Update the editor interface
+    const editorInterface = await contentfulClient.editorInterface.update(
+      params,
+      updatePayload as EditorInterfaceProps,
+    );
 
     return createSuccessResponse('Editor interface updated successfully', {
       editorInterface,

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   mockContentTypeGet,
   mockContentTypeUpdate,
@@ -14,6 +14,11 @@ import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('updateContentType', () => {
   const mockConfig = createMockConfig();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('should update a content type with new name only', async () => {
     const testArgs = {
       ...mockArgs,
@@ -332,5 +337,24 @@ describe('updateContentType', () => {
         },
       ],
     });
+  });
+
+  it('should return error when environment is protected', async () => {
+    const protectedConfig = createMockConfig({
+      protectedEnvironments: ['master'],
+    });
+    const tool = updateContentTypeTool(protectedConfig);
+    const result = await tool({ ...mockArgs, environmentId: 'master' });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error updating content type: Environment 'master' is protected. Destructive operations are not allowed.",
+        },
+      ],
+    });
+    expect(mockContentTypeUpdate).not.toHaveBeenCalled();
   });
 });

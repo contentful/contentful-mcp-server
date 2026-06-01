@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   mockContentTypeUnpublish,
   mockContentType,
@@ -10,6 +10,11 @@ import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('unpublishContentType', () => {
   const mockConfig = createMockConfig();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('should unpublish a content type successfully', async () => {
     const unpublishedContentType = {
       ...mockContentType,
@@ -88,5 +93,24 @@ describe('unpublishContentType', () => {
         },
       ],
     });
+  });
+
+  it('should return error when environment is protected', async () => {
+    const protectedConfig = createMockConfig({
+      protectedEnvironments: ['master'],
+    });
+    const tool = unpublishContentTypeTool(protectedConfig);
+    const result = await tool({ ...mockArgs, environmentId: 'master' });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error unpublishing content type: Environment 'master' is protected. Destructive operations are not allowed.",
+        },
+      ],
+    });
+    expect(mockContentTypeUnpublish).not.toHaveBeenCalled();
   });
 });

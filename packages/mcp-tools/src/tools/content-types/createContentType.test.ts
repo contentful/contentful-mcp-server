@@ -378,4 +378,30 @@ describe('createContentType', () => {
       ],
     });
   });
+
+  it('should return error when environment is protected', async () => {
+    const protectedConfig = createMockConfig({
+      protectedEnvironments: ['master'],
+    });
+    const tool = createContentTypeTool(protectedConfig);
+    const result = await tool({
+      ...mockArgs,
+      environmentId: 'master',
+      name: 'My Content Type',
+      displayField: 'title',
+      fields: [mockField],
+    });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error creating content type: Environment 'master' is protected. Destructive operations are not allowed.",
+        },
+      ],
+    });
+    expect(mockContentTypeCreate).not.toHaveBeenCalled();
+    expect(mockContentTypeCreateWithId).not.toHaveBeenCalled();
+  });
 });

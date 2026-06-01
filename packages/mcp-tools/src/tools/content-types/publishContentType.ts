@@ -3,7 +3,11 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../utils/response.js';
-import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import {
+  BaseToolSchema,
+  createToolClient,
+  assertEnvironmentNotProtected,
+} from '../../utils/tools.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
 export const PublishContentTypeToolParams = BaseToolSchema.extend({
@@ -14,6 +18,11 @@ type Params = z.infer<typeof PublishContentTypeToolParams>;
 
 export function publishContentTypeTool(config: ContentfulConfig) {
   async function tool(args: Params) {
+    assertEnvironmentNotProtected(
+      args.environmentId,
+      config.protectedEnvironments,
+    );
+
     const params = {
       spaceId: args.spaceId,
       environmentId: args.environmentId,

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mockArgs, testLocale, mockLocaleCreate } from './mockClient.js';
 
 import { createLocaleTool } from './createLocale.js';
@@ -8,6 +8,11 @@ import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('createLocale', () => {
   const mockConfig = createMockConfig();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('should create a locale successfully with default values', async () => {
     const testArgs = {
       ...mockArgs,
@@ -134,5 +139,34 @@ describe('createLocale', () => {
         },
       ],
     });
+  });
+
+  it('should return error when environment is protected', async () => {
+    const protectedConfig = createMockConfig({
+      protectedEnvironments: ['master'],
+    });
+    const tool = createLocaleTool(protectedConfig);
+    const result = await tool({
+      ...mockArgs,
+      environmentId: 'master',
+      name: 'English (US)',
+      code: 'en-US',
+      fallbackCode: null,
+      contentDeliveryApi: true,
+      contentManagementApi: true,
+      default: false,
+      optional: false,
+    });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error creating locale: Environment 'master' is protected. Destructive operations are not allowed.",
+        },
+      ],
+    });
+    expect(mockLocaleCreate).not.toHaveBeenCalled();
   });
 });
