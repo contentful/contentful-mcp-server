@@ -12,29 +12,20 @@ import {
 } from './mockClient.js';
 import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
-vi.mock('../../../src/utils/tools.js', () => ({
-  BaseToolSchema: { extend: vi.fn().mockReturnValue({ extend: vi.fn() }) },
-  createToolClient: vi.fn(),
-  assertEnvironmentNotProtected: (
-    environmentId: string,
-    protectedEnvironments?: string[],
-  ) => {
-    if (
-      protectedEnvironments &&
-      protectedEnvironments.includes(environmentId)
-    ) {
-      throw new Error(
-        `Environment '${environmentId}' is protected. Destructive operations are not allowed.`,
-      );
-    }
-  },
-}));
+vi.mock('../../utils/tools.js', async (importOriginal) => {
+  const orig = await importOriginal<typeof import('../../utils/tools.js')>();
+  return {
+    ...orig,
+    createToolClient: vi.fn(),
+  };
+});
 vi.mock('../../../src/utils/bulkOperations.js');
 
 describe('publishEntry', () => {
   const mockConfig = createMockConfig();
 
   beforeEach(() => {
+    vi.clearAllMocks();
     setupMockClient();
   });
 
@@ -145,6 +136,25 @@ describe('publishEntry', () => {
         },
       ],
     });
+  });
+
+  it('should return error when environment is protected', async () => {
+    const protectedConfig = createMockConfig({
+      protectedEnvironments: ['master'],
+    });
+    const tool = publishEntryTool(protectedConfig);
+    const result = await tool({ ...mockArgs, environmentId: 'master' });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error publishing entry: Environment 'master' is protected. Destructive operations are not allowed.",
+        },
+      ],
+    });
+    expect(mockEntryPublish).not.toHaveBeenCalled();
   });
 
   it('should handle errors when entry publishing fails', async () => {
