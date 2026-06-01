@@ -42,13 +42,8 @@ export function deleteEntryTool(config: ContentfulConfig) {
 
     const expectedToken = buildConfirmToken('entry', args.entryId, entry.sys.version);
     if (args.confirm !== true || args.confirmToken !== expectedToken) {
-      const tokenSupplied =
-        args.confirm === true && typeof args.confirmToken === 'string';
-      const message = tokenSupplied
-        ? `${CONFIRMATION_MESSAGE_PREFIX} entry — the entry was modified since the preview was issued; a new confirmToken has been generated`
-        : `${CONFIRMATION_MESSAGE_PREFIX} entry`;
       return createSuccessResponse(
-        message,
+        `${CONFIRMATION_MESSAGE_PREFIX} entry`,
         buildConfirmationPreview('entry', args.entryId, { entry }, expectedToken),
       );
     }
