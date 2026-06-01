@@ -18,6 +18,12 @@ const EnvSchema = z.object({
     .optional()
     .default('master')
     .describe('Contentful environment ID'),
+  PROTECTED_ENVIRONMENTS: z
+    .string()
+    .optional()
+    .describe(
+      'Comma-separated list of environment IDs protected from write/delete operations (e.g., master,staging)',
+    ),
   ORGANIZATION_ID: z.string().optional().describe('Contentful organization ID'),
   CONTENTFUL_DELIVERY_TOKEN: z
     .string()

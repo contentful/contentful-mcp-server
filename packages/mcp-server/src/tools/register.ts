@@ -27,6 +27,11 @@ export function registerAllTools(server: McpServer): void {
     mcpVersion: getVersion(),
     deliveryToken: env.data.CONTENTFUL_DELIVERY_TOKEN,
     hostDelivery: env.data.CONTENTFUL_DELIVERY_HOST,
+    protectedEnvironments: env.data.PROTECTED_ENVIRONMENTS
+      ? env.data.PROTECTED_ENVIRONMENTS.split(',')
+          .map((e) => e.trim())
+          .filter(Boolean)
+      : undefined,
   });
 
   // Get tool collections
