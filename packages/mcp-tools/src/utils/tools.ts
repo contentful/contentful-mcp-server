@@ -47,3 +47,18 @@ export function createClientConfig(config: ContentfulConfig): ClientOptions {
 
   return clientConfig;
 }
+
+/**
+ * Throws if the given environmentId is in the protectedEnvironments list.
+ * Call this at the top of any write/delete tool before executing the operation.
+ */
+export function assertEnvironmentNotProtected(
+  environmentId: string,
+  protectedEnvironments: string[] | undefined,
+): void {
+  if (protectedEnvironments && protectedEnvironments.includes(environmentId)) {
+    throw new Error(
+      `Environment '${environmentId}' is protected. Destructive operations are not allowed.`,
+    );
+  }
+}
