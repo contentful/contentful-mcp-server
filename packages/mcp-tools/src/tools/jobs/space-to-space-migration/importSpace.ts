@@ -90,13 +90,49 @@ export function createImportSpaceTool(config: ContentfulConfig) {
       throw new Error('Contentful management token is not configured');
     }
 
-    // Consolidate args with defaults and additional required fields.
+    // Explicitly destructure only the fields exposed in ImportSpaceToolParams so
+    // that future schema additions do not accidentally reach contentful-import.
     // host is always sourced from server config — never from LLM-controlled args.
+    const {
+      spaceId,
+      environmentId,
+      contentFile,
+      content,
+      contentModelOnly,
+      skipContentModel,
+      skipLocales,
+      skipContentUpdates,
+      skipContentPublishing,
+      uploadAssets,
+      skipAssetUpdates,
+      assetsDirectory,
+      timeout,
+      retryLimit,
+      rateLimit,
+      errorLogFile,
+      useVerboseRenderer,
+    } = args;
+
     const importOptions = {
-      ...args,
+      spaceId,
       managementToken,
       host: config.host ?? 'api.contentful.com',
-      environmentId: args.environmentId || 'master',
+      environmentId: environmentId || 'master',
+      contentFile,
+      content,
+      contentModelOnly,
+      skipContentModel,
+      skipLocales,
+      skipContentUpdates,
+      skipContentPublishing,
+      uploadAssets,
+      skipAssetUpdates,
+      assetsDirectory,
+      timeout,
+      retryLimit,
+      rateLimit,
+      errorLogFile,
+      useVerboseRenderer,
     } as any;
 
     try {
@@ -104,8 +140,8 @@ export function createImportSpaceTool(config: ContentfulConfig) {
       const result = await contentfulImport.default(importOptions);
 
       return createSuccessResponse('Space imported successfully', {
-        spaceId: args.spaceId,
-        environmentId: args.environmentId || 'master',
+        spaceId,
+        environmentId: environmentId || 'master',
         contentTypes: result.contentTypes?.length || 0,
         entries: result.entries?.length || 0,
         assets: result.assets?.length || 0,
