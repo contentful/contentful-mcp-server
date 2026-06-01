@@ -4,10 +4,27 @@ import {
   withErrorHandling,
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import {
+  buildConfirmToken,
+  buildConfirmationPreview,
+  CONFIRMATION_MESSAGE_PREFIX,
+} from '../../utils/confirmation.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
 export const DeleteEntryToolParams = BaseToolSchema.extend({
   entryId: z.string().describe('The ID of the entry to delete'),
+  confirm: z
+    .boolean()
+    .optional()
+    .describe(
+      'Set to true on the second call to actually perform the deletion. Required together with confirmToken.',
+    ),
+  confirmToken: z
+    .string()
+    .optional()
+    .describe(
+      'Token returned by the preview call; must be supplied with confirm: true.',
+    ),
 });
 
 type Params = z.infer<typeof DeleteEntryToolParams>;
@@ -21,14 +38,22 @@ export function deleteEntryTool(config: ContentfulConfig) {
     };
 
     const contentfulClient = createToolClient(config, args);
-
-    // First, get the entry to check its status
     const entry = await contentfulClient.entry.get(params);
 
-    // Delete the entry
-    await contentfulClient.entry.delete(params);
+    const expectedToken = buildConfirmToken('entry', args.entryId, entry.sys.version);
+    if (args.confirm !== true || args.confirmToken !== expectedToken) {
+      const tokenSupplied =
+        args.confirm === true && typeof args.confirmToken === 'string';
+      const message = tokenSupplied
+        ? `${CONFIRMATION_MESSAGE_PREFIX} entry — the entry was modified since the preview was issued; a new confirmToken has been generated`
+        : `${CONFIRMATION_MESSAGE_PREFIX} entry`;
+      return createSuccessResponse(
+        message,
+        buildConfirmationPreview('entry', args.entryId, { entry }, expectedToken),
+      );
+    }
 
-    //return info about the entry that was deleted
+    await contentfulClient.entry.delete(params);
     return createSuccessResponse('Entry deleted successfully', { entry });
   }
 

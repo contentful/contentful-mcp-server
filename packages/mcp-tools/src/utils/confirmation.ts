@@ -21,11 +21,11 @@ export function buildConfirmToken(
   return createHash('sha256').update(payload).digest('hex').slice(0, 16);
 }
 
-export interface ConfirmationPreview {
+export type ConfirmationPreview = {
   preview: Record<string, unknown>;
   confirmToken: string;
   instructions: string;
-}
+} & Record<string, unknown>;
 
 const RESOURCE_DISPLAY_NAME: Record<DestructiveResource, string> = {
   entry: 'entry',
