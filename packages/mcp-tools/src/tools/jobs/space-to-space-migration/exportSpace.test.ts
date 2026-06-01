@@ -42,6 +42,7 @@ describe('exportSpace', () => {
     expect(mockContentfulExport).toHaveBeenCalledWith({
       ...testArgs,
       managementToken: mockConfig.accessToken,
+      host: 'api.contentful.com',
       environmentId: 'test-environment',
       exportDir: process.cwd(),
       contentFile: 'contentful-export-test-space-id.json',
@@ -106,36 +107,51 @@ describe('exportSpace', () => {
       // Asset and performance options
       downloadAssets: true,
       maxAllowedLimit: 500,
-      deliveryToken: 'test-delivery-token',
-
-      // Network options
-      host: 'eu.contentful.com',
-      hostDelivery: 'cdn.contentful.com',
-      proxy: 'user:pass@proxy:8080',
-      rawProxy: true,
 
       // Logging and debugging
-      headers: {
-        'X-Custom': 'value',
-        'User-Agent': 'test-agent',
-      },
       errorLogFile: '/logs/export.log',
       useVerboseRenderer: true,
-      config: '/config/export.json',
     });
 
-    const tool = createExportSpaceTool(mockConfig);
+    const configWithDelivery = createMockConfig({
+      deliveryToken: 'cfg-delivery-token',
+      hostDelivery: 'cdn.eu.contentful.com',
+    });
+
+    const tool = createExportSpaceTool(configWithDelivery);
     const result = await tool(testArgs);
 
     expect(mockContentfulExport).toHaveBeenCalledWith({
       ...testArgs,
-      managementToken: mockConfig.accessToken,
+      managementToken: configWithDelivery.accessToken,
+      host: 'api.contentful.com',
+      deliveryToken: 'cfg-delivery-token',
+      hostDelivery: 'cdn.eu.contentful.com',
     });
 
     expect(result.content[0].text).toContain('Space exported successfully');
     expect(result.content[0].text).toContain(
       '/custom/export/dir/custom-export.json',
     );
+  });
+
+  it('should always use config host/deliveryToken/hostDelivery, never from args (GHSA-2xhg-73j7-rrgx)', async () => {
+    const configWithAll = createMockConfig({
+      host: 'eu.api.contentful.com',
+      deliveryToken: 'cfg-cda-token',
+      hostDelivery: 'cdn.eu.contentful.com',
+    });
+    const testArgs = createExportTestArgs();
+
+    const tool = createExportSpaceTool(configWithAll);
+    await tool(testArgs);
+
+    const calledWith = mockContentfulExport.mock.calls[0][0];
+    expect(calledWith.host).toBe('eu.api.contentful.com');
+    expect(calledWith.deliveryToken).toBe('cfg-cda-token');
+    expect(calledWith.hostDelivery).toBe('cdn.eu.contentful.com');
+    expect(calledWith.proxy).toBeUndefined();
+    expect(calledWith.rawProxy).toBeUndefined();
   });
 
   it('should handle contentful-export errors', async () => {

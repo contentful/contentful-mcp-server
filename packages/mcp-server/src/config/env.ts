@@ -19,6 +19,18 @@ const EnvSchema = z.object({
     .default('master')
     .describe('Contentful environment ID'),
   ORGANIZATION_ID: z.string().optional().describe('Contentful organization ID'),
+  CONTENTFUL_DELIVERY_TOKEN: z
+    .string()
+    .optional()
+    .describe(
+      'Contentful CDA token (used with export_space to export only published content)',
+    ),
+  CONTENTFUL_DELIVERY_HOST: z
+    .string()
+    .optional()
+    .describe(
+      'Contentful Delivery API host (used with CONTENTFUL_DELIVERY_TOKEN for custom CDA endpoints)',
+    ),
 });
 
 export const env = EnvSchema.safeParse(process.env);

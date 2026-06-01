@@ -66,33 +66,16 @@ export const ImportSpaceToolParams = BaseToolSchema.extend({
     .optional()
     .default(10)
     .describe('Max retries for asset processing'),
-  host: z.string().optional().describe('Management API host'),
-  proxy: z
-    .string()
-    .optional()
-    .describe('HTTP/HTTPS proxy string (host:port or user:pass@host:port)'),
-  rawProxy: z
-    .boolean()
-    .optional()
-    .describe('Pass proxy config directly to Axios'),
   rateLimit: z
     .number()
     .optional()
     .default(7)
     .describe('Max requests per second to the API'),
-  headers: z
-    .record(z.any())
-    .optional()
-    .describe('Additional headers to attach to requests'),
   errorLogFile: z.string().optional().describe('Path to error log file'),
   useVerboseRenderer: z
     .boolean()
     .optional()
     .describe('Line-by-line progress output (good for CI)'),
-  config: z
-    .string()
-    .optional()
-    .describe('Path to config JSON file (merged with CLI args)'),
 });
 
 type Params = z.infer<typeof ImportSpaceToolParams>;
@@ -107,10 +90,13 @@ export function createImportSpaceTool(config: ContentfulConfig) {
       throw new Error('Contentful management token is not configured');
     }
 
-    // Consolidate args with defaults and additional required fields
+    // host is always sourced from server config — never from LLM-controlled args.
+    // Zod strips unknown fields before this point, so ...args only contains
+    // schema-declared fields.
     const importOptions = {
       ...args,
       managementToken,
+      host: config.host ?? 'api.contentful.com',
       environmentId: args.environmentId || 'master',
     } as any;
 

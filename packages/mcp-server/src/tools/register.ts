@@ -25,6 +25,8 @@ export function registerAllTools(server: McpServer): void {
     organizationId: env.data.ORGANIZATION_ID,
     appId: env.data.APP_ID,
     mcpVersion: getVersion(),
+    deliveryToken: env.data.CONTENTFUL_DELIVERY_TOKEN,
+    hostDelivery: env.data.CONTENTFUL_DELIVERY_HOST,
   });
 
   // Get tool collections

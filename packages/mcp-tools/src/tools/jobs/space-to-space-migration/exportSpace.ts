@@ -92,30 +92,11 @@ export const ExportSpaceToolParams = BaseToolSchema.extend({
     .optional()
     .default(1000)
     .describe('Maximum number of items per request'),
-  deliveryToken: z
-    .string()
-    .optional()
-    .describe('CDA token to export only published content (excludes tags)'),
-  host: z.string().optional().describe('Management API host'),
-  hostDelivery: z.string().optional().describe('Delivery API host'),
-  proxy: z.string().optional().describe('HTTP/HTTPS proxy config'),
-  rawProxy: z
-    .boolean()
-    .optional()
-    .describe('Pass raw proxy config directly to Axios'),
-  headers: z
-    .record(z.string())
-    .optional()
-    .describe('Additional headers to include in requests'),
   errorLogFile: z.string().optional().describe('Path to error log output file'),
   useVerboseRenderer: z
     .boolean()
     .optional()
     .describe('Line-by-line logging, useful for CI'),
-  config: z
-    .string()
-    .optional()
-    .describe('Path to a JSON config file with all options'),
 });
 
 type Params = z.infer<typeof ExportSpaceToolParams>;
@@ -130,10 +111,15 @@ export function createExportSpaceTool(config: ContentfulConfig) {
       throw new Error('Contentful management token is not configured');
     }
 
-    // Consolidate args with defaults and additional required fields
+    // host, deliveryToken, and hostDelivery are always sourced from server config
+    // — never from LLM-controlled args. Zod strips unknown fields before this
+    // point, so ...args only contains schema-declared fields.
     const exportOptions = {
       ...args,
       managementToken,
+      host: config.host ?? 'api.contentful.com',
+      ...(config.deliveryToken && { deliveryToken: config.deliveryToken }),
+      ...(config.hostDelivery && { hostDelivery: config.hostDelivery }),
       environmentId: args.environmentId || 'master',
       exportDir: args.exportDir || process.cwd(),
       contentFile: args.contentFile || `contentful-export-${args.spaceId}.json`,
