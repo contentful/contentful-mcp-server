@@ -49,7 +49,7 @@ describe('unpublishEntry', () => {
 
     const expectedResponse = formatResponse('Entry unpublished successfully', {
       status: mockUnpublishedEntry.sys.status,
-      entryId: mockArgs.entryId,
+      entryId: mockArgs.entryId[0],
     });
     expect(result).toEqual({
       content: [

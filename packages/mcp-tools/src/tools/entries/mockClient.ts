@@ -90,7 +90,7 @@ export const mockArchivedEntry = {
 export const mockArgs = {
   spaceId: 'test-space-id',
   environmentId: 'test-environment',
-  entryId: 'test-entry-id',
+  entryId: ['test-entry-id'],
 };
 
 /**
