@@ -12,7 +12,23 @@ import {
 } from './mockClient.js';
 import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
-vi.mock('../../../src/utils/tools.js');
+vi.mock('../../../src/utils/tools.js', () => ({
+  BaseToolSchema: { extend: vi.fn().mockReturnValue({ extend: vi.fn() }) },
+  createToolClient: vi.fn(),
+  assertEnvironmentNotProtected: (
+    environmentId: string,
+    protectedEnvironments?: string[],
+  ) => {
+    if (
+      protectedEnvironments &&
+      protectedEnvironments.includes(environmentId)
+    ) {
+      throw new Error(
+        `Environment '${environmentId}' is protected. Destructive operations are not allowed.`,
+      );
+    }
+  },
+}));
 vi.mock('../../../src/utils/bulkOperations.js');
 
 describe('unpublishEntry', () => {

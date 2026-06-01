@@ -12,7 +12,23 @@ import { createToolClient } from '../../utils/tools.js';
 import { createMockConfig } from '../../test-helpers/mockConfig.js';
 import { RichTextDocument } from '../../types/richTextSchema.js';
 
-vi.mock('../../utils/tools.js');
+vi.mock('../../utils/tools.js', () => ({
+  BaseToolSchema: { extend: vi.fn().mockReturnValue({ extend: vi.fn() }) },
+  createToolClient: vi.fn(),
+  assertEnvironmentNotProtected: (
+    environmentId: string,
+    protectedEnvironments?: string[],
+  ) => {
+    if (
+      protectedEnvironments &&
+      protectedEnvironments.includes(environmentId)
+    ) {
+      throw new Error(
+        `Environment '${environmentId}' is protected. Destructive operations are not allowed.`,
+      );
+    }
+  },
+}));
 
 describe('createEntry', () => {
   const mockConfig = createMockConfig();

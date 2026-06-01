@@ -3,7 +3,11 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../utils/response.js';
-import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import {
+  BaseToolSchema,
+  createToolClient,
+  assertEnvironmentNotProtected,
+} from '../../utils/tools.js';
 import {
   BulkOperationParams,
   createEntryUnversionedLinks,
@@ -24,6 +28,11 @@ type Params = z.infer<typeof UnpublishEntryToolParams>;
 
 export function unpublishEntryTool(config: ContentfulConfig) {
   async function tool(args: Params) {
+    assertEnvironmentNotProtected(
+      args.environmentId,
+      config.protectedEnvironments,
+    );
+
     const baseParams: BulkOperationParams = {
       spaceId: args.spaceId,
       environmentId: args.environmentId,
@@ -31,59 +40,61 @@ export function unpublishEntryTool(config: ContentfulConfig) {
 
     const contentfulClient = createToolClient(config, args);
 
-  // Normalize input to always be an array
-  const entryIds = Array.isArray(args.entryId) ? args.entryId : [args.entryId];
+    // Normalize input to always be an array
+    const entryIds = Array.isArray(args.entryId)
+      ? args.entryId
+      : [args.entryId];
 
-  // For single entry, use individual unpublish for simplicity
-  if (entryIds.length === 1) {
-    const entryId = entryIds[0];
-    const params = {
-      ...baseParams,
-      entryId,
-    };
+    // For single entry, use individual unpublish for simplicity
+    if (entryIds.length === 1) {
+      const entryId = entryIds[0];
+      const params = {
+        ...baseParams,
+        entryId,
+      };
 
-    // Get the entry first
-    const entry = await contentfulClient.entry.get(params);
+      // Get the entry first
+      const entry = await contentfulClient.entry.get(params);
 
-    // Unpublish the entry
-    const unpublishedEntry = await contentfulClient.entry.unpublish(
-      params,
-      entry,
+      // Unpublish the entry
+      const unpublishedEntry = await contentfulClient.entry.unpublish(
+        params,
+        entry,
+      );
+
+      return createSuccessResponse('Entry unpublished successfully', {
+        status: unpublishedEntry.sys.status,
+        entryId,
+      });
+    }
+
+    // For multiple entries, use bulk action API
+    // Get the unversioned links for each entry (unpublish doesn't need version info)
+    const entityLinks = await createEntryUnversionedLinks(
+      contentfulClient,
+      baseParams,
+      entryIds,
     );
 
-    return createSuccessResponse('Entry unpublished successfully', {
-      status: unpublishedEntry.sys.status,
-      entryId,
+    // Create the collection object
+    const entitiesCollection = createEntitiesCollection(entityLinks);
+
+    // Create the bulk action
+    const bulkAction = await contentfulClient.bulkAction.unpublish(baseParams, {
+      entities: entitiesCollection,
     });
-  }
 
-  // For multiple entries, use bulk action API
-  // Get the unversioned links for each entry (unpublish doesn't need version info)
-  const entityLinks = await createEntryUnversionedLinks(
-    contentfulClient,
-    baseParams,
-    entryIds,
-  );
+    // Wait for the bulk action to complete
+    const action = await waitForBulkActionCompletion(
+      contentfulClient,
+      baseParams,
+      bulkAction.sys.id,
+    );
 
-  // Create the collection object
-  const entitiesCollection = createEntitiesCollection(entityLinks);
-
-  // Create the bulk action
-  const bulkAction = await contentfulClient.bulkAction.unpublish(baseParams, {
-    entities: entitiesCollection,
-  });
-
-  // Wait for the bulk action to complete
-  const action = await waitForBulkActionCompletion(
-    contentfulClient,
-    baseParams,
-    bulkAction.sys.id,
-  );
-
-  return createSuccessResponse('Entry(s) unpublished successfully', {
-    status: action.sys.status,
-    entryIds,
-  });
+    return createSuccessResponse('Entry(s) unpublished successfully', {
+      status: action.sys.status,
+      entryIds,
+    });
   }
 
   return withErrorHandling(tool, 'Error unpublishing entry');
