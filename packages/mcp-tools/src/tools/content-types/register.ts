@@ -26,6 +26,14 @@ import {
   unpublishContentTypeTool,
   UnpublishContentTypeToolParams,
 } from './unpublishContentType.js';
+import {
+  omitAndDeleteContentTypeFieldTool,
+  OmitAndDeleteContentTypeFieldToolParams,
+} from './omitAndDeleteContentTypeField.js';
+import {
+  disableContentTypeFieldTool,
+  DisableContentTypeFieldToolParams,
+} from './disableContentTypeField.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
 export function createContentTypeTools(config: ContentfulConfig) {
@@ -36,6 +44,9 @@ export function createContentTypeTools(config: ContentfulConfig) {
   const deleteContentType = deleteContentTypeTool(config);
   const publishContentType = publishContentTypeTool(config);
   const unpublishContentType = unpublishContentTypeTool(config);
+  const omitAndDeleteContentTypeField =
+    omitAndDeleteContentTypeFieldTool(config);
+  const disableContentTypeField = disableContentTypeFieldTool(config);
 
   return {
     getContentType: {
@@ -119,6 +130,32 @@ export function createContentTypeTools(config: ContentfulConfig) {
         openWorldHint: false,
       },
       tool: unpublishContentType,
+    },
+    omitAndDeleteContentTypeField: {
+      title: 'omit_and_delete_content_type_field',
+      description:
+        'Permanently delete a field from a content type by omitting it, publishing the change, then marking it deleted. This is a destructive, irreversible operation. The field must not be required. Use disable_content_type_field to temporarily hide a field instead.',
+      inputParams: OmitAndDeleteContentTypeFieldToolParams.shape,
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: false,
+        openWorldHint: false,
+      },
+      tool: omitAndDeleteContentTypeField,
+    },
+    disableContentTypeField: {
+      title: 'disable_content_type_field',
+      description:
+        'Disable or omit a single field on a content type without deleting it. Setting disabled=true hides the field in the editor UI. Setting omitted=true removes it from API responses. Both can be set at once. These changes are reversible.',
+      inputParams: DisableContentTypeFieldToolParams.shape,
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
+      tool: disableContentTypeField,
     },
   };
 }
