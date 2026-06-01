@@ -1,3 +1,9 @@
+## 0.4.5 (2026-06-01)
+
+### 🩹 Fixes
+
+- remove host/proxy/headers from export_space and import_space tool schemas [DX-1177] ([#376](https://github.com/contentful/contentful-mcp-server/pull/376))
+
 ## 0.4.4 (2026-05-28)
 
 ### 🩹 Fixes
