@@ -16,6 +16,17 @@ export function registerAllTools(server: McpServer): void {
     throw new Error('Environment variables are not properly configured');
   }
 
+  // Parse protectedEnvironments: collapse empty arrays (e.g. ", ,") to undefined
+  // so that undefined consistently means "feature disabled"
+  const parsedProtectedEnvs = env.data.PROTECTED_ENVIRONMENTS
+    ? env.data.PROTECTED_ENVIRONMENTS.split(',')
+        .map((e) => e.trim())
+        .filter(Boolean)
+    : undefined;
+  const protectedEnvironments = parsedProtectedEnvs?.length
+    ? parsedProtectedEnvs
+    : undefined;
+
   // Initialize tools with configuration from environment variables
   const tools = new ContentfulMcpTools({
     accessToken: env.data.CONTENTFUL_MANAGEMENT_ACCESS_TOKEN,
@@ -27,11 +38,7 @@ export function registerAllTools(server: McpServer): void {
     mcpVersion: getVersion(),
     deliveryToken: env.data.CONTENTFUL_DELIVERY_TOKEN,
     hostDelivery: env.data.CONTENTFUL_DELIVERY_HOST,
-    protectedEnvironments: env.data.PROTECTED_ENVIRONMENTS
-      ? env.data.PROTECTED_ENVIRONMENTS.split(',')
-          .map((e) => e.trim())
-          .filter(Boolean)
-      : undefined,
+    protectedEnvironments,
   });
 
   // Get tool collections

@@ -4,20 +4,36 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { ContentfulMcpTools } from '@contentful/mcp-tools';
 import { env } from '../config/env.js';
 
-// Mock the env module
+// Mutable data object — tests can override individual fields before calling registerAllTools
+const mockEnvData: Record<string, string | undefined> = {
+  CONTENTFUL_MANAGEMENT_ACCESS_TOKEN: 'test-token',
+  CONTENTFUL_HOST: 'api.contentful.com',
+  SPACE_ID: 'test-space-id',
+  ENVIRONMENT_ID: 'master',
+  ORGANIZATION_ID: 'test-org-id',
+  APP_ID: 'test-app-id',
+  PROTECTED_ENVIRONMENTS: undefined,
+};
+
+// Mock the env module — references the mutable object above so tests can mutate it
 vi.mock('../config/env.js', () => ({
   env: {
     success: true,
-    data: {
-      CONTENTFUL_MANAGEMENT_ACCESS_TOKEN: 'test-token',
-      CONTENTFUL_HOST: 'api.contentful.com',
-      SPACE_ID: 'test-space-id',
-      ENVIRONMENT_ID: 'master',
-      ORGANIZATION_ID: 'test-org-id',
-      APP_ID: 'test-app-id',
+    get data() {
+      return mockEnvData;
     },
   },
 }));
+
+vi.mock('@contentful/mcp-tools', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@contentful/mcp-tools')>();
+  return {
+    ...actual,
+    ContentfulMcpTools: vi
+      .fn()
+      .mockImplementation((config) => new actual.ContentfulMcpTools(config)),
+  };
+});
 
 describe('registerAllTools', () => {
   let mockServer: McpServer;
@@ -25,6 +41,9 @@ describe('registerAllTools', () => {
   let mockRegisteredTool: { disable: ReturnType<typeof vi.fn> };
 
   beforeEach(() => {
+    // Reset PROTECTED_ENVIRONMENTS to absent for existing tests
+    mockEnvData.PROTECTED_ENVIRONMENTS = undefined;
+
     // Create mock registered tool with disable method
     mockRegisteredTool = {
       disable: vi.fn(),
@@ -35,6 +54,8 @@ describe('registerAllTools', () => {
     mockServer = {
       registerTool: registerToolSpy,
     } as unknown as McpServer;
+
+    vi.mocked(ContentfulMcpTools).mockClear();
   });
 
   it('should register all standard tool collections', () => {
@@ -130,5 +151,51 @@ describe('registerAllTools', () => {
     });
     // The tool should be the result of calling handlerConfig.tool with workflow tools
     expect(typeof handlerCall[2]).toBe('function');
+  });
+});
+
+describe('registerAllTools — PROTECTED_ENVIRONMENTS parsing', () => {
+  let mockServer: McpServer;
+  let mockRegisteredTool: { disable: ReturnType<typeof vi.fn> };
+
+  beforeEach(() => {
+    mockRegisteredTool = { disable: vi.fn() };
+    mockServer = {
+      registerTool: vi.fn(() => mockRegisteredTool),
+    } as unknown as McpServer;
+
+    vi.mocked(ContentfulMcpTools).mockClear();
+  });
+
+  it('passes undefined when PROTECTED_ENVIRONMENTS is absent', () => {
+    mockEnvData.PROTECTED_ENVIRONMENTS = undefined;
+    registerAllTools(mockServer);
+    expect(vi.mocked(ContentfulMcpTools)).toHaveBeenCalledWith(
+      expect.objectContaining({ protectedEnvironments: undefined }),
+    );
+  });
+
+  it('passes parsed array when PROTECTED_ENVIRONMENTS is "master,staging"', () => {
+    mockEnvData.PROTECTED_ENVIRONMENTS = 'master,staging';
+    registerAllTools(mockServer);
+    expect(vi.mocked(ContentfulMcpTools)).toHaveBeenCalledWith(
+      expect.objectContaining({ protectedEnvironments: ['master', 'staging'] }),
+    );
+  });
+
+  it('trims whitespace when PROTECTED_ENVIRONMENTS is " master , staging "', () => {
+    mockEnvData.PROTECTED_ENVIRONMENTS = ' master , staging ';
+    registerAllTools(mockServer);
+    expect(vi.mocked(ContentfulMcpTools)).toHaveBeenCalledWith(
+      expect.objectContaining({ protectedEnvironments: ['master', 'staging'] }),
+    );
+  });
+
+  it('passes undefined when PROTECTED_ENVIRONMENTS is only commas/whitespace (", ,")', () => {
+    mockEnvData.PROTECTED_ENVIRONMENTS = ', ,';
+    registerAllTools(mockServer);
+    expect(vi.mocked(ContentfulMcpTools)).toHaveBeenCalledWith(
+      expect.objectContaining({ protectedEnvironments: undefined }),
+    );
   });
 });
