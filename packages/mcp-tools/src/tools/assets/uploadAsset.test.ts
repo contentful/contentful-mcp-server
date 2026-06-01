@@ -13,7 +13,13 @@ import {
 } from './mockClient.js';
 import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
-vi.mock('../../../src/utils/tools.js');
+vi.mock('../../utils/tools.js', async (importOriginal) => {
+  const orig = await importOriginal<typeof import('../../utils/tools.js')>();
+  return {
+    ...orig,
+    createToolClient: vi.fn(),
+  };
+});
 
 describe('uploadAsset', () => {
   const mockConfig = createMockConfig();
@@ -298,6 +304,30 @@ describe('uploadAsset', () => {
       ],
     });
     expect(mockUploadCreate).not.toHaveBeenCalled();
+  });
+
+  it('should return error when environment is protected', async () => {
+    const protectedConfig = createMockConfig({
+      protectedEnvironments: ['master'],
+    });
+    const tool = uploadAssetTool(protectedConfig);
+    const result = await tool({
+      ...mockArgs,
+      environmentId: 'master',
+      title: 'Test',
+      file: mockFile,
+    });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error uploading asset: Environment 'master' is protected. Destructive operations are not allowed.",
+        },
+      ],
+    });
+    expect(mockAssetCreate).not.toHaveBeenCalled();
   });
 
   it('should upload an asset with a custom locale', async () => {

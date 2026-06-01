@@ -9,7 +9,13 @@ import {
   mockArchivedAsset,
 } from './mockClient.js';
 
-vi.mock('../../../src/utils/tools.js');
+vi.mock('../../utils/tools.js', async (importOriginal) => {
+  const orig = await importOriginal<typeof import('../../utils/tools.js')>();
+  return {
+    ...orig,
+    createToolClient: vi.fn(),
+  };
+});
 import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('unarchiveAsset', () => {
@@ -80,6 +86,29 @@ describe('unarchiveAsset', () => {
       // Verify the error message includes the asset ID
       expect(result.content[0].text).toContain('test-asset-id');
     });
+  });
+
+  it('should return error when environment is protected', async () => {
+    const protectedConfig = createMockConfig({
+      protectedEnvironments: ['master'],
+    });
+    const tool = unarchiveAssetTool(protectedConfig);
+    const result = await tool({
+      ...mockArgs,
+      assetId: 'test-asset-id',
+      environmentId: 'master',
+    });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error unarchiving asset: Environment 'master' is protected. Destructive operations are not allowed.",
+        },
+      ],
+    });
+    expect(mockAssetUnarchive).not.toHaveBeenCalled();
   });
 
   describe('multiple assets', () => {

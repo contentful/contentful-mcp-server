@@ -3,7 +3,11 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../utils/response.js';
-import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import {
+  BaseToolSchema,
+  createToolClient,
+  assertEnvironmentNotProtected,
+} from '../../utils/tools.js';
 import { AssetMetadataSchema } from '../../types/taxonomySchema.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
@@ -35,6 +39,10 @@ type Params = z.infer<typeof UploadAssetToolParams>;
 
 export function uploadAssetTool(config: ContentfulConfig) {
   async function tool(args: Params) {
+    assertEnvironmentNotProtected(
+      args.environmentId,
+      config.protectedEnvironments,
+    );
     const params = {
       spaceId: args.spaceId,
       environmentId: args.environmentId,

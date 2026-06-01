@@ -3,7 +3,11 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../utils/response.js';
-import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import {
+  BaseToolSchema,
+  createToolClient,
+  assertEnvironmentNotProtected,
+} from '../../utils/tools.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
 export const ArchiveAssetToolParams = BaseToolSchema.extend({
@@ -18,6 +22,10 @@ type Params = z.infer<typeof ArchiveAssetToolParams>;
 
 export function archiveAssetTool(config: ContentfulConfig) {
   async function tool(args: Params) {
+    assertEnvironmentNotProtected(
+      args.environmentId,
+      config.protectedEnvironments,
+    );
     const baseParams = {
       spaceId: args.spaceId,
       environmentId: args.environmentId,
@@ -25,47 +33,49 @@ export function archiveAssetTool(config: ContentfulConfig) {
 
     const contentfulClient = createToolClient(config, args);
 
-  // Normalize input to always be an array
-  const assetIds = Array.isArray(args.assetId) ? args.assetId : [args.assetId];
+    // Normalize input to always be an array
+    const assetIds = Array.isArray(args.assetId)
+      ? args.assetId
+      : [args.assetId];
 
-  // Track successfully archived assets
-  const successfullyArchived: string[] = [];
+    // Track successfully archived assets
+    const successfullyArchived: string[] = [];
 
-  // Process each asset sequentially, stopping at first failure
-  for (const assetId of assetIds) {
-    try {
-      const params = {
-        ...baseParams,
-        assetId,
-      };
+    // Process each asset sequentially, stopping at first failure
+    for (const assetId of assetIds) {
+      try {
+        const params = {
+          ...baseParams,
+          assetId,
+        };
 
-      // Archive the asset - will throw on error
-      await contentfulClient.asset.archive(params);
-      successfullyArchived.push(assetId);
-    } catch (error) {
-      // Enhance error with context about successful operations
-      const errorMessage =
-        successfullyArchived.length > 0
-          ? `Failed to archive asset '${assetId}' after successfully archiving ${successfullyArchived.length} asset(s): [${successfullyArchived.join(', ')}]. Original error: ${error instanceof Error ? error.message : String(error)}`
-          : `Failed to archive asset '${assetId}': ${error instanceof Error ? error.message : String(error)}`;
+        // Archive the asset - will throw on error
+        await contentfulClient.asset.archive(params);
+        successfullyArchived.push(assetId);
+      } catch (error) {
+        // Enhance error with context about successful operations
+        const errorMessage =
+          successfullyArchived.length > 0
+            ? `Failed to archive asset '${assetId}' after successfully archiving ${successfullyArchived.length} asset(s): [${successfullyArchived.join(', ')}]. Original error: ${error instanceof Error ? error.message : String(error)}`
+            : `Failed to archive asset '${assetId}': ${error instanceof Error ? error.message : String(error)}`;
 
-      throw new Error(errorMessage);
+        throw new Error(errorMessage);
+      }
     }
-  }
 
-  if (assetIds.length === 1) {
-    return createSuccessResponse('Asset archived successfully', {
-      assetId: assetIds[0],
-    });
-  } else {
-    return createSuccessResponse(
-      `Successfully archived ${assetIds.length} assets`,
-      {
-        archivedCount: assetIds.length,
-        assetIds,
-      },
-    );
-  }
+    if (assetIds.length === 1) {
+      return createSuccessResponse('Asset archived successfully', {
+        assetId: assetIds[0],
+      });
+    } else {
+      return createSuccessResponse(
+        `Successfully archived ${assetIds.length} assets`,
+        {
+          archivedCount: assetIds.length,
+          assetIds,
+        },
+      );
+    }
   }
 
   return withErrorHandling(tool, 'Error archiving asset');
