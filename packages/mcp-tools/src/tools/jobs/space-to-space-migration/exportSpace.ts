@@ -92,16 +92,6 @@ export const ExportSpaceToolParams = BaseToolSchema.extend({
     .optional()
     .default(1000)
     .describe('Maximum number of items per request'),
-  deliveryToken: z
-    .string()
-    .optional()
-    .describe('CDA token to export only published content (excludes tags)'),
-  hostDelivery: z
-    .string()
-    .optional()
-    .describe(
-      'Delivery API host (used with deliveryToken for custom CDA endpoints)',
-    ),
   errorLogFile: z.string().optional().describe('Path to error log output file'),
   useVerboseRenderer: z
     .boolean()
@@ -122,11 +112,14 @@ export function createExportSpaceTool(config: ContentfulConfig) {
     }
 
     // Consolidate args with defaults and additional required fields.
-    // host is always sourced from server config — never from LLM-controlled args.
+    // host, deliveryToken, and hostDelivery are always sourced from server config
+    // — never from LLM-controlled args.
     const exportOptions = {
       ...args,
       managementToken,
       host: config.host ?? 'api.contentful.com',
+      ...(config.deliveryToken && { deliveryToken: config.deliveryToken }),
+      ...(config.hostDelivery && { hostDelivery: config.hostDelivery }),
       environmentId: args.environmentId || 'master',
       exportDir: args.exportDir || process.cwd(),
       contentFile: args.contentFile || `contentful-export-${args.spaceId}.json`,

@@ -16,4 +16,8 @@ export interface ContentfulConfig {
   appId?: string;
   /** Version number to use for MCP tool calls */
   mcpVersion: string;
+  /** Contentful CDA token for exporting only published content */
+  deliveryToken?: string;
+  /** Contentful Delivery API host (used with deliveryToken for custom CDA endpoints) */
+  hostDelivery?: string;
 }

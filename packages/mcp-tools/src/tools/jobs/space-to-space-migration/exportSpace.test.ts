@@ -107,21 +107,26 @@ describe('exportSpace', () => {
       // Asset and performance options
       downloadAssets: true,
       maxAllowedLimit: 500,
-      deliveryToken: 'test-delivery-token',
-      hostDelivery: 'cdn.eu.contentful.com',
 
       // Logging and debugging
       errorLogFile: '/logs/export.log',
       useVerboseRenderer: true,
     });
 
-    const tool = createExportSpaceTool(mockConfig);
+    const configWithDelivery = createMockConfig({
+      deliveryToken: 'cfg-delivery-token',
+      hostDelivery: 'cdn.eu.contentful.com',
+    });
+
+    const tool = createExportSpaceTool(configWithDelivery);
     const result = await tool(testArgs);
 
     expect(mockContentfulExport).toHaveBeenCalledWith({
       ...testArgs,
-      managementToken: mockConfig.accessToken,
+      managementToken: configWithDelivery.accessToken,
       host: 'api.contentful.com',
+      deliveryToken: 'cfg-delivery-token',
+      hostDelivery: 'cdn.eu.contentful.com',
     });
 
     expect(result.content[0].text).toContain('Space exported successfully');
@@ -130,17 +135,21 @@ describe('exportSpace', () => {
     );
   });
 
-  it('should always use config host, ignoring any host provided in args (GHSA-2xhg-73j7-rrgx)', async () => {
-    const customHostConfig = createMockConfig({
+  it('should always use config host/deliveryToken/hostDelivery, never from args (GHSA-2xhg-73j7-rrgx)', async () => {
+    const configWithAll = createMockConfig({
       host: 'eu.api.contentful.com',
+      deliveryToken: 'cfg-cda-token',
+      hostDelivery: 'cdn.eu.contentful.com',
     });
     const testArgs = createExportTestArgs();
 
-    const tool = createExportSpaceTool(customHostConfig);
+    const tool = createExportSpaceTool(configWithAll);
     await tool(testArgs);
 
     const calledWith = mockContentfulExport.mock.calls[0][0];
     expect(calledWith.host).toBe('eu.api.contentful.com');
+    expect(calledWith.deliveryToken).toBe('cfg-cda-token');
+    expect(calledWith.hostDelivery).toBe('cdn.eu.contentful.com');
     expect(calledWith.proxy).toBeUndefined();
     expect(calledWith.rawProxy).toBeUndefined();
   });
