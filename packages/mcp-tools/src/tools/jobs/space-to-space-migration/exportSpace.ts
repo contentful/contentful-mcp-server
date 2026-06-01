@@ -111,60 +111,18 @@ export function createExportSpaceTool(config: ContentfulConfig) {
       throw new Error('Contentful management token is not configured');
     }
 
-    // Explicitly destructure only the fields exposed in ExportSpaceToolParams so
-    // that future schema additions do not accidentally reach contentful-export.
     // host, deliveryToken, and hostDelivery are always sourced from server config
-    // — never from LLM-controlled args.
-    const {
-      spaceId,
-      environmentId,
-      exportDir,
-      saveFile,
-      contentFile,
-      includeDrafts,
-      includeArchived,
-      skipContentModel,
-      skipEditorInterfaces,
-      skipContent,
-      skipRoles,
-      skipTags,
-      skipWebhooks,
-      stripTags,
-      contentOnly,
-      queryEntries,
-      queryAssets,
-      downloadAssets,
-      maxAllowedLimit,
-      errorLogFile,
-      useVerboseRenderer,
-    } = args;
-
+    // — never from LLM-controlled args. Zod strips unknown fields before this
+    // point, so ...args only contains schema-declared fields.
     const exportOptions = {
-      spaceId,
+      ...args,
       managementToken,
       host: config.host ?? 'api.contentful.com',
       ...(config.deliveryToken && { deliveryToken: config.deliveryToken }),
       ...(config.hostDelivery && { hostDelivery: config.hostDelivery }),
-      environmentId: environmentId || 'master',
-      exportDir: exportDir || process.cwd(),
-      contentFile: contentFile || `contentful-export-${spaceId}.json`,
-      saveFile,
-      includeDrafts,
-      includeArchived,
-      skipContentModel,
-      skipEditorInterfaces,
-      skipContent,
-      skipRoles,
-      skipTags,
-      skipWebhooks,
-      stripTags,
-      contentOnly,
-      queryEntries,
-      queryAssets,
-      downloadAssets,
-      maxAllowedLimit,
-      errorLogFile,
-      useVerboseRenderer,
+      environmentId: args.environmentId || 'master',
+      exportDir: args.exportDir || process.cwd(),
+      contentFile: args.contentFile || `contentful-export-${args.spaceId}.json`,
     } as any;
 
     try {
@@ -181,8 +139,8 @@ export function createExportSpaceTool(config: ContentfulConfig) {
       );
 
       return createSuccessResponse('Space exported successfully', {
-        spaceId,
-        environmentId: environmentId || 'master',
+        spaceId: args.spaceId,
+        environmentId: args.environmentId || 'master',
         exportPath,
         contentTypes: result.contentTypes?.length || 0,
         entries: result.entries?.length || 0,
