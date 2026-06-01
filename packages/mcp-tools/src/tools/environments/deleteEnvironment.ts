@@ -4,25 +4,53 @@ import {
   withErrorHandling,
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import {
+  buildConfirmToken,
+  buildConfirmationPreview,
+  CONFIRMATION_MESSAGE_PREFIX,
+} from '../../utils/confirmation.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
 export const DeleteEnvironmentToolParams = BaseToolSchema.extend({
   environmentId: z.string().describe('The ID of the environment to delete'),
+  confirm: z
+    .boolean()
+    .optional()
+    .describe(
+      'Set to true on the second call to actually perform the deletion. Required together with confirmToken.',
+    ),
+  confirmToken: z
+    .string()
+    .optional()
+    .describe(
+      'Token returned by the preview call; must be supplied with confirm: true.',
+    ),
 });
 
 type Params = z.infer<typeof DeleteEnvironmentToolParams>;
 
 export function deleteEnvironmentTool(config: ContentfulConfig) {
   async function tool(args: Params) {
+    const expectedToken = buildConfirmToken('environment', args.environmentId);
+    if (args.confirm !== true || args.confirmToken !== expectedToken) {
+      return createSuccessResponse(
+        `${CONFIRMATION_MESSAGE_PREFIX} environment`,
+        buildConfirmationPreview(
+          'environment',
+          args.environmentId,
+          { environmentId: args.environmentId },
+          expectedToken,
+        ),
+      );
+    }
+
     const params = {
       spaceId: args.spaceId,
       environmentId: args.environmentId,
     };
 
     const contentfulClient = createToolClient(config, args);
-
-  // Delete the environment
-  await contentfulClient.environment.delete(params);
+    await contentfulClient.environment.delete(params);
 
     return createSuccessResponse('Environment deleted successfully', {
       environmentId: args.environmentId,
