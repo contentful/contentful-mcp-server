@@ -151,7 +151,7 @@ describe('updateEditorInterface', () => {
       content: [
         {
           type: 'text',
-          text: "Error updating editor interface: Environment 'master' is protected. Destructive operations are not allowed.",
+          text: "Error updating editor interface: Environment 'master' is protected. Write and delete operations are not allowed.",
         },
       ],
     });

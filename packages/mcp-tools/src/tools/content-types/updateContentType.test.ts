@@ -351,7 +351,7 @@ describe('updateContentType', () => {
       content: [
         {
           type: 'text',
-          text: "Error updating content type: Environment 'master' is protected. Destructive operations are not allowed.",
+          text: "Error updating content type: Environment 'master' is protected. Write and delete operations are not allowed.",
         },
       ],
     });

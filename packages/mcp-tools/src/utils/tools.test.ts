@@ -22,7 +22,7 @@ describe('assertEnvironmentNotProtected', () => {
     expect(() =>
       assertEnvironmentNotProtected('master', ['master', 'staging']),
     ).toThrow(
-      "Environment 'master' is protected. Destructive operations are not allowed.",
+      "Environment 'master' is protected. Write and delete operations are not allowed.",
     );
   });
 
@@ -30,7 +30,7 @@ describe('assertEnvironmentNotProtected', () => {
     expect(() =>
       assertEnvironmentNotProtected('staging', ['master', 'staging']),
     ).toThrow(
-      "Environment 'staging' is protected. Destructive operations are not allowed.",
+      "Environment 'staging' is protected. Write and delete operations are not allowed.",
     );
   });
 

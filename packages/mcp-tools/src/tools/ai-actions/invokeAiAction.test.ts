@@ -304,7 +304,7 @@ describe('invokeAiAction', () => {
       content: [
         {
           type: 'text',
-          text: "Error invoking AI action: Environment 'master' is protected. Destructive operations are not allowed.",
+          text: "Error invoking AI action: Environment 'master' is protected. Write and delete operations are not allowed.",
         },
       ],
     });

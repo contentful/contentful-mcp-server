@@ -137,7 +137,7 @@ describe('importSpace', () => {
       content: [
         {
           type: 'text',
-          text: "Error importing space: Environment 'master' is protected. Destructive operations are not allowed.",
+          text: "Error importing space: Environment 'master' is protected. Write and delete operations are not allowed.",
         },
       ],
     });

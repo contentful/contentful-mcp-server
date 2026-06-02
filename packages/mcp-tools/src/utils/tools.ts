@@ -58,7 +58,7 @@ export function assertEnvironmentNotProtected(
 ): void {
   if (protectedEnvironments && protectedEnvironments.includes(environmentId)) {
     throw new Error(
-      `Environment '${environmentId}' is protected. Destructive operations are not allowed.`,
+      `Environment '${environmentId}' is protected. Write and delete operations are not allowed.`,
     );
   }
 }
