@@ -81,7 +81,7 @@ export function createEntryTools(config: ContentfulConfig) {
       annotations: {
         readOnlyHint: false,
         destructiveHint: true,
-        idempotentHint: true,
+        idempotentHint: false,
         openWorldHint: false,
       },
       tool: deleteEntry,

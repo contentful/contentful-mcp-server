@@ -31,25 +31,31 @@ type Params = z.infer<typeof DeleteEnvironmentToolParams>;
 
 export function deleteEnvironmentTool(config: ContentfulConfig) {
   async function tool(args: Params) {
-    const expectedToken = buildConfirmToken('environment', args.environmentId);
-    if (args.confirm !== true || args.confirmToken !== expectedToken) {
-      return createSuccessResponse(
-        `${CONFIRMATION_MESSAGE_PREFIX} environment`,
-        buildConfirmationPreview(
-          'environment',
-          args.environmentId,
-          { environmentId: args.environmentId },
-          expectedToken,
-        ),
-      );
-    }
-
     const params = {
       spaceId: args.spaceId,
       environmentId: args.environmentId,
     };
 
     const contentfulClient = createToolClient(config, args);
+    const environment = await contentfulClient.environment.get(params);
+
+    const expectedToken = buildConfirmToken(
+      'environment',
+      args.environmentId,
+      environment.sys.version,
+    );
+    if (args.confirm !== true || args.confirmToken !== expectedToken) {
+      return createSuccessResponse(
+        `${CONFIRMATION_MESSAGE_PREFIX} environment`,
+        buildConfirmationPreview(
+          'environment',
+          args.environmentId,
+          { environment },
+          expectedToken,
+        ),
+      );
+    }
+
     await contentfulClient.environment.delete(params);
 
     return createSuccessResponse('Environment deleted successfully', {

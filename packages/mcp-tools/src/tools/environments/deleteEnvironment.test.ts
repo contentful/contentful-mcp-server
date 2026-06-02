@@ -1,5 +1,10 @@
-import { describe, it, expect } from 'vitest';
-import { mockArgs, mockEnvironmentDelete } from './mockClient.js';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import {
+  mockArgs,
+  mockEnvironmentDelete,
+  mockEnvironmentGet,
+  testEnvironment,
+} from './mockClient.js';
 import { deleteEnvironmentTool } from './deleteEnvironment.js';
 import { createToolClient } from '../../utils/tools.js';
 import { formatResponse } from '../../utils/formatters.js';
@@ -9,9 +14,23 @@ import { createMockConfig } from '../../test-helpers/mockConfig.js';
 describe('deleteEnvironment', () => {
   const mockConfig = createMockConfig();
   const targetEnv = 'env-to-delete';
-  const validToken = buildConfirmToken('environment', targetEnv);
+  const validToken = buildConfirmToken(
+    'environment',
+    targetEnv,
+    testEnvironment.sys.version,
+  );
+  const targetEnvironment = {
+    ...testEnvironment,
+    sys: { ...testEnvironment.sys, id: targetEnv },
+  };
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   it('returns a confirmation preview when confirm is missing', async () => {
+    mockEnvironmentGet.mockResolvedValue(targetEnvironment);
+
     const tool = deleteEnvironmentTool(mockConfig);
     const result = await tool({ ...mockArgs, environmentId: targetEnv });
 
@@ -21,6 +40,8 @@ describe('deleteEnvironment', () => {
   });
 
   it('returns a confirmation preview when confirmToken is wrong', async () => {
+    mockEnvironmentGet.mockResolvedValue(targetEnvironment);
+
     const tool = deleteEnvironmentTool(mockConfig);
     const result = await tool({
       ...mockArgs,
@@ -34,6 +55,8 @@ describe('deleteEnvironment', () => {
   });
 
   it('returns a confirmation preview when confirm is true but confirmToken is missing', async () => {
+    mockEnvironmentGet.mockResolvedValue(targetEnvironment);
+
     const tool = deleteEnvironmentTool(mockConfig);
     const result = await tool({ ...mockArgs, environmentId: targetEnv, confirm: true });
 
@@ -42,6 +65,8 @@ describe('deleteEnvironment', () => {
   });
 
   it('returns a confirmation preview when confirm is false even with correct token', async () => {
+    mockEnvironmentGet.mockResolvedValue(targetEnvironment);
+
     const tool = deleteEnvironmentTool(mockConfig);
     const result = await tool({
       ...mockArgs,
@@ -55,6 +80,7 @@ describe('deleteEnvironment', () => {
   });
 
   it('deletes when confirm is true and confirmToken matches', async () => {
+    mockEnvironmentGet.mockResolvedValue(targetEnvironment);
     mockEnvironmentDelete.mockResolvedValue(undefined);
 
     const tool = deleteEnvironmentTool(mockConfig);
@@ -78,7 +104,22 @@ describe('deleteEnvironment', () => {
     expect(result).toEqual({ content: [{ type: 'text', text: expected }] });
   });
 
+  it('handles errors when environment get fails before confirmation', async () => {
+    mockEnvironmentGet.mockRejectedValue(new Error('Environment not found'));
+
+    const tool = deleteEnvironmentTool(mockConfig);
+    const result = await tool({ ...mockArgs, environmentId: targetEnv });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        { type: 'text', text: 'Error deleting environment: Environment not found' },
+      ],
+    });
+  });
+
   it('handles errors when deletion fails after confirmation', async () => {
+    mockEnvironmentGet.mockResolvedValue(targetEnvironment);
     mockEnvironmentDelete.mockRejectedValue(new Error('Deletion failed'));
 
     const tool = deleteEnvironmentTool(mockConfig);

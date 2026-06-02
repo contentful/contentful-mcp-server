@@ -18,6 +18,7 @@ describe('deleteEntry', () => {
   const validToken = buildConfirmToken('entry', mockArgs.entryId, mockEntry.sys.version);
 
   beforeEach(() => {
+    vi.clearAllMocks();
     setupMockClient();
   });
 

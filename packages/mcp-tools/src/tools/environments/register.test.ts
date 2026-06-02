@@ -71,7 +71,7 @@ describe('environment tools collection', () => {
     expect(deleteEnvironment.annotations).toEqual({
       readOnlyHint: false,
       destructiveHint: true,
-      idempotentHint: true,
+      idempotentHint: false,
       openWorldHint: false,
     });
     expect(deleteEnvironment.tool).toBeDefined();
