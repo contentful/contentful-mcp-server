@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { deleteAssetTool } from './deleteAsset.js';
 import { formatResponse } from '../../utils/formatters.js';
+import { buildConfirmToken } from '../../utils/confirmation.js';
 import {
   setupMockClient,
   mockAssetGet,
@@ -14,35 +15,67 @@ import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('deleteAsset', () => {
   const mockConfig = createMockConfig();
+  const validToken = buildConfirmToken('asset', mockArgs.assetId, mockAsset.sys.version);
 
   beforeEach(() => {
-    setupMockClient();
     vi.clearAllMocks();
+    setupMockClient();
   });
 
-  it('should delete an asset successfully', async () => {
+  it('returns a confirmation preview when confirm is missing', async () => {
     mockAssetGet.mockResolvedValue(mockAsset);
-    mockAssetDelete.mockResolvedValue(undefined);
 
     const tool = deleteAssetTool(mockConfig);
     const result = await tool(mockArgs);
 
-    const expectedResponse = formatResponse('Asset deleted successfully', {
-      asset: mockAsset,
-    });
-    expect(result).toEqual({
-      content: [
-        {
-          type: 'text',
-          text: expectedResponse,
-        },
-      ],
+    expect(mockAssetDelete).not.toHaveBeenCalled();
+    expect(result.content[0].text).toContain('Confirmation required to delete');
+    expect(result.content[0].text).toContain(validToken);
+  });
+
+  it('returns a confirmation preview when confirmToken is wrong', async () => {
+    mockAssetGet.mockResolvedValue(mockAsset);
+
+    const tool = deleteAssetTool(mockConfig);
+    const result = await tool({ ...mockArgs, confirm: true, confirmToken: 'wrong' });
+
+    expect(mockAssetDelete).not.toHaveBeenCalled();
+    expect(result.content[0].text).toContain('Confirmation required to delete');
+  });
+
+  it('returns a confirmation preview when confirm is true but confirmToken is missing', async () => {
+    mockAssetGet.mockResolvedValue(mockAsset);
+
+    const tool = deleteAssetTool(mockConfig);
+    const result = await tool({ ...mockArgs, confirm: true });
+
+    expect(mockAssetDelete).not.toHaveBeenCalled();
+    expect(result.content[0].text).toContain('Confirmation required to delete');
+  });
+
+  it('returns a confirmation preview when confirm is false even with correct token', async () => {
+    mockAssetGet.mockResolvedValue(mockAsset);
+
+    const tool = deleteAssetTool(mockConfig);
+    const result = await tool({
+      ...mockArgs,
+      confirm: false,
+      confirmToken: validToken,
     });
 
-    expect(mockAssetGet).toHaveBeenCalledWith({
-      spaceId: mockArgs.spaceId,
-      environmentId: mockArgs.environmentId,
-      assetId: mockArgs.assetId,
+    expect(mockAssetDelete).not.toHaveBeenCalled();
+    expect(result.content[0].text).toContain('Confirmation required to delete');
+  });
+
+  it('deletes when confirm is true and confirmToken matches', async () => {
+    mockAssetGet.mockResolvedValue(mockAsset);
+    mockAssetDelete.mockResolvedValue(undefined);
+
+    const tool = deleteAssetTool(mockConfig);
+    const result = await tool({
+      ...mockArgs,
+      confirm: true,
+      confirmToken: validToken,
     });
 
     expect(mockAssetDelete).toHaveBeenCalledWith({
@@ -50,44 +83,37 @@ describe('deleteAsset', () => {
       environmentId: mockArgs.environmentId,
       assetId: mockArgs.assetId,
     });
+    const expected = formatResponse('Asset deleted successfully', { asset: mockAsset });
+    expect(result).toEqual({ content: [{ type: 'text', text: expected }] });
   });
 
-  it('should handle errors when asset retrieval fails before deletion', async () => {
-    const error = new Error('Asset not found');
-    mockAssetGet.mockRejectedValue(error);
+  it('handles errors when asset get fails before confirmation', async () => {
+    mockAssetGet.mockRejectedValue(new Error('Asset not found'));
 
     const tool = deleteAssetTool(mockConfig);
     const result = await tool(mockArgs);
-
-    expect(result).toEqual({
-      isError: true,
-      content: [
-        {
-          type: 'text',
-          text: 'Error deleting asset: Asset not found',
-        },
-      ],
-    });
 
     expect(mockAssetDelete).not.toHaveBeenCalled();
+    expect(result).toEqual({
+      isError: true,
+      content: [{ type: 'text', text: 'Error deleting asset: Asset not found' }],
+    });
   });
 
-  it('should handle errors when asset deletion fails', async () => {
+  it('handles errors when deletion fails after confirmation', async () => {
     mockAssetGet.mockResolvedValue(mockAsset);
-    const deletionError = new Error('Asset deletion failed');
-    mockAssetDelete.mockRejectedValue(deletionError);
+    mockAssetDelete.mockRejectedValue(new Error('Asset deletion failed'));
 
     const tool = deleteAssetTool(mockConfig);
-    const result = await tool(mockArgs);
+    const result = await tool({
+      ...mockArgs,
+      confirm: true,
+      confirmToken: validToken,
+    });
 
     expect(result).toEqual({
       isError: true,
-      content: [
-        {
-          type: 'text',
-          text: 'Error deleting asset: Asset deletion failed',
-        },
-      ],
+      content: [{ type: 'text', text: 'Error deleting asset: Asset deletion failed' }],
     });
   });
 });

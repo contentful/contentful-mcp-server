@@ -24,7 +24,7 @@ describe('buildConfirmToken', () => {
     );
   });
 
-  it('omits version when undefined (e.g. environment)', () => {
+  it('still produces a stable hex token when version is undefined', () => {
     const token = buildConfirmToken('environment', 'staging');
     expect(token).toMatch(/^[0-9a-f]{16}$/);
     expect(token).toBe(buildConfirmToken('environment', 'staging'));
@@ -51,9 +51,17 @@ describe('buildConfirmationPreview', () => {
     expect(CONFIRMATION_MESSAGE_PREFIX).toBe('Confirmation required to delete');
   });
 
-  it('renders contentType as "content type" in instructions', () => {
-    const result = buildConfirmationPreview('contentType', 'BlogPost', {}, 'token');
-    expect(result.instructions).toContain('delete content type "BlogPost"');
-    expect(result.instructions).not.toContain('contentType');
+  it('renders multi-word resource names with spaces in instructions', () => {
+    const ct = buildConfirmationPreview('contentType', 'BlogPost', {}, 'token');
+    expect(ct.instructions).toContain('delete content type "BlogPost"');
+    expect(ct.instructions).not.toContain('contentType');
+
+    const cs = buildConfirmationPreview('conceptScheme', 'Topics', {}, 'token');
+    expect(cs.instructions).toContain('delete concept scheme "Topics"');
+    expect(cs.instructions).not.toContain('conceptScheme');
+
+    const ai = buildConfirmationPreview('aiAction', 'Translate', {}, 'token');
+    expect(ai.instructions).toContain('delete AI action "Translate"');
+    expect(ai.instructions).not.toContain('aiAction');
   });
 });

@@ -107,7 +107,7 @@ describe('concept scheme tools collection', () => {
 
     expect(deleteConceptScheme.title).toBe('delete_concept_scheme');
     expect(deleteConceptScheme.description).toBe(
-      'Delete a taxonomy concept scheme from Contentful. Requires the concept scheme ID and version number for optimistic concurrency control. This operation permanently removes the concept scheme and cannot be undone.',
+      'Delete a taxonomy concept scheme from Contentful. This is a two-phase operation: the first call (without confirm/confirmToken) returns a preview of the concept scheme and a confirmToken. To complete the deletion, call this tool again with the same conceptSchemeId, confirm: true, and the confirmToken from the preview response. The concept scheme version is fetched server-side and used for optimistic concurrency control.',
     );
     expect(deleteConceptScheme.inputParams).toStrictEqual(
       DeleteConceptSchemeToolParams.shape,
@@ -115,7 +115,7 @@ describe('concept scheme tools collection', () => {
     expect(deleteConceptScheme.annotations).toEqual({
       readOnlyHint: false,
       destructiveHint: true,
-      idempotentHint: true,
+      idempotentHint: false,
       openWorldHint: false,
     });
     expect(deleteConceptScheme.tool).toBeDefined();

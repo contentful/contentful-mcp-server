@@ -63,12 +63,12 @@ export function createLocaleTools(config: ContentfulConfig) {
     deleteLocale: {
       title: 'delete_locale',
       description:
-        'Delete a specific locale from your Contentful environment. This operation permanently removes the locale and cannot be undone.',
+        'Delete a specific locale from your Contentful environment. This is a two-phase operation: the first call (without confirm/confirmToken) returns a preview of the locale and a confirmToken. To complete the deletion, call this tool again with the same localeId, confirm: true, and the confirmToken from the preview response.',
       inputParams: DeleteLocaleToolParams.shape,
       annotations: {
         readOnlyHint: false,
         destructiveHint: true,
-        idempotentHint: true,
+        idempotentHint: false,
         openWorldHint: false,
       },
       tool: deleteLocale,

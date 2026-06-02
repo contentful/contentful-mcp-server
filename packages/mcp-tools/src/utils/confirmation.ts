@@ -1,6 +1,14 @@
 import { createHash } from 'node:crypto';
 
-export type DestructiveResource = 'entry' | 'environment' | 'contentType';
+export type DestructiveResource =
+  | 'entry'
+  | 'environment'
+  | 'contentType'
+  | 'asset'
+  | 'aiAction'
+  | 'locale'
+  | 'concept'
+  | 'conceptScheme';
 
 export const CONFIRMATION_MESSAGE_PREFIX = 'Confirmation required to delete';
 
@@ -10,7 +18,8 @@ export const CONFIRMATION_MESSAGE_PREFIX = 'Confirmation required to delete';
  * which means the AI must have actually called the tool once to see the
  * current state before it can produce a token that matches on the second call.
  *
- * For environments, version is omitted (no sys.version on environment).
+ * `version` is optional to keep the helper resilient — callers should pass
+ * sys.version when the resource has one. All current resources do.
  */
 export function buildConfirmToken(
   resource: DestructiveResource,
@@ -31,6 +40,11 @@ const RESOURCE_DISPLAY_NAME: Record<DestructiveResource, string> = {
   entry: 'entry',
   environment: 'environment',
   contentType: 'content type',
+  asset: 'asset',
+  aiAction: 'AI action',
+  locale: 'locale',
+  concept: 'concept',
+  conceptScheme: 'concept scheme',
 };
 
 /**

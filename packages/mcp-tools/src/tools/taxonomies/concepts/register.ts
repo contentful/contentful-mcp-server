@@ -64,12 +64,12 @@ export function createConceptTools(config: ContentfulConfig) {
     deleteConcept: {
       title: 'delete_concept',
       description:
-        'Delete a taxonomy concept from Contentful. Requires the concept ID and version number for optimistic concurrency control. This operation permanently removes the concept and cannot be undone.',
+        'Delete a taxonomy concept from Contentful. This is a two-phase operation: the first call (without confirm/confirmToken) returns a preview of the concept and a confirmToken. To complete the deletion, call this tool again with the same conceptId, confirm: true, and the confirmToken from the preview response. The concept version is fetched server-side and used for optimistic concurrency control.',
       inputParams: DeleteConceptToolParams.shape,
       annotations: {
         readOnlyHint: false,
         destructiveHint: true,
-        idempotentHint: true,
+        idempotentHint: false,
         openWorldHint: false,
       },
       tool: deleteConcept,
