@@ -24,6 +24,7 @@ describe('updateEntry', () => {
   it('should update an entry successfully with fields only', async () => {
     const testArgs = {
       ...mockArgs,
+      entryId: 'test-entry-id',
       fields: {
         title: { 'en-US': 'Updated Title' },
         description: { 'en-US': 'Updated Description' },
@@ -76,6 +77,7 @@ describe('updateEntry', () => {
   it('should update an entry with metadata tags', async () => {
     const testArgs = {
       ...mockArgs,
+      entryId: 'test-entry-id',
       fields: {
         title: { 'en-US': 'Updated Title' },
       },
@@ -285,6 +287,7 @@ describe('updateEntry', () => {
 
     const testArgs = {
       ...mockArgs,
+      entryId: 'test-entry-id',
       fields: {
         title: { 'en-US': 'Updated Title', fr: 'Titre mis à jour' },
         body: { 'en-US': richTextEnUS, fr: richTextFr },
@@ -418,6 +421,7 @@ describe('updateEntry', () => {
 
     const testArgs = {
       ...mockArgs,
+      entryId: 'test-entry-id',
       fields: {
         body: { 'en-US': richTextWithEmbeds },
       },
@@ -468,6 +472,7 @@ describe('updateEntry', () => {
   it('should update an entry with empty fields', async () => {
     const testArgs = {
       ...mockArgs,
+      entryId: 'test-entry-id',
       fields: {},
     };
 
@@ -532,6 +537,7 @@ describe('updateEntry', () => {
   it('should handle errors when entry retrieval succeeds but update fails', async () => {
     const testArgs = {
       ...mockArgs,
+      entryId: 'test-entry-id',
       fields: {
         title: { 'en-US': 'Updated Title' },
       },
