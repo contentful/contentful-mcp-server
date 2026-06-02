@@ -1,3 +1,9 @@
+## 0.6.0 (2026-06-02)
+
+### 🚀 Features
+
+- add PROTECTED_ENVIRONMENTS to block writes on listed envs [DX-1058] ([#381](https://github.com/contentful/contentful-mcp-server/pull/381))
+
 ## 0.5.0 (2026-06-02)
 
 ### 🚀 Features
