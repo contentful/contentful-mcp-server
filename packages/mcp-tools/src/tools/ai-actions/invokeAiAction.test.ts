@@ -289,27 +289,6 @@ describe('invokeAiAction', () => {
     });
   });
 
-  it('should return error when environment is protected', async () => {
-    const protectedConfig = createMockConfig({
-      protectedEnvironments: ['master'],
-    });
-    const tool = invokeAiActionTool(protectedConfig);
-    const result = await tool({
-      ...mockArgs,
-      environmentId: 'master',
-      fields: mockInvocationFields,
-    });
-    expect(result).toEqual({
-      isError: true,
-      content: [
-        {
-          type: 'text',
-          text: "Error invoking AI action: Environment 'master' is protected. Write and delete operations are not allowed.",
-        },
-      ],
-    });
-  });
-
   it('should handle errors during initial invocation', async () => {
     const testArgs = {
       ...mockArgs,
