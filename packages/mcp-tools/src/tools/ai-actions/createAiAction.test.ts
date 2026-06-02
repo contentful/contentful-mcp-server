@@ -11,7 +11,10 @@ import {
 } from './mockClient.js';
 import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
-vi.mock('../../utils/tools.js');
+vi.mock('../../utils/tools.js', async (importOriginal) => {
+  const orig = await importOriginal<typeof import('../../utils/tools.js')>();
+  return { ...orig, createToolClient: vi.fn() };
+});
 
 describe('createAiAction', () => {
   const mockConfig = createMockConfig();
@@ -123,6 +126,30 @@ describe('createAiAction', () => {
         {
           type: 'text',
           text: expectedResponse,
+        },
+      ],
+    });
+  });
+
+  it('should return error when environment is protected', async () => {
+    const protectedConfig = createMockConfig({
+      protectedEnvironments: ['master'],
+    });
+    const tool = createAiActionTool(protectedConfig);
+    const result = await tool({
+      ...mockArgs,
+      environmentId: 'master',
+      name: 'Test',
+      description: 'Test',
+      instruction: { template: 'Test', variables: [] },
+      configuration: { modelType: 'gpt-4', modelTemperature: 0.3 },
+    });
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error creating AI action: Environment 'master' is protected. Destructive operations are not allowed.",
         },
       ],
     });

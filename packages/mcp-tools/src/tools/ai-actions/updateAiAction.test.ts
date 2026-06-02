@@ -10,7 +10,10 @@ import {
 } from './mockClient.js';
 import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
-vi.mock('../../../src/utils/tools.js');
+vi.mock('../../utils/tools.js', async (importOriginal) => {
+  const orig = await importOriginal<typeof import('../../utils/tools.js')>();
+  return { ...orig, createToolClient: vi.fn() };
+});
 
 describe('updateAiAction', () => {
   const mockConfig = createMockConfig();
@@ -101,6 +104,23 @@ describe('updateAiAction', () => {
         {
           type: 'text',
           text: expectedResponse,
+        },
+      ],
+    });
+  });
+
+  it('should return error when environment is protected', async () => {
+    const protectedConfig = createMockConfig({
+      protectedEnvironments: ['master'],
+    });
+    const tool = updateAiActionTool(protectedConfig);
+    const result = await tool({ ...mockArgs, environmentId: 'master' });
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error updating AI action: Environment 'master' is protected. Destructive operations are not allowed.",
         },
       ],
     });

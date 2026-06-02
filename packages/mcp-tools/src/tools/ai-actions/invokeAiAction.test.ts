@@ -12,7 +12,10 @@ import {
 } from './mockClient.js';
 import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
-vi.mock('../../utils/tools.js');
+vi.mock('../../utils/tools.js', async (importOriginal) => {
+  const orig = await importOriginal<typeof import('../../utils/tools.js')>();
+  return { ...orig, createToolClient: vi.fn() };
+});
 
 describe('invokeAiAction', () => {
   const mockConfig = createMockConfig();
@@ -281,6 +284,27 @@ describe('invokeAiAction', () => {
         {
           type: 'text',
           text: 'Error invoking AI action: Polling timeout: 0/1 actions completed after 10 attempts',
+        },
+      ],
+    });
+  });
+
+  it('should return error when environment is protected', async () => {
+    const protectedConfig = createMockConfig({
+      protectedEnvironments: ['master'],
+    });
+    const tool = invokeAiActionTool(protectedConfig);
+    const result = await tool({
+      ...mockArgs,
+      environmentId: 'master',
+      fields: mockInvocationFields,
+    });
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error invoking AI action: Environment 'master' is protected. Destructive operations are not allowed.",
         },
       ],
     });
