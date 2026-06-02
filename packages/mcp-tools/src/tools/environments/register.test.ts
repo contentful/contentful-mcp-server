@@ -62,7 +62,9 @@ describe('environment tools collection', () => {
     const { deleteEnvironment } = environmentTools;
 
     expect(deleteEnvironment.title).toBe('delete_environment');
-    expect(deleteEnvironment.description).toBe('Delete an environment');
+    expect(deleteEnvironment.description).toBe(
+      'Delete an environment from your Contentful space. This is a two-phase operation: the first call (without confirm/confirmToken) returns a preview and a confirmToken. To complete the deletion, call this tool again with the same environmentId, confirm: true, and the confirmToken from the preview response.',
+    );
     expect(deleteEnvironment.inputParams).toStrictEqual(
       DeleteEnvironmentToolParams.shape,
     );
