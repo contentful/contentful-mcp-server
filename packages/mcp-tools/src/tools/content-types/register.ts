@@ -26,6 +26,18 @@ import {
   unpublishContentTypeTool,
   UnpublishContentTypeToolParams,
 } from './unpublishContentType.js';
+import {
+  omitContentTypeFieldTool,
+  OmitContentTypeFieldToolParams,
+} from './omitContentTypeField.js';
+import {
+  deleteContentTypeFieldTool,
+  DeleteContentTypeFieldToolParams,
+} from './deleteContentTypeField.js';
+import {
+  disableContentTypeFieldTool,
+  DisableContentTypeFieldToolParams,
+} from './disableContentTypeField.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
 export function createContentTypeTools(config: ContentfulConfig) {
@@ -36,6 +48,9 @@ export function createContentTypeTools(config: ContentfulConfig) {
   const deleteContentType = deleteContentTypeTool(config);
   const publishContentType = publishContentTypeTool(config);
   const unpublishContentType = unpublishContentTypeTool(config);
+  const omitContentTypeField = omitContentTypeFieldTool(config);
+  const deleteContentTypeField = deleteContentTypeFieldTool(config);
+  const disableContentTypeField = disableContentTypeFieldTool(config);
 
   return {
     getContentType: {
@@ -119,6 +134,45 @@ export function createContentTypeTools(config: ContentfulConfig) {
         openWorldHint: false,
       },
       tool: unpublishContentType,
+    },
+    omitContentTypeField: {
+      title: 'omit_content_type_field',
+      description:
+        'Mark a single field as omitted (or un-omitted) on a content type. Updates the content type draft only — call publish_content_type afterwards for the change to take effect. Reversible via the same tool with omitted=false. This is a prerequisite for delete_content_type_field: the field must be omitted in the published version before it can be deleted.',
+      inputParams: OmitContentTypeFieldToolParams.shape,
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: false,
+        openWorldHint: false,
+      },
+      tool: omitContentTypeField,
+    },
+    deleteContentTypeField: {
+      title: 'delete_content_type_field',
+      description:
+        'Permanently mark a single field as deleted on a content type. Destructive and irreversible once published. Updates the content type draft only — call publish_content_type afterwards for the deletion to take effect. The field must not be required AND must already be omitted in the published version of the content type. Run omit_content_type_field, then publish_content_type, before calling this. Use disable_content_type_field to temporarily hide a field instead.',
+      inputParams: DeleteContentTypeFieldToolParams.shape,
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: false,
+        openWorldHint: false,
+      },
+      tool: deleteContentTypeField,
+    },
+    disableContentTypeField: {
+      title: 'disable_content_type_field',
+      description:
+        'Toggle the disabled and/or omitted flags on a single field. Setting disabled=true hides the field from the editor UI; setting omitted=true removes it from API responses. Both flags are reversible. Updates the content type draft only — call publish_content_type afterwards for the change to take effect. Use omit_content_type_field when only changing the omitted flag.',
+      inputParams: DisableContentTypeFieldToolParams.shape,
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: false,
+        openWorldHint: false,
+      },
+      tool: disableContentTypeField,
     },
   };
 }

@@ -1,3 +1,13 @@
+## 0.5.0 (2026-06-02)
+
+### 🚀 Features
+
+- add omit/disable/delete field tools for content types [DX-732] ([#377](https://github.com/contentful/contentful-mcp-server/pull/377))
+
+### 🩹 Fixes
+
+- require array-only entryId to prevent LLM character truncation [DX-736] ([#378](https://github.com/contentful/contentful-mcp-server/pull/378))
+
 ## 0.4.5 (2026-06-01)
 
 ### 🩹 Fixes

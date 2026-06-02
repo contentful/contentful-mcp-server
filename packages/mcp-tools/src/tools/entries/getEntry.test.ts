@@ -22,7 +22,7 @@ describe('getEntry', () => {
     mockEntryGet.mockResolvedValue(mockEntry);
 
     const tool = getEntryTool(mockConfig);
-    const result = await tool(mockArgs);
+    const result = await tool({ ...mockArgs, entryId: 'test-entry-id' });
 
     const expectedResponse = formatResponse('Entry retrieved successfully', {
       entry: mockEntry,
@@ -46,7 +46,7 @@ describe('getEntry', () => {
     mockEntryGet.mockResolvedValue(mockEmptyEntry);
 
     const tool = getEntryTool(mockConfig);
-    const result = await tool(mockArgs);
+    const result = await tool({ ...mockArgs, entryId: 'test-entry-id' });
 
     const expectedResponse = formatResponse('Entry retrieved successfully', {
       entry: mockEmptyEntry,
@@ -66,7 +66,7 @@ describe('getEntry', () => {
     mockEntryGet.mockRejectedValue(error);
 
     const tool = getEntryTool(mockConfig);
-    const result = await tool(mockArgs);
+    const result = await tool({ ...mockArgs, entryId: 'test-entry-id' });
 
     expect(result).toEqual({
       isError: true,

@@ -29,7 +29,7 @@ describe('unarchiveEntry', () => {
     it('should unarchive entry successfully with valid parameters', async () => {
       const testArgs = {
         ...mockArgs,
-        entryId: 'test-entry-id',
+        entryId: ['test-entry-id'],
       };
 
       mockEntryUnarchive.mockResolvedValue(mockEntry);
@@ -41,7 +41,7 @@ describe('unarchiveEntry', () => {
       expect(mockEntryUnarchive).toHaveBeenCalledWith({
         spaceId: testArgs.spaceId,
         environmentId: testArgs.environmentId,
-        entryId: testArgs.entryId,
+        entryId: testArgs.entryId[0],
       });
 
       // Verify response format
@@ -62,7 +62,7 @@ describe('unarchiveEntry', () => {
     it('should throw error when unarchive fails', async () => {
       const testArgs = {
         ...mockArgs,
-        entryId: 'test-entry-id',
+        entryId: ['test-entry-id'],
       };
 
       const error = new Error('Entry is not archived');

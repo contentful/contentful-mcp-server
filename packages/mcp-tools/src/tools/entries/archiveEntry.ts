@@ -12,9 +12,11 @@ import type { ContentfulConfig } from '../../config/types.js';
 
 export const ArchiveEntryToolParams = BaseToolSchema.extend({
   entryId: z
-    .union([z.string(), z.array(z.string()).max(100)])
+    .array(z.string())
+    .min(1)
+    .max(100)
     .describe(
-      'The ID of the entry to archive (string) or an array of entry IDs (up to 100 entries)',
+      'Array of entry IDs to archive. Pass a single-element array for one entry, or up to 100 IDs for batch operations.',
     ),
 });
 
@@ -34,10 +36,7 @@ export function archiveEntryTool(config: ContentfulConfig) {
 
     const contentfulClient = createToolClient(config, args);
 
-    // Normalize input to always be an array
-    const entryIds = Array.isArray(args.entryId)
-      ? args.entryId
-      : [args.entryId];
+    const entryIds = args.entryId;
 
     // Track successfully archived entries
     const successfullyArchived: string[] = [];

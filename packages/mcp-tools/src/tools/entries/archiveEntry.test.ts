@@ -29,7 +29,7 @@ describe('archiveEntry', () => {
     it('should archive entry successfully with valid parameters', async () => {
       const testArgs = {
         ...mockArgs,
-        entryId: 'test-entry-id',
+        entryId: ['test-entry-id'],
       };
 
       mockEntryArchive.mockResolvedValue(mockArchivedEntry);
@@ -41,7 +41,7 @@ describe('archiveEntry', () => {
       expect(mockEntryArchive).toHaveBeenCalledWith({
         spaceId: testArgs.spaceId,
         environmentId: testArgs.environmentId,
-        entryId: testArgs.entryId,
+        entryId: testArgs.entryId[0],
       });
 
       // Verify response format
@@ -62,7 +62,7 @@ describe('archiveEntry', () => {
     it('should throw error when archive fails', async () => {
       const testArgs = {
         ...mockArgs,
-        entryId: 'test-entry-id',
+        entryId: ['test-entry-id'],
       };
 
       const error = new Error('Entry must be unpublished before archiving');

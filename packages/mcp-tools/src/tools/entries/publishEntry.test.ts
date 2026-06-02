@@ -47,7 +47,7 @@ describe('publishEntry', () => {
 
     const expectedResponse = formatResponse('Entry published successfully', {
       status: mockPublishedEntry.sys.status,
-      entryId: mockArgs.entryId,
+      entryId: mockArgs.entryId[0],
     });
     expect(result).toEqual({
       content: [
@@ -160,7 +160,7 @@ describe('publishEntry', () => {
   it('should handle errors when entry publishing fails', async () => {
     const testArgs = {
       ...mockArgs,
-      entryId: 'non-existent-entry',
+      entryId: ['non-existent-entry'],
     };
 
     const error = new Error('Entry not found');

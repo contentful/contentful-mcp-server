@@ -31,7 +31,7 @@ describe('deleteEntry', () => {
     mockEntryDelete.mockResolvedValue(undefined);
 
     const tool = deleteEntryTool(mockConfig);
-    const result = await tool(mockArgs);
+    const result = await tool({ ...mockArgs, entryId: 'test-entry-id' });
 
     const expectedResponse = formatResponse('Entry deleted successfully', {
       entry: mockEntry,
@@ -51,7 +51,7 @@ describe('deleteEntry', () => {
     mockEntryGet.mockRejectedValue(error);
 
     const tool = deleteEntryTool(mockConfig);
-    const result = await tool(mockArgs);
+    const result = await tool({ ...mockArgs, entryId: 'test-entry-id' });
 
     expect(result).toEqual({
       isError: true,
@@ -70,7 +70,7 @@ describe('deleteEntry', () => {
     mockEntryDelete.mockRejectedValue(deleteError);
 
     const tool = deleteEntryTool(mockConfig);
-    const result = await tool(mockArgs);
+    const result = await tool({ ...mockArgs, entryId: 'test-entry-id' });
 
     expect(result).toEqual({
       isError: true,
