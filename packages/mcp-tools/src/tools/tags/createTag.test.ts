@@ -1,10 +1,15 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import { mockArgs, testTag, mockTagCreateWithId } from './mockClient.js';
 
 import { createTagTool } from './createTag.js';
 import { createToolClient } from '../../utils/tools.js';
 import { formatResponse } from '../../utils/formatters.js';
 import { createMockConfig } from '../../test-helpers/mockConfig.js';
+
+vi.mock('../../utils/tools.js', async (importOriginal) => {
+  const orig = await importOriginal<typeof import('../../utils/tools.js')>();
+  return { ...orig, createToolClient: vi.fn() };
+});
 
 describe('createTag', () => {
   const mockConfig = createMockConfig();
@@ -40,6 +45,29 @@ describe('createTag', () => {
         {
           type: 'text',
           text: expectedResponse,
+        },
+      ],
+    });
+  });
+
+  it('should return error when environment is protected', async () => {
+    const protectedConfig = createMockConfig({
+      protectedEnvironments: ['master'],
+    });
+    const tool = createTagTool(protectedConfig);
+    const result = await tool({
+      ...mockArgs,
+      environmentId: 'master',
+      name: 'Test Tag',
+      id: 'test-tag',
+      visibility: 'private' as const,
+    });
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error creating tag: Environment 'master' is protected. Write and delete operations are not allowed.",
         },
       ],
     });

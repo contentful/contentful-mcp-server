@@ -10,12 +10,19 @@ import {
 } from './mockClient.js';
 import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
-vi.mock('../../../src/utils/tools.js');
+vi.mock('../../utils/tools.js', async (importOriginal) => {
+  const orig = await importOriginal<typeof import('../../utils/tools.js')>();
+  return {
+    ...orig,
+    createToolClient: vi.fn(),
+  };
+});
 
 describe('deleteEntry', () => {
   const mockConfig = createMockConfig();
 
   beforeEach(() => {
+    vi.clearAllMocks();
     setupMockClient();
   });
 
@@ -74,5 +81,28 @@ describe('deleteEntry', () => {
         },
       ],
     });
+  });
+
+  it('should return error when environment is protected', async () => {
+    const protectedConfig = createMockConfig({
+      protectedEnvironments: ['master'],
+    });
+    const tool = deleteEntryTool(protectedConfig);
+    const result = await tool({
+      ...mockArgs,
+      environmentId: 'master',
+      entryId: 'test-entry-id',
+    });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error deleting entry: Environment 'master' is protected. Write and delete operations are not allowed.",
+        },
+      ],
+    });
+    expect(mockEntryDelete).not.toHaveBeenCalled();
   });
 });

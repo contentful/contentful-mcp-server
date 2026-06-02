@@ -3,7 +3,11 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../utils/response.js';
-import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import {
+  BaseToolSchema,
+  createToolClient,
+  assertEnvironmentNotProtected,
+} from '../../utils/tools.js';
 import {
   BulkOperationParams,
   createEntryVersionedLinks,
@@ -26,6 +30,11 @@ type Params = z.infer<typeof PublishEntryToolParams>;
 
 export function publishEntryTool(config: ContentfulConfig) {
   async function tool(args: Params) {
+    assertEnvironmentNotProtected(
+      args.environmentId,
+      config.protectedEnvironments,
+    );
+
     const baseParams: BulkOperationParams = {
       spaceId: args.spaceId,
       environmentId: args.environmentId,

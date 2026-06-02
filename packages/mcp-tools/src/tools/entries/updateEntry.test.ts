@@ -12,12 +12,19 @@ import { createMockConfig } from '../../test-helpers/mockConfig.js';
 import { BLOCKS, INLINES } from '@contentful/rich-text-types';
 import { RichTextDocument } from '../../types/richTextSchema.js';
 
-vi.mock('../../../src/utils/tools.js');
+vi.mock('../../utils/tools.js', async (importOriginal) => {
+  const orig = await importOriginal<typeof import('../../utils/tools.js')>();
+  return {
+    ...orig,
+    createToolClient: vi.fn(),
+  };
+});
 
 describe('updateEntry', () => {
   const mockConfig = createMockConfig();
 
   beforeEach(() => {
+    vi.clearAllMocks();
     setupMockClient();
   });
 
@@ -532,6 +539,30 @@ describe('updateEntry', () => {
         },
       ],
     });
+  });
+
+  it('should return error when environment is protected', async () => {
+    const protectedConfig = createMockConfig({
+      protectedEnvironments: ['master'],
+    });
+    const tool = updateEntryTool(protectedConfig);
+    const result = await tool({
+      ...mockArgs,
+      environmentId: 'master',
+      entryId: 'test-entry-id',
+      fields: {},
+    });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error updating entry: Environment 'master' is protected. Write and delete operations are not allowed.",
+        },
+      ],
+    });
+    expect(mockEntryUpdate).not.toHaveBeenCalled();
   });
 
   it('should handle errors when entry retrieval succeeds but update fails', async () => {

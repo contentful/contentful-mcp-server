@@ -3,7 +3,11 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../../utils/response.js';
-import { BaseToolSchema, createClientConfig } from '../../../utils/tools.js';
+import {
+  BaseToolSchema,
+  createClientConfig,
+  assertEnvironmentNotProtected,
+} from '../../../utils/tools.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
 export const ImportSpaceToolParams = BaseToolSchema.extend({
@@ -82,6 +86,12 @@ type Params = z.infer<typeof ImportSpaceToolParams>;
 
 export function createImportSpaceTool(config: ContentfulConfig) {
   async function tool(args: Params) {
+    const targetEnvironmentId = args.environmentId || 'master';
+    assertEnvironmentNotProtected(
+      targetEnvironmentId,
+      config.protectedEnvironments,
+    );
+
     // Get management token from the same config used by other MCP tools
     const clientConfig = createClientConfig(config);
     const managementToken = clientConfig.accessToken;
@@ -97,7 +107,7 @@ export function createImportSpaceTool(config: ContentfulConfig) {
       ...args,
       managementToken,
       host: config.host ?? 'api.contentful.com',
-      environmentId: args.environmentId || 'master',
+      environmentId: targetEnvironmentId,
     } as any;
 
     try {
@@ -106,7 +116,7 @@ export function createImportSpaceTool(config: ContentfulConfig) {
 
       return createSuccessResponse('Space imported successfully', {
         spaceId: args.spaceId,
-        environmentId: args.environmentId || 'master',
+        environmentId: targetEnvironmentId,
         contentTypes: result.contentTypes?.length || 0,
         entries: result.entries?.length || 0,
         assets: result.assets?.length || 0,

@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { mockContentTypeDelete, mockArgs } from './mockClient.js';
 import { deleteContentTypeTool } from './deleteContentType.js';
 import { formatResponse } from '../../utils/formatters.js';
@@ -6,6 +6,11 @@ import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('deleteContentType', () => {
   const mockConfig = createMockConfig();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('should delete a content type successfully', async () => {
     mockContentTypeDelete.mockResolvedValue(undefined);
 
@@ -44,5 +49,24 @@ describe('deleteContentType', () => {
         },
       ],
     });
+  });
+
+  it('should return error when environment is protected', async () => {
+    const protectedConfig = createMockConfig({
+      protectedEnvironments: ['master'],
+    });
+    const tool = deleteContentTypeTool(protectedConfig);
+    const result = await tool({ ...mockArgs, environmentId: 'master' });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error deleting content type: Environment 'master' is protected. Write and delete operations are not allowed.",
+        },
+      ],
+    });
+    expect(mockContentTypeDelete).not.toHaveBeenCalled();
   });
 });

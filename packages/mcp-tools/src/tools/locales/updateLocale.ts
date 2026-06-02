@@ -3,7 +3,11 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../utils/response.js';
-import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import {
+  BaseToolSchema,
+  createToolClient,
+  assertEnvironmentNotProtected,
+} from '../../utils/tools.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
 export const UpdateLocaleToolParams = BaseToolSchema.extend({
@@ -41,6 +45,11 @@ type Params = z.infer<typeof UpdateLocaleToolParams>;
 
 export function updateLocaleTool(config: ContentfulConfig) {
   async function tool(args: Params) {
+    assertEnvironmentNotProtected(
+      args.environmentId,
+      config.protectedEnvironments,
+    );
+
     const params = {
       spaceId: args.spaceId,
       environmentId: args.environmentId,
@@ -49,20 +58,20 @@ export function updateLocaleTool(config: ContentfulConfig) {
 
     const contentfulClient = createToolClient(config, args);
 
-  // First, get the existing locale
-  const existingLocale = await contentfulClient.locale.get(params);
+    // First, get the existing locale
+    const existingLocale = await contentfulClient.locale.get(params);
 
-  // Remove read-only fields (nternal_code cannot be updated)
-  delete (existingLocale as { internal_code?: string }).internal_code;
+    // Remove read-only fields (nternal_code cannot be updated)
+    delete (existingLocale as { internal_code?: string }).internal_code;
 
-  // Build update data with only provided fields, merging with existing locale
-  const updateData = { ...existingLocale, ...args.fields };
+    // Build update data with only provided fields, merging with existing locale
+    const updateData = { ...existingLocale, ...args.fields };
 
-  // Update the locale with merged data
-  const updatedLocale = await contentfulClient.locale.update(
-    params,
-    updateData,
-  );
+    // Update the locale with merged data
+    const updatedLocale = await contentfulClient.locale.update(
+      params,
+      updateData,
+    );
 
     return createSuccessResponse('Locale updated successfully', {
       updatedLocale,

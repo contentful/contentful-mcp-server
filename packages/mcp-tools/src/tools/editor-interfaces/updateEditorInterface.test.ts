@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import {
   mockEditorInterfaceGet,
   mockEditorInterfaceUpdate,
@@ -11,6 +11,10 @@ import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('updateEditorInterface', () => {
   const mockConfig = createMockConfig();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
 
   it('should update an editor interface successfully', async () => {
     const updatedControls = [
@@ -133,5 +137,24 @@ describe('updateEditorInterface', () => {
         },
       ],
     });
+  });
+
+  it('should return error when environment is protected', async () => {
+    const protectedConfig = createMockConfig({
+      protectedEnvironments: ['master'],
+    });
+    const tool = updateEditorInterfaceTool(protectedConfig);
+    const result = await tool({ ...mockArgs, environmentId: 'master' });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error updating editor interface: Environment 'master' is protected. Write and delete operations are not allowed.",
+        },
+      ],
+    });
+    expect(mockEditorInterfaceUpdate).not.toHaveBeenCalled();
   });
 });

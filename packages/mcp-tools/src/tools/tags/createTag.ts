@@ -3,7 +3,11 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../utils/response.js';
-import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import {
+  BaseToolSchema,
+  createToolClient,
+  assertEnvironmentNotProtected,
+} from '../../utils/tools.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
 export const CreateTagToolParams = BaseToolSchema.extend({
@@ -18,6 +22,11 @@ type Params = z.infer<typeof CreateTagToolParams>;
 
 export function createTagTool(config: ContentfulConfig) {
   async function tool(args: Params) {
+    assertEnvironmentNotProtected(
+      args.environmentId,
+      config.protectedEnvironments,
+    );
+
     const params = {
       spaceId: args.spaceId,
       environmentId: args.environmentId,
@@ -26,10 +35,10 @@ export function createTagTool(config: ContentfulConfig) {
 
     const contentfulClient = createToolClient(config, args);
 
-  const newTag = await contentfulClient.tag.createWithId(params, {
-    name: args.name,
-    sys: { visibility: args.visibility },
-  });
+    const newTag = await contentfulClient.tag.createWithId(params, {
+      name: args.name,
+      sys: { visibility: args.visibility },
+    });
 
     return createSuccessResponse('Tag created successfully', { newTag });
   }

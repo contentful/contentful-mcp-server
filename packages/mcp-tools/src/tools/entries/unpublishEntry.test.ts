@@ -12,13 +12,20 @@ import {
 } from './mockClient.js';
 import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
-vi.mock('../../../src/utils/tools.js');
+vi.mock('../../utils/tools.js', async (importOriginal) => {
+  const orig = await importOriginal<typeof import('../../utils/tools.js')>();
+  return {
+    ...orig,
+    createToolClient: vi.fn(),
+  };
+});
 vi.mock('../../../src/utils/bulkOperations.js');
 
 describe('unpublishEntry', () => {
   const mockConfig = createMockConfig();
 
   beforeEach(() => {
+    vi.clearAllMocks();
     setupMockClient();
   });
 
@@ -139,6 +146,25 @@ describe('unpublishEntry', () => {
         },
       ],
     });
+  });
+
+  it('should return error when environment is protected', async () => {
+    const protectedConfig = createMockConfig({
+      protectedEnvironments: ['master'],
+    });
+    const tool = unpublishEntryTool(protectedConfig);
+    const result = await tool({ ...mockArgs, environmentId: 'master' });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error unpublishing entry: Environment 'master' is protected. Write and delete operations are not allowed.",
+        },
+      ],
+    });
+    expect(mockEntryUnpublish).not.toHaveBeenCalled();
   });
 
   it('should handle errors when entry unpublishing fails', async () => {

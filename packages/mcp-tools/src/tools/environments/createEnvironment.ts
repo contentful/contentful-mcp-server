@@ -3,7 +3,11 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../utils/response.js';
-import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import {
+  BaseToolSchema,
+  createToolClient,
+  assertEnvironmentNotProtected,
+} from '../../utils/tools.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
 export const CreateEnvironmentToolParams = BaseToolSchema.extend({
@@ -21,6 +25,11 @@ type Params = z.infer<typeof CreateEnvironmentToolParams>;
 
 export function createEnvironmentTool(config: ContentfulConfig) {
   async function tool(args: Params) {
+    assertEnvironmentNotProtected(
+      args.environmentId,
+      config.protectedEnvironments,
+    );
+
     const contentfulClient = createToolClient(config, args);
 
     // Create the environment

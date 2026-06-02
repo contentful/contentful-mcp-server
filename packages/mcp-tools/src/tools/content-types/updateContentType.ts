@@ -3,7 +3,11 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../utils/response.js';
-import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import {
+  BaseToolSchema,
+  createToolClient,
+  assertEnvironmentNotProtected,
+} from '../../utils/tools.js';
 import { FieldSchema } from '../../types/fieldSchema.js';
 import { ContentTypeMetadataSchema } from '../../types/taxonomySchema.js';
 import { ContentFields } from 'contentful-management';
@@ -33,6 +37,11 @@ type Params = z.infer<typeof UpdateContentTypeToolParams>;
 
 export function updateContentTypeTool(config: ContentfulConfig) {
   async function tool(args: Params) {
+    assertEnvironmentNotProtected(
+      args.environmentId,
+      config.protectedEnvironments,
+    );
+
     const params = {
       spaceId: args.spaceId,
       environmentId: args.environmentId,
@@ -41,64 +50,64 @@ export function updateContentTypeTool(config: ContentfulConfig) {
 
     const contentfulClient = createToolClient(config, args);
 
-  // Get the current content type
-  const currentContentType = await contentfulClient.contentType.get(params);
+    // Get the current content type
+    const currentContentType = await contentfulClient.contentType.get(params);
 
-  // Use the new fields if provided, otherwise keep existing fields
-  const fields = args.fields || currentContentType.fields;
+    // Use the new fields if provided, otherwise keep existing fields
+    const fields = args.fields || currentContentType.fields;
 
-  // If fields are provided, ensure we're not removing any required field metadata
-  if (args.fields) {
-    const existingFieldsMap = currentContentType.fields.reduce(
-      (acc: Record<string, ContentFields>, field: ContentFields) => {
-        acc[field.id] = field;
-        return acc;
-      },
-      {},
-    );
+    // If fields are provided, ensure we're not removing any required field metadata
+    if (args.fields) {
+      const existingFieldsMap = currentContentType.fields.reduce(
+        (acc: Record<string, ContentFields>, field: ContentFields) => {
+          acc[field.id] = field;
+          return acc;
+        },
+        {},
+      );
 
-    // Ensure each field has all required metadata
-    fields.forEach((field: ContentFields) => {
-      const existingField = existingFieldsMap[field.id];
-      if (existingField) {
-        // Preserve validations if not explicitly changed
-        field.validations = field.validations || existingField.validations;
+      // Ensure each field has all required metadata
+      fields.forEach((field: ContentFields) => {
+        const existingField = existingFieldsMap[field.id];
+        if (existingField) {
+          // Preserve validations if not explicitly changed
+          field.validations = field.validations || existingField.validations;
 
-        // Preserve required flag if not explicitly set, default to false
-        field.required =
-          field.required !== undefined
-            ? field.required
-            : existingField.required || false;
+          // Preserve required flag if not explicitly set, default to false
+          field.required =
+            field.required !== undefined
+              ? field.required
+              : existingField.required || false;
 
-        // Preserve link type for Link fields
-        if (
-          field.type === 'Link' &&
-          !field.linkType &&
-          existingField.linkType
-        ) {
-          field.linkType = existingField.linkType;
+          // Preserve link type for Link fields
+          if (
+            field.type === 'Link' &&
+            !field.linkType &&
+            existingField.linkType
+          ) {
+            field.linkType = existingField.linkType;
+          }
+
+          // Preserve items for Array fields
+          if (field.type === 'Array' && !field.items && existingField.items) {
+            field.items = existingField.items;
+          }
+        } else {
+          // For new fields, ensure required is a boolean
+          field.required = field.required || false;
         }
+      });
+    }
 
-        // Preserve items for Array fields
-        if (field.type === 'Array' && !field.items && existingField.items) {
-          field.items = existingField.items;
-        }
-      } else {
-        // For new fields, ensure required is a boolean
-        field.required = field.required || false;
-      }
+    // Update the content type
+    const contentType = await contentfulClient.contentType.update(params, {
+      ...currentContentType,
+      name: args.name || currentContentType.name,
+      description: args.description || currentContentType.description,
+      displayField: args.displayField || currentContentType.displayField,
+      fields: fields as typeof currentContentType.fields,
+      metadata: args.metadata || currentContentType.metadata,
     });
-  }
-
-  // Update the content type
-  const contentType = await contentfulClient.contentType.update(params, {
-    ...currentContentType,
-    name: args.name || currentContentType.name,
-    description: args.description || currentContentType.description,
-    displayField: args.displayField || currentContentType.displayField,
-    fields: fields as typeof currentContentType.fields,
-    metadata: args.metadata || currentContentType.metadata,
-  });
 
     return createSuccessResponse('Content type updated successfully', {
       contentType,

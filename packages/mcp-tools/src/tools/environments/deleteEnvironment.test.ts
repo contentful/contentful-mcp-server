@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mockArgs, mockEnvironmentDelete } from './mockClient.js';
 
 import { deleteEnvironmentTool } from './deleteEnvironment.js';
@@ -8,6 +8,11 @@ import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('deleteEnvironment', () => {
   const mockConfig = createMockConfig();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('should delete an environment successfully', async () => {
     const testArgs = {
       ...mockArgs,
@@ -60,5 +65,24 @@ describe('deleteEnvironment', () => {
         },
       ],
     });
+  });
+
+  it('should return error when environment is protected', async () => {
+    const protectedConfig = createMockConfig({
+      protectedEnvironments: ['master'],
+    });
+    const tool = deleteEnvironmentTool(protectedConfig);
+    const result = await tool({ ...mockArgs, environmentId: 'master' });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error deleting environment: Environment 'master' is protected. Write and delete operations are not allowed.",
+        },
+      ],
+    });
+    expect(mockEnvironmentDelete).not.toHaveBeenCalled();
   });
 });

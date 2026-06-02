@@ -3,7 +3,11 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../utils/response.js';
-import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import {
+  BaseToolSchema,
+  createToolClient,
+  assertEnvironmentNotProtected,
+} from '../../utils/tools.js';
 import { AssetMetadataSchema } from '../../types/taxonomySchema.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
@@ -21,6 +25,10 @@ type Params = z.infer<typeof UpdateAssetToolParams>;
 
 export function updateAssetTool(config: ContentfulConfig) {
   async function tool(args: Params) {
+    assertEnvironmentNotProtected(
+      args.environmentId,
+      config.protectedEnvironments,
+    );
     const params = {
       spaceId: args.spaceId,
       environmentId: args.environmentId,
@@ -29,29 +37,31 @@ export function updateAssetTool(config: ContentfulConfig) {
 
     const contentfulClient = createToolClient(config, args);
 
-  // Get existing asset, merge fields, and update
-  const existingAsset = await contentfulClient.asset.get(params);
+    // Get existing asset, merge fields, and update
+    const existingAsset = await contentfulClient.asset.get(params);
 
-  const allTags = [
-    ...(existingAsset.metadata?.tags || []),
-    ...(args.metadata?.tags || []),
-  ];
+    const allTags = [
+      ...(existingAsset.metadata?.tags || []),
+      ...(args.metadata?.tags || []),
+    ];
 
-  const allConcepts = [
-    ...(existingAsset.metadata?.concepts || []),
-    ...(args.metadata?.concepts || []),
-  ];
+    const allConcepts = [
+      ...(existingAsset.metadata?.concepts || []),
+      ...(args.metadata?.concepts || []),
+    ];
 
-  const updatedAsset = await contentfulClient.asset.update(params, {
-    ...existingAsset,
-    fields: { ...existingAsset.fields, ...args.fields },
-    metadata: {
-      tags: allTags,
-      concepts: allConcepts,
-    },
-  });
+    const updatedAsset = await contentfulClient.asset.update(params, {
+      ...existingAsset,
+      fields: { ...existingAsset.fields, ...args.fields },
+      metadata: {
+        tags: allTags,
+        concepts: allConcepts,
+      },
+    });
 
-    return createSuccessResponse('Asset updated successfully', { updatedAsset });
+    return createSuccessResponse('Asset updated successfully', {
+      updatedAsset,
+    });
   }
 
   return withErrorHandling(tool, 'Error updating asset');

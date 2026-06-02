@@ -79,4 +79,27 @@ describe('deleteLocaleTool', () => {
       ],
     });
   });
+
+  it('should return error when environment is protected', async () => {
+    const protectedConfig = createMockConfig({
+      protectedEnvironments: ['master'],
+    });
+    const tool = deleteLocaleTool(protectedConfig);
+    const result = await tool({
+      ...mockArgs,
+      environmentId: 'master',
+      localeId: 'test-locale-id',
+    });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error deleting locale: Environment 'master' is protected. Write and delete operations are not allowed.",
+        },
+      ],
+    });
+    expect(mockLocaleDelete).not.toHaveBeenCalled();
+  });
 });

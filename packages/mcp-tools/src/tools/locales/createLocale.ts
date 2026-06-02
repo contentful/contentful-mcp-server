@@ -3,7 +3,11 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../utils/response.js';
-import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import {
+  BaseToolSchema,
+  createToolClient,
+  assertEnvironmentNotProtected,
+} from '../../utils/tools.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
 export const CreateLocaleToolParams = BaseToolSchema.extend({
@@ -45,6 +49,11 @@ type Params = z.infer<typeof CreateLocaleToolParams>;
 
 export function createLocaleTool(config: ContentfulConfig) {
   async function tool(args: Params) {
+    assertEnvironmentNotProtected(
+      args.environmentId,
+      config.protectedEnvironments,
+    );
+
     const params = {
       spaceId: args.spaceId,
       environmentId: args.environmentId,
@@ -52,15 +61,15 @@ export function createLocaleTool(config: ContentfulConfig) {
 
     const contentfulClient = createToolClient(config, args);
 
-  // Create the locale
-  const newLocale = await contentfulClient.locale.create(params, {
-    name: args.name,
-    code: args.code,
-    fallbackCode: args.fallbackCode,
-    contentDeliveryApi: args.contentDeliveryApi,
-    contentManagementApi: args.contentManagementApi,
-    optional: args.optional,
-  });
+    // Create the locale
+    const newLocale = await contentfulClient.locale.create(params, {
+      name: args.name,
+      code: args.code,
+      fallbackCode: args.fallbackCode,
+      contentDeliveryApi: args.contentDeliveryApi,
+      contentManagementApi: args.contentManagementApi,
+      optional: args.optional,
+    });
 
     return createSuccessResponse('Locale created successfully', { newLocale });
   }

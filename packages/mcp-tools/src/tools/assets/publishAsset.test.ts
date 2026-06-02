@@ -17,7 +17,13 @@ vi.mock('../../utils/bulkOperations.js', () => ({
   waitForBulkActionCompletion: vi.fn(),
 }));
 
-vi.mock('../../../src/utils/tools.js');
+vi.mock('../../utils/tools.js', async (importOriginal) => {
+  const orig = await importOriginal<typeof import('../../utils/tools.js')>();
+  return {
+    ...orig,
+    createToolClient: vi.fn(),
+  };
+});
 import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('publishAsset', () => {
@@ -276,5 +282,24 @@ describe('publishAsset', () => {
         },
       ],
     });
+  });
+
+  it('should return error when environment is protected', async () => {
+    const protectedConfig = createMockConfig({
+      protectedEnvironments: ['master'],
+    });
+    const tool = publishAssetTool(protectedConfig);
+    const result = await tool({ ...mockArgs, environmentId: 'master' });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error publishing asset: Environment 'master' is protected. Write and delete operations are not allowed.",
+        },
+      ],
+    });
+    expect(mockAssetPublish).not.toHaveBeenCalled();
   });
 });

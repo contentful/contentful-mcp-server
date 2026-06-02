@@ -8,7 +8,13 @@ import {
   mockArgs,
 } from './mockClient.js';
 
-vi.mock('../../../src/utils/tools.js');
+vi.mock('../../utils/tools.js', async (importOriginal) => {
+  const orig = await importOriginal<typeof import('../../utils/tools.js')>();
+  return {
+    ...orig,
+    createToolClient: vi.fn(),
+  };
+});
 import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('unarchiveEntry', () => {
@@ -79,6 +85,25 @@ describe('unarchiveEntry', () => {
       // Verify the error message includes the entry ID
       expect(result.content[0].text).toContain('test-entry-id');
     });
+  });
+
+  it('should return error when environment is protected', async () => {
+    const protectedConfig = createMockConfig({
+      protectedEnvironments: ['master'],
+    });
+    const tool = unarchiveEntryTool(protectedConfig);
+    const result = await tool({ ...mockArgs, environmentId: 'master' });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error unarchiving entry: Environment 'master' is protected. Write and delete operations are not allowed.",
+        },
+      ],
+    });
+    expect(mockEntryUnarchive).not.toHaveBeenCalled();
   });
 
   describe('multiple entries', () => {

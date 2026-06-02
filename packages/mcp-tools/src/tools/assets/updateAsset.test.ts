@@ -9,7 +9,13 @@ import {
   mockAsset,
 } from './mockClient.js';
 
-vi.mock('../../../src/utils/tools.js');
+vi.mock('../../utils/tools.js', async (importOriginal) => {
+  const orig = await importOriginal<typeof import('../../utils/tools.js')>();
+  return {
+    ...orig,
+    createToolClient: vi.fn(),
+  };
+});
 import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('updateAsset', () => {
@@ -390,6 +396,29 @@ describe('updateAsset', () => {
         },
       }),
     );
+  });
+
+  it('should return error when environment is protected', async () => {
+    const protectedConfig = createMockConfig({
+      protectedEnvironments: ['master'],
+    });
+    const tool = updateAssetTool(protectedConfig);
+    const result = await tool({
+      ...mockArgs,
+      environmentId: 'master',
+      fields: { title: { 'en-US': 'Updated' } },
+    });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error updating asset: Environment 'master' is protected. Write and delete operations are not allowed.",
+        },
+      ],
+    });
+    expect(mockAssetUpdate).not.toHaveBeenCalled();
   });
 
   it('should update an asset with both tags and concepts', async () => {

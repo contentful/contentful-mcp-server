@@ -20,4 +20,6 @@ export interface ContentfulConfig {
   deliveryToken?: string;
   /** Contentful Delivery API host (used with deliveryToken for custom CDA endpoints) */
   hostDelivery?: string;
+  /** Environment IDs that are protected from write/delete operations */
+  protectedEnvironments?: string[];
 }
