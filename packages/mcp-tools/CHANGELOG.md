@@ -1,3 +1,9 @@
+## 0.7.0 (2026-06-02)
+
+### 🚀 Features
+
+- two-phase confirmation on destructive MCP tools [DX-1057] ([#380](https://github.com/contentful/contentful-mcp-server/pull/380))
+
 ## 0.6.0 (2026-06-02)
 
 ### 🚀 Features
