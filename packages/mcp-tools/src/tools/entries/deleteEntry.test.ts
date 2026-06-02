@@ -88,7 +88,11 @@ describe('deleteEntry', () => {
       protectedEnvironments: ['master'],
     });
     const tool = deleteEntryTool(protectedConfig);
-    const result = await tool({ ...mockArgs, environmentId: 'master' });
+    const result = await tool({
+      ...mockArgs,
+      environmentId: 'master',
+      entryId: 'test-entry-id',
+    });
 
     expect(result).toEqual({
       isError: true,

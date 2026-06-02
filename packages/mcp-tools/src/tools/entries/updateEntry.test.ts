@@ -549,6 +549,7 @@ describe('updateEntry', () => {
     const result = await tool({
       ...mockArgs,
       environmentId: 'master',
+      entryId: 'test-entry-id',
       fields: {},
     });
 
