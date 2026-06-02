@@ -18,6 +18,7 @@ This MCP server provides a comprehensive set of tools for content management, al
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
   - [Environment Variables](#environment-variables)
+  - [Protected environments](#protected-environments)
   - [Configuration](#configuration)
 - [🛠️ Available Tools](#️-available-tools)
 - [🔍 Development](#-development)
@@ -67,14 +68,33 @@ npm run build
 
 ### Environment Variables
 
-| Environment Variable                 | Required | Default Value        | Description                                                                                  |
-| ------------------------------------ | -------- | -------------------- | -------------------------------------------------------------------------------------------- |
-| `CONTENTFUL_MANAGEMENT_ACCESS_TOKEN` | ✅ Yes   | -                    | Your Contentful Management API personal access token                                         |
-| `SPACE_ID`                           | ✅ Yes   | -                    | Your Contentful Space ID                                                                     |
-| `ENVIRONMENT_ID`                     | ❌ No    | `master`             | Target environment within your space                                                         |
-| `PROTECTED_ENVIRONMENTS`             | ❌ No    | -                    | Comma-separated environment IDs blocked from write/delete operations (e.g. `master,staging`) |
-| `CONTENTFUL_HOST`                    | ❌ No    | `api.contentful.com` | Contentful API host                                                                          |
-| `NODE_ENV`                           | ❌ No    | `production`         | Node Environment to run in                                                                   |
+| Environment Variable                 | Required | Default Value        | Description                                                                                                                                          |
+| ------------------------------------ | -------- | -------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CONTENTFUL_MANAGEMENT_ACCESS_TOKEN` | ✅ Yes   | -                    | Your Contentful Management API personal access token                                                                                                 |
+| `SPACE_ID`                           | ✅ Yes   | -                    | Your Contentful Space ID                                                                                                                             |
+| `ENVIRONMENT_ID`                     | ❌ No    | `master`             | Target environment within your space                                                                                                                 |
+| `PROTECTED_ENVIRONMENTS`             | ❌ No    | -                    | Comma-separated environment IDs blocked from write/delete operations (e.g. `master,staging`). See [Protected environments](#protected-environments). |
+| `CONTENTFUL_HOST`                    | ❌ No    | `api.contentful.com` | Contentful API host                                                                                                                                  |
+| `NODE_ENV`                           | ❌ No    | `production`         | Node Environment to run in                                                                                                                           |
+
+### Protected environments
+
+Set `PROTECTED_ENVIRONMENTS` to a comma-separated list of environment IDs (e.g. `master,staging`) to block write and delete tool calls targeting those environments. Reads (`get_*`, `list_*`, `search_entries`) are unaffected.
+
+```bash
+PROTECTED_ENVIRONMENTS=master,staging
+```
+
+When the guard fires, the tool returns a clear error and never reaches the Contentful API:
+
+> Environment 'master' is protected. Write and delete operations are not allowed.
+
+**Notes:**
+
+- **Opt-in.** Unset (or only commas/whitespace) means no environments are protected — existing behavior is unchanged.
+- **Case-sensitive.** Environment IDs in Contentful are case-sensitive, so `master` and `Master` are different. Match the exact ID you want to protect.
+- **MCP boundary only.** The guard runs inside this server. Direct CMA SDK calls, the Contentful web app, and other clients are not affected — use this alongside, not instead of, role-based permissions.
+- **Covers env-scoped writes.** Org-scoped resources (concepts, concept schemes) and read-only tools have no environment to check, so the guard does not apply. `invoke_ai_action` is also unguarded — invocation generates content but doesn't write to the environment; any follow-up write the agent performs is still blocked.
 
 ### Configuration
 
