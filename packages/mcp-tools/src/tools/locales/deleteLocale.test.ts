@@ -6,76 +6,125 @@ import {
   mockLocaleDelete,
 } from './mockClient.js';
 import { deleteLocaleTool } from './deleteLocale.js';
-
-import { createToolClient } from '../../utils/tools.js';
 import { formatResponse } from '../../utils/formatters.js';
+import { buildConfirmToken } from '../../utils/confirmation.js';
 import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('deleteLocaleTool', () => {
   const mockConfig = createMockConfig();
+  const localeId = testLocale.sys.id;
+  const validToken = buildConfirmToken(
+    'locale',
+    localeId,
+    testLocale.sys.version,
+  );
+  const baseArgs = { ...mockArgs, localeId };
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it('should delete a locale successfully', async () => {
-    const testArgs = {
-      ...mockArgs,
-      localeId: 'test-locale-id',
-    };
+  it('returns a confirmation preview when confirm is missing', async () => {
+    mockLocaleGet.mockResolvedValue(testLocale);
 
+    const tool = deleteLocaleTool(mockConfig);
+    const result = await tool(baseArgs);
+
+    expect(mockLocaleDelete).not.toHaveBeenCalled();
+    expect(result.content[0].text).toContain('Confirmation required to delete');
+    expect(result.content[0].text).toContain(validToken);
+  });
+
+  it('returns a confirmation preview when confirmToken is wrong', async () => {
+    mockLocaleGet.mockResolvedValue(testLocale);
+
+    const tool = deleteLocaleTool(mockConfig);
+    const result = await tool({
+      ...baseArgs,
+      confirm: true,
+      confirmToken: 'wrong',
+    });
+
+    expect(mockLocaleDelete).not.toHaveBeenCalled();
+    expect(result.content[0].text).toContain('Confirmation required to delete');
+  });
+
+  it('returns a confirmation preview when confirm is true but confirmToken is missing', async () => {
+    mockLocaleGet.mockResolvedValue(testLocale);
+
+    const tool = deleteLocaleTool(mockConfig);
+    const result = await tool({ ...baseArgs, confirm: true });
+
+    expect(mockLocaleDelete).not.toHaveBeenCalled();
+    expect(result.content[0].text).toContain('Confirmation required to delete');
+  });
+
+  it('returns a confirmation preview when confirm is false even with correct token', async () => {
+    mockLocaleGet.mockResolvedValue(testLocale);
+
+    const tool = deleteLocaleTool(mockConfig);
+    const result = await tool({
+      ...baseArgs,
+      confirm: false,
+      confirmToken: validToken,
+    });
+
+    expect(mockLocaleDelete).not.toHaveBeenCalled();
+    expect(result.content[0].text).toContain('Confirmation required to delete');
+  });
+
+  it('deletes when confirm is true and confirmToken matches', async () => {
     mockLocaleGet.mockResolvedValue(testLocale);
     mockLocaleDelete.mockResolvedValue(undefined);
 
     const tool = deleteLocaleTool(mockConfig);
-    const result = await tool(testArgs);
-
-    expect(createToolClient).toHaveBeenCalledWith(mockConfig, testArgs);
-    expect(mockLocaleGet).toHaveBeenCalledWith({
-      spaceId: testArgs.spaceId,
-      environmentId: testArgs.environmentId,
-      localeId: testArgs.localeId,
+    const result = await tool({
+      ...baseArgs,
+      confirm: true,
+      confirmToken: validToken,
     });
+
     expect(mockLocaleDelete).toHaveBeenCalledWith({
-      spaceId: testArgs.spaceId,
-      environmentId: testArgs.environmentId,
-      localeId: testArgs.localeId,
+      spaceId: baseArgs.spaceId,
+      environmentId: baseArgs.environmentId,
+      localeId,
     });
-
-    const expectedResponse = formatResponse('Locale deleted successfully', {
+    const expected = formatResponse('Locale deleted successfully', {
       locale: testLocale,
     });
+    expect(result).toEqual({ content: [{ type: 'text', text: expected }] });
+  });
 
+  it('handles errors when locale get fails before confirmation', async () => {
+    mockLocaleGet.mockRejectedValue(new Error('Locale not found'));
+
+    const tool = deleteLocaleTool(mockConfig);
+    const result = await tool(baseArgs);
+
+    expect(mockLocaleDelete).not.toHaveBeenCalled();
     expect(result).toEqual({
+      isError: true,
       content: [
-        {
-          type: 'text',
-          text: expectedResponse,
-        },
+        { type: 'text', text: 'Error deleting locale: Locale not found' },
       ],
     });
   });
 
-  it('should handle errors when locale deletion fails', async () => {
-    const testArgs = {
-      ...mockArgs,
-      localeId: 'test-locale-id',
-    };
-
-    const error = new Error('Deletion failed');
+  it('handles errors when deletion fails after confirmation', async () => {
     mockLocaleGet.mockResolvedValue(testLocale);
-    mockLocaleDelete.mockRejectedValue(error);
+    mockLocaleDelete.mockRejectedValue(new Error('Deletion failed'));
 
     const tool = deleteLocaleTool(mockConfig);
-    const result = await tool(testArgs);
+    const result = await tool({
+      ...baseArgs,
+      confirm: true,
+      confirmToken: validToken,
+    });
 
     expect(result).toEqual({
       isError: true,
       content: [
-        {
-          type: 'text',
-          text: 'Error deleting locale: Deletion failed',
-        },
+        { type: 'text', text: 'Error deleting locale: Deletion failed' },
       ],
     });
   });

@@ -42,12 +42,13 @@ export function createEnvironmentTools(config: ContentfulConfig) {
     },
     deleteEnvironment: {
       title: 'delete_environment',
-      description: 'Delete an environment',
+      description:
+        'Delete an environment from your Contentful space. This is a two-phase operation: the first call (without confirm/confirmToken) returns a preview and a confirmToken. To complete the deletion, call this tool again with the same environmentId, confirm: true, and the confirmToken from the preview response.',
       inputParams: DeleteEnvironmentToolParams.shape,
       annotations: {
         readOnlyHint: false,
         destructiveHint: true,
-        idempotentHint: true,
+        idempotentHint: false,
         openWorldHint: false,
       },
       tool: deleteEnvironment,

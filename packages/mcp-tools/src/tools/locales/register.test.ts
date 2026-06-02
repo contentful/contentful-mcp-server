@@ -93,13 +93,16 @@ describe('locale tools collection', () => {
     const { deleteLocale } = localeTools;
 
     expect(deleteLocale.title).toBe('delete_locale');
+    expect(deleteLocale.description).toBe(
+      'Delete a specific locale from your Contentful environment. This is a two-phase operation: the first call (without confirm/confirmToken) returns a preview of the locale and a confirmToken. To complete the deletion, call this tool again with the same localeId, confirm: true, and the confirmToken from the preview response.',
+    );
     expect(deleteLocale.inputParams).toStrictEqual(
       DeleteLocaleToolParams.shape,
     );
     expect(deleteLocale.annotations).toEqual({
       readOnlyHint: false,
       destructiveHint: true,
-      idempotentHint: true,
+      idempotentHint: false,
       openWorldHint: false,
     });
     expect(deleteLocale.tool).toBeDefined();

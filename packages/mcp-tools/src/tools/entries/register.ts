@@ -75,12 +75,13 @@ export function createEntryTools(config: ContentfulConfig) {
     },
     deleteEntry: {
       title: 'delete_entry',
-      description: 'Delete a specific content entry from your Contentful space',
+      description:
+        'Delete a specific content entry from your Contentful space. This is a two-phase operation: the first call (without confirm/confirmToken) returns a preview of the entry and a confirmToken. To complete the deletion, call this tool again with the same entryId, confirm: true, and the confirmToken from the preview response.',
       inputParams: DeleteEntryToolParams.shape,
       annotations: {
         readOnlyHint: false,
         destructiveHint: true,
-        idempotentHint: true,
+        idempotentHint: false,
         openWorldHint: false,
       },
       tool: deleteEntry,

@@ -81,12 +81,13 @@ export function createAiActionTools(config: ContentfulConfig) {
     },
     deleteAiAction: {
       title: 'delete_ai_action',
-      description: 'Delete a specific AI action from your Contentful space',
+      description:
+        'Delete a specific AI action from your Contentful space. This is a two-phase operation: the first call (without confirm/confirmToken) returns a preview of the AI action and a confirmToken. To complete the deletion, call this tool again with the same aiActionId, confirm: true, and the confirmToken from the preview response.',
       inputParams: DeleteAiActionToolParams.shape,
       annotations: {
         readOnlyHint: false,
         destructiveHint: true,
-        idempotentHint: true, // Deleting same item multiple times has same effect
+        idempotentHint: false,
         openWorldHint: false,
       },
       tool: deleteAiAction,

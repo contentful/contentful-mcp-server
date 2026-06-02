@@ -8,10 +8,27 @@ import {
   createToolClient,
   assertEnvironmentNotProtected,
 } from '../../utils/tools.js';
+import {
+  buildConfirmToken,
+  buildConfirmationPreview,
+  CONFIRMATION_MESSAGE_PREFIX,
+} from '../../utils/confirmation.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
 export const DeleteAiActionToolParams = BaseToolSchema.extend({
   aiActionId: z.string().describe('The ID of the AI action to delete'),
+  confirm: z
+    .boolean()
+    .optional()
+    .describe(
+      'Set to true on the second call to actually perform the deletion. Required together with confirmToken.',
+    ),
+  confirmToken: z
+    .string()
+    .optional()
+    .describe(
+      'Token returned by the preview call; must be supplied with confirm: true.',
+    ),
 });
 
 type Params = z.infer<typeof DeleteAiActionToolParams>;
@@ -30,11 +47,25 @@ export function deleteAiActionTool(config: ContentfulConfig) {
     };
 
     const contentfulClient = createToolClient(config, args);
-
-    // First, get the AI action to store info for return
     const aiAction = await contentfulClient.aiAction.get(params);
 
-    // Delete the AI action
+    const expectedToken = buildConfirmToken(
+      'aiAction',
+      args.aiActionId,
+      aiAction.sys.version,
+    );
+    if (args.confirm !== true || args.confirmToken !== expectedToken) {
+      return createSuccessResponse(
+        `${CONFIRMATION_MESSAGE_PREFIX} AI action`,
+        buildConfirmationPreview(
+          'aiAction',
+          args.aiActionId,
+          { aiAction },
+          expectedToken,
+        ),
+      );
+    }
+
     await contentfulClient.aiAction.delete(params);
 
     return createSuccessResponse('AI action deleted successfully', {

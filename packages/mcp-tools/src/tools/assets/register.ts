@@ -75,12 +75,13 @@ export function createAssetTools(config: ContentfulConfig) {
     },
     deleteAsset: {
       title: 'delete_asset',
-      description: 'Delete an asset',
+      description:
+        'Delete an asset from your Contentful space. This is a two-phase operation: the first call (without confirm/confirmToken) returns a preview of the asset and a confirmToken. To complete the deletion, call this tool again with the same assetId, confirm: true, and the confirmToken from the preview response.',
       inputParams: DeleteAssetToolParams.shape,
       annotations: {
         readOnlyHint: false,
         destructiveHint: true,
-        idempotentHint: true,
+        idempotentHint: false,
         openWorldHint: false,
       },
       tool: deleteAsset,

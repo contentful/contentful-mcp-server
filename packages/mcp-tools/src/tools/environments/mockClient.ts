@@ -3,18 +3,21 @@ import { vi } from 'vitest';
 const {
   mockEnvironmentCreateWithId,
   mockEnvironmentDelete,
+  mockEnvironmentGet,
   mockEnvironmentGetMany,
   mockCreateToolClient,
 } = vi.hoisted(() => {
   return {
     mockEnvironmentCreateWithId: vi.fn(),
     mockEnvironmentDelete: vi.fn(),
+    mockEnvironmentGet: vi.fn(),
     mockEnvironmentGetMany: vi.fn(),
     mockCreateToolClient: vi.fn(() => {
       return {
         environment: {
           createWithId: mockEnvironmentCreateWithId,
           delete: mockEnvironmentDelete,
+          get: mockEnvironmentGet,
           getMany: mockEnvironmentGetMany,
         },
       };
@@ -33,6 +36,7 @@ vi.mock('../../utils/tools.js', async (importOriginal) => {
 export {
   mockEnvironmentCreateWithId,
   mockEnvironmentDelete,
+  mockEnvironmentGet,
   mockEnvironmentGetMany,
   mockCreateToolClient,
 };
