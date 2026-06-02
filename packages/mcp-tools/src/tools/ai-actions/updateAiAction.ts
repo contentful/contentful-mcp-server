@@ -3,7 +3,11 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../utils/response.js';
-import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import {
+  BaseToolSchema,
+  createToolClient,
+  assertEnvironmentNotProtected,
+} from '../../utils/tools.js';
 import { VariableType } from '../../utils/ai-actions.js';
 import { AiActionTestCaseSchema } from '../../types/aiActionTestCaseSchema.js';
 import type { ContentfulConfig } from '../../config/types.js';
@@ -53,6 +57,11 @@ export type Params = z.infer<typeof UpdateAiActionToolParams>;
 
 export function updateAiActionTool(config: ContentfulConfig) {
   async function tool(args: Params) {
+    assertEnvironmentNotProtected(
+      args.environmentId,
+      config.protectedEnvironments,
+    );
+
     const params = {
       spaceId: args.spaceId,
       environmentId: args.environmentId,

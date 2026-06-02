@@ -3,7 +3,11 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../utils/response.js';
-import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import {
+  BaseToolSchema,
+  createToolClient,
+  assertEnvironmentNotProtected,
+} from '../../utils/tools.js';
 import { EntryMetadataSchema } from '../../types/taxonomySchema.js';
 import { entryFieldsSchema } from '../../types/entryFieldSchema.js';
 import type { ContentfulConfig } from '../../config/types.js';
@@ -22,6 +26,11 @@ type Params = z.infer<typeof CreateEntryToolParams>;
 
 export function createEntryTool(config: ContentfulConfig) {
   async function tool(args: Params) {
+    assertEnvironmentNotProtected(
+      args.environmentId,
+      config.protectedEnvironments,
+    );
+
     const params = {
       spaceId: args.spaceId,
       environmentId: args.environmentId,

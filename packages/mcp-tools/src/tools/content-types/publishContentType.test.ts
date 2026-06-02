@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
   mockContentTypeGet,
   mockContentTypePublish,
@@ -11,6 +11,11 @@ import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('publishContentType', () => {
   const mockConfig = createMockConfig();
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   it('should publish a content type successfully', async () => {
     const unpublishedContentType = {
       ...mockContentType,
@@ -117,5 +122,24 @@ describe('publishContentType', () => {
         },
       ],
     });
+  });
+
+  it('should return error when environment is protected', async () => {
+    const protectedConfig = createMockConfig({
+      protectedEnvironments: ['master'],
+    });
+    const tool = publishContentTypeTool(protectedConfig);
+    const result = await tool({ ...mockArgs, environmentId: 'master' });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error publishing content type: Environment 'master' is protected. Write and delete operations are not allowed.",
+        },
+      ],
+    });
+    expect(mockContentTypePublish).not.toHaveBeenCalled();
   });
 });

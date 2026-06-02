@@ -11,11 +11,23 @@ import {
 } from './mockClient.js';
 import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
-vi.mock('../../../src/utils/tools.js');
+vi.mock('../../utils/tools.js', async (importOriginal) => {
+  const orig = await importOriginal<typeof import('../../utils/tools.js')>();
+  return {
+    ...orig,
+    createToolClient: vi.fn(),
+  };
+});
 
 describe('deleteEntry', () => {
   const mockConfig = createMockConfig();
-  const validToken = buildConfirmToken('entry', mockArgs.entryId, mockEntry.sys.version);
+  const targetEntryId = 'test-entry-id';
+  const baseArgs = { ...mockArgs, entryId: targetEntryId };
+  const validToken = buildConfirmToken(
+    'entry',
+    targetEntryId,
+    mockEntry.sys.version,
+  );
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -26,7 +38,7 @@ describe('deleteEntry', () => {
     mockEntryGet.mockResolvedValue(mockEntry);
 
     const tool = deleteEntryTool(mockConfig);
-    const result = await tool(mockArgs);
+    const result = await tool(baseArgs);
 
     expect(mockEntryDelete).not.toHaveBeenCalled();
     expect(result.isError).toBeUndefined();
@@ -38,7 +50,11 @@ describe('deleteEntry', () => {
     mockEntryGet.mockResolvedValue(mockEntry);
 
     const tool = deleteEntryTool(mockConfig);
-    const result = await tool({ ...mockArgs, confirm: true, confirmToken: 'wrong' });
+    const result = await tool({
+      ...baseArgs,
+      confirm: true,
+      confirmToken: 'wrong',
+    });
 
     expect(mockEntryDelete).not.toHaveBeenCalled();
     expect(result.content[0].text).toContain('Confirmation required to delete');
@@ -48,7 +64,7 @@ describe('deleteEntry', () => {
     mockEntryGet.mockResolvedValue(mockEntry);
 
     const tool = deleteEntryTool(mockConfig);
-    const result = await tool({ ...mockArgs, confirm: true });
+    const result = await tool({ ...baseArgs, confirm: true });
 
     expect(mockEntryDelete).not.toHaveBeenCalled();
     expect(result.content[0].text).toContain('Confirmation required to delete');
@@ -58,7 +74,11 @@ describe('deleteEntry', () => {
     mockEntryGet.mockResolvedValue(mockEntry);
 
     const tool = deleteEntryTool(mockConfig);
-    const result = await tool({ ...mockArgs, confirm: false, confirmToken: validToken });
+    const result = await tool({
+      ...baseArgs,
+      confirm: false,
+      confirmToken: validToken,
+    });
 
     expect(mockEntryDelete).not.toHaveBeenCalled();
     expect(result.content[0].text).toContain('Confirmation required to delete');
@@ -69,10 +89,16 @@ describe('deleteEntry', () => {
     mockEntryDelete.mockResolvedValue(undefined);
 
     const tool = deleteEntryTool(mockConfig);
-    const result = await tool({ ...mockArgs, confirm: true, confirmToken: validToken });
+    const result = await tool({
+      ...baseArgs,
+      confirm: true,
+      confirmToken: validToken,
+    });
 
     expect(mockEntryDelete).toHaveBeenCalledOnce();
-    const expected = formatResponse('Entry deleted successfully', { entry: mockEntry });
+    const expected = formatResponse('Entry deleted successfully', {
+      entry: mockEntry,
+    });
     expect(result).toEqual({ content: [{ type: 'text', text: expected }] });
   });
 
@@ -80,11 +106,13 @@ describe('deleteEntry', () => {
     mockEntryGet.mockRejectedValue(new Error('Entry not found'));
 
     const tool = deleteEntryTool(mockConfig);
-    const result = await tool(mockArgs);
+    const result = await tool(baseArgs);
 
     expect(result).toEqual({
       isError: true,
-      content: [{ type: 'text', text: 'Error deleting entry: Entry not found' }],
+      content: [
+        { type: 'text', text: 'Error deleting entry: Entry not found' },
+      ],
     });
   });
 
@@ -93,11 +121,40 @@ describe('deleteEntry', () => {
     mockEntryDelete.mockRejectedValue(new Error('Deletion failed'));
 
     const tool = deleteEntryTool(mockConfig);
-    const result = await tool({ ...mockArgs, confirm: true, confirmToken: validToken });
+    const result = await tool({
+      ...baseArgs,
+      confirm: true,
+      confirmToken: validToken,
+    });
 
     expect(result).toEqual({
       isError: true,
-      content: [{ type: 'text', text: 'Error deleting entry: Deletion failed' }],
+      content: [
+        { type: 'text', text: 'Error deleting entry: Deletion failed' },
+      ],
     });
+  });
+
+  it('should return error when environment is protected', async () => {
+    const protectedConfig = createMockConfig({
+      protectedEnvironments: ['master'],
+    });
+    const tool = deleteEntryTool(protectedConfig);
+    const result = await tool({
+      ...mockArgs,
+      environmentId: 'master',
+      entryId: 'test-entry-id',
+    });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error deleting entry: Environment 'master' is protected. Write and delete operations are not allowed.",
+        },
+      ],
+    });
+    expect(mockEntryDelete).not.toHaveBeenCalled();
   });
 });

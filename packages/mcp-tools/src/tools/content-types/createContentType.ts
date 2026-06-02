@@ -3,7 +3,11 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../utils/response.js';
-import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import {
+  BaseToolSchema,
+  createToolClient,
+  assertEnvironmentNotProtected,
+} from '../../utils/tools.js';
 import { FieldSchema } from '../../types/fieldSchema.js';
 import { ContentTypeMetadataSchema } from '../../types/taxonomySchema.js';
 import type { ContentfulConfig } from '../../config/types.js';
@@ -31,6 +35,11 @@ type Params = z.infer<typeof CreateContentTypeToolParams>;
 
 export function createContentTypeTool(config: ContentfulConfig) {
   async function tool(args: Params) {
+    assertEnvironmentNotProtected(
+      args.environmentId,
+      config.protectedEnvironments,
+    );
+
     const params = {
       spaceId: args.spaceId,
       environmentId: args.environmentId,
@@ -38,21 +47,21 @@ export function createContentTypeTool(config: ContentfulConfig) {
 
     const contentfulClient = createToolClient(config, args);
 
-  const contentTypeData = {
-    name: args.name,
-    displayField: args.displayField,
-    description: args.description,
-    fields: args.fields,
-    metadata: args.metadata,
-  };
+    const contentTypeData = {
+      name: args.name,
+      displayField: args.displayField,
+      description: args.description,
+      fields: args.fields,
+      metadata: args.metadata,
+    };
 
-  // Create the content type with or without ID
-  const contentType = args.contentTypeId
-    ? await contentfulClient.contentType.createWithId(
-        { ...params, contentTypeId: args.contentTypeId },
-        contentTypeData,
-      )
-    : await contentfulClient.contentType.create(params, contentTypeData);
+    // Create the content type with or without ID
+    const contentType = args.contentTypeId
+      ? await contentfulClient.contentType.createWithId(
+          { ...params, contentTypeId: args.contentTypeId },
+          contentTypeData,
+        )
+      : await contentfulClient.contentType.create(params, contentTypeData);
 
     return createSuccessResponse('Content type created successfully', {
       contentType,

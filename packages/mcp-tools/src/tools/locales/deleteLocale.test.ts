@@ -13,7 +13,11 @@ import { createMockConfig } from '../../test-helpers/mockConfig.js';
 describe('deleteLocaleTool', () => {
   const mockConfig = createMockConfig();
   const localeId = testLocale.sys.id;
-  const validToken = buildConfirmToken('locale', localeId, testLocale.sys.version);
+  const validToken = buildConfirmToken(
+    'locale',
+    localeId,
+    testLocale.sys.version,
+  );
   const baseArgs = { ...mockArgs, localeId };
 
   beforeEach(() => {
@@ -35,7 +39,11 @@ describe('deleteLocaleTool', () => {
     mockLocaleGet.mockResolvedValue(testLocale);
 
     const tool = deleteLocaleTool(mockConfig);
-    const result = await tool({ ...baseArgs, confirm: true, confirmToken: 'wrong' });
+    const result = await tool({
+      ...baseArgs,
+      confirm: true,
+      confirmToken: 'wrong',
+    });
 
     expect(mockLocaleDelete).not.toHaveBeenCalled();
     expect(result.content[0].text).toContain('Confirmation required to delete');
@@ -55,7 +63,11 @@ describe('deleteLocaleTool', () => {
     mockLocaleGet.mockResolvedValue(testLocale);
 
     const tool = deleteLocaleTool(mockConfig);
-    const result = await tool({ ...baseArgs, confirm: false, confirmToken: validToken });
+    const result = await tool({
+      ...baseArgs,
+      confirm: false,
+      confirmToken: validToken,
+    });
 
     expect(mockLocaleDelete).not.toHaveBeenCalled();
     expect(result.content[0].text).toContain('Confirmation required to delete');
@@ -77,7 +89,9 @@ describe('deleteLocaleTool', () => {
       environmentId: baseArgs.environmentId,
       localeId,
     });
-    const expected = formatResponse('Locale deleted successfully', { locale: testLocale });
+    const expected = formatResponse('Locale deleted successfully', {
+      locale: testLocale,
+    });
     expect(result).toEqual({ content: [{ type: 'text', text: expected }] });
   });
 
@@ -90,7 +104,9 @@ describe('deleteLocaleTool', () => {
     expect(mockLocaleDelete).not.toHaveBeenCalled();
     expect(result).toEqual({
       isError: true,
-      content: [{ type: 'text', text: 'Error deleting locale: Locale not found' }],
+      content: [
+        { type: 'text', text: 'Error deleting locale: Locale not found' },
+      ],
     });
   });
 
@@ -107,7 +123,32 @@ describe('deleteLocaleTool', () => {
 
     expect(result).toEqual({
       isError: true,
-      content: [{ type: 'text', text: 'Error deleting locale: Deletion failed' }],
+      content: [
+        { type: 'text', text: 'Error deleting locale: Deletion failed' },
+      ],
     });
+  });
+
+  it('should return error when environment is protected', async () => {
+    const protectedConfig = createMockConfig({
+      protectedEnvironments: ['master'],
+    });
+    const tool = deleteLocaleTool(protectedConfig);
+    const result = await tool({
+      ...mockArgs,
+      environmentId: 'master',
+      localeId: 'test-locale-id',
+    });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error deleting locale: Environment 'master' is protected. Write and delete operations are not allowed.",
+        },
+      ],
+    });
+    expect(mockLocaleDelete).not.toHaveBeenCalled();
   });
 });

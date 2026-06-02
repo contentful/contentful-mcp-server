@@ -12,7 +12,10 @@ import {
 } from './mockClient.js';
 import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
-vi.mock('../../utils/tools.js');
+vi.mock('../../utils/tools.js', async (importOriginal) => {
+  const orig = await importOriginal<typeof import('../../utils/tools.js')>();
+  return { ...orig, createToolClient: vi.fn() };
+});
 
 describe('invokeAiAction', () => {
   const mockConfig = createMockConfig();

@@ -3,7 +3,11 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../utils/response.js';
-import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import {
+  BaseToolSchema,
+  createToolClient,
+  assertEnvironmentNotProtected,
+} from '../../utils/tools.js';
 import {
   buildConfirmToken,
   buildConfirmationPreview,
@@ -31,6 +35,10 @@ type Params = z.infer<typeof DeleteAssetToolParams>;
 
 export function deleteAssetTool(config: ContentfulConfig) {
   async function tool(args: Params) {
+    assertEnvironmentNotProtected(
+      args.environmentId,
+      config.protectedEnvironments,
+    );
     const params = {
       spaceId: args.spaceId,
       environmentId: args.environmentId,
@@ -40,11 +48,20 @@ export function deleteAssetTool(config: ContentfulConfig) {
     const contentfulClient = createToolClient(config, args);
     const asset = await contentfulClient.asset.get(params);
 
-    const expectedToken = buildConfirmToken('asset', args.assetId, asset.sys.version);
+    const expectedToken = buildConfirmToken(
+      'asset',
+      args.assetId,
+      asset.sys.version,
+    );
     if (args.confirm !== true || args.confirmToken !== expectedToken) {
       return createSuccessResponse(
         `${CONFIRMATION_MESSAGE_PREFIX} asset`,
-        buildConfirmationPreview('asset', args.assetId, { asset }, expectedToken),
+        buildConfirmationPreview(
+          'asset',
+          args.assetId,
+          { asset },
+          expectedToken,
+        ),
       );
     }
 

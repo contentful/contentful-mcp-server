@@ -12,18 +12,26 @@ import { createMockConfig } from '../../test-helpers/mockConfig.js';
 import { BLOCKS, INLINES } from '@contentful/rich-text-types';
 import { RichTextDocument } from '../../types/richTextSchema.js';
 
-vi.mock('../../../src/utils/tools.js');
+vi.mock('../../utils/tools.js', async (importOriginal) => {
+  const orig = await importOriginal<typeof import('../../utils/tools.js')>();
+  return {
+    ...orig,
+    createToolClient: vi.fn(),
+  };
+});
 
 describe('updateEntry', () => {
   const mockConfig = createMockConfig();
 
   beforeEach(() => {
+    vi.clearAllMocks();
     setupMockClient();
   });
 
   it('should update an entry successfully with fields only', async () => {
     const testArgs = {
       ...mockArgs,
+      entryId: 'test-entry-id',
       fields: {
         title: { 'en-US': 'Updated Title' },
         description: { 'en-US': 'Updated Description' },
@@ -76,6 +84,7 @@ describe('updateEntry', () => {
   it('should update an entry with metadata tags', async () => {
     const testArgs = {
       ...mockArgs,
+      entryId: 'test-entry-id',
       fields: {
         title: { 'en-US': 'Updated Title' },
       },
@@ -285,6 +294,7 @@ describe('updateEntry', () => {
 
     const testArgs = {
       ...mockArgs,
+      entryId: 'test-entry-id',
       fields: {
         title: { 'en-US': 'Updated Title', fr: 'Titre mis à jour' },
         body: { 'en-US': richTextEnUS, fr: richTextFr },
@@ -418,6 +428,7 @@ describe('updateEntry', () => {
 
     const testArgs = {
       ...mockArgs,
+      entryId: 'test-entry-id',
       fields: {
         body: { 'en-US': richTextWithEmbeds },
       },
@@ -468,6 +479,7 @@ describe('updateEntry', () => {
   it('should update an entry with empty fields', async () => {
     const testArgs = {
       ...mockArgs,
+      entryId: 'test-entry-id',
       fields: {},
     };
 
@@ -529,9 +541,34 @@ describe('updateEntry', () => {
     });
   });
 
+  it('should return error when environment is protected', async () => {
+    const protectedConfig = createMockConfig({
+      protectedEnvironments: ['master'],
+    });
+    const tool = updateEntryTool(protectedConfig);
+    const result = await tool({
+      ...mockArgs,
+      environmentId: 'master',
+      entryId: 'test-entry-id',
+      fields: {},
+    });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error updating entry: Environment 'master' is protected. Write and delete operations are not allowed.",
+        },
+      ],
+    });
+    expect(mockEntryUpdate).not.toHaveBeenCalled();
+  });
+
   it('should handle errors when entry retrieval succeeds but update fails', async () => {
     const testArgs = {
       ...mockArgs,
+      entryId: 'test-entry-id',
       fields: {
         title: { 'en-US': 'Updated Title' },
       },

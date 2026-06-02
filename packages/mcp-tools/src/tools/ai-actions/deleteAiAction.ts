@@ -3,7 +3,11 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../utils/response.js';
-import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import {
+  BaseToolSchema,
+  createToolClient,
+  assertEnvironmentNotProtected,
+} from '../../utils/tools.js';
 import {
   buildConfirmToken,
   buildConfirmationPreview,
@@ -31,6 +35,11 @@ type Params = z.infer<typeof DeleteAiActionToolParams>;
 
 export function deleteAiActionTool(config: ContentfulConfig) {
   async function tool(args: Params) {
+    assertEnvironmentNotProtected(
+      args.environmentId,
+      config.protectedEnvironments,
+    );
+
     const params = {
       spaceId: args.spaceId,
       environmentId: args.environmentId,
@@ -48,13 +57,20 @@ export function deleteAiActionTool(config: ContentfulConfig) {
     if (args.confirm !== true || args.confirmToken !== expectedToken) {
       return createSuccessResponse(
         `${CONFIRMATION_MESSAGE_PREFIX} AI action`,
-        buildConfirmationPreview('aiAction', args.aiActionId, { aiAction }, expectedToken),
+        buildConfirmationPreview(
+          'aiAction',
+          args.aiActionId,
+          { aiAction },
+          expectedToken,
+        ),
       );
     }
 
     await contentfulClient.aiAction.delete(params);
 
-    return createSuccessResponse('AI action deleted successfully', { aiAction });
+    return createSuccessResponse('AI action deleted successfully', {
+      aiAction,
+    });
   }
 
   return withErrorHandling(tool, 'Error deleting AI action');

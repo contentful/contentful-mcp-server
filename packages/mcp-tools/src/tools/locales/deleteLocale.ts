@@ -3,7 +3,11 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../utils/response.js';
-import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
+import {
+  BaseToolSchema,
+  createToolClient,
+  assertEnvironmentNotProtected,
+} from '../../utils/tools.js';
 import {
   buildConfirmToken,
   buildConfirmationPreview,
@@ -31,6 +35,11 @@ type Params = z.infer<typeof DeleteLocaleToolParams>;
 
 export function deleteLocaleTool(config: ContentfulConfig) {
   async function tool(args: Params) {
+    assertEnvironmentNotProtected(
+      args.environmentId,
+      config.protectedEnvironments,
+    );
+
     const params = {
       spaceId: args.spaceId,
       environmentId: args.environmentId,
@@ -40,11 +49,20 @@ export function deleteLocaleTool(config: ContentfulConfig) {
     const contentfulClient = createToolClient(config, args);
     const locale = await contentfulClient.locale.get(params);
 
-    const expectedToken = buildConfirmToken('locale', args.localeId, locale.sys.version);
+    const expectedToken = buildConfirmToken(
+      'locale',
+      args.localeId,
+      locale.sys.version,
+    );
     if (args.confirm !== true || args.confirmToken !== expectedToken) {
       return createSuccessResponse(
         `${CONFIRMATION_MESSAGE_PREFIX} locale`,
-        buildConfirmationPreview('locale', args.localeId, { locale }, expectedToken),
+        buildConfirmationPreview(
+          'locale',
+          args.localeId,
+          { locale },
+          expectedToken,
+        ),
       );
     }
 

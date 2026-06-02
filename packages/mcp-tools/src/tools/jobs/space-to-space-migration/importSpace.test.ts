@@ -122,6 +122,28 @@ describe('importSpace', () => {
     expect(calledWith.rawProxy).toBeUndefined();
   });
 
+  it('should return error when environment is protected', async () => {
+    const protectedConfig = createMockConfig({
+      protectedEnvironments: ['master'],
+    });
+    const testArgs = createImportTestArgs({
+      content: { contentTypes: [], entries: [] },
+      environmentId: 'master',
+    });
+    const tool = createImportSpaceTool(protectedConfig);
+    const result = await tool(testArgs);
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error importing space: Environment 'master' is protected. Write and delete operations are not allowed.",
+        },
+      ],
+    });
+    expect(mockContentfulImport).not.toHaveBeenCalled();
+  });
+
   it('should handle contentful-import errors', async () => {
     const error = new Error('Space not found');
     mockContentfulImport.mockRejectedValue(error);

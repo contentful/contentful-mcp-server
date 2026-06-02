@@ -37,7 +37,11 @@ describe('deleteContentType', () => {
     mockContentTypeGet.mockResolvedValue(mockContentType);
 
     const tool = deleteContentTypeTool(mockConfig);
-    const result = await tool({ ...mockArgs, confirm: true, confirmToken: 'wrong' });
+    const result = await tool({
+      ...mockArgs,
+      confirm: true,
+      confirmToken: 'wrong',
+    });
 
     expect(mockContentTypeDelete).not.toHaveBeenCalled();
     expect(result.content[0].text).toContain('Confirmation required to delete');
@@ -57,7 +61,11 @@ describe('deleteContentType', () => {
     mockContentTypeGet.mockResolvedValue(mockContentType);
 
     const tool = deleteContentTypeTool(mockConfig);
-    const result = await tool({ ...mockArgs, confirm: false, confirmToken: validToken });
+    const result = await tool({
+      ...mockArgs,
+      confirm: false,
+      confirmToken: validToken,
+    });
 
     expect(mockContentTypeDelete).not.toHaveBeenCalled();
     expect(result.content[0].text).toContain('Confirmation required to delete');
@@ -90,14 +98,19 @@ describe('deleteContentType', () => {
     expect(result).toEqual({
       isError: true,
       content: [
-        { type: 'text', text: 'Error deleting content type: Content type not found' },
+        {
+          type: 'text',
+          text: 'Error deleting content type: Content type not found',
+        },
       ],
     });
   });
 
   it('handles errors when deletion fails after confirmation', async () => {
     mockContentTypeGet.mockResolvedValue(mockContentType);
-    mockContentTypeDelete.mockRejectedValue(new Error('Content type deletion failed'));
+    mockContentTypeDelete.mockRejectedValue(
+      new Error('Content type deletion failed'),
+    );
 
     const tool = deleteContentTypeTool(mockConfig);
     const result = await tool({
@@ -115,5 +128,24 @@ describe('deleteContentType', () => {
         },
       ],
     });
+  });
+
+  it('should return error when environment is protected', async () => {
+    const protectedConfig = createMockConfig({
+      protectedEnvironments: ['master'],
+    });
+    const tool = deleteContentTypeTool(protectedConfig);
+    const result = await tool({ ...mockArgs, environmentId: 'master' });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error deleting content type: Environment 'master' is protected. Write and delete operations are not allowed.",
+        },
+      ],
+    });
+    expect(mockContentTypeDelete).not.toHaveBeenCalled();
   });
 });

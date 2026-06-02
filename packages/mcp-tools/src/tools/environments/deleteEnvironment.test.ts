@@ -58,7 +58,11 @@ describe('deleteEnvironment', () => {
     mockEnvironmentGet.mockResolvedValue(targetEnvironment);
 
     const tool = deleteEnvironmentTool(mockConfig);
-    const result = await tool({ ...mockArgs, environmentId: targetEnv, confirm: true });
+    const result = await tool({
+      ...mockArgs,
+      environmentId: targetEnv,
+      confirm: true,
+    });
 
     expect(mockEnvironmentDelete).not.toHaveBeenCalled();
     expect(result.content[0].text).toContain('Confirmation required to delete');
@@ -113,7 +117,10 @@ describe('deleteEnvironment', () => {
     expect(result).toEqual({
       isError: true,
       content: [
-        { type: 'text', text: 'Error deleting environment: Environment not found' },
+        {
+          type: 'text',
+          text: 'Error deleting environment: Environment not found',
+        },
       ],
     });
   });
@@ -136,5 +143,24 @@ describe('deleteEnvironment', () => {
         { type: 'text', text: 'Error deleting environment: Deletion failed' },
       ],
     });
+  });
+
+  it('should return error when environment is protected', async () => {
+    const protectedConfig = createMockConfig({
+      protectedEnvironments: ['master'],
+    });
+    const tool = deleteEnvironmentTool(protectedConfig);
+    const result = await tool({ ...mockArgs, environmentId: 'master' });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error deleting environment: Environment 'master' is protected. Write and delete operations are not allowed.",
+        },
+      ],
+    });
+    expect(mockEnvironmentDelete).not.toHaveBeenCalled();
   });
 });
