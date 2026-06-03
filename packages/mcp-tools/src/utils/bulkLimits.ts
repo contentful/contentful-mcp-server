@@ -50,7 +50,7 @@ export interface DryRunPreviewInput {
   environmentId: string;
 }
 
-export interface DryRunPreview {
+export type DryRunPreview = {
   dryRun: true;
   operation: DryRunOperation;
   entityType: DryRunEntityType;
@@ -58,7 +58,7 @@ export interface DryRunPreview {
   ids: string[];
   target: { spaceId: string; environmentId: string };
   message: string;
-}
+} & Record<string, unknown>;
 
 const PLURAL_BY_ENTITY: Record<DryRunEntityType, string> = {
   entry: 'entries',

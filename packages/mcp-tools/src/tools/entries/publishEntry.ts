@@ -49,15 +49,16 @@ export function publishEntryTool(config: ContentfulConfig) {
     assertBulkSizeAllowed(entryIds.length, config.maxBulkSize);
 
     if (args.dryRun) {
-      return createSuccessResponse('Dry run: no changes were made', {
-        ...buildDryRunPreview({
+      return createSuccessResponse(
+        'Dry run: no changes were made',
+        buildDryRunPreview({
           operation: 'publish',
           entityType: 'entry',
           ids: entryIds,
           spaceId: args.spaceId,
           environmentId: args.environmentId,
         }),
-      });
+      );
     }
 
     const baseParams: BulkOperationParams = {

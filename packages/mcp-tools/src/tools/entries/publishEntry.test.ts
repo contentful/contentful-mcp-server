@@ -227,6 +227,19 @@ describe('publishEntry', () => {
     expect(mockBulkActionPublish).not.toHaveBeenCalled();
   });
 
+  it('should return a dry-run preview for a single entry without executing', async () => {
+    const tool = publishEntryTool(mockConfig);
+    const result = await tool({
+      ...mockArgs,
+      entryId: ['e1'],
+      dryRun: true,
+    });
+
+    expect(result).not.toHaveProperty('isError');
+    expect(mockEntryGet).not.toHaveBeenCalled();
+    expect(mockEntryPublish).not.toHaveBeenCalled();
+  });
+
   it('uses the default limit (10) when maxBulkSize is unset', async () => {
     const tool = publishEntryTool(mockConfig);
     const result = await tool({
