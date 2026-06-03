@@ -60,8 +60,14 @@ export interface DryRunPreview {
   message: string;
 }
 
+const PLURAL_BY_ENTITY: Record<DryRunEntityType, string> = {
+  entry: 'entries',
+  asset: 'assets',
+};
+
 export function buildDryRunPreview(input: DryRunPreviewInput): DryRunPreview {
   const { operation, entityType, ids, spaceId, environmentId } = input;
+  const noun = ids.length === 1 ? entityType : PLURAL_BY_ENTITY[entityType];
   return {
     dryRun: true,
     operation,
@@ -69,6 +75,6 @@ export function buildDryRunPreview(input: DryRunPreviewInput): DryRunPreview {
     count: ids.length,
     ids,
     target: { spaceId, environmentId },
-    message: `Dry run: would ${operation} ${ids.length} ${entityType}(ies) in ${spaceId}/${environmentId}. No changes were made. Re-run without dryRun to execute.`,
+    message: `Dry run: would ${operation} ${ids.length} ${noun} in ${spaceId}/${environmentId}. No changes were made. Re-run without dryRun to execute.`,
   };
 }

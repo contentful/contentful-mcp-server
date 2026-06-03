@@ -64,7 +64,20 @@ describe('buildDryRunPreview', () => {
       ids: ['a', 'b', 'c'],
       target: { spaceId: 'space-1', environmentId: 'master' },
       message:
-        'Dry run: would publish 3 entry(ies) in space-1/master. No changes were made. Re-run without dryRun to execute.',
+        'Dry run: would publish 3 entries in space-1/master. No changes were made. Re-run without dryRun to execute.',
     });
+  });
+
+  it('uses singular form when there is exactly one id', () => {
+    const preview = buildDryRunPreview({
+      operation: 'archive',
+      entityType: 'asset',
+      ids: ['only-one'],
+      spaceId: 's',
+      environmentId: 'e',
+    });
+    expect(preview.message).toBe(
+      'Dry run: would archive 1 asset in s/e. No changes were made. Re-run without dryRun to execute.',
+    );
   });
 });
