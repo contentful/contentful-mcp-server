@@ -63,13 +63,14 @@ npm run build
 
 ### Environment Variables
 
-| Environment Variable                 | Required | Default Value        | Description                                          |
-| ------------------------------------ | -------- | -------------------- | ---------------------------------------------------- |
-| `CONTENTFUL_MANAGEMENT_ACCESS_TOKEN` | ✅ Yes   | -                    | Your Contentful Management API personal access token |
-| `SPACE_ID`                           | ✅ Yes   | -                    | Your Contentful Space ID                             |
-| `ENVIRONMENT_ID`                     | ❌ No    | `master`             | Target environment within your space                 |
-| `CONTENTFUL_HOST`                    | ❌ No    | `api.contentful.com` | Contentful API host                                  |
-| `NODE_ENV`                           | ❌ No    | `production`         | Node Environment to run in                           |
+| Environment Variable                 | Required | Default Value        | Description                                                                                                                                                                                              |
+| ------------------------------------ | -------- | -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `CONTENTFUL_MANAGEMENT_ACCESS_TOKEN` | ✅ Yes   | -                    | Your Contentful Management API personal access token                                                                                                                                                     |
+| `SPACE_ID`                           | ✅ Yes   | -                    | Your Contentful Space ID                                                                                                                                                                                 |
+| `ENVIRONMENT_ID`                     | ❌ No    | `master`             | Target environment within your space                                                                                                                                                                     |
+| `CONTENTFUL_HOST`                    | ❌ No    | `api.contentful.com` | Contentful API host                                                                                                                                                                                      |
+| `NODE_ENV`                           | ❌ No    | `production`         | Node Environment to run in                                                                                                                                                                               |
+| `MAX_BULK_SIZE`                      | ❌ No    | `10`                 | Maximum number of IDs allowed in a single bulk-operation tool call (1–100). Caps publish/unpublish/archive/unarchive on entries and assets. Mitigates accidental mass operations from AI hallucinations. |
 
 ### Configuration
 
