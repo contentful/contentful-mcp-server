@@ -22,4 +22,6 @@ export interface ContentfulConfig {
   hostDelivery?: string;
   /** Environment IDs that are protected from write/delete operations */
   protectedEnvironments?: string[];
+  /** Maximum number of IDs allowed in a single bulk-operation tool call. Defaults to 10 when unset. */
+  maxBulkSize?: number;
 }
