@@ -8,6 +8,10 @@ import {
   createToolClient,
   assertEnvironmentNotProtected,
 } from '../../utils/tools.js';
+import {
+  assertBulkSizeAllowed,
+  buildDryRunPreview,
+} from '../../utils/bulkLimits.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
 export const UnarchiveEntryToolParams = BaseToolSchema.extend({
@@ -16,7 +20,13 @@ export const UnarchiveEntryToolParams = BaseToolSchema.extend({
     .min(1)
     .max(100)
     .describe(
-      'Array of entry IDs to unarchive. Pass a single-element array for one entry, or up to 100 IDs for batch operations.',
+      'Array of entry IDs to unarchive. Pass a single-element array for one entry, or up to 100 IDs for batch operations (subject to MAX_BULK_SIZE).',
+    ),
+  dryRun: z
+    .boolean()
+    .optional()
+    .describe(
+      'When true, returns a preview of the operation without executing it. Useful for verifying intent on bulk calls.',
     ),
 });
 
@@ -29,6 +39,22 @@ export function unarchiveEntryTool(config: ContentfulConfig) {
       config.protectedEnvironments,
     );
 
+    const entryIds = args.entryId;
+    assertBulkSizeAllowed(entryIds.length, config.maxBulkSize);
+
+    if (args.dryRun) {
+      return createSuccessResponse(
+        'Dry run: no changes were made',
+        buildDryRunPreview({
+          operation: 'unarchive',
+          entityType: 'entry',
+          ids: entryIds,
+          spaceId: args.spaceId,
+          environmentId: args.environmentId,
+        }),
+      );
+    }
+
     const baseParams = {
       spaceId: args.spaceId,
       environmentId: args.environmentId,
@@ -36,12 +62,8 @@ export function unarchiveEntryTool(config: ContentfulConfig) {
 
     const contentfulClient = createToolClient(config, args);
 
-    const entryIds = args.entryId;
-
-    // Track successfully unarchived entries
     const successfullyUnarchived: string[] = [];
 
-    // Process each entry sequentially, stopping at first failure
     for (const entryId of entryIds) {
       try {
         const params = {
@@ -49,11 +71,9 @@ export function unarchiveEntryTool(config: ContentfulConfig) {
           entryId,
         };
 
-        // Unarchive the entry - will throw on error
         await contentfulClient.entry.unarchive(params);
         successfullyUnarchived.push(entryId);
       } catch (error) {
-        // Enhance error with context about successful operations
         const errorMessage =
           successfullyUnarchived.length > 0
             ? `Failed to unarchive entry '${entryId}' after successfully unarchiving ${successfullyUnarchived.length} entry(s): [${successfullyUnarchived.join(', ')}]. Original error: ${error instanceof Error ? error.message : String(error)}`
