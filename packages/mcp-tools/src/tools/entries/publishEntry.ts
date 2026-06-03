@@ -14,6 +14,10 @@ import {
   createEntitiesCollection,
   waitForBulkActionCompletion,
 } from '../../utils/bulkOperations.js';
+import {
+  assertBulkSizeAllowed,
+  buildDryRunPreview,
+} from '../../utils/bulkLimits.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
 export const PublishEntryToolParams = BaseToolSchema.extend({
@@ -22,7 +26,13 @@ export const PublishEntryToolParams = BaseToolSchema.extend({
     .min(1)
     .max(100)
     .describe(
-      'Array of entry IDs to publish. Pass a single-element array for one entry, or up to 100 IDs for bulk operations.',
+      'Array of entry IDs to publish. Pass a single-element array for one entry, or up to 100 IDs for bulk operations (subject to MAX_BULK_SIZE).',
+    ),
+  dryRun: z
+    .boolean()
+    .optional()
+    .describe(
+      'When true, returns a preview of the operation without executing it. Useful for verifying intent on bulk calls.',
     ),
 });
 
@@ -35,6 +45,21 @@ export function publishEntryTool(config: ContentfulConfig) {
       config.protectedEnvironments,
     );
 
+    const entryIds = args.entryId;
+    assertBulkSizeAllowed(entryIds.length, config.maxBulkSize);
+
+    if (args.dryRun) {
+      return createSuccessResponse('Dry run: no changes were made', {
+        ...buildDryRunPreview({
+          operation: 'publish',
+          entityType: 'entry',
+          ids: entryIds,
+          spaceId: args.spaceId,
+          environmentId: args.environmentId,
+        }),
+      });
+    }
+
     const baseParams: BulkOperationParams = {
       spaceId: args.spaceId,
       environmentId: args.environmentId,
@@ -42,9 +67,6 @@ export function publishEntryTool(config: ContentfulConfig) {
 
     const contentfulClient = createToolClient(config, args);
 
-    const entryIds = args.entryId;
-
-    // For single entry, use individual publish for simplicity
     if (entryIds.length === 1) {
       const entryId = entryIds[0];
       const params = {
@@ -52,10 +74,7 @@ export function publishEntryTool(config: ContentfulConfig) {
         entryId,
       };
 
-      // Get the entry first
       const entry = await contentfulClient.entry.get(params);
-
-      // Publish the entry
       const publishedEntry = await contentfulClient.entry.publish(
         params,
         entry,
@@ -67,23 +86,18 @@ export function publishEntryTool(config: ContentfulConfig) {
       });
     }
 
-    // For multiple entries, use bulk action API
-    // Get the current version of each entry
     const entityVersions = await createEntryVersionedLinks(
       contentfulClient,
       baseParams,
       entryIds,
     );
 
-    // Create the collection object
     const entitiesCollection = createEntitiesCollection(entityVersions);
 
-    // Create the bulk action
     const bulkAction = await contentfulClient.bulkAction.publish(baseParams, {
       entities: entitiesCollection,
     });
 
-    // Wait for the bulk action to complete
     const action = await waitForBulkActionCompletion(
       contentfulClient,
       baseParams,
