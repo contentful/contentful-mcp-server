@@ -24,6 +24,18 @@ const EnvSchema = z.object({
     .describe(
       'Comma-separated list of environment IDs protected from write/delete operations (e.g., master,staging)',
     ),
+  MAX_BULK_SIZE: z
+    .string()
+    .optional()
+    .refine(
+      (v) =>
+        v === undefined ||
+        (/^\d+$/.test(v) && Number(v) > 0 && Number(v) <= 100),
+      { message: 'MAX_BULK_SIZE must be a positive integer between 1 and 100' },
+    )
+    .describe(
+      'Maximum number of IDs allowed in a single bulk-operation tool call (default: 10, max: 100). Mitigates accidental mass operations from AI hallucinations.',
+    ),
   ORGANIZATION_ID: z.string().optional().describe('Contentful organization ID'),
   CONTENTFUL_DELIVERY_TOKEN: z
     .string()
