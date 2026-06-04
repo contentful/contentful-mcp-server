@@ -262,4 +262,26 @@ describe('unpublishEntry', () => {
       ],
     });
   });
+
+  it('rejects dryRun calls that exceed maxBulkSize', async () => {
+    const limitedConfig = createMockConfig({ maxBulkSize: 2 });
+    const tool = unpublishEntryTool(limitedConfig);
+    const result = await tool({
+      ...mockArgs,
+      entryId: ['e1', 'e2', 'e3'],
+      dryRun: true,
+    });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: 'Error unpublishing entry: Bulk operation rejected: 3 IDs exceeds MAX_BULK_SIZE of 2. Reduce batch size or increase the limit.',
+        },
+      ],
+    });
+    expect(mockEntryUnpublish).not.toHaveBeenCalled();
+    expect(mockBulkActionUnpublish).not.toHaveBeenCalled();
+  });
 });

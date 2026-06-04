@@ -248,4 +248,25 @@ describe('unarchiveAsset', () => {
       ],
     });
   });
+
+  it('rejects dryRun calls that exceed maxBulkSize', async () => {
+    const limitedConfig = createMockConfig({ maxBulkSize: 2 });
+    const tool = unarchiveAssetTool(limitedConfig);
+    const result = await tool({
+      ...mockArgs,
+      assetId: ['a1', 'a2', 'a3'],
+      dryRun: true,
+    });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: 'Error unarchiving asset: Bulk operation rejected: 3 IDs exceeds MAX_BULK_SIZE of 2. Reduce batch size or increase the limit.',
+        },
+      ],
+    });
+    expect(mockAssetUnarchive).not.toHaveBeenCalled();
+  });
 });

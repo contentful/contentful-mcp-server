@@ -257,4 +257,26 @@ describe('publishEntry', () => {
       ],
     });
   });
+
+  it('rejects dryRun calls that exceed maxBulkSize', async () => {
+    const limitedConfig = createMockConfig({ maxBulkSize: 2 });
+    const tool = publishEntryTool(limitedConfig);
+    const result = await tool({
+      ...mockArgs,
+      entryId: ['e1', 'e2', 'e3'],
+      dryRun: true,
+    });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: 'Error publishing entry: Bulk operation rejected: 3 IDs exceeds MAX_BULK_SIZE of 2. Reduce batch size or increase the limit.',
+        },
+      ],
+    });
+    expect(mockEntryPublish).not.toHaveBeenCalled();
+    expect(mockBulkActionPublish).not.toHaveBeenCalled();
+  });
 });

@@ -24,13 +24,13 @@ export const UnpublishAssetToolParams = BaseToolSchema.extend({
   assetId: z
     .union([z.string(), z.array(z.string()).max(100)])
     .describe(
-      'The ID of the asset to unpublish (string) or an array of asset IDs (up to 100 assets, subject to MAX_BULK_SIZE)',
+      'A single asset ID (string) or an array of asset IDs to unpublish (up to MAX_BULK_SIZE per call; default 10, max 100 — configurable via MAX_BULK_SIZE env var).',
     ),
   dryRun: z
     .boolean()
     .optional()
     .describe(
-      'When true, returns a preview of the operation without executing it. Useful for verifying intent on bulk calls.',
+      'When true, returns a preview of the operation without executing it. Still subject to MAX_BULK_SIZE — use this to confirm intent for within-limit calls.',
     ),
 });
 

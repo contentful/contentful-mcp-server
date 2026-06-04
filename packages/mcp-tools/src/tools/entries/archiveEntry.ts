@@ -20,13 +20,13 @@ export const ArchiveEntryToolParams = BaseToolSchema.extend({
     .min(1)
     .max(100)
     .describe(
-      'Array of entry IDs to archive. Pass a single-element array for one entry, or up to 100 IDs for batch operations (subject to MAX_BULK_SIZE).',
+      'Array of entry IDs to archive. Single-element array for one entry, or up to MAX_BULK_SIZE per call (default 10, max 100 — configurable via MAX_BULK_SIZE env var).',
     ),
   dryRun: z
     .boolean()
     .optional()
     .describe(
-      'When true, returns a preview of the operation without executing it. Useful for verifying intent on bulk calls.',
+      'When true, returns a preview of the operation without executing it. Still subject to MAX_BULK_SIZE — use this to confirm intent for within-limit calls.',
     ),
 });
 

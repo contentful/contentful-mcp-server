@@ -5,7 +5,7 @@
  *   1. `assertBulkSizeAllowed` — blocks calls that exceed `MAX_BULK_SIZE`.
  *      Default 10. Configurable per-server (env var on local, OAuth-time
  *      input on remote). Mitigates the catastrophic "AI hallucinated 100
- *      entry IDs for deletion" failure mode flagged by Klarna and TELUS.
+ *      entry IDs for deletion" failure mode.
  *
  *   2. `buildDryRunPreview` — returns what would happen without executing.
  *      Tools accept `dryRun: true` and short-circuit before any CMA call.
