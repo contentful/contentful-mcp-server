@@ -1,5 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { resolveEntryReferencesTool } from './resolveEntryReferences.js';
+import {
+  resolveEntryReferencesTool,
+  ResolveEntryReferencesToolParams,
+} from './resolveEntryReferences.js';
 import { formatResponse } from '../../utils/formatters.js';
 import {
   setupMockClient,
@@ -7,16 +10,22 @@ import {
   mockEntry,
   mockArgs,
 } from './mockClient.js';
-import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
-vi.mock('../../../src/utils/tools.js');
+vi.mock('../../utils/tools.js', async (importOriginal) => {
+  const orig = await importOriginal<typeof import('../../utils/tools.js')>();
+  return {
+    ...orig,
+    createToolClient: vi.fn(),
+  };
+});
+import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('resolveEntryReferences', () => {
   const mockConfig = createMockConfig();
 
   beforeEach(() => {
     setupMockClient();
-    mockEntryReferences.mockReset();
+    vi.clearAllMocks();
   });
 
   it('should resolve entry references successfully', async () => {
@@ -78,33 +87,41 @@ describe('resolveEntryReferences', () => {
     });
   });
 
-  it('should reject include values below 1', async () => {
-    const tool = resolveEntryReferencesTool(mockConfig);
-    const result = await tool({
-      ...mockArgs,
+  it('should reject include values below 1 via the schema', () => {
+    const result = ResolveEntryReferencesToolParams.safeParse({
+      spaceId: 'test-space-id',
+      environmentId: 'test-environment',
       entryId: 'test-entry-id',
       include: 0,
-    } as unknown as Parameters<typeof tool>[0]);
+    });
 
-    expect(result.isError).toBe(true);
-    expect(result.content[0].text).toMatch(/include/i);
-    expect(mockEntryReferences).not.toHaveBeenCalled();
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].path).toEqual(['include']);
   });
 
-  it('should reject include values above 10', async () => {
-    const tool = resolveEntryReferencesTool(mockConfig);
-    const result = await tool({
-      ...mockArgs,
+  it('should reject include values above 10 via the schema', () => {
+    const result = ResolveEntryReferencesToolParams.safeParse({
+      spaceId: 'test-space-id',
+      environmentId: 'test-environment',
       entryId: 'test-entry-id',
       include: 11,
-    } as unknown as Parameters<typeof tool>[0]);
+    });
 
-    expect(result.isError).toBe(true);
-    expect(result.content[0].text).toMatch(/include/i);
-    expect(mockEntryReferences).not.toHaveBeenCalled();
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].path).toEqual(['include']);
   });
 
-  it('should handle errors when CMA call fails', async () => {
+  it('should default include to 2 when omitted', () => {
+    const result = ResolveEntryReferencesToolParams.parse({
+      spaceId: 'test-space-id',
+      environmentId: 'test-environment',
+      entryId: 'test-entry-id',
+    });
+
+    expect(result.include).toBe(2);
+  });
+
+  it('should surface CMA errors via withErrorHandling', async () => {
     const error = new Error('Entry not found');
     mockEntryReferences.mockRejectedValue(error);
 

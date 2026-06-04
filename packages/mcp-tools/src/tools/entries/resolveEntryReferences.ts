@@ -22,25 +22,13 @@ export const ResolveEntryReferencesToolParams = BaseToolSchema.extend({
     ),
 });
 
+// z.input (not z.infer) so the optional-with-default `include` stays optional
+// in the handler signature; the MCP runtime applies the default via the schema.
 type Params = z.input<typeof ResolveEntryReferencesToolParams>;
-
-const DEFAULT_INCLUDE = 2;
-const MIN_INCLUDE = 1;
-const MAX_INCLUDE = 10;
 
 export function resolveEntryReferencesTool(config: ContentfulConfig) {
   async function tool(args: Params) {
-    const include = args.include ?? DEFAULT_INCLUDE;
-
-    if (
-      !Number.isInteger(include) ||
-      include < MIN_INCLUDE ||
-      include > MAX_INCLUDE
-    ) {
-      throw new Error(
-        `include must be an integer between ${MIN_INCLUDE} and ${MAX_INCLUDE} (received: ${include})`,
-      );
-    }
+    const { include = 2 } = args;
 
     const params = {
       spaceId: args.spaceId,
