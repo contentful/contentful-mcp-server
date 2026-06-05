@@ -1,4 +1,8 @@
 import { searchEntriesTool, SearchEntriesToolParams } from './searchEntries.js';
+import {
+  semanticSearchTool,
+  SemanticSearchToolParams,
+} from './semanticSearch.js';
 import { createEntryTool, CreateEntryToolParams } from './createEntry.js';
 import { deleteEntryTool, DeleteEntryToolParams } from './deleteEntry.js';
 import { updateEntryTool, UpdateEntryToolParams } from './updateEntry.js';
@@ -17,6 +21,7 @@ import type { ContentfulConfig } from '../../config/types.js';
 
 export function createEntryTools(config: ContentfulConfig) {
   const searchEntries = searchEntriesTool(config);
+  const semanticSearch = semanticSearchTool(config);
   const createEntry = createEntryTool(config);
   const deleteEntry = deleteEntryTool(config);
   const updateEntry = updateEntryTool(config);
@@ -36,6 +41,17 @@ export function createEntryTools(config: ContentfulConfig) {
         openWorldHint: false,
       },
       tool: searchEntries,
+    },
+    semanticSearch: {
+      title: 'semantic_search',
+      description:
+        "Find entries by meaning using semantic (vector) search. Provide a descriptive natural-language query of what you're looking for — phrases resembling entry content work best (not questions or JSON). Optionally restrict to specific content types. Returns up to 10 matching entry references (unranked); use get_entry to fetch full content. Requires semantic search to be enabled for the environment.",
+      inputParams: SemanticSearchToolParams.shape,
+      annotations: {
+        readOnlyHint: true,
+        openWorldHint: false,
+      },
+      tool: semanticSearch,
     },
     createEntry: {
       title: 'create_entry',
