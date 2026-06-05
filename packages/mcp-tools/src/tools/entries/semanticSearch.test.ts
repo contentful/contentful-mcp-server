@@ -1,10 +1,19 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { semanticSearchTool } from './semanticSearch.js';
+import {
+  semanticSearchTool,
+  SemanticSearchToolParams,
+} from './semanticSearch.js';
 import { formatResponse } from '../../utils/formatters.js';
 import { setupMockClient, mockSemanticSearchGet } from './mockClient.js';
 import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
-vi.mock('../../../src/utils/tools.js');
+vi.mock('../../utils/tools.js', async (importOriginal) => {
+  const orig = await importOriginal<typeof import('../../utils/tools.js')>();
+  return {
+    ...orig,
+    createToolClient: vi.fn(),
+  };
+});
 
 const mockArgs = {
   spaceId: 'test-space-id',
@@ -34,7 +43,7 @@ describe('semanticSearch', () => {
     mockSemanticSearchGet.mockReset();
   });
 
-  it('returns mapped entry references and correlationId', async () => {
+  it('should return mapped entry references and correlationId', async () => {
     mockSemanticSearchGet.mockResolvedValue(
       semanticResult(['entry-1', 'entry-2'], 'corr-123'),
     );
@@ -54,7 +63,7 @@ describe('semanticSearch', () => {
     });
   });
 
-  it('calls the endpoint without a filter when no contentTypeIds are given', async () => {
+  it('should call the endpoint without a filter when no contentTypeIds are given', async () => {
     mockSemanticSearchGet.mockResolvedValue(semanticResult(['entry-1']));
 
     const tool = semanticSearchTool(mockConfig);
@@ -66,7 +75,7 @@ describe('semanticSearch', () => {
     );
   });
 
-  it('builds a filter with entityType Entry when contentTypeIds are given', async () => {
+  it('should build a filter with entityType Entry when contentTypeIds are given', async () => {
     mockSemanticSearchGet.mockResolvedValue(semanticResult(['entry-1']));
 
     const tool = semanticSearchTool(mockConfig);
@@ -85,19 +94,17 @@ describe('semanticSearch', () => {
     );
   });
 
-  it('omits the filter when contentTypeIds is an empty array', async () => {
-    mockSemanticSearchGet.mockResolvedValue(semanticResult(['entry-1']));
+  it('should reject an empty contentTypeIds array at the schema layer', () => {
+    const result = SemanticSearchToolParams.safeParse({
+      ...mockArgs,
+      query: 'something',
+      contentTypeIds: [],
+    });
 
-    const tool = semanticSearchTool(mockConfig);
-    await tool({ ...mockArgs, query: 'something', contentTypeIds: [] });
-
-    expect(mockSemanticSearchGet).toHaveBeenCalledWith(
-      { spaceId: 'test-space-id', environmentId: 'test-environment' },
-      { query: 'something' },
-    );
+    expect(result.success).toBe(false);
   });
 
-  it('tolerates a missing correlationId', async () => {
+  it('should tolerate a missing correlationId', async () => {
     mockSemanticSearchGet.mockResolvedValue(semanticResult(['entry-1']));
 
     const tool = semanticSearchTool(mockConfig);
@@ -114,7 +121,7 @@ describe('semanticSearch', () => {
     });
   });
 
-  it('surfaces CMA errors via the standard error handler', async () => {
+  it('should surface CMA errors via the standard error handler', async () => {
     mockSemanticSearchGet.mockRejectedValue(
       new Error('Semantic search is not enabled for this environment'),
     );
