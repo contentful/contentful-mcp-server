@@ -14,6 +14,7 @@ export const SemanticSearchToolParams = BaseToolSchema.extend({
     ),
   contentTypeIds: z
     .array(z.string())
+    .min(1)
     .optional()
     .describe('Restrict the search to entries of these content type IDs'),
 });
@@ -48,7 +49,9 @@ export function semanticSearchTool(config: ContentfulConfig) {
       'Semantic search results retrieved successfully',
       {
         entries,
-        correlationId: results.sys.correlationId,
+        ...(results.sys.correlationId !== undefined
+          ? { correlationId: results.sys.correlationId }
+          : {}),
       },
     );
   }
