@@ -18,6 +18,7 @@ export const mockEntryUnarchive = vi.fn();
 export const mockEntryGetMany = vi.fn();
 export const mockBulkActionPublish = vi.fn();
 export const mockBulkActionUnpublish = vi.fn();
+export const mockSemanticSearchGet = vi.fn();
 
 /**
  * Standard mock Contentful client with all entry operations
@@ -37,6 +38,9 @@ export const mockClient = {
   bulkAction: {
     publish: mockBulkActionPublish,
     unpublish: mockBulkActionUnpublish,
+  },
+  semanticSearch: {
+    get: mockSemanticSearchGet,
   },
 };
 
