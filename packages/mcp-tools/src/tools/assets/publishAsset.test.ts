@@ -263,6 +263,7 @@ describe('publishAsset', () => {
   });
 
   it('should respect maximum bulk limit of 100 assets', async () => {
+    const expandedConfig = createMockConfig({ maxBulkSize: 100 });
     const manyAssets = Array.from({ length: 100 }, (_, i) => `asset${i + 1}`);
     const testArgs = {
       ...mockArgs,
@@ -271,7 +272,7 @@ describe('publishAsset', () => {
 
     mockBulkActionPublish.mockResolvedValue(mockBulkAction);
 
-    const tool = publishAssetTool(mockConfig);
+    const tool = publishAssetTool(expandedConfig);
     const result = await tool(testArgs);
 
     expect(result).toEqual({
@@ -301,5 +302,107 @@ describe('publishAsset', () => {
       ],
     });
     expect(mockAssetPublish).not.toHaveBeenCalled();
+  });
+
+  it('should reject calls that exceed maxBulkSize', async () => {
+    const limitedConfig = createMockConfig({ maxBulkSize: 2 });
+    const tool = publishAssetTool(limitedConfig);
+    const result = await tool({
+      ...mockArgs,
+      assetId: ['a1', 'a2', 'a3'],
+    });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: 'Error publishing asset: Bulk operation rejected: 3 IDs exceeds MAX_BULK_SIZE of 2. Reduce batch size or increase the limit.',
+        },
+      ],
+    });
+    expect(mockAssetPublish).not.toHaveBeenCalled();
+    expect(mockBulkActionPublish).not.toHaveBeenCalled();
+  });
+
+  it('should return a dry-run preview without executing when dryRun is true', async () => {
+    const tool = publishAssetTool(mockConfig);
+    const result = await tool({
+      ...mockArgs,
+      assetId: ['a1', 'a2'],
+      dryRun: true,
+    });
+
+    const expectedResponse = formatResponse('Dry run: no changes were made', {
+      dryRun: true,
+      operation: 'publish',
+      entityType: 'asset',
+      count: 2,
+      ids: ['a1', 'a2'],
+      target: {
+        spaceId: mockArgs.spaceId,
+        environmentId: mockArgs.environmentId,
+      },
+      message: `Dry run: would publish 2 assets in ${mockArgs.spaceId}/${mockArgs.environmentId}. No changes were made. Re-run without dryRun to execute.`,
+    });
+    expect(result).toEqual({
+      content: [{ type: 'text', text: expectedResponse }],
+    });
+    expect(mockAssetPublish).not.toHaveBeenCalled();
+    expect(mockBulkActionPublish).not.toHaveBeenCalled();
+  });
+
+  it('should return a dry-run preview for a single asset without executing', async () => {
+    const tool = publishAssetTool(mockConfig);
+    const result = await tool({
+      ...mockArgs,
+      assetId: 'a1',
+      dryRun: true,
+    });
+
+    expect(result).not.toHaveProperty('isError');
+    expect(mockAssetGet).not.toHaveBeenCalled();
+    expect(mockAssetPublish).not.toHaveBeenCalled();
+  });
+
+  it('uses the default limit (10) when maxBulkSize is unset', async () => {
+    const tool = publishAssetTool(mockConfig);
+    const result = await tool({
+      ...mockArgs,
+      assetId: Array.from({ length: 11 }, (_, i) => `a${i}`),
+    });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: 'Error publishing asset: Bulk operation rejected: 11 IDs exceeds MAX_BULK_SIZE of 10. Reduce batch size or increase the limit.',
+        },
+      ],
+    });
+  });
+
+  it('rejects dryRun calls that exceed maxBulkSize', async () => {
+    const limitedConfig = createMockConfig({ maxBulkSize: 2 });
+    const tool = publishAssetTool(limitedConfig);
+    const result = await tool({
+      ...mockArgs,
+      assetId: ['a1', 'a2', 'a3'],
+      dryRun: true,
+    });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: 'Error publishing asset: Bulk operation rejected: 3 IDs exceeds MAX_BULK_SIZE of 2. Reduce batch size or increase the limit.',
+        },
+      ],
+    });
+    expect(mockAssetGet).not.toHaveBeenCalled();
+    expect(mockAssetPublish).not.toHaveBeenCalled();
+    expect(mockBulkActionPublish).not.toHaveBeenCalled();
   });
 });

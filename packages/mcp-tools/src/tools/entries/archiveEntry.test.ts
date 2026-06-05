@@ -167,4 +167,101 @@ describe('archiveEntry', () => {
       expect(result.content[0].text).toContain('entry-1');
     });
   });
+
+  it('should reject calls that exceed maxBulkSize', async () => {
+    const limitedConfig = createMockConfig({ maxBulkSize: 2 });
+    const tool = archiveEntryTool(limitedConfig);
+    const result = await tool({
+      ...mockArgs,
+      entryId: ['e1', 'e2', 'e3'],
+    });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: 'Error archiving entry: Bulk operation rejected: 3 IDs exceeds MAX_BULK_SIZE of 2. Reduce batch size or increase the limit.',
+        },
+      ],
+    });
+    expect(mockEntryArchive).not.toHaveBeenCalled();
+  });
+
+  it('should return a dry-run preview without executing when dryRun is true', async () => {
+    const tool = archiveEntryTool(mockConfig);
+    const result = await tool({
+      ...mockArgs,
+      entryId: ['e1', 'e2'],
+      dryRun: true,
+    });
+
+    const expectedResponse = formatResponse('Dry run: no changes were made', {
+      dryRun: true,
+      operation: 'archive',
+      entityType: 'entry',
+      count: 2,
+      ids: ['e1', 'e2'],
+      target: {
+        spaceId: mockArgs.spaceId,
+        environmentId: mockArgs.environmentId,
+      },
+      message: `Dry run: would archive 2 entries in ${mockArgs.spaceId}/${mockArgs.environmentId}. No changes were made. Re-run without dryRun to execute.`,
+    });
+    expect(result).toEqual({
+      content: [{ type: 'text', text: expectedResponse }],
+    });
+    expect(mockEntryArchive).not.toHaveBeenCalled();
+  });
+
+  it('should return a dry-run preview for a single entry without executing', async () => {
+    const tool = archiveEntryTool(mockConfig);
+    const result = await tool({
+      ...mockArgs,
+      entryId: ['e1'],
+      dryRun: true,
+    });
+
+    expect(result).not.toHaveProperty('isError');
+    expect(mockEntryArchive).not.toHaveBeenCalled();
+  });
+
+  it('uses the default limit (10) when maxBulkSize is unset', async () => {
+    const tool = archiveEntryTool(mockConfig);
+    const result = await tool({
+      ...mockArgs,
+      entryId: Array.from({ length: 11 }, (_, i) => `e${i}`),
+    });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: 'Error archiving entry: Bulk operation rejected: 11 IDs exceeds MAX_BULK_SIZE of 10. Reduce batch size or increase the limit.',
+        },
+      ],
+    });
+  });
+
+  it('rejects dryRun calls that exceed maxBulkSize', async () => {
+    const limitedConfig = createMockConfig({ maxBulkSize: 2 });
+    const tool = archiveEntryTool(limitedConfig);
+    const result = await tool({
+      ...mockArgs,
+      entryId: ['e1', 'e2', 'e3'],
+      dryRun: true,
+    });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: 'Error archiving entry: Bulk operation rejected: 3 IDs exceeds MAX_BULK_SIZE of 2. Reduce batch size or increase the limit.',
+        },
+      ],
+    });
+    expect(mockEntryArchive).not.toHaveBeenCalled();
+  });
 });

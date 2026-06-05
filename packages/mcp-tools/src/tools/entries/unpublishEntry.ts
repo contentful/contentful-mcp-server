@@ -14,6 +14,10 @@ import {
   createEntitiesCollection,
   waitForBulkActionCompletion,
 } from '../../utils/bulkOperations.js';
+import {
+  assertBulkSizeAllowed,
+  buildDryRunPreview,
+} from '../../utils/bulkLimits.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
 export const UnpublishEntryToolParams = BaseToolSchema.extend({
@@ -22,7 +26,13 @@ export const UnpublishEntryToolParams = BaseToolSchema.extend({
     .min(1)
     .max(100)
     .describe(
-      'Array of entry IDs to unpublish. Pass a single-element array for one entry, or up to 100 IDs for bulk operations.',
+      'Array of entry IDs to unpublish. Single-element array for one entry, or up to MAX_BULK_SIZE per call (default 10, max 100 — configurable via MAX_BULK_SIZE env var).',
+    ),
+  dryRun: z
+    .boolean()
+    .optional()
+    .describe(
+      'When true, returns a preview of the operation without executing it. Still subject to MAX_BULK_SIZE — use this to confirm intent for within-limit calls.',
     ),
 });
 
@@ -35,6 +45,22 @@ export function unpublishEntryTool(config: ContentfulConfig) {
       config.protectedEnvironments,
     );
 
+    const entryIds = args.entryId;
+    assertBulkSizeAllowed(entryIds.length, config.maxBulkSize);
+
+    if (args.dryRun) {
+      return createSuccessResponse(
+        'Dry run: no changes were made',
+        buildDryRunPreview({
+          operation: 'unpublish',
+          entityType: 'entry',
+          ids: entryIds,
+          spaceId: args.spaceId,
+          environmentId: args.environmentId,
+        }),
+      );
+    }
+
     const baseParams: BulkOperationParams = {
       spaceId: args.spaceId,
       environmentId: args.environmentId,
@@ -42,9 +68,6 @@ export function unpublishEntryTool(config: ContentfulConfig) {
 
     const contentfulClient = createToolClient(config, args);
 
-    const entryIds = args.entryId;
-
-    // For single entry, use individual unpublish for simplicity
     if (entryIds.length === 1) {
       const entryId = entryIds[0];
       const params = {
@@ -52,10 +75,7 @@ export function unpublishEntryTool(config: ContentfulConfig) {
         entryId,
       };
 
-      // Get the entry first
       const entry = await contentfulClient.entry.get(params);
-
-      // Unpublish the entry
       const unpublishedEntry = await contentfulClient.entry.unpublish(
         params,
         entry,
@@ -67,23 +87,18 @@ export function unpublishEntryTool(config: ContentfulConfig) {
       });
     }
 
-    // For multiple entries, use bulk action API
-    // Get the unversioned links for each entry (unpublish doesn't need version info)
     const entityLinks = await createEntryUnversionedLinks(
       contentfulClient,
       baseParams,
       entryIds,
     );
 
-    // Create the collection object
     const entitiesCollection = createEntitiesCollection(entityLinks);
 
-    // Create the bulk action
     const bulkAction = await contentfulClient.bulkAction.unpublish(baseParams, {
       entities: entitiesCollection,
     });
 
-    // Wait for the bulk action to complete
     const action = await waitForBulkActionCompletion(
       contentfulClient,
       baseParams,

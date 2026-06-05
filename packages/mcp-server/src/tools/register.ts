@@ -27,6 +27,10 @@ export function registerAllTools(server: McpServer): void {
     ? parsedProtectedEnvs
     : undefined;
 
+  const maxBulkSize = env.data.MAX_BULK_SIZE
+    ? Number(env.data.MAX_BULK_SIZE)
+    : undefined;
+
   // Initialize tools with configuration from environment variables
   const tools = new ContentfulMcpTools({
     accessToken: env.data.CONTENTFUL_MANAGEMENT_ACCESS_TOKEN,
@@ -39,6 +43,7 @@ export function registerAllTools(server: McpServer): void {
     deliveryToken: env.data.CONTENTFUL_DELIVERY_TOKEN,
     hostDelivery: env.data.CONTENTFUL_DELIVERY_HOST,
     protectedEnvironments,
+    maxBulkSize,
   });
 
   // Get tool collections

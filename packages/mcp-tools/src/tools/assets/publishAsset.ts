@@ -14,13 +14,23 @@ import {
   createEntitiesCollection,
   waitForBulkActionCompletion,
 } from '../../utils/bulkOperations.js';
+import {
+  assertBulkSizeAllowed,
+  buildDryRunPreview,
+} from '../../utils/bulkLimits.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
 export const PublishAssetToolParams = BaseToolSchema.extend({
   assetId: z
     .union([z.string(), z.array(z.string()).max(100)])
     .describe(
-      'The ID of the asset to publish (string) or an array of asset IDs (up to 100 assets)',
+      'A single asset ID (string) or an array of asset IDs to publish (up to MAX_BULK_SIZE per call; default 10, max 100 — configurable via MAX_BULK_SIZE env var).',
+    ),
+  dryRun: z
+    .boolean()
+    .optional()
+    .describe(
+      'When true, returns a preview of the operation without executing it. Still subject to MAX_BULK_SIZE — use this to confirm intent for within-limit calls.',
     ),
 });
 
@@ -32,6 +42,26 @@ export function publishAssetTool(config: ContentfulConfig) {
       args.environmentId,
       config.protectedEnvironments,
     );
+
+    const assetIds = Array.isArray(args.assetId)
+      ? args.assetId
+      : [args.assetId];
+
+    assertBulkSizeAllowed(assetIds.length, config.maxBulkSize);
+
+    if (args.dryRun) {
+      return createSuccessResponse(
+        'Dry run: no changes were made',
+        buildDryRunPreview({
+          operation: 'publish',
+          entityType: 'asset',
+          ids: assetIds,
+          spaceId: args.spaceId,
+          environmentId: args.environmentId,
+        }),
+      );
+    }
+
     const baseParams: BulkOperationParams = {
       spaceId: args.spaceId,
       environmentId: args.environmentId,
@@ -39,12 +69,6 @@ export function publishAssetTool(config: ContentfulConfig) {
 
     const contentfulClient = createToolClient(config, args);
 
-    // Normalize input to always be an array
-    const assetIds = Array.isArray(args.assetId)
-      ? args.assetId
-      : [args.assetId];
-
-    // For single asset, use individual publish
     if (assetIds.length === 1) {
       try {
         const assetId = assetIds[0];
@@ -53,10 +77,7 @@ export function publishAssetTool(config: ContentfulConfig) {
           assetId,
         };
 
-        // Get the asset first
         const asset = await contentfulClient.asset.get(params);
-
-        // Publish the asset
         const publishedAsset = await contentfulClient.asset.publish(
           params,
           asset,
@@ -74,23 +95,18 @@ export function publishAssetTool(config: ContentfulConfig) {
       }
     }
 
-    // For multiple assets, use bulk action API
-    // Get the current version of each asset
     const entityVersions = await createAssetVersionedLinks(
       contentfulClient,
       baseParams,
       assetIds,
     );
 
-    // Create the collection object
     const entitiesCollection = createEntitiesCollection(entityVersions);
 
-    // Create the bulk action
     const bulkAction = await contentfulClient.bulkAction.publish(baseParams, {
       entities: entitiesCollection,
     });
 
-    // Wait for the bulk action to complete
     const action = await waitForBulkActionCompletion(
       contentfulClient,
       baseParams,
