@@ -133,6 +133,7 @@ Below is a sample configuration:
 |                           | `delete_content_type`      | Remove content types                             |
 | **Entries**               | `search_entries`           | Search and filter entries                        |
 |                           | `get_entry`                | Retrieve specific entries                        |
+|                           | `get_entry_snapshot`       | Retrieve entry version history (snapshots)       |
 |                           | `create_entry`             | Create new content entries                       |
 |                           | `update_entry`             | Modify existing entries                          |
 |                           | `publish_entry`            | Publish entries (single or bulk)                 |
