@@ -11,6 +11,10 @@ import {
   resolveEntryReferencesTool,
   ResolveEntryReferencesToolParams,
 } from './resolveEntryReferences.js';
+import {
+  getEntrySnapshotTool,
+  GetEntrySnapshotToolParams,
+} from './getEntrySnapshot.js';
 import { publishEntryTool, PublishEntryToolParams } from './publishEntry.js';
 import {
   unpublishEntryTool,
@@ -31,6 +35,7 @@ export function createEntryTools(config: ContentfulConfig) {
   const updateEntry = updateEntryTool(config);
   const getEntry = getEntryTool(config);
   const resolveEntryReferences = resolveEntryReferencesTool(config);
+  const getEntrySnapshot = getEntrySnapshotTool(config);
   const publishEntry = publishEntryTool(config);
   const unpublishEntry = unpublishEntryTool(config);
   const archiveEntry = archiveEntryTool(config);
@@ -91,6 +96,17 @@ export function createEntryTools(config: ContentfulConfig) {
         openWorldHint: false,
       },
       tool: resolveEntryReferences,
+    },
+    getEntrySnapshot: {
+      title: 'get_entry_snapshot',
+      description:
+        'Retrieve version history (snapshots) of an entry for safe rollback. Call with only an entryId to list all available snapshots (each has a snapshot ID and metadata). Call with both entryId and snapshotId to retrieve the full field content of that specific snapshot, which can then be used to restore a previous version.',
+      inputParams: GetEntrySnapshotToolParams.shape,
+      annotations: {
+        readOnlyHint: true,
+        openWorldHint: false,
+      },
+      tool: getEntrySnapshot,
     },
     updateEntry: {
       title: 'update_entry',

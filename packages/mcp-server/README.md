@@ -109,6 +109,7 @@ Below is a sample configuration:
 |                           | `delete_content_type`              | Remove content types                             |
 | **Entries**               | `search_entries`                   | Search and filter entries in your space          |
 |                           | `get_entry`                        | Retrieve specific entries                        |
+|                           | `get_entry_snapshot`               | Retrieve entry version history (snapshots)       |
 |                           | `create_entry`                     | Create new content entries with locale support   |
 |                           | `update_entry`                     | Modify existing entries with locale support      |
 |                           | `publish_entry`                    | Publish entries (single or bulk up to 100)       |
