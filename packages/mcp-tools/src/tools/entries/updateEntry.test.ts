@@ -32,6 +32,7 @@ describe('updateEntry', () => {
     const testArgs = {
       ...mockArgs,
       entryId: 'test-entry-id',
+      version: 1, // matches mockEntry.sys.version
       fields: {
         title: { 'en-US': 'Updated Title' },
         description: { 'en-US': 'Updated Description' },
@@ -85,6 +86,7 @@ describe('updateEntry', () => {
     const testArgs = {
       ...mockArgs,
       entryId: 'test-entry-id',
+      version: 1, // matches mockEntry.sys.version
       fields: {
         title: { 'en-US': 'Updated Title' },
       },
@@ -295,6 +297,7 @@ describe('updateEntry', () => {
     const testArgs = {
       ...mockArgs,
       entryId: 'test-entry-id',
+      version: 1, // matches mockEntry.sys.version
       fields: {
         title: { 'en-US': 'Updated Title', fr: 'Titre mis à jour' },
         body: { 'en-US': richTextEnUS, fr: richTextFr },
@@ -429,6 +432,7 @@ describe('updateEntry', () => {
     const testArgs = {
       ...mockArgs,
       entryId: 'test-entry-id',
+      version: 1, // matches mockEntry.sys.version
       fields: {
         body: { 'en-US': richTextWithEmbeds },
       },
@@ -480,6 +484,7 @@ describe('updateEntry', () => {
     const testArgs = {
       ...mockArgs,
       entryId: 'test-entry-id',
+      version: 1, // matches mockEntry.sys.version
       fields: {},
     };
 
@@ -519,6 +524,7 @@ describe('updateEntry', () => {
     const testArgs = {
       ...mockArgs,
       entryId: 'non-existent-entry',
+      version: 1, // matches mockEntry.sys.version
       fields: {
         title: { 'en-US': 'Updated Title' },
       },
@@ -550,6 +556,7 @@ describe('updateEntry', () => {
       ...mockArgs,
       environmentId: 'master',
       entryId: 'test-entry-id',
+      version: 1, // matches mockEntry.sys.version
       fields: {},
     });
 
@@ -569,6 +576,7 @@ describe('updateEntry', () => {
     const testArgs = {
       ...mockArgs,
       entryId: 'test-entry-id',
+      version: 1, // matches mockEntry.sys.version
       fields: {
         title: { 'en-US': 'Updated Title' },
       },
@@ -596,5 +604,47 @@ describe('updateEntry', () => {
         },
       ],
     });
+  });
+
+  it('should return a version conflict error when the supplied version is stale', async () => {
+    const testArgs = {
+      ...mockArgs,
+      entryId: 'test-entry-id',
+      version: 1, // what the LLM read earlier
+      fields: {
+        title: { 'en-US': 'Updated Title' },
+      },
+    };
+
+    // Server now has a newer version than what the caller supplied
+    const mockExistingEntry = {
+      ...mockEntry,
+      sys: { ...mockEntry.sys, version: 3 },
+      fields: { title: { 'en-US': 'Original Title' } },
+      metadata: { tags: [] },
+    };
+
+    mockEntryGet.mockResolvedValue(mockExistingEntry);
+
+    const tool = updateEntryTool(mockConfig);
+    const result = await tool(testArgs);
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: 'Error updating entry: Version conflict: the entry has changed since you read it (your version: 1, current version: 3). Re-fetch the entry with get_entry and retry the update with the latest version.',
+        },
+      ],
+    });
+    // The entry must have been fetched with the correct params before the check
+    expect(mockEntryGet).toHaveBeenCalledWith({
+      spaceId: 'test-space-id',
+      environmentId: 'test-environment',
+      entryId: 'test-entry-id',
+    });
+    // Must NOT attempt the write when the version is stale
+    expect(mockEntryUpdate).not.toHaveBeenCalled();
   });
 });
