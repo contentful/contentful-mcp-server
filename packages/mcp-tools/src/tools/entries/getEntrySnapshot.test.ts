@@ -92,4 +92,27 @@ describe('getEntrySnapshot', () => {
       ],
     });
   });
+
+  it('handles errors when single snapshot retrieval fails', async () => {
+    mockSnapshotGetForEntry.mockRejectedValue(
+      new Error('Snapshot not found'),
+    );
+
+    const tool = getEntrySnapshotTool(mockConfig);
+    const result = await tool({
+      ...baseArgs,
+      entryId: 'test-entry-id',
+      snapshotId: 'test-snapshot-id',
+    });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: 'Error retrieving entry snapshot: Snapshot not found',
+        },
+      ],
+    });
+  });
 });

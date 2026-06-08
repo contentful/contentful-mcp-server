@@ -115,9 +115,11 @@ export const mockEntrySnapshot = {
   sys: {
     id: 'test-snapshot-id',
     type: 'Snapshot' as const,
+    version: 1,
     snapshotType: 'publish',
     snapshotEntityType: 'entry',
     createdAt: '2023-01-01T00:00:00Z',
+    updatedAt: '2023-01-01T00:00:00Z',
   },
   snapshot: {
     sys: {
