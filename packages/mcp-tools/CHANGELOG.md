@@ -1,3 +1,9 @@
+## 0.10.0 (2026-06-08)
+
+### 🚀 Features
+
+- add semantic_search MCP tool [DX-1211] ([#386](https://github.com/contentful/contentful-mcp-server/pull/386))
+
 ## 0.9.0 (2026-06-08)
 
 ### 🚀 Features
