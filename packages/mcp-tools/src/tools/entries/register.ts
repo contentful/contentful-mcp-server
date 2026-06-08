@@ -63,7 +63,7 @@ export function createEntryTools(config: ContentfulConfig) {
     updateEntry: {
       title: 'update_entry',
       description:
-        'Update an existing entry. The handler will merge your field updates with the existing entry fields, so you only need to provide the fields you want to change. However, for multiple-locale fields, all existing locales must be included in the update.',
+        'Update an existing entry. You MUST call get_entry first to read the current state, then pass the sys.version you received as the version parameter. The handler merges your field updates with the existing entry fields, so you only need to provide the fields you want to change. However, for multiple-locale fields, all existing locales must be included in the update. If the version is stale (the entry changed since you read it), the update is rejected and you must re-fetch with get_entry.',
       inputParams: UpdateEntryToolParams.shape,
       annotations: {
         readOnlyHint: false,
