@@ -1,3 +1,13 @@
+## 1.10.0 (2026-06-08)
+
+### 🚀 Features
+
+- add resolve_entry_references MCP tool [DX-754] ([#384](https://github.com/contentful/contentful-mcp-server/pull/384))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.9.0
+
 ## 1.9.0 (2026-06-05)
 
 ### 🚀 Features

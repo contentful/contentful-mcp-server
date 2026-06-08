@@ -7,6 +7,10 @@ import { createEntryTool, CreateEntryToolParams } from './createEntry.js';
 import { deleteEntryTool, DeleteEntryToolParams } from './deleteEntry.js';
 import { updateEntryTool, UpdateEntryToolParams } from './updateEntry.js';
 import { getEntryTool, GetEntryToolParams } from './getEntry.js';
+import {
+  resolveEntryReferencesTool,
+  ResolveEntryReferencesToolParams,
+} from './resolveEntryReferences.js';
 import { publishEntryTool, PublishEntryToolParams } from './publishEntry.js';
 import {
   unpublishEntryTool,
@@ -26,6 +30,7 @@ export function createEntryTools(config: ContentfulConfig) {
   const deleteEntry = deleteEntryTool(config);
   const updateEntry = updateEntryTool(config);
   const getEntry = getEntryTool(config);
+  const resolveEntryReferences = resolveEntryReferencesTool(config);
   const publishEntry = publishEntryTool(config);
   const unpublishEntry = unpublishEntryTool(config);
   const archiveEntry = archiveEntryTool(config);
@@ -75,6 +80,17 @@ export function createEntryTools(config: ContentfulConfig) {
         openWorldHint: false,
       },
       tool: getEntry,
+    },
+    resolveEntryReferences: {
+      title: 'resolve_entry_references',
+      description:
+        "Recursively resolve an entry's references and return the entry plus its descendant entries and linked assets. Useful for verifying the structure of a page or any entry that links to other entries before or after edits, without issuing one fetch per descendant. Set `include` (1-10, default 2) to control how many levels deep to walk; the CMA caps this at 10.",
+      inputParams: ResolveEntryReferencesToolParams.shape,
+      annotations: {
+        readOnlyHint: true,
+        openWorldHint: false,
+      },
+      tool: resolveEntryReferences,
     },
     updateEntry: {
       title: 'update_entry',

@@ -16,6 +16,7 @@ export const mockEntryUnpublish = vi.fn();
 export const mockEntryArchive = vi.fn();
 export const mockEntryUnarchive = vi.fn();
 export const mockEntryGetMany = vi.fn();
+export const mockEntryReferences = vi.fn();
 export const mockBulkActionPublish = vi.fn();
 export const mockBulkActionUnpublish = vi.fn();
 export const mockSemanticSearchGet = vi.fn();
@@ -34,6 +35,7 @@ export const mockClient = {
     archive: mockEntryArchive,
     unarchive: mockEntryUnarchive,
     getMany: mockEntryGetMany,
+    references: mockEntryReferences,
   },
   bulkAction: {
     publish: mockBulkActionPublish,
