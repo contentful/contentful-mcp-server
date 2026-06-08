@@ -1,3 +1,9 @@
+## 0.12.0 (2026-06-08)
+
+### 🚀 Features
+
+- require version param to enforce read-before-write in update_entry [DX-759] ([#390](https://github.com/contentful/contentful-mcp-server/pull/390))
+
 ## 0.11.0 (2026-06-08)
 
 ### 🚀 Features
