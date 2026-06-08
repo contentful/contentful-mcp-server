@@ -18,6 +18,8 @@ export const mockEntryUnarchive = vi.fn();
 export const mockEntryGetMany = vi.fn();
 export const mockBulkActionPublish = vi.fn();
 export const mockBulkActionUnpublish = vi.fn();
+export const mockSnapshotGetManyForEntry = vi.fn();
+export const mockSnapshotGetForEntry = vi.fn();
 
 /**
  * Standard mock Contentful client with all entry operations
@@ -37,6 +39,10 @@ export const mockClient = {
   bulkAction: {
     publish: mockBulkActionPublish,
     unpublish: mockBulkActionUnpublish,
+  },
+  snapshot: {
+    getManyForEntry: mockSnapshotGetManyForEntry,
+    getForEntry: mockSnapshotGetForEntry,
   },
 };
 
@@ -100,4 +106,38 @@ export const mockBulkArgs = {
   spaceId: 'test-space-id',
   environmentId: 'test-environment',
   entryId: ['entry-1', 'entry-2'],
+};
+
+/**
+ * Mock single entry snapshot object (shape of SnapshotProps<EntryProps>)
+ */
+export const mockEntrySnapshot = {
+  sys: {
+    id: 'test-snapshot-id',
+    type: 'Snapshot' as const,
+    snapshotType: 'publish',
+    snapshotEntityType: 'entry',
+    createdAt: '2023-01-01T00:00:00Z',
+  },
+  snapshot: {
+    sys: {
+      id: 'test-entry-id',
+      type: 'Entry' as const,
+      version: 3,
+    },
+    fields: {
+      title: { 'en-US': 'Previous Title' },
+    },
+  },
+};
+
+/**
+ * Mock collection of entry snapshots (shape of CollectionProp<SnapshotProps<EntryProps>>)
+ */
+export const mockEntrySnapshotCollection = {
+  sys: { type: 'Array' as const },
+  total: 1,
+  skip: 0,
+  limit: 100,
+  items: [mockEntrySnapshot],
 };
