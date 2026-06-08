@@ -132,6 +132,7 @@ Below is a sample configuration:
 |                           | `unpublish_content_type`   | Unpublish content types                          |
 |                           | `delete_content_type`      | Remove content types                             |
 | **Entries**               | `search_entries`           | Search and filter entries                        |
+|                           | `semantic_search`          | Find entries by meaning (vector search)          |
 |                           | `get_entry`                | Retrieve specific entries                        |
 |                           | `create_entry`             | Create new content entries                       |
 |                           | `update_entry`             | Modify existing entries                          |
