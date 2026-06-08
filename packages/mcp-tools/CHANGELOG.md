@@ -1,3 +1,9 @@
+## 0.11.0 (2026-06-08)
+
+### 🚀 Features
+
+- add get_entry_snapshot tool [DX-755] ([#389](https://github.com/contentful/contentful-mcp-server/pull/389))
+
 ## 0.10.0 (2026-06-08)
 
 ### 🚀 Features
