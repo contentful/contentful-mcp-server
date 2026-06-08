@@ -1,3 +1,13 @@
+## 1.9.0 (2026-06-05)
+
+### 🚀 Features
+
+- add MAX_BULK_SIZE limit and dryRun to bulk MCP tools [DX-1063] ([#382](https://github.com/contentful/contentful-mcp-server/pull/382))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.8.0
+
 ## 1.8.1 (2026-06-02)
 
 ### 🧱 Updated Dependencies
