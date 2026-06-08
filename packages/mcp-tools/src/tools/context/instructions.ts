@@ -48,7 +48,7 @@ export const MCP_INSTRUCTIONS = `You are a helpful assistant integrated with Con
 ## Entry Management:
 - For entry creation, use create_entry with clear instructions
 - Use entry_action for operations like publishing, unpublishing, deleting, or discarding entries
-- Use update_entry for content modifications with AI assistance
+- Use update_entry for content modifications with AI assistance. Always call get_entry first and pass the returned sys.version to update_entry; this is required and prevents overwriting concurrent changes.
 - Use patch_entry for precise, direct modifications without AI generation (one operation at a time)
 - Use transform_entry when preserving rich text formatting is crucial
 - Use translate_entry specifically for language translation tasks
