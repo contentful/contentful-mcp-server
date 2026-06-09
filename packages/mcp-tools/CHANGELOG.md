@@ -1,3 +1,9 @@
+## 0.12.1 (2026-06-09)
+
+### 🩹 Fixes
+
+- add destructiveHint to all read-only tool annotations [] ([#391](https://github.com/contentful/contentful-mcp-server/pull/391))
+
 ## 0.12.0 (2026-06-08)
 
 ### 🚀 Features
