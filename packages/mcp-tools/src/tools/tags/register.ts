@@ -14,6 +14,7 @@ export function createTagTools(config: ContentfulConfig) {
       inputParams: ListTagsToolParams.shape,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
         openWorldHint: false,
       },
       tool: listTags,

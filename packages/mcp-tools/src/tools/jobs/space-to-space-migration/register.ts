@@ -24,6 +24,7 @@ export function createJobTools(config: ContentfulConfig) {
       inputParams: ParamCollectionToolParams.shape,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
         openWorldHint: false,
       },
       tool: paramCollection,
@@ -34,6 +35,7 @@ export function createJobTools(config: ContentfulConfig) {
       inputParams: ExportSpaceToolParams.shape,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
         openWorldHint: false,
       },
       tool: exportSpace,

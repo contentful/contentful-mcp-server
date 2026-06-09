@@ -13,6 +13,7 @@ export function createSpaceTools(config: ContentfulConfig) {
       inputParams: ListSpacesToolParams.shape,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
         openWorldHint: false,
       },
       tool: listSpaces,
@@ -23,6 +24,7 @@ export function createSpaceTools(config: ContentfulConfig) {
       inputParams: GetSpaceToolParams.shape,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
         openWorldHint: false,
       },
       tool: getSpace,

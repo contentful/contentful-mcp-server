@@ -25,6 +25,7 @@ export function createEditorInterfaceTools(config: ContentfulConfig) {
       inputParams: ListEditorInterfacesToolParams.shape,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
         openWorldHint: false,
       },
       tool: listEditorInterfaces,
@@ -36,6 +37,7 @@ export function createEditorInterfaceTools(config: ContentfulConfig) {
       inputParams: GetEditorInterfaceToolParams.shape,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
         openWorldHint: false,
       },
       tool: getEditorInterface,

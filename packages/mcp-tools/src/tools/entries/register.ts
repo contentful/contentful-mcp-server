@@ -48,6 +48,7 @@ export function createEntryTools(config: ContentfulConfig) {
       inputParams: SearchEntriesToolParams.shape,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
         openWorldHint: false,
       },
       tool: searchEntries,
@@ -59,6 +60,7 @@ export function createEntryTools(config: ContentfulConfig) {
       inputParams: SemanticSearchToolParams.shape,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
         openWorldHint: false,
       },
       tool: semanticSearch,
@@ -82,6 +84,7 @@ export function createEntryTools(config: ContentfulConfig) {
       inputParams: GetEntryToolParams.shape,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
         openWorldHint: false,
       },
       tool: getEntry,
@@ -93,6 +96,7 @@ export function createEntryTools(config: ContentfulConfig) {
       inputParams: ResolveEntryReferencesToolParams.shape,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
         openWorldHint: false,
       },
       tool: resolveEntryReferences,
@@ -104,6 +108,7 @@ export function createEntryTools(config: ContentfulConfig) {
       inputParams: GetEntrySnapshotToolParams.shape,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
         openWorldHint: false,
       },
       tool: getEntrySnapshot,

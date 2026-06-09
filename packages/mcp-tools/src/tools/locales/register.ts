@@ -19,6 +19,7 @@ export function createLocaleTools(config: ContentfulConfig) {
       inputParams: GetLocaleToolParams.shape,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
         openWorldHint: false,
       },
       tool: getLocale,
@@ -43,6 +44,7 @@ export function createLocaleTools(config: ContentfulConfig) {
       inputParams: ListLocaleToolParams.shape,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
         openWorldHint: false,
       },
       tool: listLocales,

@@ -29,6 +29,7 @@ describe('tag tools collection', () => {
     expect(listTags.inputParams).toStrictEqual(ListTagsToolParams.shape);
     expect(listTags.annotations).toEqual({
       readOnlyHint: true,
+      destructiveHint: false,
       openWorldHint: false,
     });
     expect(listTags.tool).toBeDefined();

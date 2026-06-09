@@ -53,6 +53,7 @@ describe('concept tools collection', () => {
     expect(getConcept.inputParams).toStrictEqual(GetConceptToolParams.shape);
     expect(getConcept.annotations).toEqual({
       readOnlyHint: true,
+      destructiveHint: false,
       openWorldHint: false,
     });
     expect(getConcept.tool).toBeDefined();
@@ -72,6 +73,7 @@ describe('concept tools collection', () => {
     );
     expect(listConcepts.annotations).toEqual({
       readOnlyHint: true,
+      destructiveHint: false,
       openWorldHint: false,
     });
     expect(listConcepts.tool).toBeDefined();

@@ -27,6 +27,7 @@ describe('space tools collection', () => {
     expect(listSpaces.inputParams).toStrictEqual(ListSpacesToolParams.shape);
     expect(listSpaces.annotations).toEqual({
       readOnlyHint: true,
+      destructiveHint: false,
       openWorldHint: false,
     });
     expect(listSpaces.tool).toBeDefined();
@@ -42,6 +43,7 @@ describe('space tools collection', () => {
     expect(getSpace.inputParams).toStrictEqual(GetSpaceToolParams.shape);
     expect(getSpace.annotations).toEqual({
       readOnlyHint: true,
+      destructiveHint: false,
       openWorldHint: false,
     });
     expect(getSpace.tool).toBeDefined();

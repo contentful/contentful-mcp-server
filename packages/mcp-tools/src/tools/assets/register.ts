@@ -47,6 +47,7 @@ export function createAssetTools(config: ContentfulConfig) {
       inputParams: ListAssetsToolParams.shape,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
         openWorldHint: false,
       },
       tool: listAssets,
@@ -57,6 +58,7 @@ export function createAssetTools(config: ContentfulConfig) {
       inputParams: GetAssetToolParams.shape,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
         openWorldHint: false,
       },
       tool: getAsset,

@@ -75,6 +75,7 @@ export function createAiActionTools(config: ContentfulConfig) {
       inputParams: GetAiActionInvocationToolParams.shape,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
         openWorldHint: false,
       },
       tool: getAiActionInvocation,
@@ -99,6 +100,7 @@ export function createAiActionTools(config: ContentfulConfig) {
       inputParams: GetAiActionToolParams.shape,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
         openWorldHint: false,
       },
       tool: getAiAction,
@@ -110,6 +112,7 @@ export function createAiActionTools(config: ContentfulConfig) {
       inputParams: ListAiActionToolParams.shape,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
         openWorldHint: false,
       },
       tool: listAiAction,

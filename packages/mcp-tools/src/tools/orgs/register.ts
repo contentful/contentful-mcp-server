@@ -13,6 +13,7 @@ export function createOrgTools(config: ContentfulConfig) {
       inputParams: ListOrgsToolParams.shape,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
         openWorldHint: false,
       },
       tool: listOrgs,
@@ -23,6 +24,7 @@ export function createOrgTools(config: ContentfulConfig) {
       inputParams: GetOrgToolParams.shape,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
         openWorldHint: false,
       },
       tool: getOrg,
