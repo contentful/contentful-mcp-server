@@ -36,6 +36,7 @@ export function createEnvironmentTools(config: ContentfulConfig) {
       inputParams: ListEnvironmentsToolParams.shape,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
         openWorldHint: false,
       },
       tool: listEnvironments,

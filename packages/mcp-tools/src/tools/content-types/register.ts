@@ -59,6 +59,7 @@ export function createContentTypeTools(config: ContentfulConfig) {
       inputParams: GetContentTypeToolParams.shape,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
         openWorldHint: false,
       },
       tool: getContentType,
@@ -70,6 +71,7 @@ export function createContentTypeTools(config: ContentfulConfig) {
       inputParams: ListContentTypesToolParams.shape,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
         openWorldHint: false,
       },
       tool: listContentTypes,

@@ -33,6 +33,7 @@ export function createConceptTools(config: ContentfulConfig) {
       inputParams: GetConceptToolParams.shape,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
         openWorldHint: false,
       },
       tool: getConcept,
@@ -44,6 +45,7 @@ export function createConceptTools(config: ContentfulConfig) {
       inputParams: ListConceptsToolParams.shape,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
         openWorldHint: false,
       },
       tool: listConcepts,

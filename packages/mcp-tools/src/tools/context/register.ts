@@ -15,6 +15,7 @@ export function createContextTools(config: ContentfulConfig) {
       inputParams: GetInitialContextToolParams.shape,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
         openWorldHint: false,
       },
       tool: getInitialContext,

@@ -48,6 +48,7 @@ export function createConceptSchemeTools(config: ContentfulConfig) {
       inputParams: GetConceptSchemeToolParams.shape,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
         openWorldHint: false,
       },
       tool: getConceptScheme,
@@ -59,6 +60,7 @@ export function createConceptSchemeTools(config: ContentfulConfig) {
       inputParams: ListConceptSchemesToolParams.shape,
       annotations: {
         readOnlyHint: true,
+        destructiveHint: false,
         openWorldHint: false,
       },
       tool: listConceptSchemes,
