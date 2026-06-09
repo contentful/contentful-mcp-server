@@ -51,6 +51,7 @@ describe('environment tools collection', () => {
     );
     expect(listEnvironments.annotations).toEqual({
       readOnlyHint: true,
+      destructiveHint: false,
       openWorldHint: false,
     });
     expect(listEnvironments.tool).toBeDefined();

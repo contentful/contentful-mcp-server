@@ -29,6 +29,7 @@ describe('organization tools collection', () => {
     expect(listOrgs.inputParams).toStrictEqual(ListOrgsToolParams.shape);
     expect(listOrgs.annotations).toEqual({
       readOnlyHint: true,
+      destructiveHint: false,
       openWorldHint: false,
     });
     expect(listOrgs.tool).toBeDefined();
@@ -44,6 +45,7 @@ describe('organization tools collection', () => {
     expect(getOrg.inputParams).toStrictEqual(GetOrgToolParams.shape);
     expect(getOrg.annotations).toEqual({
       readOnlyHint: true,
+      destructiveHint: false,
       openWorldHint: false,
     });
     expect(getOrg.tool).toBeDefined();

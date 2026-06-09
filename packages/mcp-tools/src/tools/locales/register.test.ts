@@ -32,6 +32,7 @@ describe('locale tools collection', () => {
     expect(getLocale.inputParams).toStrictEqual(GetLocaleToolParams.shape);
     expect(getLocale.annotations).toEqual({
       readOnlyHint: true,
+      destructiveHint: false,
       openWorldHint: false,
     });
     expect(getLocale.tool).toBeDefined();
@@ -64,6 +65,7 @@ describe('locale tools collection', () => {
     expect(listLocales.inputParams).toStrictEqual(ListLocaleToolParams.shape);
     expect(listLocales.annotations).toEqual({
       readOnlyHint: true,
+      destructiveHint: false,
       openWorldHint: false,
     });
     expect(listLocales.tool).toBeDefined();

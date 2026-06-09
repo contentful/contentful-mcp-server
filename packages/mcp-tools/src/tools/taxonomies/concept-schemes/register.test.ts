@@ -55,6 +55,7 @@ describe('concept scheme tools collection', () => {
     );
     expect(getConceptScheme.annotations).toEqual({
       readOnlyHint: true,
+      destructiveHint: false,
       openWorldHint: false,
     });
     expect(getConceptScheme.tool).toBeDefined();
@@ -74,6 +75,7 @@ describe('concept scheme tools collection', () => {
     );
     expect(listConceptSchemes.annotations).toEqual({
       readOnlyHint: true,
+      destructiveHint: false,
       openWorldHint: false,
     });
     expect(listConceptSchemes.tool).toBeDefined();
