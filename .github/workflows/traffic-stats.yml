@@ -1,0 +1,77 @@
+name: Traffic stats
+
+# Daily snapshot of GitHub Traffic API stats (clones, views, top referrers)
+# uploaded to s3://mcp-usage-playground/contentful-mcp-server/. Feeds the
+# PRDA-976 dashboard for FY27 SP4 metrics. The Traffic API only retains
+# 14 days of history, so this must run at least once a fortnight to avoid
+# permanent data loss.
+
+permissions:
+  contents: read
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch: {}
+
+concurrency:
+  group: traffic-stats
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: 'Retrieve Secrets from Vault'
+        id: vault
+        uses: hashicorp/vault-action@v3.4.0
+        with:
+          url: ${{ secrets.VAULT_URL }}
+          role: ${{ github.event.repository.name }}-github-action
+          method: jwt
+          path: github-actions
+          exportEnv: false
+          secrets: |
+            github/token/${{ github.event.repository.name }}-semantic-release token | GITHUB_TOKEN ;
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v5
+        with:
+          aws-access-key-id: ${{ secrets.MCP_USAGE_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.MCP_USAGE_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Fetch Traffic API and upload to S3
+        env:
+          GH_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
+          BUCKET: mcp-usage-playground
+          PREFIX: contentful-mcp-server
+        run: |
+          set -euo pipefail
+          DT=$(date -u +%F)
+          REPO=${{ github.repository }}
+
+          declare -A endpoints=(
+            [clones]="traffic/clones"
+            [views]="traffic/views"
+            [referrers]="traffic/popular/referrers"
+          )
+
+          for kind in "${!endpoints[@]}"; do
+            path="${endpoints[$kind]}"
+            file="${kind}.json"
+            echo "Fetching /repos/${REPO}/${path}"
+            gh api "/repos/${REPO}/${path}" > "${file}"
+            aws s3 cp "${file}" \
+              "s3://${BUCKET}/${PREFIX}/${kind}/dt=${DT}/data.json" \
+              --content-type application/json
+          done
+
+          echo "## Traffic stats uploaded for ${DT}" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          for kind in "${!endpoints[@]}"; do
+            echo "- s3://${BUCKET}/${PREFIX}/${kind}/dt=${DT}/data.json" >> "$GITHUB_STEP_SUMMARY"
+          done
