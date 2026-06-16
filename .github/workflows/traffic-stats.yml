@@ -13,8 +13,6 @@ on:
   schedule:
     - cron: '0 3 * * *'
   workflow_dispatch: {}
-  push:
-    branches: ['feat/traffic-stats']
 
 concurrency:
   group: traffic-stats
