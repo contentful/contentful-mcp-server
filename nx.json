@@ -65,7 +65,9 @@
   "release": {
     "projectsRelationship": "independent",
     "projects": ["packages/mcp-server", "packages/mcp-tools"],
-    "releaseTagPattern": "{projectName}@{version}",
+    "releaseTag": {
+      "pattern": "{projectName}@{version}"
+    },
     "git": {
       "commit": true,
       "commitMessage": "chore(release): publish v{version} [skip ci]",
