@@ -1,10 +1,8 @@
 #!/usr/bin/env node
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { registerAllPrompts } from './prompts/register.js';
-import { registerAllResources } from './resources/register.js';
-import { registerAllTools } from './tools/register.js';
 import { getVersion } from './getVersion.js';
+import { handleCliMetadataArgs } from './cli.js';
 
 if (process.env.NODE_ENV === 'development') {
   try {
@@ -18,7 +16,19 @@ if (process.env.NODE_ENV === 'development') {
 
 const MCP_SERVER_NAME = '@contentful/mcp-server';
 
+handleCliMetadataArgs();
+
 async function initializeServer() {
+  const [
+    { registerAllPrompts },
+    { registerAllResources },
+    { registerAllTools },
+  ] = await Promise.all([
+    import('./prompts/register.js'),
+    import('./resources/register.js'),
+    import('./tools/register.js'),
+  ]);
+
   const server = new McpServer({
     name: MCP_SERVER_NAME,
     version: getVersion(),
