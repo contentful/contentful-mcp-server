@@ -47,7 +47,7 @@ jobs:
       - name: Fetch Traffic API and upload to S3
         env:
           GH_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
-          BUCKET: mcp-usage-playground
+          BUCKET: s3-github-mcp-skills-usage-stats-043206427008-eu-central-1-an
           PREFIX: contentful-mcp-server
         run: |
           set -euo pipefail
