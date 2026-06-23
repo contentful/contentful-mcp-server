@@ -58,7 +58,7 @@
     "husky": "^9.1.7",
     "jiti": "2.4.2",
     "jsonc-eslint-parser": "^2.1.0",
-    "license-checker-rseidelsohn": "^4.4.2",
+    "license-checker-rseidelsohn": "^5.0.1",
     "mcps-logger": "^1.0.0",
     "nodemon": "^3.1.10",
     "nx": "23.0.0",
