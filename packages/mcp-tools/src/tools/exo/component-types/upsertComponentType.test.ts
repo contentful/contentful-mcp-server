@@ -64,6 +64,23 @@ describe('upsertComponentType', () => {
     ]);
   });
 
+  it('preserves dataAssemblies from the existing component type', async () => {
+    const dataAssemblies = [
+      { sys: { id: 'da-1', type: 'Link', linkType: 'DataAssembly' } },
+    ];
+    mockComponentTypeGet.mockResolvedValue({
+      ...mockComponentType,
+      dataAssemblies,
+    });
+    mockComponentTypeUpsert.mockResolvedValue(mockComponentType);
+
+    const tool = upsertComponentTypeTool(mockConfig);
+    await tool({ ...mockArgs, name: 'Renamed' });
+
+    const [, body] = mockComponentTypeUpsert.mock.calls[0];
+    expect(body.dataAssemblies).toEqual(dataAssemblies);
+  });
+
   it('rejects writes to a protected environment', async () => {
     const protectedConfig = createMockConfig({
       protectedEnvironments: ['test-environment'],

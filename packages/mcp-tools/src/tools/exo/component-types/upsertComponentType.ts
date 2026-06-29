@@ -86,6 +86,9 @@ export function upsertComponentTypeTool(config: ContentfulConfig) {
       ...((args.metadata ?? current.metadata)
         ? { metadata: args.metadata ?? current.metadata }
         : {}),
+      ...(current.dataAssemblies
+        ? { dataAssemblies: current.dataAssemblies }
+        : {}),
     } as Parameters<typeof contentfulClient.componentType.upsert>[1]);
 
     return createSuccessResponse('Component type updated successfully', {

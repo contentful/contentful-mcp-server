@@ -42,6 +42,19 @@ describe('listComponentTypes', () => {
     });
   });
 
+  it('forwards pagePrev cursor param', async () => {
+    mockComponentTypeGetMany.mockResolvedValue(mockComponentTypesResponse);
+
+    const tool = listComponentTypesTool(mockConfig);
+    await tool({ ...baseArgs, pagePrev: 'cursor-back' });
+
+    expect(mockComponentTypeGetMany).toHaveBeenCalledWith({
+      spaceId: baseArgs.spaceId,
+      environmentId: baseArgs.environmentId,
+      query: { limit: 10, pagePrev: 'cursor-back' },
+    });
+  });
+
   it('handles errors', async () => {
     mockComponentTypeGetMany.mockRejectedValue(new Error('boom'));
 
