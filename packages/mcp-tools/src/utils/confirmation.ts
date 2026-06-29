@@ -8,7 +8,8 @@ export type DestructiveResource =
   | 'aiAction'
   | 'locale'
   | 'concept'
-  | 'conceptScheme';
+  | 'conceptScheme'
+  | 'componentType';
 
 export const CONFIRMATION_MESSAGE_PREFIX = 'Confirmation required to delete';
 
@@ -45,6 +46,7 @@ const RESOURCE_DISPLAY_NAME: Record<DestructiveResource, string> = {
   locale: 'locale',
   concept: 'concept',
   conceptScheme: 'concept scheme',
+  componentType: 'component type',
 };
 
 /**
