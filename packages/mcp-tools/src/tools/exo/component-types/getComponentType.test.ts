@@ -32,7 +32,9 @@ describe('getComponentType', () => {
   });
 
   it('handles errors when the component type is not found', async () => {
-    mockComponentTypeGet.mockRejectedValue(new Error('Component type not found'));
+    mockComponentTypeGet.mockRejectedValue(
+      new Error('Component type not found'),
+    );
 
     const tool = getComponentTypeTool(mockConfig);
     const result = await tool(mockArgs);

@@ -40,7 +40,9 @@ export function listComponentTypesTool(config: ContentfulConfig) {
         ...(args.pageNext && { pageNext: args.pageNext }),
         ...(args.pagePrev && { pagePrev: args.pagePrev }),
         ...(args.order && { order: args.order }),
-      } as unknown as Parameters<typeof contentfulClient.componentType.getMany>[0]['query'],
+      } as unknown as Parameters<
+        typeof contentfulClient.componentType.getMany
+      >[0]['query'],
     });
 
     const summarized = summarizeData(componentTypes, {

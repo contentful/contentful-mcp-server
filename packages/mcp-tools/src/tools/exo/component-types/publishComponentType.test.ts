@@ -30,7 +30,9 @@ describe('publishComponentType', () => {
       componentTypeId: mockArgs.componentTypeId,
       version: mockComponentType.sys.version,
     });
-    expect(result.content[0].text).toContain('Component type published successfully');
+    expect(result.content[0].text).toContain(
+      'Component type published successfully',
+    );
   });
 
   it('rejects writes to a protected environment', async () => {
@@ -49,7 +51,9 @@ describe('publishComponentType', () => {
     const result = await tool(mockArgs);
     expect(result).toEqual({
       isError: true,
-      content: [{ type: 'text', text: 'Error publishing component type: boom' }],
+      content: [
+        { type: 'text', text: 'Error publishing component type: boom' },
+      ],
     });
   });
 });

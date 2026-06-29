@@ -34,7 +34,11 @@ describe('deleteComponentType', () => {
     mockComponentTypeGet.mockResolvedValue(mockComponentType);
 
     const tool = deleteComponentTypeTool(mockConfig);
-    const result = await tool({ ...mockArgs, confirm: true, confirmToken: 'wrong' });
+    const result = await tool({
+      ...mockArgs,
+      confirm: true,
+      confirmToken: 'wrong',
+    });
 
     expect(mockComponentTypeDelete).not.toHaveBeenCalled();
     expect(result.content[0].text).toContain('Confirmation required to delete');
@@ -56,7 +60,9 @@ describe('deleteComponentType', () => {
       environmentId: mockArgs.environmentId,
       componentTypeId: mockArgs.componentTypeId,
     });
-    expect(result.content[0].text).toContain('Component type deleted successfully');
+    expect(result.content[0].text).toContain(
+      'Component type deleted successfully',
+    );
   });
 
   it('rejects deletes in a protected environment', async () => {

@@ -30,7 +30,9 @@ describe('unpublishComponentType', () => {
       componentTypeId: mockArgs.componentTypeId,
       version: mockComponentType.sys.version,
     });
-    expect(result.content[0].text).toContain('Component type unpublished successfully');
+    expect(result.content[0].text).toContain(
+      'Component type unpublished successfully',
+    );
   });
 
   it('rejects writes to a protected environment', async () => {
@@ -49,7 +51,9 @@ describe('unpublishComponentType', () => {
     const result = await tool(mockArgs);
     expect(result).toEqual({
       isError: true,
-      content: [{ type: 'text', text: 'Error unpublishing component type: boom' }],
+      content: [
+        { type: 'text', text: 'Error unpublishing component type: boom' },
+      ],
     });
   });
 });

@@ -43,7 +43,9 @@ describe('upsertComponentType', () => {
     });
     expect(body.name).toBe('Renamed');
     expect(body.description).toBe(mockComponentType.description);
-    expect(result.content[0].text).toContain('Component type updated successfully');
+    expect(result.content[0].text).toContain(
+      'Component type updated successfully',
+    );
   });
 
   it('preserves unspecified fields from the existing component type', async () => {
@@ -84,7 +86,9 @@ describe('upsertComponentType', () => {
 
     expect(result).toEqual({
       isError: true,
-      content: [{ type: 'text', text: 'Error updating component type: not found' }],
+      content: [
+        { type: 'text', text: 'Error updating component type: not found' },
+      ],
     });
   });
 });

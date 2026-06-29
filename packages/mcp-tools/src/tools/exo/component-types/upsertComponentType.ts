@@ -77,13 +77,13 @@ export function upsertComponentTypeTool(config: ContentfulConfig) {
       viewports: args.viewports ?? current.viewports,
       contentProperties: args.contentProperties ?? current.contentProperties,
       designProperties: args.designProperties ?? current.designProperties,
-      ...(args.componentTree ?? current.componentTree
+      ...((args.componentTree ?? current.componentTree)
         ? { componentTree: args.componentTree ?? current.componentTree }
         : {}),
-      ...(args.slots ?? current.slots
+      ...((args.slots ?? current.slots)
         ? { slots: args.slots ?? current.slots }
         : {}),
-      ...(args.metadata ?? current.metadata
+      ...((args.metadata ?? current.metadata)
         ? { metadata: args.metadata ?? current.metadata }
         : {}),
     } as Parameters<typeof contentfulClient.componentType.upsert>[1]);

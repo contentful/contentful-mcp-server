@@ -1,8 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import {
-  mockComponentTypeCreate,
-  mockComponentType,
-} from './mockClient.js';
+import { mockComponentTypeCreate, mockComponentType } from './mockClient.js';
 import { createComponentTypeTool } from './createComponentType.js';
 import { formatResponse } from '../../../utils/formatters.js';
 import { createMockConfig } from '../../../test-helpers/mockConfig.js';

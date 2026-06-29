@@ -67,7 +67,11 @@ export const mockComponentType = {
     type: 'ComponentType' as const,
     version: 1,
     space: {
-      sys: { type: 'Link' as const, linkType: 'Space' as const, id: 'test-space-id' },
+      sys: {
+        type: 'Link' as const,
+        linkType: 'Space' as const,
+        id: 'test-space-id',
+      },
     },
     environment: {
       sys: {

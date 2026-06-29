@@ -8,7 +8,10 @@ import { createMockConfig } from '../../../test-helpers/mockConfig.js';
 
 describe('listComponentTypes', () => {
   const mockConfig = createMockConfig();
-  const baseArgs = { spaceId: 'test-space-id', environmentId: 'test-environment' };
+  const baseArgs = {
+    spaceId: 'test-space-id',
+    environmentId: 'test-environment',
+  };
 
   it('lists component types and clamps limit to 10', async () => {
     mockComponentTypeGetMany.mockResolvedValue(mockComponentTypesResponse);
@@ -21,7 +24,9 @@ describe('listComponentTypes', () => {
       environmentId: baseArgs.environmentId,
       query: { limit: 10 },
     });
-    expect(result.content[0].text).toContain('Component types retrieved successfully');
+    expect(result.content[0].text).toContain(
+      'Component types retrieved successfully',
+    );
   });
 
   it('forwards cursor and order params', async () => {
