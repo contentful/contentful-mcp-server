@@ -77,7 +77,7 @@ export function createComponentTypeTools(config: ContentfulConfig) {
     upsertComponentType: {
       title: 'upsert_component_type',
       description:
-        'Update an existing ExO component type. The handler fetches the current component type first (read-before-write) to obtain its version and to preserve any fields you do not supply, then writes the merged result via PUT.',
+        'Update an existing ExO component type. You MUST call get_component_type first to read the current state, then pass the sys.version you received as the version parameter. The handler merges your updates with the existing component type fields, so you only need to provide the fields you want to change. If the version is stale (the component type changed since you read it), the update is rejected and you must re-fetch with get_component_type.',
       inputParams: UpsertComponentTypeToolParams.shape,
       annotations: {
         readOnlyHint: false,
@@ -102,7 +102,8 @@ export function createComponentTypeTools(config: ContentfulConfig) {
     },
     publishComponentType: {
       title: 'publish_component_type',
-      description: 'Publish an ExO component type.',
+      description:
+        'Publish an ExO component type. You MUST call get_component_type first and pass the returned sys.version as the version parameter. If the version is stale the operation is rejected and you must re-fetch with get_component_type.',
       inputParams: PublishComponentTypeToolParams.shape,
       annotations: {
         readOnlyHint: false,
@@ -114,7 +115,8 @@ export function createComponentTypeTools(config: ContentfulConfig) {
     },
     unpublishComponentType: {
       title: 'unpublish_component_type',
-      description: 'Unpublish an ExO component type.',
+      description:
+        'Unpublish an ExO component type. You MUST call get_component_type first and pass the returned sys.version as the version parameter. If the version is stale the operation is rejected and you must re-fetch with get_component_type.',
       inputParams: UnpublishComponentTypeToolParams.shape,
       annotations: {
         readOnlyHint: false,

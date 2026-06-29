@@ -17,7 +17,7 @@ describe('unpublishComponentType', () => {
     mockComponentTypeUnpublish.mockResolvedValue(mockComponentType);
 
     const tool = unpublishComponentTypeTool(mockConfig);
-    const result = await tool(mockArgs);
+    const result = await tool({ ...mockArgs, version: 1 });
 
     expect(mockComponentTypeGet).toHaveBeenCalledWith({
       spaceId: mockArgs.spaceId,
@@ -35,11 +35,22 @@ describe('unpublishComponentType', () => {
     );
   });
 
+  it('rejects a stale version', async () => {
+    mockComponentTypeGet.mockResolvedValue(mockComponentType); // sys.version === 1
+
+    const tool = unpublishComponentTypeTool(mockConfig);
+    const result = await tool({ ...mockArgs, version: 999 });
+
+    expect(mockComponentTypeUnpublish).not.toHaveBeenCalled();
+    expect(result.isError).toBe(true);
+    expect(result.content[0].text).toContain('Version conflict');
+  });
+
   it('rejects writes to a protected environment', async () => {
     const tool = unpublishComponentTypeTool(
       createMockConfig({ protectedEnvironments: ['test-environment'] }),
     );
-    const result = await tool(mockArgs);
+    const result = await tool({ ...mockArgs, version: 1 });
     expect(mockComponentTypeGet).not.toHaveBeenCalled();
     expect(result.isError).toBe(true);
     expect(result.content[0].text).toContain('is protected');
@@ -48,7 +59,7 @@ describe('unpublishComponentType', () => {
   it('handles errors', async () => {
     mockComponentTypeGet.mockRejectedValue(new Error('boom'));
     const tool = unpublishComponentTypeTool(mockConfig);
-    const result = await tool(mockArgs);
+    const result = await tool({ ...mockArgs, version: 1 });
     expect(result).toEqual({
       isError: true,
       content: [

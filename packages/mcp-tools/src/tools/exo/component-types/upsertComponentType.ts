@@ -14,6 +14,14 @@ export const UpsertComponentTypeToolParams = BaseToolSchema.extend({
   componentTypeId: z
     .string()
     .describe('The ID of the component type to update'),
+  version: z
+    .number()
+    .describe(
+      "REQUIRED. The component type's sys.version as returned by get_component_type. " +
+        'You must call get_component_type first to read the current state and version. ' +
+        'The update is rejected if this does not match the current version, which means ' +
+        'the component type changed since you read it.',
+    ),
   name: z.string().optional().describe('The name of the component type'),
   description: z
     .string()
@@ -65,6 +73,16 @@ export function upsertComponentTypeTool(config: ContentfulConfig) {
     // Read before write: fetch current state to obtain sys.version and to
     // preserve fields the caller did not supply.
     const current = await contentfulClient.componentType.get(params);
+
+    // Enforce read-before-write: the caller must supply the version it read.
+    // Reject stale writes so concurrent edits are not silently overwritten.
+    if (args.version !== current.sys.version) {
+      throw new Error(
+        `Version conflict: the component type has changed since you read it ` +
+          `(your version: ${args.version}, current version: ${current.sys.version}). ` +
+          `Re-fetch the component type with get_component_type and retry the update with the latest sys.version.`,
+      );
+    }
 
     const componentType = await contentfulClient.componentType.upsert(params, {
       sys: {

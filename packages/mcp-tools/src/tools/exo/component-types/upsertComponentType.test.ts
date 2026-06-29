@@ -21,7 +21,7 @@ describe('upsertComponentType', () => {
     });
 
     const tool = upsertComponentTypeTool(mockConfig);
-    const result = await tool({ ...mockArgs, name: 'Renamed' });
+    const result = await tool({ ...mockArgs, name: 'Renamed', version: 1 });
 
     // get is called first to obtain current state + version
     expect(mockComponentTypeGet).toHaveBeenCalledWith({
@@ -56,7 +56,7 @@ describe('upsertComponentType', () => {
     mockComponentTypeUpsert.mockResolvedValue(mockComponentType);
 
     const tool = upsertComponentTypeTool(mockConfig);
-    await tool({ ...mockArgs, name: 'Renamed' });
+    await tool({ ...mockArgs, name: 'Renamed', version: 1 });
 
     const [, body] = mockComponentTypeUpsert.mock.calls[0];
     expect(body.designProperties).toEqual([
@@ -75,10 +75,21 @@ describe('upsertComponentType', () => {
     mockComponentTypeUpsert.mockResolvedValue(mockComponentType);
 
     const tool = upsertComponentTypeTool(mockConfig);
-    await tool({ ...mockArgs, name: 'Renamed' });
+    await tool({ ...mockArgs, name: 'Renamed', version: 1 });
 
     const [, body] = mockComponentTypeUpsert.mock.calls[0];
     expect(body.dataAssemblies).toEqual(dataAssemblies);
+  });
+
+  it('rejects a stale version', async () => {
+    mockComponentTypeGet.mockResolvedValue(mockComponentType); // sys.version === 1
+
+    const tool = upsertComponentTypeTool(mockConfig);
+    const result = await tool({ ...mockArgs, name: 'Renamed', version: 999 });
+
+    expect(mockComponentTypeUpsert).not.toHaveBeenCalled();
+    expect(result.isError).toBe(true);
+    expect(result.content[0].text).toContain('Version conflict');
   });
 
   it('rejects writes to a protected environment', async () => {
@@ -87,7 +98,7 @@ describe('upsertComponentType', () => {
     });
 
     const tool = upsertComponentTypeTool(protectedConfig);
-    const result = await tool({ ...mockArgs, name: 'Renamed' });
+    const result = await tool({ ...mockArgs, name: 'Renamed', version: 1 });
 
     expect(mockComponentTypeGet).not.toHaveBeenCalled();
     expect(mockComponentTypeUpsert).not.toHaveBeenCalled();
@@ -99,7 +110,7 @@ describe('upsertComponentType', () => {
     mockComponentTypeGet.mockRejectedValue(new Error('not found'));
 
     const tool = upsertComponentTypeTool(mockConfig);
-    const result = await tool({ ...mockArgs, name: 'Renamed' });
+    const result = await tool({ ...mockArgs, name: 'Renamed', version: 1 });
 
     expect(result).toEqual({
       isError: true,
