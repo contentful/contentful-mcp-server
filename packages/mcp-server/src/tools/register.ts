@@ -49,6 +49,7 @@ export function registerAllTools(server: McpServer): void {
   // Get tool collections
   const aiActionTools = tools.getAiActionTools();
   const assetTools = tools.getAssetTools();
+  const componentTypeTools = tools.getComponentTypeTools();
   const contentTypeTools = tools.getContentTypeTools();
   const contextTools = tools.getContextTools();
   const editorInterfaceTools = tools.getEditorInterfaceTools();
@@ -64,6 +65,7 @@ export function registerAllTools(server: McpServer): void {
   const allToolCollections = [
     aiActionTools,
     assetTools,
+    componentTypeTools,
     contentTypeTools,
     contextTools,
     editorInterfaceTools,
