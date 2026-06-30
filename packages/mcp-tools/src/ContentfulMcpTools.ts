@@ -16,6 +16,7 @@ import { createComponentTypeTools } from './tools/exo/component-types/register.j
 import { createFragmentTools } from './tools/exo/fragments/register.js';
 import { createTemplateTools } from './tools/exo/templates/register.js';
 import { createExperienceTools } from './tools/exo/experiences/register.js';
+import { createDataAssemblyTools } from './tools/exo/data-assemblies/register.js';
 
 /**
  * Main class for Contentful MCP Tools
@@ -155,6 +156,13 @@ export class ContentfulMcpTools {
    */
   getFragmentTools() {
     return createFragmentTools(this.config);
+  }
+
+  /**
+   * Get ExO data assembly tools
+   */
+  getDataAssemblyTools() {
+    return createDataAssemblyTools(this.config);
   }
 
   /**
