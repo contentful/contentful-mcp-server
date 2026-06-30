@@ -1,0 +1,60 @@
+import { z } from 'zod';
+import {
+  createSuccessResponse,
+  withErrorHandling,
+} from '../../../utils/response.js';
+import { BaseToolSchema, createToolClient } from '../../../utils/tools.js';
+import { summarizeData } from '../../../utils/summarizer.js';
+import type { ContentfulConfig } from '../../../config/types.js';
+
+export const ListPublishedDataAssembliesToolParams = BaseToolSchema.extend({
+  limit: z
+    .number()
+    .optional()
+    .describe('Maximum number of published data assemblies to return (max 10)'),
+  pageNext: z
+    .string()
+    .optional()
+    .describe('Cursor token to fetch the next page of results'),
+  pagePrev: z
+    .string()
+    .optional()
+    .describe('Cursor token to fetch the previous page of results'),
+  sysIdIn: z
+    .string()
+    .optional()
+    .describe('Comma-separated list of data assembly IDs to filter by'),
+});
+
+type Params = z.infer<typeof ListPublishedDataAssembliesToolParams>;
+
+export function listPublishedDataAssembliesTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    const contentfulClient = createToolClient(config, args);
+
+    const dataAssemblies = await contentfulClient.dataAssembly.getManyPublished({
+      spaceId: args.spaceId,
+      environmentId: args.environmentId,
+      query: {
+        limit: Math.min(args.limit || 10, 10),
+        ...(args.pageNext && { pageNext: args.pageNext }),
+        ...(args.pagePrev && { pagePrev: args.pagePrev }),
+        ...(args.sysIdIn && { 'sys.id[in]': args.sysIdIn }),
+      } as unknown as Parameters<typeof contentfulClient.dataAssembly.getManyPublished>[0]['query'],
+    });
+
+    const summarized = summarizeData(dataAssemblies, {
+      maxItems: 10,
+      remainingMessage:
+        'To see more published data assemblies, ask me to retrieve the next page using the pageNext cursor.',
+    });
+
+    return createSuccessResponse('Published data assemblies retrieved successfully', {
+      dataAssemblies: summarized,
+      total: dataAssemblies.total,
+      pages: dataAssemblies.pages,
+    });
+  }
+
+  return withErrorHandling(tool, 'Error listing published data assemblies');
+}

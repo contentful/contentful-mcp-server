@@ -57,6 +57,7 @@ export function registerAllTools(server: McpServer): void {
   const editorInterfaceTools = tools.getEditorInterfaceTools();
   const entryTools = tools.getEntryTools();
   const environmentTools = tools.getEnvironmentTools();
+  const dataAssemblyTools = tools.getDataAssemblyTools();
   const fragmentTools = tools.getFragmentTools();
   const localeTools = tools.getLocaleTools();
   const orgTools = tools.getOrgTools();
@@ -69,6 +70,7 @@ export function registerAllTools(server: McpServer): void {
     aiActionTools,
     assetTools,
     componentTypeTools,
+    dataAssemblyTools,
     experienceTools,
     templateTools,
     contentTypeTools,

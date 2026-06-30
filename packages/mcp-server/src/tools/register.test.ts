@@ -77,6 +77,7 @@ describe('registerAllTools', () => {
       mcpTools.getAiActionTools(),
       mcpTools.getAssetTools(),
       mcpTools.getComponentTypeTools(),
+      mcpTools.getDataAssemblyTools(),
       mcpTools.getExperienceTools(),
       mcpTools.getTemplateTools(),
       mcpTools.getContentTypeTools(),
