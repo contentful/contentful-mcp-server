@@ -8,32 +8,39 @@ import {
   createToolClient,
   assertEnvironmentNotProtected,
 } from '../../../utils/tools.js';
+import {
+  ViewportSchema,
+  ContentPropertySchema,
+  DesignPropertySchema,
+  SlotDefinitionSchema,
+  TreeNodeSchema,
+  ComponentTypeMetadataSchema,
+} from '../../../types/componentTypeSchemas.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
 export const CreateComponentTypeToolParams = BaseToolSchema.extend({
   name: z.string().describe('The name of the component type'),
   description: z.string().describe('Description of the component type'),
   viewports: z
-    .array(z.record(z.unknown()))
+    .array(ViewportSchema)
     .describe('Viewport definitions for the component type (may be empty)'),
   contentProperties: z
-    .array(z.record(z.unknown()))
+    .array(ContentPropertySchema)
     .describe('Content property definitions (may be empty)'),
   designProperties: z
-    .array(z.record(z.unknown()))
+    .array(DesignPropertySchema)
     .describe('Design property definitions (may be empty)'),
   componentTree: z
-    .array(z.record(z.unknown()))
+    .array(TreeNodeSchema)
     .optional()
     .describe('Optional component tree node definitions'),
   slots: z
-    .array(z.record(z.unknown()))
+    .array(SlotDefinitionSchema)
     .optional()
     .describe('Optional slot definitions'),
-  metadata: z
-    .record(z.unknown())
-    .optional()
-    .describe('Optional ExO metadata (tags, concepts)'),
+  metadata: ComponentTypeMetadataSchema.optional().describe(
+    'Optional ExO metadata (tags, concepts)',
+  ),
 });
 
 type Params = z.infer<typeof CreateComponentTypeToolParams>;

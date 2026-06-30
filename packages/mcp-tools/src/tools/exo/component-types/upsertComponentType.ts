@@ -8,6 +8,14 @@ import {
   createToolClient,
   assertEnvironmentNotProtected,
 } from '../../../utils/tools.js';
+import {
+  ViewportSchema,
+  ContentPropertySchema,
+  DesignPropertySchema,
+  SlotDefinitionSchema,
+  TreeNodeSchema,
+  ComponentTypeMetadataSchema,
+} from '../../../types/componentTypeSchemas.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
 export const UpsertComponentTypeToolParams = BaseToolSchema.extend({
@@ -28,29 +36,28 @@ export const UpsertComponentTypeToolParams = BaseToolSchema.extend({
     .optional()
     .describe('Description of the component type'),
   viewports: z
-    .array(z.record(z.unknown()))
+    .array(ViewportSchema)
     .optional()
     .describe('Viewport definitions; replaces existing viewports if provided'),
   contentProperties: z
-    .array(z.record(z.unknown()))
+    .array(ContentPropertySchema)
     .optional()
     .describe('Content property definitions; replaces existing if provided'),
   designProperties: z
-    .array(z.record(z.unknown()))
+    .array(DesignPropertySchema)
     .optional()
     .describe('Design property definitions; replaces existing if provided'),
   componentTree: z
-    .array(z.record(z.unknown()))
+    .array(TreeNodeSchema)
     .optional()
     .describe('Component tree node definitions; replaces existing if provided'),
   slots: z
-    .array(z.record(z.unknown()))
+    .array(SlotDefinitionSchema)
     .optional()
     .describe('Slot definitions; replaces existing if provided'),
-  metadata: z
-    .record(z.unknown())
-    .optional()
-    .describe('ExO metadata (tags, concepts); replaces existing if provided'),
+  metadata: ComponentTypeMetadataSchema.optional().describe(
+    'ExO metadata (tags, concepts); replaces existing if provided',
+  ),
 });
 
 type Params = z.infer<typeof UpsertComponentTypeToolParams>;
