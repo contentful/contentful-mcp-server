@@ -10,6 +10,7 @@ export type DestructiveResource =
   | 'concept'
   | 'conceptScheme'
   | 'componentType'
+  | 'fragment'
   | 'template';
 
 export const CONFIRMATION_MESSAGE_PREFIX = 'Confirmation required to delete';
@@ -48,6 +49,7 @@ const RESOURCE_DISPLAY_NAME: Record<DestructiveResource, string> = {
   concept: 'concept',
   conceptScheme: 'concept scheme',
   componentType: 'component type',
+  fragment: 'fragment',
   template: 'template',
 };
 
