@@ -82,6 +82,7 @@ describe('registerAllTools', () => {
       mcpTools.getEditorInterfaceTools(),
       mcpTools.getEntryTools(),
       mcpTools.getEnvironmentTools(),
+      mcpTools.getFragmentTools(),
       mcpTools.getLocaleTools(),
       mcpTools.getOrgTools(),
       mcpTools.getSpaceTools(),
