@@ -20,7 +20,7 @@ export const ListDataAssembliesToolParams = BaseToolSchema.extend({
     .string()
     .optional()
     .describe('Cursor token to fetch the previous page of results'),
-  'sys.id[in]': z
+  sysIdIn: z
     .string()
     .optional()
     .describe('Comma-separated list of data assembly IDs to filter by'),
@@ -39,7 +39,7 @@ export function listDataAssembliesTool(config: ContentfulConfig) {
         limit: Math.min(args.limit || 10, 10),
         ...(args.pageNext && { pageNext: args.pageNext }),
         ...(args.pagePrev && { pagePrev: args.pagePrev }),
-        ...(args['sys.id[in]'] && { 'sys.id[in]': args['sys.id[in]'] }),
+        ...(args.sysIdIn && { 'sys.id[in]': args.sysIdIn }),
       } as unknown as Parameters<typeof contentfulClient.dataAssembly.getMany>[0]['query'],
     });
 
