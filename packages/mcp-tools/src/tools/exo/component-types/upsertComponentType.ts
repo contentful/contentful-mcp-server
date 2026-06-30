@@ -1,0 +1,125 @@
+import { z } from 'zod';
+import {
+  createSuccessResponse,
+  withErrorHandling,
+} from '../../../utils/response.js';
+import {
+  BaseToolSchema,
+  createToolClient,
+  assertEnvironmentNotProtected,
+} from '../../../utils/tools.js';
+import {
+  ViewportSchema,
+  ContentPropertySchema,
+  DesignPropertySchema,
+  SlotDefinitionSchema,
+  TreeNodeSchema,
+  ComponentTypeMetadataSchema,
+} from '../../../types/componentTypeSchemas.js';
+import type { ContentfulConfig } from '../../../config/types.js';
+
+export const UpsertComponentTypeToolParams = BaseToolSchema.extend({
+  componentTypeId: z
+    .string()
+    .describe('The ID of the component type to update'),
+  version: z
+    .number()
+    .describe(
+      "REQUIRED. The component type's sys.version as returned by get_component_type. " +
+        'You must call get_component_type first to read the current state and version. ' +
+        'The update is rejected if this does not match the current version, which means ' +
+        'the component type changed since you read it.',
+    ),
+  name: z.string().optional().describe('The name of the component type'),
+  description: z
+    .string()
+    .optional()
+    .describe('Description of the component type'),
+  viewports: z
+    .array(ViewportSchema)
+    .optional()
+    .describe('Viewport definitions; replaces existing viewports if provided'),
+  contentProperties: z
+    .array(ContentPropertySchema)
+    .optional()
+    .describe('Content property definitions; replaces existing if provided'),
+  designProperties: z
+    .array(DesignPropertySchema)
+    .optional()
+    .describe('Design property definitions; replaces existing if provided'),
+  componentTree: z
+    .array(TreeNodeSchema)
+    .optional()
+    .describe('Component tree node definitions; replaces existing if provided'),
+  slots: z
+    .array(SlotDefinitionSchema)
+    .optional()
+    .describe('Slot definitions; replaces existing if provided'),
+  metadata: ComponentTypeMetadataSchema.optional().describe(
+    'ExO metadata (tags, concepts); replaces existing if provided',
+  ),
+});
+
+type Params = z.infer<typeof UpsertComponentTypeToolParams>;
+
+export function upsertComponentTypeTool(config: ContentfulConfig) {
+  async function tool(args: Params) {
+    assertEnvironmentNotProtected(
+      args.environmentId,
+      config.protectedEnvironments,
+    );
+
+    const params = {
+      spaceId: args.spaceId,
+      environmentId: args.environmentId,
+      componentTypeId: args.componentTypeId,
+    };
+
+    const contentfulClient = createToolClient(config, args);
+
+    // Read before write: fetch current state to obtain sys.version and to
+    // preserve fields the caller did not supply.
+    const current = await contentfulClient.componentType.get(params);
+
+    // Enforce read-before-write: the caller must supply the version it read.
+    // Reject stale writes so concurrent edits are not silently overwritten.
+    if (args.version !== current.sys.version) {
+      throw new Error(
+        `Version conflict: the component type has changed since you read it ` +
+          `(your version: ${args.version}, current version: ${current.sys.version}). ` +
+          `Re-fetch the component type with get_component_type and retry the update with the latest sys.version.`,
+      );
+    }
+
+    const componentType = await contentfulClient.componentType.upsert(params, {
+      sys: {
+        id: current.sys.id,
+        type: 'ComponentType',
+        version: current.sys.version,
+      },
+      name: args.name ?? current.name,
+      description: args.description ?? current.description,
+      viewports: args.viewports ?? current.viewports,
+      contentProperties: args.contentProperties ?? current.contentProperties,
+      designProperties: args.designProperties ?? current.designProperties,
+      ...((args.componentTree ?? current.componentTree)
+        ? { componentTree: args.componentTree ?? current.componentTree }
+        : {}),
+      ...((args.slots ?? current.slots)
+        ? { slots: args.slots ?? current.slots }
+        : {}),
+      ...((args.metadata ?? current.metadata)
+        ? { metadata: args.metadata ?? current.metadata }
+        : {}),
+      ...(current.dataAssemblies
+        ? { dataAssemblies: current.dataAssemblies }
+        : {}),
+    } as Parameters<typeof contentfulClient.componentType.upsert>[1]);
+
+    return createSuccessResponse('Component type updated successfully', {
+      componentType,
+    });
+  }
+
+  return withErrorHandling(tool, 'Error updating component type');
+}

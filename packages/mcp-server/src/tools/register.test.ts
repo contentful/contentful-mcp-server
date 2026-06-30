@@ -76,6 +76,7 @@ describe('registerAllTools', () => {
     const standardToolCollections = [
       mcpTools.getAiActionTools(),
       mcpTools.getAssetTools(),
+      mcpTools.getComponentTypeTools(),
       mcpTools.getContentTypeTools(),
       mcpTools.getContextTools(),
       mcpTools.getEditorInterfaceTools(),
