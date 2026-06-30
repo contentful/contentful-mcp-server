@@ -14,6 +14,7 @@ import { createTaxonomyTools } from './tools/taxonomies/register.js';
 import { createJobTools } from './tools/jobs/space-to-space-migration/register.js';
 import { createComponentTypeTools } from './tools/exo/component-types/register.js';
 import { createFragmentTools } from './tools/exo/fragments/register.js';
+import { createTemplateTools } from './tools/exo/templates/register.js';
 
 /**
  * Main class for Contentful MCP Tools
@@ -69,6 +70,13 @@ export class ContentfulMcpTools {
    */
   getComponentTypeTools() {
     return createComponentTypeTools(this.config);
+  }
+
+  /**
+   * Get ExO template tools
+   */
+  getTemplateTools() {
+    return createTemplateTools(this.config);
   }
 
   /**
