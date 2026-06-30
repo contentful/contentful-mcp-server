@@ -50,11 +50,11 @@ describe('listDataAssemblies', () => {
     });
   });
 
-  it('forwards sys.id[in] filter', async () => {
+  it('forwards sysIdIn filter', async () => {
     mockDataAssemblyGetMany.mockResolvedValue(mockDataAssembliesResponse);
 
     const tool = listDataAssembliesTool(mockConfig);
-    await tool({ ...baseArgs, 'sys.id[in]': 'id1,id2' });
+    await tool({ ...baseArgs, sysIdIn: 'id1,id2' });
 
     expect(mockDataAssemblyGetMany).toHaveBeenCalledWith({
       spaceId: baseArgs.spaceId,
