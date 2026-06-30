@@ -10,6 +10,7 @@ export type DestructiveResource =
   | 'concept'
   | 'conceptScheme'
   | 'componentType'
+  | 'experience'
   | 'fragment'
   | 'template';
 
@@ -49,6 +50,7 @@ const RESOURCE_DISPLAY_NAME: Record<DestructiveResource, string> = {
   concept: 'concept',
   conceptScheme: 'concept scheme',
   componentType: 'component type',
+  experience: 'experience',
   fragment: 'fragment',
   template: 'template',
 };

@@ -15,6 +15,7 @@ import { createJobTools } from './tools/jobs/space-to-space-migration/register.j
 import { createComponentTypeTools } from './tools/exo/component-types/register.js';
 import { createFragmentTools } from './tools/exo/fragments/register.js';
 import { createTemplateTools } from './tools/exo/templates/register.js';
+import { createExperienceTools } from './tools/exo/experiences/register.js';
 
 /**
  * Main class for Contentful MCP Tools
@@ -77,6 +78,13 @@ export class ContentfulMcpTools {
    */
   getTemplateTools() {
     return createTemplateTools(this.config);
+  }
+
+  /**
+   * Get ExO experience tools
+   */
+  getExperienceTools() {
+    return createExperienceTools(this.config);
   }
 
   /**
