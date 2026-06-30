@@ -31,7 +31,7 @@ export const UpdateDataAssemblyToolParams = BaseToolSchema.extend({
     .optional()
     .describe('Resolver definitions; replaces existing if provided'),
   return: z
-    .unknown()
+    .record(z.unknown())
     .optional()
     .describe('Return mapping configuration; replaces existing if provided'),
   dataType: z

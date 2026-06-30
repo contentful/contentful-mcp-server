@@ -20,7 +20,7 @@ export const CreateDataAssemblyToolParams = BaseToolSchema.extend({
     .record(z.unknown())
     .describe('Resolver definitions keyed by resolver name (may be empty object)'),
   return: z
-    .unknown()
+    .record(z.unknown())
     .describe('Return mapping configuration specifying how to map resolved data'),
   dataType: z
     .array(z.unknown())
