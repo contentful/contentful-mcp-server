@@ -1,8 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import {
   CORE_INVARIANTS,
-  GUIDANCE,
-  GUIDANCE_TOPICS,
+  SEARCHING_GUIDANCE,
+  CONVENTIONS_GUIDANCE,
 } from './instructions.js';
 
 // Terms the 2026-07-02 audit proved are fiction. They must never appear
@@ -21,17 +21,13 @@ const FICTION = [
 ];
 
 describe('guidance corpus', () => {
-  const allContent = [CORE_INVARIANTS, ...Object.values(GUIDANCE)].join('\n');
+  const allContent = [CORE_INVARIANTS, SEARCHING_GUIDANCE, CONVENTIONS_GUIDANCE].join(
+    '\n',
+  );
 
-  it('exposes exactly the three guidance topics', () => {
-    expect(GUIDANCE_TOPICS).toEqual(['searching', 'editing', 'conventions']);
-  });
-
-  it('has a non-empty section for every topic', () => {
-    for (const topic of GUIDANCE_TOPICS) {
-      expect(GUIDANCE[topic]).toBeTruthy();
-      expect(GUIDANCE[topic].length).toBeGreaterThan(0);
-    }
+  it('has non-empty guidance sections', () => {
+    expect(SEARCHING_GUIDANCE.length).toBeGreaterThan(0);
+    expect(CONVENTIONS_GUIDANCE.length).toBeGreaterThan(0);
   });
 
   it('contains none of the audit-identified fiction', () => {

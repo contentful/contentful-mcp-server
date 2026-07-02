@@ -2,13 +2,10 @@ import {
   getInitialContextTool,
   GetInitialContextToolParams,
 } from './getInitialContextTool.js';
-import { getGuidanceTool, GetGuidanceToolParams } from './getGuidanceTool.js';
-import { GUIDANCE_TOPICS } from './instructions.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
 export function createContextTools(config: ContentfulConfig) {
   const getInitialContext = getInitialContextTool(config);
-  const getGuidance = getGuidanceTool();
 
   return {
     getInitialContext: {
@@ -22,17 +19,6 @@ export function createContextTools(config: ContentfulConfig) {
         openWorldHint: false,
       },
       tool: getInitialContext,
-    },
-    getGuidance: {
-      title: 'get_guidance',
-      description: `Retrieve detailed Contentful operating guidance for a specific topic. Call this when you need depth beyond the core rules from get_initial_context. Topics: ${GUIDANCE_TOPICS.join(', ')}.`,
-      inputParams: GetGuidanceToolParams.shape,
-      annotations: {
-        readOnlyHint: true,
-        destructiveHint: false,
-        openWorldHint: false,
-      },
-      tool: getGuidance,
     },
   };
 }

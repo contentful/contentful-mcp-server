@@ -1,6 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { getInitialContextTool } from './getInitialContextTool.js';
-import { CORE_INVARIANTS, GUIDANCE_TOPICS } from './instructions.js';
+import {
+  CORE_INVARIANTS,
+  SEARCHING_GUIDANCE,
+  CONVENTIONS_GUIDANCE,
+} from './instructions.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
 const config: ContentfulConfig = {
@@ -26,11 +30,10 @@ describe('get_initial_context (tiered index)', () => {
     expect(text).toContain(CORE_INVARIANTS);
   });
 
-  it('advertises every guidance topic in the topic map', async () => {
+  it('includes searching and conventions guidance inline', async () => {
     const text = (await tool({})).content[0].text;
-    for (const topic of GUIDANCE_TOPICS) {
-      expect(text).toContain(topic);
-    }
+    expect(text).toContain(SEARCHING_GUIDANCE);
+    expect(text).toContain(CONVENTIONS_GUIDANCE);
   });
 
   it('does not dump the full legacy prose (no fiction leaks)', async () => {

@@ -2,7 +2,11 @@ import { z } from 'zod';
 import { outdent } from 'outdent';
 import { contextStore } from './store.js';
 import { withErrorHandling } from '../../utils/response.js';
-import { CORE_INVARIANTS, GUIDANCE_TOPICS } from './instructions.js';
+import {
+  CORE_INVARIANTS,
+  SEARCHING_GUIDANCE,
+  CONVENTIONS_GUIDANCE,
+} from './instructions.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
 export const GetInitialContextToolParams = z.object({});
@@ -21,8 +25,6 @@ export function getInitialContextTool(config: ContentfulConfig) {
         - Environment ID: ${config.environmentId || 'master'}
         - Organization ID: ${config.organizationId || 'Not set'}`;
 
-    const topicMap = GUIDANCE_TOPICS.map((t) => `  - ${t}`).join('\n');
-
     const message = outdent`
       You are an assistant integrated with Contentful through the Model Context Protocol (MCP). Always call this tool first.
 
@@ -30,8 +32,9 @@ export function getInitialContextTool(config: ContentfulConfig) {
 
       ${CORE_INVARIANTS}
 
-      Detailed guidance is available on demand via the get_guidance tool. Topics:
-      ${topicMap}
+      ${SEARCHING_GUIDANCE}
+
+      ${CONVENTIONS_GUIDANCE}
     `;
 
     contextStore.setInitialContextLoaded();
