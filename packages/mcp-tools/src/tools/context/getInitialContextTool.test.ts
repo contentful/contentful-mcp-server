@@ -38,4 +38,13 @@ describe('get_initial_context (tiered index)', () => {
     expect(text).not.toContain('entry_action');
     expect(text).not.toContain('maximum of 5');
   });
+
+  it('does not use the legacy envelope format', async () => {
+    const text = (await tool({})).content[0].text;
+    expect(text).not.toContain('<context>');
+    expect(text).not.toContain('<todaysDate>');
+    expect(text).not.toContain(
+      'This is the initial context for your Contentful instance',
+    );
+  });
 });
