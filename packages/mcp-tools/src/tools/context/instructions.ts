@@ -50,6 +50,3 @@ Each operation is its own tool — there is no single "entry action" tool.
 - **Format for readability.** Use markdown for complex data; show the most important fields of an entry first; keep responses concise but complete.
 - **Prefer bulk.** If you would call the same tool many times, check whether it supports multiple IDs and condense into one call (respecting the 10-ID cap on publish-family operations).`,
 };
-
-/** @deprecated temporary shim; removed in the get_initial_context rewrite. */
-export const MCP_INSTRUCTIONS = CORE_INVARIANTS;

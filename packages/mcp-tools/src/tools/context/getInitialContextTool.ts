@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { outdent } from 'outdent';
 import { contextStore } from './store.js';
 import { withErrorHandling } from '../../utils/response.js';
-import { MCP_INSTRUCTIONS } from './instructions.js';
+import { CORE_INVARIANTS, GUIDANCE_TOPICS } from './instructions.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
 export const GetInitialContextToolParams = z.object({});
@@ -15,24 +15,24 @@ export function hasInitialContext(): boolean {
 
 export function getInitialContextTool(config: ContentfulConfig) {
   async function tool(_params: Params) {
-    const configInfo = `Current Contentful Configuration:
-  - Space ID: ${config.spaceId || 'Not set'}
-  - Environment ID: ${config.environmentId || 'master'}
-  - Organization ID: ${config.organizationId || 'Not set'}`;
+    const sessionFacts = outdent`
+      Current Contentful session:
+        - Space ID: ${config.spaceId || 'Not set'}
+        - Environment ID: ${config.environmentId || 'master'}
+        - Organization ID: ${config.organizationId || 'Not set'}`;
 
-    const todaysDate = new Date().toLocaleDateString('en-US');
+    const topicMap = GUIDANCE_TOPICS.map((t) => `  - ${t}`).join('\n');
 
     const message = outdent`
-    ${MCP_INSTRUCTIONS}
+      You are an assistant integrated with Contentful through the Model Context Protocol (MCP). Always call this tool first.
 
-    This is the initial context for your Contentful instance:
+      ${sessionFacts}
 
-    <context>
-      ${configInfo}
-    </content>
+      ${CORE_INVARIANTS}
 
-    <todaysDate>${todaysDate}</todaysDate>
-  `;
+      Detailed guidance is available on demand via the get_guidance tool. Topics:
+      ${topicMap}
+    `;
 
     contextStore.setInitialContextLoaded();
 
