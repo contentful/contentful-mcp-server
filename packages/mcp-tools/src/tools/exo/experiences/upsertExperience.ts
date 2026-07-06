@@ -10,7 +10,10 @@ import {
 } from '../../../utils/tools.js';
 import {
   ViewportSchema,
-  ComponentTypeMetadataSchema,
+  ExperienceMetadataSchema,
+  DimensionedDesignPropertyValueSchema,
+  ExperienceContentBindingsSchema,
+  ExperienceSlotNodeSchema,
 } from '../../../types/componentTypeSchemas.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
@@ -31,39 +34,21 @@ export const UpsertExperienceToolParams = BaseToolSchema.extend({
     .optional()
     .describe('Viewport definitions; replaces existing viewports if provided'),
   designProperties: z
-    .record(z.unknown())
+    .record(z.string(), DimensionedDesignPropertyValueSchema)
     .optional()
     .describe(
       'Design property values keyed by property ID; replaces existing if provided',
     ),
-  contentBindings: z
-    .object({
-      sys: z.object({
-        type: z.literal('ResourceLink'),
-        linkType: z.literal('Contentful:DataAssembly'),
-        urn: z.string(),
-      }),
-      parameters: z
-        .record(
-          z.object({
-            sys: z.object({
-              type: z.literal('ResourceLink'),
-              linkType: z.string(),
-              urn: z.string(),
-            }),
-          }),
-        )
-        .describe('Parameter bindings keyed by parameter ID'),
-    })
-    .optional()
-    .describe('Content bindings linking this experience to a data assembly; replaces existing if provided'),
+  contentBindings: ExperienceContentBindingsSchema.optional().describe(
+    'Content bindings linking this experience to a data assembly; replaces existing if provided',
+  ),
   slots: z
-    .record(z.array(z.unknown()))
+    .record(z.string(), z.array(ExperienceSlotNodeSchema))
     .optional()
     .describe(
       'Slot contents keyed by slot ID; replaces existing if provided',
     ),
-  metadata: ComponentTypeMetadataSchema.optional().describe(
+  metadata: ExperienceMetadataSchema.optional().describe(
     'ExO metadata (tags, concepts); replaces existing if provided',
   ),
 });

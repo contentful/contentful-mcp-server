@@ -8,39 +8,36 @@ import {
   createToolClient,
   assertEnvironmentNotProtected,
 } from '../../../utils/tools.js';
+import {
+  ViewportSchema,
+  ExperienceMetadataSchema,
+  DimensionedDesignPropertyValueSchema,
+  ExperienceContentBindingsSchema,
+  ExperienceSlotNodeSchema,
+  ComponentTypeResourceLinkSchema,
+} from '../../../types/componentTypeSchemas.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
 export const CreateFragmentToolParams = BaseToolSchema.extend({
   name: z.string().describe('The name of the fragment'),
   description: z.string().describe('Description of the fragment'),
-  componentType: z
-    .object({
-      sys: z.object({
-        type: z.literal('ResourceLink'),
-        linkType: z.literal('Contentful:ComponentType'),
-        urn: z.string(),
-      }),
-    })
-    .describe('Resource link to the component type this fragment is based on'),
-  viewports: z.array(z.unknown()).describe('Viewport definitions (may be empty)'),
+  componentType: ComponentTypeResourceLinkSchema.describe(
+    'Resource link to the component type this fragment is based on',
+  ),
+  viewports: z.array(ViewportSchema).describe('Viewport definitions (may be empty)'),
   designProperties: z
-    .record(z.unknown())
+    .record(z.string(), DimensionedDesignPropertyValueSchema)
     .describe('Design property values keyed by property ID (may be empty object)'),
-  contentBindings: z
-    .record(z.unknown())
-    .optional()
-    .describe('Optional content bindings for the fragment'),
+  contentBindings: ExperienceContentBindingsSchema.optional().describe(
+    'Optional content bindings for the fragment',
+  ),
   slots: z
-    .record(z.array(z.unknown()))
+    .record(z.string(), z.array(ExperienceSlotNodeSchema))
     .optional()
     .describe('Optional slot node definitions keyed by slot ID'),
-  metadata: z
-    .object({
-      tags: z.array(z.unknown()).optional(),
-      concepts: z.array(z.unknown()).optional(),
-    })
-    .optional()
-    .describe('Optional ExO metadata (tags, concepts)'),
+  metadata: ExperienceMetadataSchema.optional().describe(
+    'Optional ExO metadata (tags, concepts)',
+  ),
 });
 
 type Params = z.infer<typeof CreateFragmentToolParams>;
@@ -65,7 +62,7 @@ export function createFragmentTool(config: ContentfulConfig) {
         ...(args.contentBindings && { contentBindings: args.contentBindings }),
         ...(args.slots && { slots: args.slots }),
         ...(args.metadata && { metadata: args.metadata }),
-      } as Parameters<typeof contentfulClient.fragment.create>[1],
+      },
     );
 
     return createSuccessResponse('Fragment created successfully', {

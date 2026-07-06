@@ -8,6 +8,13 @@ import {
   createToolClient,
   assertEnvironmentNotProtected,
 } from '../../../utils/tools.js';
+import {
+  DataAssemblyParameterConfigSchema,
+  DataAssemblyResolverConfigSchema,
+  DataAssemblyReturnMappingConfigSchema,
+  DataAssemblyDataTypeFieldSchema,
+  DataAssemblyMetadataSchema,
+} from '../../../types/dataAssemblySchemas.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
 export const UpdateDataAssemblyToolParams = BaseToolSchema.extend({
@@ -22,32 +29,26 @@ export const UpdateDataAssemblyToolParams = BaseToolSchema.extend({
     ),
   name: z.string().optional().describe('The name of the data assembly'),
   description: z.string().optional().describe('Description of the data assembly'),
-  parameters: z
-    .record(z.unknown())
-    .optional()
-    .describe('Parameter definitions; replaces existing if provided'),
-  resolvers: z
-    .record(z.unknown())
-    .optional()
-    .describe('Resolver definitions; replaces existing if provided'),
-  return: z
-    .record(z.unknown())
-    .optional()
-    .describe('Return mapping configuration; replaces existing if provided'),
+  parameters: DataAssemblyParameterConfigSchema.optional().describe(
+    'Parameter definitions; replaces existing if provided',
+  ),
+  resolvers: DataAssemblyResolverConfigSchema.optional().describe(
+    'Resolver definitions; replaces existing if provided',
+  ),
+  return: DataAssemblyReturnMappingConfigSchema.optional().describe(
+    'Return mapping configuration; replaces existing if provided',
+  ),
   dataType: z
-    .array(z.unknown())
+    .array(DataAssemblyDataTypeFieldSchema)
     .optional()
     .describe('Data type field definitions; replaces existing if provided'),
   variant: z
     .string()
     .optional()
     .describe('Optional variant identifier; replaces existing if provided'),
-  metadata: z
-    .object({
-      tags: z.array(z.unknown()).optional(),
-    })
-    .optional()
-    .describe('Metadata (tags); replaces existing if provided'),
+  metadata: DataAssemblyMetadataSchema.optional().describe(
+    'Metadata (tags); replaces existing if provided',
+  ),
 });
 
 type Params = z.infer<typeof UpdateDataAssemblyToolParams>;
@@ -79,14 +80,12 @@ export function updateDataAssemblyTool(config: ContentfulConfig) {
       );
     }
 
-    type UpdatePayload = Parameters<typeof contentfulClient.dataAssembly.update>[1];
-
     const dataAssembly = await contentfulClient.dataAssembly.update(params, {
       sys: {
         id: current.sys.id,
         type: 'DataAssembly',
         version: current.sys.version,
-        dataType: (args.dataType ?? current.sys.dataType) as UpdatePayload['sys']['dataType'],
+        dataType: args.dataType ?? current.sys.dataType,
         ...(args.variant !== undefined
           ? { variant: args.variant }
           : current.sys.variant !== undefined
@@ -95,10 +94,10 @@ export function updateDataAssemblyTool(config: ContentfulConfig) {
       },
       name: args.name ?? current.name,
       description: args.description ?? current.description,
-      parameters: (args.parameters ?? current.parameters) as UpdatePayload['parameters'],
-      resolvers: (args.resolvers ?? current.resolvers) as UpdatePayload['resolvers'],
-      return: (args.return ?? current.return) as UpdatePayload['return'],
-      metadata: (args.metadata ?? current.metadata) as UpdatePayload['metadata'],
+      parameters: args.parameters ?? current.parameters,
+      resolvers: args.resolvers ?? current.resolvers,
+      return: args.return ?? current.return,
+      metadata: args.metadata ?? current.metadata,
     });
 
     return createSuccessResponse('Data assembly updated successfully', {
