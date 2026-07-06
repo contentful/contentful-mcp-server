@@ -8,6 +8,13 @@ import {
   createToolClient,
   assertEnvironmentNotProtected,
 } from '../../../utils/tools.js';
+import {
+  ViewportSchema,
+  ExperienceMetadataSchema,
+  DimensionedDesignPropertyValueSchema,
+  ExperienceContentBindingsSchema,
+  ExperienceSlotNodeSchema,
+} from '../../../types/componentTypeSchemas.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
 export const UpdateFragmentToolParams = BaseToolSchema.extend({
@@ -23,28 +30,23 @@ export const UpdateFragmentToolParams = BaseToolSchema.extend({
   name: z.string().optional().describe('The name of the fragment'),
   description: z.string().optional().describe('Description of the fragment'),
   viewports: z
-    .array(z.unknown())
+    .array(ViewportSchema)
     .optional()
     .describe('Viewport definitions; replaces existing viewports if provided'),
   designProperties: z
-    .record(z.unknown())
+    .record(z.string(), DimensionedDesignPropertyValueSchema)
     .optional()
     .describe('Design property values; replaces existing if provided'),
-  contentBindings: z
-    .record(z.unknown())
-    .optional()
-    .describe('Content bindings; replaces existing if provided'),
+  contentBindings: ExperienceContentBindingsSchema.optional().describe(
+    'Content bindings; replaces existing if provided',
+  ),
   slots: z
-    .record(z.array(z.unknown()))
+    .record(z.string(), z.array(ExperienceSlotNodeSchema))
     .optional()
     .describe('Slot node definitions; replaces existing if provided'),
-  metadata: z
-    .object({
-      tags: z.array(z.unknown()).optional(),
-      concepts: z.array(z.unknown()).optional(),
-    })
-    .optional()
-    .describe('ExO metadata (tags, concepts); replaces existing if provided'),
+  metadata: ExperienceMetadataSchema.optional().describe(
+    'ExO metadata (tags, concepts); replaces existing if provided',
+  ),
 });
 
 type Params = z.infer<typeof UpdateFragmentToolParams>;
@@ -95,7 +97,7 @@ export function updateFragmentTool(config: ContentfulConfig) {
       ...((args.metadata ?? current.metadata)
         ? { metadata: args.metadata ?? current.metadata }
         : {}),
-    } as Parameters<typeof contentfulClient.fragment.upsert>[1]);
+    });
 
     return createSuccessResponse('Fragment updated successfully', {
       fragment,

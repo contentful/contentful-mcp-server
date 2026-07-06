@@ -14,7 +14,7 @@ import {
   DesignPropertySchema,
   SlotDefinitionSchema,
   TreeNodeSchema,
-  ComponentTypeMetadataSchema,
+  ExoMetadataSchema,
 } from '../../../types/componentTypeSchemas.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
@@ -55,7 +55,7 @@ export const UpsertComponentTypeToolParams = BaseToolSchema.extend({
     .array(SlotDefinitionSchema)
     .optional()
     .describe('Slot definitions; replaces existing if provided'),
-  metadata: ComponentTypeMetadataSchema.optional().describe(
+  metadata: ExoMetadataSchema.optional().describe(
     'ExO metadata (tags, concepts); replaces existing if provided',
   ),
 });
@@ -114,7 +114,7 @@ export function upsertComponentTypeTool(config: ContentfulConfig) {
       ...(current.dataAssemblies
         ? { dataAssemblies: current.dataAssemblies }
         : {}),
-    } as Parameters<typeof contentfulClient.componentType.upsert>[1]);
+    });
 
     return createSuccessResponse('Component type updated successfully', {
       componentType,

@@ -10,14 +10,17 @@ import {
 } from '../../../utils/tools.js';
 import {
   ViewportSchema,
-  ComponentTypeMetadataSchema,
+  ExperienceMetadataSchema,
+  DimensionedDesignPropertyValueSchema,
+  ExperienceContentBindingsSchema,
+  ExperienceSlotNodeSchema,
 } from '../../../types/componentTypeSchemas.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
-const ResourceLinkSchema = z.object({
+const TemplateResourceLinkSchema = z.object({
   sys: z.object({
     type: z.literal('ResourceLink'),
-    linkType: z.string().describe('Resource link type (e.g. "Contentful:Template")'),
+    linkType: z.literal('Contentful:Template'),
     urn: z.string().describe('URN of the linked resource'),
   }),
 });
@@ -25,46 +28,28 @@ const ResourceLinkSchema = z.object({
 export const CreateExperienceToolParams = BaseToolSchema.extend({
   name: z.string().describe('The name of the experience'),
   description: z.string().describe('Description of the experience'),
-  template: ResourceLinkSchema.describe(
+  template: TemplateResourceLinkSchema.describe(
     'Resource link to the Template this experience is backed by',
   ),
   viewports: z
     .array(ViewportSchema)
     .describe('Viewport definitions for the experience (may be empty)'),
   designProperties: z
-    .record(z.unknown())
+    .record(z.string(), DimensionedDesignPropertyValueSchema)
     .describe(
       'Design property values keyed by property ID. Each value is a dimensioned map ' +
         '(viewport ID → design value). May be an empty object.',
     ),
-  contentBindings: z
-    .object({
-      sys: z.object({
-        type: z.literal('ResourceLink'),
-        linkType: z.literal('Contentful:DataAssembly'),
-        urn: z.string(),
-      }),
-      parameters: z
-        .record(
-          z.object({
-            sys: z.object({
-              type: z.literal('ResourceLink'),
-              linkType: z.string(),
-              urn: z.string(),
-            }),
-          }),
-        )
-        .describe('Parameter bindings keyed by parameter ID'),
-    })
-    .optional()
-    .describe('Optional content bindings linking this experience to a data assembly'),
+  contentBindings: ExperienceContentBindingsSchema.optional().describe(
+    'Optional content bindings linking this experience to a data assembly',
+  ),
   slots: z
-    .record(z.array(z.unknown()))
+    .record(z.string(), z.array(ExperienceSlotNodeSchema))
     .optional()
     .describe(
       'Optional slot contents keyed by slot ID. Each value is an array of FragmentNode or InlineFragmentNode.',
     ),
-  metadata: ComponentTypeMetadataSchema.optional().describe(
+  metadata: ExperienceMetadataSchema.optional().describe(
     'Optional ExO metadata (tags, concepts)',
   ),
 });
@@ -91,7 +76,7 @@ export function createExperienceTool(config: ContentfulConfig) {
         ...(args.contentBindings && { contentBindings: args.contentBindings }),
         ...(args.slots && { slots: args.slots }),
         ...(args.metadata && { metadata: args.metadata }),
-      } as Parameters<typeof contentfulClient.experience.create>[1],
+      },
     );
 
     return createSuccessResponse('Experience created successfully', {

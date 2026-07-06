@@ -14,7 +14,7 @@ import {
   DesignPropertySchema,
   SlotDefinitionSchema,
   TreeNodeSchema,
-  ComponentTypeMetadataSchema,
+  ExoMetadataSchema,
 } from '../../../types/componentTypeSchemas.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
@@ -38,7 +38,7 @@ export const CreateTemplateToolParams = BaseToolSchema.extend({
     .array(SlotDefinitionSchema)
     .optional()
     .describe('Optional slot definitions'),
-  metadata: ComponentTypeMetadataSchema.optional().describe(
+  metadata: ExoMetadataSchema.optional().describe(
     'Optional ExO metadata (tags, concepts)',
   ),
 });
@@ -65,7 +65,7 @@ export function createTemplateTool(config: ContentfulConfig) {
         ...(args.componentTree && { componentTree: args.componentTree }),
         ...(args.slots && { slots: args.slots }),
         ...(args.metadata && { metadata: args.metadata }),
-      } as Parameters<typeof contentfulClient.template.create>[1],
+      },
     );
 
     return createSuccessResponse('Template created successfully', {
