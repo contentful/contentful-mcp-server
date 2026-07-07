@@ -12,13 +12,28 @@ type DataAssemblyEntity = Awaited<ReturnType<PlainClientAPI['dataAssembly']['get
 export type DataAssemblyDataTypeField = Distribute<
   DataAssemblyEntity['sys']['dataType'][number]
 >;
-export type LegacyDataAssemblyDataTypeField = Extract<
+// Discriminate by the specific type literals from DataTypeDefinition — the canonical arm
+// has a narrow type literal for `type`, the legacy arm has `type: string` (wide). Using
+// optional-field filters (source?, ref?) would match both arms and collapse to never.
+export type CanonicalDataAssemblyDataTypeField = Extract<
   DataAssemblyDataTypeField,
-  { source?: string; ref?: unknown }
+  {
+    type:
+      | 'String'
+      | 'Number'
+      | 'Integer'
+      | 'Boolean'
+      | 'RichText'
+      | 'Array'
+      | 'Record'
+      | 'TypeRef'
+      | 'Literal'
+      | 'DiscriminatedUnion';
+  }
 >;
-export type CanonicalDataAssemblyDataTypeField = Exclude<
+export type LegacyDataAssemblyDataTypeField = Exclude<
   DataAssemblyDataTypeField,
-  LegacyDataAssemblyDataTypeField
+  CanonicalDataAssemblyDataTypeField
 >;
 
 export type DataAssemblyParameterConfig = Distribute<DataAssemblyEntity['parameters']>;
