@@ -61,15 +61,19 @@ describe('detectExoDisposition', () => {
   });
 
   it('returns undefined when the component type call throws', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const config = createMockConfig();
     mockComponentTypeGetMany.mockRejectedValue(new Error('network error'));
 
     const result = await detectExoDisposition(config, 'space-a', 'master');
 
     expect(result).toBeUndefined();
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    errorSpy.mockRestore();
   });
 
   it('returns undefined when the content type call throws', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     const config = createMockConfig();
     mockComponentTypeGetMany.mockResolvedValue({ items: [], total: 0 });
     mockContentTypeGetMany.mockRejectedValue(new Error('network error'));
@@ -77,6 +81,8 @@ describe('detectExoDisposition', () => {
     const result = await detectExoDisposition(config, 'space-a', 'master');
 
     expect(result).toBeUndefined();
+    expect(errorSpy).toHaveBeenCalledTimes(1);
+    errorSpy.mockRestore();
   });
 
   it('falls back to items.length when total is absent', async () => {

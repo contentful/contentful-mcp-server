@@ -38,7 +38,11 @@ export async function detectExoDisposition(
     return (contentTypes.total ?? contentTypes.items.length) > 0
       ? 'classic'
       : 'empty';
-  } catch {
+  } catch (error) {
+    console.error(
+      `ExO detection failed for ${spaceId}:${environmentId}; falling back to classic-only tool registration.`,
+      error,
+    );
     return undefined;
   }
 }
