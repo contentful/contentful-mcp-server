@@ -4,6 +4,7 @@ import {
   CORE_INVARIANTS,
   SEARCHING_GUIDANCE,
   CONVENTIONS_GUIDANCE,
+  EXO_DISPOSITION,
 } from './instructions.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
@@ -61,5 +62,16 @@ describe('get_initial_context (tiered index)', () => {
     expect(text).not.toContain(
       'This is the initial context for your Contentful instance',
     );
+  });
+
+  it('does NOT append the ExO disposition when exoToolsRegistered is unset', async () => {
+    const text = (await getInitialContextTool(config)({})).content[0].text;
+    expect(text).not.toContain(EXO_DISPOSITION);
+  });
+
+  it('appends the ExO disposition when exoToolsRegistered is true', async () => {
+    const exoConfig: ContentfulConfig = { ...config, exoToolsRegistered: true };
+    const text = (await getInitialContextTool(exoConfig)({})).content[0].text;
+    expect(text).toContain(EXO_DISPOSITION);
   });
 });

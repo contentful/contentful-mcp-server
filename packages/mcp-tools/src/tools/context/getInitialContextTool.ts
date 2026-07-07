@@ -6,6 +6,7 @@ import {
   CORE_INVARIANTS,
   SEARCHING_GUIDANCE,
   CONVENTIONS_GUIDANCE,
+  EXO_DISPOSITION,
 } from './instructions.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
@@ -33,7 +34,10 @@ export function getInitialContextTool(config: ContentfulConfig) {
         - Environment ID: ${config.environmentId || 'master'}
         - Organization ID: ${config.organizationId || 'Not set'}`;
 
-    const message = outdent`
+    const exoBlock = config.exoToolsRegistered ? `\n\n${EXO_DISPOSITION}` : '';
+
+    const message =
+      outdent`
       You are an assistant integrated with Contentful through the Model Context Protocol (MCP). Always call this tool first.
 
       ${sessionFacts}
@@ -43,7 +47,7 @@ export function getInitialContextTool(config: ContentfulConfig) {
       ${SEARCHING_GUIDANCE}
 
       ${CONVENTIONS_GUIDANCE}
-    `;
+    ` + exoBlock;
 
     contextStore.setInitialContextLoaded();
 
