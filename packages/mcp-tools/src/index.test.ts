@@ -22,23 +22,13 @@ describe('Package Exports', () => {
     expect(tools).toBeDefined();
   });
 
-  it('should export exactly the intended runtime items', async () => {
-    // TypeScript types are erased at runtime, so ContentfulConfig / ExoDisposition
-    // won't be in exports. This guards the package's public export surface —
-    // update it deliberately when adding new public exports.
+  it('should export exactly 1 runtime item (ContentfulMcpTools class)', async () => {
+    // TypeScript types are erased at runtime, so ContentfulConfig won't be in exports
     const moduleExports = await import('./index.js');
     const exportedKeys = Object.keys(moduleExports);
 
-    expect(exportedKeys.sort()).toEqual(
-      [
-        'ContentfulMcpTools',
-        'detectExoDisposition',
-        'CORE_INVARIANTS',
-        'SEARCHING_GUIDANCE',
-        'CONVENTIONS_GUIDANCE',
-        'EXO_DISPOSITION',
-      ].sort(),
-    );
+    expect(exportedKeys).toHaveLength(1);
+    expect(exportedKeys).toContain('ContentfulMcpTools');
   });
 });
 

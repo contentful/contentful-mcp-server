@@ -1,12 +1,2 @@
 export { ContentfulMcpTools } from './ContentfulMcpTools.js';
 export type { ContentfulConfig } from './config/types.js';
-export {
-  detectExoDisposition,
-  type ExoDisposition,
-} from './tools/context/detectExoDisposition.js';
-export {
-  CORE_INVARIANTS,
-  SEARCHING_GUIDANCE,
-  CONVENTIONS_GUIDANCE,
-  EXO_DISPOSITION,
-} from './tools/context/instructions.js';

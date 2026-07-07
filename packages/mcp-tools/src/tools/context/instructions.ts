@@ -31,4 +31,4 @@ export const CONVENTIONS_GUIDANCE = `# Response and workflow conventions
 
 export const EXO_DISPOSITION = `# Tool disposition: prefer Experience Orchestration
 
-This space is empty or already uses Experience Orchestration (ExO). Prefer ExO primitives — Component Types, Experiences, Templates — over classic content types and entries: for new work in an empty space, build with ExO; in a space that already uses ExO, stay consistent with the existing model. Do this unless the user explicitly asks for classic content types or entries instead.`;
+Experience Orchestration (ExO) tools are enabled. Prefer ExO primitives — Component Types, Experiences, Templates — over classic content types and entries, unless the user explicitly asks for classic content types or entries instead.`;

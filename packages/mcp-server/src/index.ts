@@ -24,7 +24,7 @@ async function initializeServer() {
     version: getVersion(),
   });
 
-  await registerAllTools(server);
+  registerAllTools(server);
   registerAllPrompts(server);
   registerAllResources(server);
 

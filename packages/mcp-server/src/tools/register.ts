@@ -1,5 +1,5 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { ContentfulMcpTools, detectExoDisposition } from '@contentful/mcp-tools';
+import { ContentfulMcpTools } from '@contentful/mcp-tools';
 import { env } from '../config/env.js';
 import { getVersion } from '../getVersion.js';
 
@@ -7,18 +7,15 @@ import { getVersion } from '../getVersion.js';
  * Registers all Contentful MCP tools with the server.
  * Each tool is registered with its title, description, input schema, annotations, and implementation.
  *
- * ExO (Experience Orchestration) tool collections are gated on the configured space's
- * disposition:
- * - No SPACE_ID: nothing to probe, register everything (ExO included).
- * - SPACE_ID set: probe once via detectExoDisposition. 'exo'/'empty' -> register ExO
- *   collections. 'classic' or a probe error (undefined) -> omit ExO collections
- *   (fail closed).
+ * ExO (Experience Orchestration) tool collections are opt-in via the
+ * ENABLE_EXO_TOOLS env var: they register only when it is set to "true".
+ * Classic collections always register.
  *
  * Special handling for space-to-space migration workflow tools:
  * - The param collection, export, and import tools are disabled by default
  * - The migration handler controls their enable/disable state
  */
-export async function registerAllTools(server: McpServer): Promise<void> {
+export function registerAllTools(server: McpServer): void {
   if (!env.success || !env.data) {
     throw new Error('Environment variables are not properly configured');
   }
@@ -38,7 +35,6 @@ export async function registerAllTools(server: McpServer): Promise<void> {
     ? Number(env.data.MAX_BULK_SIZE)
     : undefined;
 
-  // Base config used both for detection and for the tools instance.
   const baseConfig = {
     accessToken: env.data.CONTENTFUL_MANAGEMENT_ACCESS_TOKEN,
     host: env.data.CONTENTFUL_HOST,
@@ -53,19 +49,8 @@ export async function registerAllTools(server: McpServer): Promise<void> {
     maxBulkSize,
   };
 
-  // Decide whether to register ExO collections.
-  // - No SPACE_ID: nothing to probe, user hasn't scoped to a space -> full toolset.
-  // - SPACE_ID set: probe once; register ExO only when empty or already ExO.
-  //   Fail closed (classic-only) on 'classic' or a detection error (undefined).
-  let registerExoTools = true;
-  if (baseConfig.spaceId) {
-    const disposition = await detectExoDisposition(
-      baseConfig,
-      baseConfig.spaceId,
-      baseConfig.environmentId ?? 'master',
-    );
-    registerExoTools = disposition === 'exo' || disposition === 'empty';
-  }
+  // ExO tools are opt-in via ENABLE_EXO_TOOLS. Off by default.
+  const registerExoTools = env.data.ENABLE_EXO_TOOLS;
 
   // Initialize tools with configuration from environment variables
   const tools = new ContentfulMcpTools({
