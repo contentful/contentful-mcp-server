@@ -25,6 +25,18 @@ describe('get_initial_context (tiered index)', () => {
     expect(text).toContain('org456');
   });
 
+  it("includes today's date as a session fact", async () => {
+    const text = (await tool({})).content[0].text;
+    const today = new Date().toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+    expect(text).toContain("Today's date:");
+    expect(text).toContain(today);
+  });
+
   it('includes the core invariants inline', async () => {
     const text = (await tool({})).content[0].text;
     expect(text).toContain(CORE_INVARIANTS);

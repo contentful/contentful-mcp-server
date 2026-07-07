@@ -19,8 +19,16 @@ export function hasInitialContext(): boolean {
 
 export function getInitialContextTool(config: ContentfulConfig) {
   async function tool(_params: Params) {
+    const today = new Date().toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+
     const sessionFacts = outdent`
       Current Contentful session:
+        - Today's date: ${today}
         - Space ID: ${config.spaceId || 'Not set'}
         - Environment ID: ${config.environmentId || 'master'}
         - Organization ID: ${config.organizationId || 'Not set'}`;
