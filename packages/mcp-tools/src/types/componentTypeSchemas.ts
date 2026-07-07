@@ -77,14 +77,30 @@ export type TokenBackedDesignProperty = Exclude<
 
 // ── Resource / entity links ───────────────────────────────────────────────────
 
-const resourceLinkSchema = <T extends string>(linkType: T) =>
-  z.object({
+const URN_EXAMPLES: Partial<Record<string, string>> = {
+  'Contentful:ComponentType':
+    'crn:contentful:::experience:spaces/{spaceId}/environments/{envId}/componentTypes/{id}',
+  'Contentful:Fragment':
+    'crn:contentful:::experience:spaces/{spaceId}/environments/{envId}/fragments/{id}',
+  'Contentful:Template':
+    'crn:contentful:::experience:spaces/{spaceId}/environments/{envId}/templates/{id}',
+  'Contentful:DataAssembly':
+    'crn:contentful:::experience:spaces/{spaceId}/environments/{envId}/dataAssemblies/{id}',
+};
+
+const resourceLinkSchema = <T extends string>(linkType: T) => {
+  const example = URN_EXAMPLES[linkType];
+  const urnDesc = example
+    ? `URN of the linked resource (e.g. "${example}")`
+    : 'URN of the linked resource';
+  return z.object({
     sys: z.object({
       type: z.literal('ResourceLink'),
       linkType: z.literal(linkType),
-      urn: z.string().describe('URN of the linked resource'),
+      urn: z.string().describe(urnDesc),
     }),
   });
+};
 
 const linkSchema = <T extends string>(linkType: T) =>
   z.object({
