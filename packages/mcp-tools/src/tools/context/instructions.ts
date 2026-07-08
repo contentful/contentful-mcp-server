@@ -16,10 +16,10 @@ export const CORE_INVARIANTS = `# Core operating rules
 
 export const SEARCHING_GUIDANCE = `# Searching for content
 
-- **Content-type first.** When users ask about specific content ("pricing page", "blog posts"), call \`list_content_types\` / \`get_content_type\` to discover the correct type before searching. This prevents wasted queries on wrong field names.
-- **Then search.** Use \`search_entries\` with the correct content type and field names. Use \`semantic_search\` when the user's request is conceptual rather than an exact field match.
+- **Schema first.** When users ask about specific content, discover the relevant schema before searching: list the environment's available types and inspect a type's fields so you query on real field names. This prevents wasted queries. Use whichever primitives the environment exposes — classic content types and entries, or Experience Orchestration component types and experiences.
+- **Then search.** Query using the correct type and field names. Prefer semantic search when the request is conceptual rather than an exact field match.
 - **Retry thoughtfully.** If a query returns no results, retry 2-3 times: relax filters, use more general terms, or check for typos in field names.
-- **Multi-step reference queries.** For requests like "blog posts by Magnus", first inspect the content type to confirm the reference field, then query for the referenced entry (the author) to get its ID, then query the primary content filtering on that ID. If several entities match, show them all and ask.`;
+- **Multi-step reference queries.** For requests that span references (e.g. "posts by Magnus"), first inspect the schema to confirm the reference field, then query for the referenced item to get its ID, then filter the primary query on that ID. If several items match, show them all and ask.`;
 
 export const CONVENTIONS_GUIDANCE = `# Response and workflow conventions
 
