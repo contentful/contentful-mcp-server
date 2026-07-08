@@ -3,19 +3,6 @@ name: prerelease
 # Publishes prerelease builds of the workspace packages (@contentful/mcp-tools
 # and @contentful/mcp-server) to GitHub Packages under the `next` dist-tag.
 #
-# Model: branch-triggered, mirroring the SDK fleet (e.g. contentful-management.js
-# publishes prereleases by pushing to its `beta`/`canary`/`dev` branches). Here a
-# push to the long-lived `next` branch cuts a `X.Y.Z-next.N` prerelease. Nx
-# resolves the current version from the latest git tag, so each push to `next`
-# increments the prerelease counter (…-next.0 → …-next.1 → …).
-#
-# Both packages are released together (not scoped to mcp-tools): mcp-server
-# depends on mcp-tools, so scoping the release would leave mcp-server with a
-# STABLE bump pinned to a prerelease dependency. Releasing both makes mcp-server
-# a prerelease too (…-next.N), keeping versions self-consistent. This is safe for
-# the stable release line because nx's releaseTag.strictPreid (default true)
-# makes the stable path (`nx release` with no --preid) ignore `-next` tags.
-#
 # The `next` dist-tag is set via ~/.npmrc so `nx release` publishes under it and
 # never moves `latest`. Consumers install with `@contentful/<pkg>@next`.
 
@@ -94,18 +81,6 @@ jobs:
       - uses: nrwl/nx-set-shas@dbe0650947e5f2c81f59190a38512cf49126fe6b # sets NX_BASE, NX_HEAD env vars
 
       - name: NX Prerelease
-        # Top-level `nx release` (not the `version` subcommand) so the existing
-        # top-level `release.git` config in nx.json is honored: it commits and
-        # tags the prerelease, and creates a GitHub Release — exactly as the
-        # fleet does for prerelease channels. The push back to `next` happens
-        # automatically: nx.json's changelog.projectChangelogs.createRelease
-        # forces git push to true internally, since a GitHub Release requires
-        # the tagged commit to exist on the remote. `--push` is not a valid
-        # flag on the top-level `nx release` command (verified via dry-run —
-        # `Unknown argument: push`), which is what broke the first attempt at
-        # this fix. Releases all workspace packages together (see header) so
-        # mcp-server isn't left as a stable version pinned to a prerelease
-        # mcp-tools.
         run: npx nx release prerelease --preid next -y
         env:
           GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
