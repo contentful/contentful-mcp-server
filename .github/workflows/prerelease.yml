@@ -106,14 +106,6 @@ jobs:
         # this fix. Releases all workspace packages together (see header) so
         # mcp-server isn't left as a stable version pinned to a prerelease
         # mcp-tools.
-        #
-        # --first-release is a temporary bootstrap flag: the `next` dist-tag
-        # has never been published, so nx's pre-publish dist-tag check (`npm
-        # view <pkg>@next`) 404s with a message nx doesn't recognize as
-        # "package/tag doesn't exist yet" and fails the whole run. Once this
-        # run successfully publishes the first `@next` version, remove
-        # --first-release so future runs get the real duplicate-publish check
-        # back.
-        run: npx nx release prerelease --preid next --first-release -y
+        run: npx nx release prerelease --preid next -y
         env:
           GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
