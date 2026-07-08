@@ -1,3 +1,24 @@
+## 0.12.3-next.0 (2026-07-08)
+
+### 🚀 Features
+
+- replace ExO space-detection with ENABLE_EXO_TOOLS opt-in ([60e8679](https://github.com/contentful/contentful-mcp-server/commit/60e8679))
+- append EXO_DISPOSITION to get_initial_context when ExO tools registered ([f31f3ef](https://github.com/contentful/contentful-mcp-server/commit/f31f3ef))
+- add detectExoDisposition shared classification helper ([e436b88](https://github.com/contentful/contentful-mcp-server/commit/e436b88))
+- add exoToolsRegistered flag to ContentfulConfig ([299bfc7](https://github.com/contentful/contentful-mcp-server/commit/299bfc7))
+- add EXO_DISPOSITION instruction nudge to mcp-tools ([d34d9a1](https://github.com/contentful/contentful-mcp-server/commit/d34d9a1))
+- **exo:** pin ExO tool schemas to canonical CMA types ([#425](https://github.com/contentful/contentful-mcp-server/pull/425))
+- **exo:** implement DataAssembly CRUD MCP tools [AIS-75] ([#422](https://github.com/contentful/contentful-mcp-server/pull/422))
+- **exo:** implement Experience CRUD MCP tools [AIS-74] ([36b055c](https://github.com/contentful/contentful-mcp-server/commit/36b055c))
+- add Template CRUD MCP tools [AIS-77] ([#421](https://github.com/contentful/contentful-mcp-server/pull/421))
+- **exo:** implement Fragment CRUD MCP tools [AIS-76] ([#420](https://github.com/contentful/contentful-mcp-server/pull/420))
+- add ComponentType CRUD MCP tools [AIS-73] ([#419](https://github.com/contentful/contentful-mcp-server/pull/419))
+
+### 🩹 Fixes
+
+- add URN examples to ExO resource link schema descriptions ([c73aec5](https://github.com/contentful/contentful-mcp-server/commit/c73aec5))
+- **exo:** use type-literal discriminant for DataAssembly type aliases ([a0e0f8a](https://github.com/contentful/contentful-mcp-server/commit/a0e0f8a))
+
 ## 0.12.2 (2026-06-18)
 
 This was a version bump only for mcp-tools to align it with other projects, there were no code changes.

@@ -1,3 +1,19 @@
+## 1.12.4-next.0 (2026-07-08)
+
+### 🚀 Features
+
+- replace ExO space-detection with ENABLE_EXO_TOOLS opt-in ([60e8679](https://github.com/contentful/contentful-mcp-server/commit/60e8679))
+- gate ExO tool registration on space detection (local server) ([68b79e3](https://github.com/contentful/contentful-mcp-server/commit/68b79e3))
+- **exo:** implement DataAssembly CRUD MCP tools [AIS-75] ([#422](https://github.com/contentful/contentful-mcp-server/pull/422))
+- **exo:** implement Experience CRUD MCP tools [AIS-74] ([36b055c](https://github.com/contentful/contentful-mcp-server/commit/36b055c))
+- add Template CRUD MCP tools [AIS-77] ([#421](https://github.com/contentful/contentful-mcp-server/pull/421))
+- **exo:** implement Fragment CRUD MCP tools [AIS-76] ([#420](https://github.com/contentful/contentful-mcp-server/pull/420))
+- add ComponentType CRUD MCP tools [AIS-73] ([#419](https://github.com/contentful/contentful-mcp-server/pull/419))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.3-next.0
+
 ## 1.12.3 (2026-06-18)
 
 ### 🧱 Updated Dependencies
