@@ -45,7 +45,7 @@
     "@modelcontextprotocol/sdk": "^1.26.0",
     "contentful-export": "^7.21.78",
     "contentful-import": "^9.4.129",
-    "contentful-management": "^12.2.0",
+    "contentful-management": "12.6.0-dev.3",
     "fast-xml-parser": "^5.7.1",
     "lodash-es": "^4.17.23",
     "outdent": "^0.8.0",

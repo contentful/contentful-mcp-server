@@ -24,4 +24,6 @@ export interface ContentfulConfig {
   protectedEnvironments?: string[];
   /** Maximum number of IDs allowed in a single bulk-operation tool call. Defaults to 10 when unset. */
   maxBulkSize?: number;
+  /** Set by the server when ExO tool collections were registered this session. Gates the EXO_DISPOSITION nudge in get_initial_context. */
+  exoToolsRegistered?: boolean;
 }
