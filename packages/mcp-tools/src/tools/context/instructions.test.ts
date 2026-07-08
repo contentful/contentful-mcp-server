@@ -3,6 +3,7 @@ import {
   CORE_INVARIANTS,
   SEARCHING_GUIDANCE,
   CONVENTIONS_GUIDANCE,
+  EXO_DISPOSITION,
 } from './instructions.js';
 
 // Terms the 2026-07-02 audit proved are fiction. They must never appear
@@ -45,5 +46,14 @@ describe('guidance corpus', () => {
     // sys.version edit-safety rule
     expect(allContent).toContain('sys.version');
     expect(allContent).toContain('update_entry');
+  });
+
+  it('exposes an ExO disposition nudge that names ExO primitives and an override', () => {
+    expect(EXO_DISPOSITION.length).toBeGreaterThan(0);
+    expect(EXO_DISPOSITION).toContain('Experience Orchestration');
+    // Names the primitives the model should prefer
+    expect(EXO_DISPOSITION).toContain('Component Type');
+    // States the override so it is a default, not a hard rule
+    expect(EXO_DISPOSITION.toLowerCase()).toContain('unless the user');
   });
 });

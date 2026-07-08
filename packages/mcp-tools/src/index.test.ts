@@ -22,13 +22,35 @@ describe('Package Exports', () => {
     expect(tools).toBeDefined();
   });
 
-  it('should export exactly 1 runtime item (ContentfulMcpTools class)', async () => {
+  it('should export the shared instruction constants for downstream consumers', async () => {
+    const moduleExports = await import('./index.js');
+
+    for (const name of [
+      'CORE_INVARIANTS',
+      'SEARCHING_GUIDANCE',
+      'CONVENTIONS_GUIDANCE',
+      'EXO_DISPOSITION',
+    ] as const) {
+      expect(typeof moduleExports[name]).toBe('string');
+      expect(moduleExports[name].length).toBeGreaterThan(0);
+    }
+  });
+
+  it('should export exactly 5 runtime items (class + 4 instruction constants)', async () => {
     // TypeScript types are erased at runtime, so ContentfulConfig won't be in exports
     const moduleExports = await import('./index.js');
     const exportedKeys = Object.keys(moduleExports);
 
-    expect(exportedKeys).toHaveLength(1);
+    expect(exportedKeys).toHaveLength(5);
     expect(exportedKeys).toContain('ContentfulMcpTools');
+    expect(exportedKeys).toEqual(
+      expect.arrayContaining([
+        'CORE_INVARIANTS',
+        'SEARCHING_GUIDANCE',
+        'CONVENTIONS_GUIDANCE',
+        'EXO_DISPOSITION',
+      ]),
+    );
   });
 });
 

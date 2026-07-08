@@ -4,8 +4,9 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { ContentfulMcpTools } from '@contentful/mcp-tools';
 import { env } from '../config/env.js';
 
-// Mutable data object — tests can override individual fields before calling registerAllTools
-const mockEnvData: Record<string, string | undefined> = {
+// Mutable data object — tests can override individual fields before calling registerAllTools.
+// ENABLE_EXO_TOOLS is a boolean here (the real env schema transforms the string to a boolean).
+const mockEnvData: Record<string, string | boolean | undefined> = {
   CONTENTFUL_MANAGEMENT_ACCESS_TOKEN: 'test-token',
   CONTENTFUL_HOST: 'api.contentful.com',
   SPACE_ID: 'test-space-id',
@@ -13,6 +14,7 @@ const mockEnvData: Record<string, string | undefined> = {
   ORGANIZATION_ID: 'test-org-id',
   APP_ID: 'test-app-id',
   PROTECTED_ENVIRONMENTS: undefined,
+  ENABLE_EXO_TOOLS: true,
 };
 
 // Mock the env module — references the mutable object above so tests can mutate it
@@ -44,6 +46,9 @@ describe('registerAllTools', () => {
     // Reset PROTECTED_ENVIRONMENTS to absent for existing tests
     mockEnvData.PROTECTED_ENVIRONMENTS = undefined;
 
+    // Default ExO tools on so existing tests keep seeing the full tool surface
+    mockEnvData.ENABLE_EXO_TOOLS = true;
+
     // Create mock registered tool with disable method
     mockRegisteredTool = {
       disable: vi.fn(),
@@ -58,7 +63,7 @@ describe('registerAllTools', () => {
     vi.mocked(ContentfulMcpTools).mockClear();
   });
 
-  it('should register all standard tool collections', () => {
+  it('should register all standard tool collections', async () => {
     registerAllTools(mockServer);
 
     // Create a ContentfulMcpTools instance to count tools
@@ -104,7 +109,7 @@ describe('registerAllTools', () => {
     expect(registerToolSpy).toHaveBeenCalledTimes(expectedTotalCalls);
   });
 
-  it('should register tools with correct metadata structure', () => {
+  it('should register tools with correct metadata structure', async () => {
     registerAllTools(mockServer);
 
     // Check that all calls follow the expected structure
@@ -119,14 +124,14 @@ describe('registerAllTools', () => {
     });
   });
 
-  it('should register workflow tools with disable called', () => {
+  it('should register workflow tools with disable called', async () => {
     registerAllTools(mockServer);
 
     // The disable method should be called 3 times (once for each workflow tool)
     expect(mockRegisteredTool.disable).toHaveBeenCalledTimes(3);
   });
 
-  it('should register spaceToSpaceMigrationHandler with workflow tools', () => {
+  it('should register spaceToSpaceMigrationHandler with workflow tools', async () => {
     registerAllTools(mockServer);
 
     const mcpTools = new ContentfulMcpTools({
@@ -159,6 +164,48 @@ describe('registerAllTools', () => {
   });
 });
 
+describe('registerAllTools ExO opt-in', () => {
+  let registerToolSpy: ReturnType<typeof vi.fn>;
+  let mockServer: McpServer;
+
+  beforeEach(() => {
+    mockEnvData.ENABLE_EXO_TOOLS = true;
+    registerToolSpy = vi.fn(() => ({ disable: vi.fn() }));
+    mockServer = { registerTool: registerToolSpy } as unknown as McpServer;
+    vi.mocked(ContentfulMcpTools).mockClear();
+  });
+
+  const registeredToolTitles = () =>
+    registerToolSpy.mock.calls.map((c) => c[0] as string);
+
+  it('registers ExO tools and sets exoToolsRegistered:true when ENABLE_EXO_TOOLS is on', () => {
+    mockEnvData.ENABLE_EXO_TOOLS = true;
+
+    registerAllTools(mockServer);
+
+    // create_component_type is an ExO tool title
+    expect(registeredToolTitles()).toContain('create_component_type');
+    // classic tools still present alongside ExO
+    expect(registeredToolTitles()).toContain('list_content_types');
+    expect(vi.mocked(ContentfulMcpTools)).toHaveBeenCalledWith(
+      expect.objectContaining({ exoToolsRegistered: true }),
+    );
+  });
+
+  it('omits ExO tools and sets exoToolsRegistered:false when ENABLE_EXO_TOOLS is off', () => {
+    mockEnvData.ENABLE_EXO_TOOLS = false;
+
+    registerAllTools(mockServer);
+
+    expect(registeredToolTitles()).not.toContain('create_component_type');
+    // classic tools still present
+    expect(registeredToolTitles()).toContain('list_content_types');
+    expect(vi.mocked(ContentfulMcpTools)).toHaveBeenCalledWith(
+      expect.objectContaining({ exoToolsRegistered: false }),
+    );
+  });
+});
+
 describe('registerAllTools — PROTECTED_ENVIRONMENTS parsing', () => {
   let mockServer: McpServer;
   let mockRegisteredTool: { disable: ReturnType<typeof vi.fn> };
@@ -172,7 +219,7 @@ describe('registerAllTools — PROTECTED_ENVIRONMENTS parsing', () => {
     vi.mocked(ContentfulMcpTools).mockClear();
   });
 
-  it('passes undefined when PROTECTED_ENVIRONMENTS is absent', () => {
+  it('passes undefined when PROTECTED_ENVIRONMENTS is absent', async () => {
     mockEnvData.PROTECTED_ENVIRONMENTS = undefined;
     registerAllTools(mockServer);
     expect(vi.mocked(ContentfulMcpTools)).toHaveBeenCalledWith(
@@ -180,7 +227,7 @@ describe('registerAllTools — PROTECTED_ENVIRONMENTS parsing', () => {
     );
   });
 
-  it('passes parsed array when PROTECTED_ENVIRONMENTS is "master,staging"', () => {
+  it('passes parsed array when PROTECTED_ENVIRONMENTS is "master,staging"', async () => {
     mockEnvData.PROTECTED_ENVIRONMENTS = 'master,staging';
     registerAllTools(mockServer);
     expect(vi.mocked(ContentfulMcpTools)).toHaveBeenCalledWith(
@@ -188,7 +235,7 @@ describe('registerAllTools — PROTECTED_ENVIRONMENTS parsing', () => {
     );
   });
 
-  it('trims whitespace when PROTECTED_ENVIRONMENTS is " master , staging "', () => {
+  it('trims whitespace when PROTECTED_ENVIRONMENTS is " master , staging "', async () => {
     mockEnvData.PROTECTED_ENVIRONMENTS = ' master , staging ';
     registerAllTools(mockServer);
     expect(vi.mocked(ContentfulMcpTools)).toHaveBeenCalledWith(
@@ -196,7 +243,7 @@ describe('registerAllTools — PROTECTED_ENVIRONMENTS parsing', () => {
     );
   });
 
-  it('passes undefined when PROTECTED_ENVIRONMENTS is only commas/whitespace (", ,")', () => {
+  it('passes undefined when PROTECTED_ENVIRONMENTS is only commas/whitespace (", ,")', async () => {
     mockEnvData.PROTECTED_ENVIRONMENTS = ', ,';
     registerAllTools(mockServer);
     expect(vi.mocked(ContentfulMcpTools)).toHaveBeenCalledWith(

@@ -7,6 +7,10 @@ import { getVersion } from '../getVersion.js';
  * Registers all Contentful MCP tools with the server.
  * Each tool is registered with its title, description, input schema, annotations, and implementation.
  *
+ * ExO (Experience Orchestration) tool collections are opt-in via the
+ * ENABLE_EXO_TOOLS env var: they register only when it is set to "true".
+ * Classic collections always register.
+ *
  * Special handling for space-to-space migration workflow tools:
  * - The param collection, export, and import tools are disabled by default
  * - The migration handler controls their enable/disable state
@@ -31,8 +35,7 @@ export function registerAllTools(server: McpServer): void {
     ? Number(env.data.MAX_BULK_SIZE)
     : undefined;
 
-  // Initialize tools with configuration from environment variables
-  const tools = new ContentfulMcpTools({
+  const baseConfig = {
     accessToken: env.data.CONTENTFUL_MANAGEMENT_ACCESS_TOKEN,
     host: env.data.CONTENTFUL_HOST,
     spaceId: env.data.SPACE_ID,
@@ -44,46 +47,54 @@ export function registerAllTools(server: McpServer): void {
     hostDelivery: env.data.CONTENTFUL_DELIVERY_HOST,
     protectedEnvironments,
     maxBulkSize,
+  };
+
+  // ExO tools are opt-in via ENABLE_EXO_TOOLS. Off by default.
+  const registerExoTools = env.data.ENABLE_EXO_TOOLS;
+
+  // Initialize tools with configuration from environment variables
+  const tools = new ContentfulMcpTools({
+    ...baseConfig,
+    exoToolsRegistered: registerExoTools,
   });
 
-  // Get tool collections
+  // Classic (always-registered) tool collections
   const aiActionTools = tools.getAiActionTools();
   const assetTools = tools.getAssetTools();
-  const componentTypeTools = tools.getComponentTypeTools();
-  const templateTools = tools.getTemplateTools();
-  const experienceTools = tools.getExperienceTools();
   const contentTypeTools = tools.getContentTypeTools();
   const contextTools = tools.getContextTools();
   const editorInterfaceTools = tools.getEditorInterfaceTools();
   const entryTools = tools.getEntryTools();
   const environmentTools = tools.getEnvironmentTools();
-  const dataAssemblyTools = tools.getDataAssemblyTools();
-  const fragmentTools = tools.getFragmentTools();
   const localeTools = tools.getLocaleTools();
   const orgTools = tools.getOrgTools();
   const spaceTools = tools.getSpaceTools();
   const tagTools = tools.getTagTools();
   const taxonomyTools = tools.getTaxonomyTools();
 
-  // Combine standard tool collections
+  // Combine standard tool collections with the ExO collections, gated on detection.
   const allToolCollections = [
     aiActionTools,
     assetTools,
-    componentTypeTools,
-    dataAssemblyTools,
-    experienceTools,
-    templateTools,
     contentTypeTools,
     contextTools,
     editorInterfaceTools,
     entryTools,
     environmentTools,
-    fragmentTools,
     localeTools,
     orgTools,
     spaceTools,
     tagTools,
     taxonomyTools,
+    ...(registerExoTools
+      ? [
+          tools.getComponentTypeTools(),
+          tools.getDataAssemblyTools(),
+          tools.getExperienceTools(),
+          tools.getTemplateTools(),
+          tools.getFragmentTools(),
+        ]
+      : []),
   ];
 
   // Register each tool from standard collections

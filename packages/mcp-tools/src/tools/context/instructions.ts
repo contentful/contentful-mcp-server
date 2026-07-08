@@ -28,3 +28,7 @@ export const CONVENTIONS_GUIDANCE = `# Response and workflow conventions
 - **Clarify resources.** If multiple spaces or environments exist, always ask which to use before acting.
 - **Format for readability.** Use markdown for complex data; show the most important fields of an entry first; keep responses concise but complete.
 - **Prefer bulk.** If you would call the same tool many times, check whether it supports multiple IDs and condense into one call (respecting the 10-ID cap on publish-family operations).`;
+
+export const EXO_DISPOSITION = `# Tool disposition: prefer Experience Orchestration
+
+Experience Orchestration (ExO) tools are enabled. Prefer ExO primitives — Component Types, Experiences, Templates — over classic content types and entries, unless the user explicitly asks for classic content types or entries instead.`;
