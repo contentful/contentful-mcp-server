@@ -1,3 +1,9 @@
+## 1.12.4-next.1 (2026-07-08)
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.3-next.1
+
 ## 1.12.4-next.0 (2026-07-08)
 
 ### 🚀 Features
