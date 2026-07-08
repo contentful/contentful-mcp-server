@@ -97,12 +97,15 @@ jobs:
         # Top-level `nx release` (not the `version` subcommand) so the existing
         # top-level `release.git` config in nx.json is honored: it commits and
         # tags the prerelease, and creates a GitHub Release — exactly as the
-        # fleet does for prerelease channels. `--push` is required explicitly:
-        # nx.json's release.git has no `push` field, which defaults to false, so
-        # without this flag the commit/tag stay local to the runner and the next
-        # push to `next` can't resolve the current version from git tags.
-        # Releases all workspace packages together (see header) so mcp-server
-        # isn't left as a stable version pinned to a prerelease mcp-tools.
-        run: npx nx release prerelease --preid next --push -y
+        # fleet does for prerelease channels. The push back to `next` happens
+        # automatically: nx.json's changelog.projectChangelogs.createRelease
+        # forces git push to true internally, since a GitHub Release requires
+        # the tagged commit to exist on the remote. `--push` is not a valid
+        # flag on the top-level `nx release` command (verified via dry-run —
+        # `Unknown argument: push`), which is what broke the first attempt at
+        # this fix. Releases all workspace packages together (see header) so
+        # mcp-server isn't left as a stable version pinned to a prerelease
+        # mcp-tools.
+        run: npx nx release prerelease --preid next -y
         env:
           GITHUB_TOKEN: ${{ steps.vault.outputs.GITHUB_TOKEN }}
