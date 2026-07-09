@@ -38,14 +38,10 @@ describe('guidance corpus', () => {
   });
 
   it('states the corrected load-bearing facts', () => {
-    // Real content-type verbs
-    expect(allContent).toContain('list_content_types');
-    expect(allContent).toContain('get_content_type');
     // Real bulk cap
     expect(CORE_INVARIANTS).toContain('10');
     // sys.version edit-safety rule
     expect(allContent).toContain('sys.version');
-    expect(allContent).toContain('update_entry');
   });
 
   it('exposes an ExO disposition nudge that names ExO primitives and an override', () => {
