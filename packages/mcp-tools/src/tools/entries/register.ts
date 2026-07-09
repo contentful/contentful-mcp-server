@@ -25,6 +25,10 @@ import {
   unarchiveEntryTool,
   UnarchiveEntryToolParams,
 } from './unarchiveEntry.js';
+import {
+  appendEntryFieldTool,
+  AppendEntryFieldToolParams,
+} from './appendEntryField.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
 export function createEntryTools(config: ContentfulConfig) {
@@ -40,6 +44,7 @@ export function createEntryTools(config: ContentfulConfig) {
   const unpublishEntry = unpublishEntryTool(config);
   const archiveEntry = archiveEntryTool(config);
   const unarchiveEntry = unarchiveEntryTool(config);
+  const appendEntryField = appendEntryFieldTool(config);
 
   return {
     searchEntries: {
@@ -116,7 +121,16 @@ export function createEntryTools(config: ContentfulConfig) {
     updateEntry: {
       title: 'update_entry',
       description:
-        'Update an existing entry. You MUST call get_entry first to read the current state, then pass the sys.version you received as the version parameter. The handler merges your field updates with the existing entry fields, so you only need to provide the fields you want to change. However, for multiple-locale fields, all existing locales must be included in the update. If the version is stale (the entry changed since you read it), the update is rejected and you must re-fetch with get_entry.',
+        'Update an existing entry. You MUST call get_entry first to read the current state, ' +
+        'then pass the sys.version you received as the version parameter. ' +
+        'The handler merges your field updates with the existing entry fields, so you only need ' +
+        'to provide the fields you want to change. However, for multiple-locale fields, all ' +
+        'existing locales must be included in the update. ' +
+        'If the version is stale (the entry changed since you read it), the update is rejected ' +
+        'and you must re-fetch with get_entry. ' +
+        'NOTE: for appending items to large array fields (e.g. reference arrays with many items), ' +
+        'prefer append_entry_field — it performs the read-modify-append server-side and deduplicates, ' +
+        'so you never need to hold the full array.',
       inputParams: UpdateEntryToolParams.shape,
       annotations: {
         readOnlyHint: false,
@@ -190,6 +204,30 @@ export function createEntryTools(config: ContentfulConfig) {
         openWorldHint: false,
       },
       tool: unarchiveEntry,
+    },
+    appendEntryField: {
+      title: 'append_entry_field',
+      description:
+        'Append one or more items to an array-typed entry field (Array of Symbols, ' +
+        'Array of Links, or Array of ResourceLinks) entirely server-side. ' +
+        'The agent never holds or resends the full array — the tool reads the ' +
+        'current array on the server, deduplicates (Links by sys.id, ResourceLinks ' +
+        'by sys.urn, Symbols by exact value), appends survivors, and writes back ' +
+        'only the target field/locale. ' +
+        'PREFER this over update_entry when adding items to large reference arrays ' +
+        '(e.g. a page with dozens of references) — update_entry replaces the full ' +
+        'array and will silently lose items if the agent held a truncated read. ' +
+        'Optionally pass version (from get_entry) to enforce a conflict check; ' +
+        'omit it to append without a version guard (safe for additive operations). ' +
+        'Returns the updated entry plus appended/skipped item lists and the new array length.',
+      inputParams: AppendEntryFieldToolParams.shape,
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
+      tool: appendEntryField,
     },
   };
 }
