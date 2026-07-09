@@ -36,18 +36,17 @@ export function getInitialContextTool(config: ContentfulConfig) {
 
     const exoBlock = config.exoToolsRegistered ? `\n\n${EXO_DISPOSITION}` : '';
 
-    const message =
-      outdent`
+    const message = outdent`
       You are an assistant integrated with Contentful through the Model Context Protocol (MCP). Always call this tool first.
 
       ${sessionFacts}
-
+    ` + exoBlock + `\n\n` + outdent`
       ${CORE_INVARIANTS}
 
       ${SEARCHING_GUIDANCE}
 
       ${CONVENTIONS_GUIDANCE}
-    ` + exoBlock;
+    `;
 
     contextStore.setInitialContextLoaded();
 

@@ -9,9 +9,9 @@
 
 export const CORE_INVARIANTS = `# Core operating rules
 
-- **Content-type first.** Before finding or editing content, call \`list_content_types\` to see what content types exist, and \`get_content_type\` to inspect a type's fields. This prevents failed queries and reveals the right type (e.g. a \`pricingPage\` type when asked about pricing).
-- **Edit safely.** To modify an entry, call \`get_entry\` first, then pass the returned \`sys.version\` to \`update_entry\`. The version is required and prevents overwriting concurrent changes.
-- **Bulk cap.** The bulk operations \`publish_entry\`, \`unpublish_entry\`, \`archive_entry\`, and \`unarchive_entry\` accept at most 10 IDs per call by default. This cap does not apply to creating or updating entries.
+- **Schema first.** Before creating or finding content, inspect the environment's schema: list available types and inspect their fields. This prevents failed operations and ensures you use the right type and field names.
+- **Edit safely.** Before updating any item, fetch it first to get the current \`sys.version\`, then pass that version to the update call. The version is required and prevents overwriting concurrent changes.
+- **Bulk cap.** Bulk publish/unpublish/archive/unarchive operations accept at most 10 IDs per call by default. This cap does not apply to creating or updating items.
 - **Ask when ambiguous.** If multiple spaces or environments are available, ask the user which to use. Do not guess.`;
 
 export const SEARCHING_GUIDANCE = `# Searching for content
@@ -29,6 +29,6 @@ export const CONVENTIONS_GUIDANCE = `# Response and workflow conventions
 - **Format for readability.** Use markdown for complex data; show the most important fields of an entry first; keep responses concise but complete.
 - **Prefer bulk.** If you would call the same tool many times, check whether it supports multiple IDs and condense into one call (respecting the 10-ID cap on publish-family operations).`;
 
-export const EXO_DISPOSITION = `# Tool disposition: prefer Experience Orchestration
+export const EXO_DISPOSITION = `# Tool disposition: Experience Orchestration by default
 
-Experience Orchestration (ExO) tools are enabled. Prefer ExO primitives — Component Types, Experiences, Templates — over classic content types and entries, unless the user explicitly asks for classic content types or entries instead.`;
+Experience Orchestration (ExO) tools are enabled. Use ExO primitives — Component Types, Experiences, Templates, Fragments, and Data Assemblies — for all content modeling and authoring. Do not create classic content types or entries unless the user explicitly instructs you to. If you are unsure how to model something with ExO, inspect the tool schemas and proceed with ExO.`;
