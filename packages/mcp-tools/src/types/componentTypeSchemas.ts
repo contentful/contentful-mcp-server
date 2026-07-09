@@ -1,52 +1,50 @@
 import { z } from 'zod';
-import type { JsonValue, PlainClientAPI } from 'contentful-management';
+import type { JsonValue, ComponentTypeProps, ExperienceProps } from 'contentful-management';
 
-// CMA.js does not re-export the individual ExO entity Props types
-// (ComponentTypeProps, FragmentProps, etc.) or their nested constituents
-// (ComponentTypeViewport, ComponentTypeDesignProperty, TreeNode, ...) by name
-// from its package root — only the *Collection types make it into the public
-// export surface. To pin these schemas to the canonical shapes anyway, derive
-// them structurally off PlainClientAPI's method signatures, which are exported.
+// As of contentful-management 12.6.0-dev.4, the top-level ExO entity Props
+// types (ComponentTypeProps, ExperienceProps, ...) are re-exported by name from
+// the package root, so we derive our schemas' canonical shapes by indexing
+// directly into them — no more reaching through PlainClientAPI method-return
+// signatures.
 //
-// Each derived alias is passed through Distribute<T> below, which forces TS to
-// treat it as a distinct nominal type rather than a live indexed-access
-// expression. Without this, combining two indexed-access types derived from the
-// same CMA entity (e.g. ComponentTypeContentProperty + TreeNode, both derived
-// from ComponentTypeEntity) in a single z.object()/extend() call makes tsup's
-// declaration emit fail with TS2742 ("cannot be named without a reference to
-// .../contentful-management/.../entities/component-type.js") — even though
-// each type alone emits fine. Distribute<T> is written as a distributive
-// conditional (`T extends any ? ... : never`) rather than a plain mapped type
-// so it maps over each arm of a union separately, preserving discriminated
-// unions like TreeNode instead of collapsing them to their common keys.
+// The nested *constituent* types (ComponentTypeViewport, ComponentTypeDesignProperty,
+// TreeNode, ...) are still NOT re-exported by name — they live only in
+// .../entities/component-type.js. A bare indexed-access alias like
+// `ComponentTypeProps['viewports'][number]` therefore still resolves through to
+// that non-portable nested type when a *consumer's* inferred type (e.g. a tool's
+// z.infer param) has to be named for declaration emit, producing TS2742
+// ("cannot be named without a reference to .../entities/component-type.js").
+//
+// Distribute<T> shields against this: written as a distributive conditional
+// (`T extends unknown ? ... : never`) it materializes each alias into a fresh,
+// self-contained structural object, severing the reference to the CMA entity
+// module while preserving discriminated unions like TreeNode (mapping over each
+// union arm separately rather than collapsing to common keys).
 type Distribute<T> = T extends unknown ? { [K in keyof T]: T[K] } : never;
 
-type ComponentTypeEntity = Awaited<ReturnType<PlainClientAPI['componentType']['get']>>;
-
-export type ComponentTypeViewport = Distribute<ComponentTypeEntity['viewports'][number]>;
+export type ComponentTypeViewport = Distribute<ComponentTypeProps['viewports'][number]>;
 export type ComponentTypeContentProperty = Distribute<
-  ComponentTypeEntity['contentProperties'][number]
+  ComponentTypeProps['contentProperties'][number]
 >;
 export type ComponentTypeDesignProperty = Distribute<
-  ComponentTypeEntity['designProperties'][number]
+  ComponentTypeProps['designProperties'][number]
 >;
 export type ComponentTypeSlotDefinition = Distribute<
-  NonNullable<ComponentTypeEntity['slots']>[number]
+  NonNullable<ComponentTypeProps['slots']>[number]
 >;
-export type TreeNode = Distribute<NonNullable<ComponentTypeEntity['componentTree']>[number]>;
+export type TreeNode = Distribute<NonNullable<ComponentTypeProps['componentTree']>[number]>;
 export type ComponentNode = Extract<TreeNode, { nodeType: 'Component' }>;
 export type FragmentNode = Extract<TreeNode, { nodeType: 'Fragment' }>;
 export type SlotNode = Extract<TreeNode, { nodeType: 'Slot' }>;
 export type ComponentTreeDesignPropertyValue = ComponentNode['designProperties'][string];
-export type ExoMetadataProps = Distribute<NonNullable<ComponentTypeEntity['metadata']>>;
+export type ExoMetadataProps = Distribute<NonNullable<ComponentTypeProps['metadata']>>;
 
-type ExperienceEntity = Awaited<ReturnType<PlainClientAPI['experience']['get']>>;
-export type ExperienceMetadataProps = Distribute<NonNullable<ExperienceEntity['metadata']>>;
+export type ExperienceMetadataProps = Distribute<NonNullable<ExperienceProps['metadata']>>;
 export type ExperienceContentBindings = Distribute<
-  NonNullable<ExperienceEntity['contentBindings']>
+  NonNullable<ExperienceProps['contentBindings']>
 >;
 export type ExperienceSlotNode = Distribute<
-  NonNullable<ExperienceEntity['slots']>[string][number]
+  NonNullable<ExperienceProps['slots']>[string][number]
 >;
 export type InlineFragmentNode = Extract<ExperienceSlotNode, { nodeType: 'InlineFragment' }>;
 
