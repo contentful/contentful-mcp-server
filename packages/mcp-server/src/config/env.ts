@@ -42,7 +42,7 @@ const EnvSchema = z.object({
     .optional()
     .transform((v) => v === 'true')
     .describe(
-      'Opt in to Experience Orchestration (ExO) tools. Set to "true" to register the ExO tool collections (component types, data assemblies, experiences, templates, fragments). Defaults to off.',
+      'Opt in to Experience Orchestration (ExO) tools. Set to "true" to register the ExO tool collections (component types, data assemblies, experiences, templates, fragments). Tools register only if the token also holds the exoM1 entitlement in at least one accessible org — both gates must pass. Defaults to off.',
     ),
   CONTENTFUL_DELIVERY_TOKEN: z
     .string()

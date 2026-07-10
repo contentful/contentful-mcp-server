@@ -27,6 +27,14 @@ vi.mock('../config/env.js', () => ({
   },
 }));
 
+// hasExoM1Entitlement is mocked so tests don't hit the network. Defaults to
+// entitled (true) so existing ExO-on tests keep seeing the full tool surface;
+// entitlement-gate tests override per-case. Hoisted so the vi.mock factory can
+// reference it (factories are lifted above top-level consts).
+const { mockHasExoM1Entitlement } = vi.hoisted(() => ({
+  mockHasExoM1Entitlement: vi.fn().mockResolvedValue(true),
+}));
+
 vi.mock('@contentful/mcp-tools', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@contentful/mcp-tools')>();
   return {
@@ -34,6 +42,7 @@ vi.mock('@contentful/mcp-tools', async (importOriginal) => {
     ContentfulMcpTools: vi
       .fn()
       .mockImplementation((config) => new actual.ContentfulMcpTools(config)),
+    hasExoM1Entitlement: mockHasExoM1Entitlement,
   };
 });
 
@@ -64,7 +73,7 @@ describe('registerAllTools', () => {
   });
 
   it('should register all standard tool collections', async () => {
-    registerAllTools(mockServer);
+    await registerAllTools(mockServer);
 
     // Create a ContentfulMcpTools instance to count tools
     const mcpTools = new ContentfulMcpTools({
@@ -110,7 +119,7 @@ describe('registerAllTools', () => {
   });
 
   it('should register tools with correct metadata structure', async () => {
-    registerAllTools(mockServer);
+    await registerAllTools(mockServer);
 
     // Check that all calls follow the expected structure
     const calls = registerToolSpy.mock.calls;
@@ -125,14 +134,14 @@ describe('registerAllTools', () => {
   });
 
   it('should register workflow tools with disable called', async () => {
-    registerAllTools(mockServer);
+    await registerAllTools(mockServer);
 
     // The disable method should be called 3 times (once for each workflow tool)
     expect(mockRegisteredTool.disable).toHaveBeenCalledTimes(3);
   });
 
   it('should register spaceToSpaceMigrationHandler with workflow tools', async () => {
-    registerAllTools(mockServer);
+    await registerAllTools(mockServer);
 
     const mcpTools = new ContentfulMcpTools({
       accessToken: env.data!.CONTENTFUL_MANAGEMENT_ACCESS_TOKEN,
@@ -170,6 +179,9 @@ describe('registerAllTools ExO opt-in', () => {
 
   beforeEach(() => {
     mockEnvData.ENABLE_EXO_TOOLS = true;
+    mockEnvData.ORGANIZATION_ID = 'test-org-id';
+    mockHasExoM1Entitlement.mockReset();
+    mockHasExoM1Entitlement.mockResolvedValue(true);
     registerToolSpy = vi.fn(() => ({ disable: vi.fn() }));
     mockServer = { registerTool: registerToolSpy } as unknown as McpServer;
     vi.mocked(ContentfulMcpTools).mockClear();
@@ -178,10 +190,11 @@ describe('registerAllTools ExO opt-in', () => {
   const registeredToolTitles = () =>
     registerToolSpy.mock.calls.map((c) => c[0] as string);
 
-  it('registers ExO tools and sets exoToolsRegistered:true when ENABLE_EXO_TOOLS is on', () => {
+  it('registers ExO tools when ENABLE_EXO_TOOLS is on AND the org is entitled', async () => {
     mockEnvData.ENABLE_EXO_TOOLS = true;
+    mockHasExoM1Entitlement.mockResolvedValue(true);
 
-    registerAllTools(mockServer);
+    await registerAllTools(mockServer);
 
     // create_component_type is an ExO tool title
     expect(registeredToolTitles()).toContain('create_component_type');
@@ -192,10 +205,10 @@ describe('registerAllTools ExO opt-in', () => {
     );
   });
 
-  it('omits ExO tools and sets exoToolsRegistered:false when ENABLE_EXO_TOOLS is off', () => {
+  it('omits ExO tools when ENABLE_EXO_TOOLS is off (and never checks entitlement)', async () => {
     mockEnvData.ENABLE_EXO_TOOLS = false;
 
-    registerAllTools(mockServer);
+    await registerAllTools(mockServer);
 
     expect(registeredToolTitles()).not.toContain('create_component_type');
     // classic tools still present
@@ -203,6 +216,37 @@ describe('registerAllTools ExO opt-in', () => {
     expect(vi.mocked(ContentfulMcpTools)).toHaveBeenCalledWith(
       expect.objectContaining({ exoToolsRegistered: false }),
     );
+    // Short-circuit: no entitlement network call when the env var is off.
+    expect(mockHasExoM1Entitlement).not.toHaveBeenCalled();
+  });
+
+  it('omits ExO tools when the env var is on but the org is NOT entitled', async () => {
+    mockEnvData.ENABLE_EXO_TOOLS = true;
+    mockHasExoM1Entitlement.mockResolvedValue(false);
+
+    await registerAllTools(mockServer);
+
+    expect(registeredToolTitles()).not.toContain('create_component_type');
+    expect(registeredToolTitles()).toContain('list_content_types');
+    expect(vi.mocked(ContentfulMcpTools)).toHaveBeenCalledWith(
+      expect.objectContaining({ exoToolsRegistered: false }),
+    );
+    // Org is derived from the PAT inside the helper — the caller passes only
+    // the config, not an org id.
+    expect(mockHasExoM1Entitlement).toHaveBeenCalledWith(
+      expect.objectContaining({ accessToken: 'test-token' }),
+    );
+  });
+
+  it('fails closed: omits ExO tools when both gates would pass but entitlement lookup rejects', async () => {
+    mockEnvData.ENABLE_EXO_TOOLS = true;
+    // hasExoM1Entitlement itself swallows errors and returns false; simulate
+    // that resolved-false result here (the helper never throws to the caller).
+    mockHasExoM1Entitlement.mockResolvedValue(false);
+
+    await registerAllTools(mockServer);
+
+    expect(registeredToolTitles()).not.toContain('create_component_type');
   });
 });
 
@@ -221,7 +265,7 @@ describe('registerAllTools — PROTECTED_ENVIRONMENTS parsing', () => {
 
   it('passes undefined when PROTECTED_ENVIRONMENTS is absent', async () => {
     mockEnvData.PROTECTED_ENVIRONMENTS = undefined;
-    registerAllTools(mockServer);
+    await registerAllTools(mockServer);
     expect(vi.mocked(ContentfulMcpTools)).toHaveBeenCalledWith(
       expect.objectContaining({ protectedEnvironments: undefined }),
     );
@@ -229,7 +273,7 @@ describe('registerAllTools — PROTECTED_ENVIRONMENTS parsing', () => {
 
   it('passes parsed array when PROTECTED_ENVIRONMENTS is "master,staging"', async () => {
     mockEnvData.PROTECTED_ENVIRONMENTS = 'master,staging';
-    registerAllTools(mockServer);
+    await registerAllTools(mockServer);
     expect(vi.mocked(ContentfulMcpTools)).toHaveBeenCalledWith(
       expect.objectContaining({ protectedEnvironments: ['master', 'staging'] }),
     );
@@ -237,7 +281,7 @@ describe('registerAllTools — PROTECTED_ENVIRONMENTS parsing', () => {
 
   it('trims whitespace when PROTECTED_ENVIRONMENTS is " master , staging "', async () => {
     mockEnvData.PROTECTED_ENVIRONMENTS = ' master , staging ';
-    registerAllTools(mockServer);
+    await registerAllTools(mockServer);
     expect(vi.mocked(ContentfulMcpTools)).toHaveBeenCalledWith(
       expect.objectContaining({ protectedEnvironments: ['master', 'staging'] }),
     );
@@ -245,7 +289,7 @@ describe('registerAllTools — PROTECTED_ENVIRONMENTS parsing', () => {
 
   it('passes undefined when PROTECTED_ENVIRONMENTS is only commas/whitespace (", ,")', async () => {
     mockEnvData.PROTECTED_ENVIRONMENTS = ', ,';
-    registerAllTools(mockServer);
+    await registerAllTools(mockServer);
     expect(vi.mocked(ContentfulMcpTools)).toHaveBeenCalledWith(
       expect.objectContaining({ protectedEnvironments: undefined }),
     );
