@@ -7,12 +7,7 @@ import { getVersion } from '../getVersion.js';
  * Registers all Contentful MCP tools with the server.
  * Each tool is registered with its title, description, input schema, annotations, and implementation.
  *
- * ExO (Experience Orchestration) tool collections require BOTH gates:
- * 1. the ENABLE_EXO_TOOLS env var is "true" (explicit local opt-in), AND
- * 2. the org holds the shared `exoM1` entitlement (the coordinated M1 rollout
- *    gate — see the ExO M1 rollout doc).
- * The entitlement check fails closed: offline or any error withholds ExO. This
- * makes registration async. Classic collections always register.
+ * ExO tool collections require both the ENABLE_EXO_TOOLS env var and the exoM1 entitlement; fails closed.
  *
  * Special handling for space-to-space migration workflow tools:
  * - The param collection, export, and import tools are disabled by default
@@ -52,12 +47,7 @@ export async function registerAllTools(server: McpServer): Promise<void> {
     maxBulkSize,
   };
 
-  // ExO tools require BOTH the local opt-in env var AND the exoM1 entitlement.
-  // The org is derived from the PAT (the user may have ExO in any org they can
-  // access), since spaceId/organizationId are per-call, not required config.
-  // Off by default; the entitlement check fails closed (offline / error / no
-  // accessible orgs → no ExO). Skip the network call entirely when the env var
-  // is off.
+  // Skip the entitlement network call entirely when the env var is off.
   const registerExoTools =
     env.data.ENABLE_EXO_TOOLS && (await hasExoM1Entitlement(baseConfig));
 
@@ -81,7 +71,7 @@ export async function registerAllTools(server: McpServer): Promise<void> {
   const tagTools = tools.getTagTools();
   const taxonomyTools = tools.getTaxonomyTools();
 
-  // Combine standard tool collections with the ExO collections, gated on detection.
+  // ExO collections appended only when both gates pass.
   const allToolCollections = [
     aiActionTools,
     assetTools,

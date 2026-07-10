@@ -20,7 +20,7 @@ import { createDataAssemblyTools } from './tools/exo/data-assemblies/register.js
 
 /**
  * Main class for Contentful MCP Tools
- * 
+ *
  * This class encapsulates all Contentful MCP tools and provides methods
  * to access tool collections. Configuration is passed to the constructor
  * and can be updated at runtime.
@@ -39,7 +39,7 @@ export class ContentfulMcpTools {
 
   /**
    * Update the configuration after initialization
-   * 
+   *
    * @param updates - Partial configuration to merge with existing config
    */
   updateConfig(updates: Partial<ContentfulConfig>): void {
