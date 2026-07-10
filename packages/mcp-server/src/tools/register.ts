@@ -1,5 +1,5 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
-import { ContentfulMcpTools } from '@contentful/mcp-tools';
+import { ContentfulMcpTools, hasExoM1Entitlement } from '@contentful/mcp-tools';
 import { env } from '../config/env.js';
 import { getVersion } from '../getVersion.js';
 
@@ -7,15 +7,18 @@ import { getVersion } from '../getVersion.js';
  * Registers all Contentful MCP tools with the server.
  * Each tool is registered with its title, description, input schema, annotations, and implementation.
  *
- * ExO (Experience Orchestration) tool collections are opt-in via the
- * ENABLE_EXO_TOOLS env var: they register only when it is set to "true".
- * Classic collections always register.
+ * ExO (Experience Orchestration) tool collections require BOTH gates:
+ * 1. the ENABLE_EXO_TOOLS env var is "true" (explicit local opt-in), AND
+ * 2. the org holds the shared `exoM1` entitlement (the coordinated M1 rollout
+ *    gate — see the ExO M1 rollout doc).
+ * The entitlement check fails closed: offline or any error withholds ExO. This
+ * makes registration async. Classic collections always register.
  *
  * Special handling for space-to-space migration workflow tools:
  * - The param collection, export, and import tools are disabled by default
  * - The migration handler controls their enable/disable state
  */
-export function registerAllTools(server: McpServer): void {
+export async function registerAllTools(server: McpServer): Promise<void> {
   if (!env.success || !env.data) {
     throw new Error('Environment variables are not properly configured');
   }
@@ -49,8 +52,14 @@ export function registerAllTools(server: McpServer): void {
     maxBulkSize,
   };
 
-  // ExO tools are opt-in via ENABLE_EXO_TOOLS. Off by default.
-  const registerExoTools = env.data.ENABLE_EXO_TOOLS;
+  // ExO tools require BOTH the local opt-in env var AND the exoM1 entitlement.
+  // The org is derived from the PAT (the user may have ExO in any org they can
+  // access), since spaceId/organizationId are per-call, not required config.
+  // Off by default; the entitlement check fails closed (offline / error / no
+  // accessible orgs → no ExO). Skip the network call entirely when the env var
+  // is off.
+  const registerExoTools =
+    env.data.ENABLE_EXO_TOOLS && (await hasExoM1Entitlement(baseConfig));
 
   // Initialize tools with configuration from environment variables
   const tools = new ContentfulMcpTools({

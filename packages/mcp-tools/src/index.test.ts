@@ -36,12 +36,19 @@ describe('Package Exports', () => {
     }
   });
 
-  it('should export exactly 5 runtime items (class + 4 instruction constants)', async () => {
+  it('should export the exoM1 entitlement helper and feature constant', async () => {
+    const moduleExports = await import('./index.js');
+
+    expect(typeof moduleExports.hasExoM1Entitlement).toBe('function');
+    expect(moduleExports.EXO_M1_FEATURE).toBe('exoM1');
+  });
+
+  it('should export exactly 7 runtime items (class + 4 instruction constants + entitlement helper + feature constant)', async () => {
     // TypeScript types are erased at runtime, so ContentfulConfig won't be in exports
     const moduleExports = await import('./index.js');
     const exportedKeys = Object.keys(moduleExports);
 
-    expect(exportedKeys).toHaveLength(5);
+    expect(exportedKeys).toHaveLength(7);
     expect(exportedKeys).toContain('ContentfulMcpTools');
     expect(exportedKeys).toEqual(
       expect.arrayContaining([
@@ -49,6 +56,8 @@ describe('Package Exports', () => {
         'SEARCHING_GUIDANCE',
         'CONVENTIONS_GUIDANCE',
         'EXO_DISPOSITION',
+        'hasExoM1Entitlement',
+        'EXO_M1_FEATURE',
       ]),
     );
   });
