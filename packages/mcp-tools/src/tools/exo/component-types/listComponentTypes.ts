@@ -32,17 +32,23 @@ export function listComponentTypesTool(config: ContentfulConfig) {
   async function tool(args: Params) {
     const contentfulClient = createToolClient(config, args);
 
+    // CursorPaginationParams is a discriminated union (pageNext/pagePrev are
+    // mutually exclusive via `?: never`), so we pick one cursor arm explicitly
+    // to satisfy the type without a cast.
+    const cursorParam = args.pageNext
+      ? { pageNext: args.pageNext }
+      : args.pagePrev
+        ? { pagePrev: args.pagePrev }
+        : {};
+
     const componentTypes = await contentfulClient.componentType.getMany({
       spaceId: args.spaceId,
       environmentId: args.environmentId,
       query: {
         limit: Math.min(args.limit || 10, 10),
-        ...(args.pageNext && { pageNext: args.pageNext }),
-        ...(args.pagePrev && { pagePrev: args.pagePrev }),
         ...(args.order && { order: args.order }),
-      } as unknown as Parameters<
-        typeof contentfulClient.componentType.getMany
-      >[0]['query'],
+        ...cursorParam,
+      },
     });
 
     const summarized = summarizeData(componentTypes, {
