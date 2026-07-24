@@ -1,25 +1,23 @@
 import { z } from 'zod';
-import type { JsonValue, ComponentTypeProps, ExperienceProps } from 'contentful-management';
+import type {
+  JsonValue,
+  ComponentTypeProps,
+  ExperienceProps,
+  ExoMetadataProps,
+  ExperienceMetadataProps,
+} from 'contentful-management';
 
-// As of contentful-management 12.6.0-dev.4, the top-level ExO entity Props
-// types (ComponentTypeProps, ExperienceProps, ...) are re-exported by name from
-// the package root, so we derive our schemas' canonical shapes by indexing
-// directly into them — no more reaching through PlainClientAPI method-return
-// signatures.
+// ComponentTypeProps and ExperienceProps are barrel-exported from contentful-management,
+// as are ExoMetadataProps and ExperienceMetadataProps (via common-types).
 //
-// The nested *constituent* types (ComponentTypeViewport, ComponentTypeDesignProperty,
-// TreeNode, ...) are still NOT re-exported by name — they live only in
-// .../entities/component-type.js. A bare indexed-access alias like
-// `ComponentTypeProps['viewports'][number]` therefore still resolves through to
-// that non-portable nested type when a *consumer's* inferred type (e.g. a tool's
-// z.infer param) has to be named for declaration emit, producing TS2742
-// ("cannot be named without a reference to .../entities/component-type.js").
+// The nested entity types (ComponentTypeViewport, TreeNode, ComponentTypeDesignProperty,
+// ExperienceContentBindings, InlineFragmentNode, etc.) are NOT barrel-exported — the
+// entity files use named export type { ... } rather than export *, so they're
+// inaccessible from the package root and deep path imports are blocked by the exports map.
 //
-// Distribute<T> shields against this: written as a distributive conditional
-// (`T extends unknown ? ... : never`) it materializes each alias into a fresh,
-// self-contained structural object, severing the reference to the CMA entity
-// module while preserving discriminated unions like TreeNode (mapping over each
-// union arm separately rather than collapsing to common keys).
+// Distribute<T> materializes indexed-access aliases into self-contained structural types,
+// severing the reference to the internal entity module (which would cause TS2742 on
+// declaration emit) while preserving discriminated unions like TreeNode.
 type Distribute<T> = T extends unknown ? { [K in keyof T]: T[K] } : never;
 
 export type ComponentTypeViewport = Distribute<ComponentTypeProps['viewports'][number]>;
@@ -37,9 +35,8 @@ export type ComponentNode = Extract<TreeNode, { nodeType: 'Component' }>;
 export type FragmentNode = Extract<TreeNode, { nodeType: 'Fragment' }>;
 export type SlotNode = Extract<TreeNode, { nodeType: 'Slot' }>;
 export type ComponentTreeDesignPropertyValue = ComponentNode['designProperties'][string];
-export type ExoMetadataProps = Distribute<NonNullable<ComponentTypeProps['metadata']>>;
+export type { ExoMetadataProps, ExperienceMetadataProps };
 
-export type ExperienceMetadataProps = Distribute<NonNullable<ExperienceProps['metadata']>>;
 export type ExperienceContentBindings = Distribute<
   NonNullable<ExperienceProps['contentBindings']>
 >;
