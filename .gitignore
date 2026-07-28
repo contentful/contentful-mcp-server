@@ -30,3 +30,6 @@ contentful-mcp-server.dxt
 
 vite.config.*.timestamp*
 vitest.config.*.timestamp*
+
+# Superpowers planning scaffolding (not product code)
+docs/superpowers/

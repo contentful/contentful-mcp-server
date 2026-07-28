@@ -2,7 +2,12 @@ import { z } from 'zod';
 import { outdent } from 'outdent';
 import { contextStore } from './store.js';
 import { withErrorHandling } from '../../utils/response.js';
-import { MCP_INSTRUCTIONS } from './instructions.js';
+import {
+  CORE_INVARIANTS,
+  SEARCHING_GUIDANCE,
+  CONVENTIONS_GUIDANCE,
+  EXO_DISPOSITION,
+} from './instructions.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
 export const GetInitialContextToolParams = z.object({});
@@ -15,24 +20,33 @@ export function hasInitialContext(): boolean {
 
 export function getInitialContextTool(config: ContentfulConfig) {
   async function tool(_params: Params) {
-    const configInfo = `Current Contentful Configuration:
-  - Space ID: ${config.spaceId || 'Not set'}
-  - Environment ID: ${config.environmentId || 'master'}
-  - Organization ID: ${config.organizationId || 'Not set'}`;
+    const today = new Date().toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
 
-    const todaysDate = new Date().toLocaleDateString('en-US');
+    const sessionFacts = outdent`
+      Current Contentful session:
+        - Today's date: ${today}
+        - Space ID: ${config.spaceId || 'Not set'}
+        - Environment ID: ${config.environmentId || 'master'}
+        - Organization ID: ${config.organizationId || 'Not set'}`;
+
+    const exoBlock = config.exoToolsRegistered ? `\n\n${EXO_DISPOSITION}` : '';
 
     const message = outdent`
-    ${MCP_INSTRUCTIONS}
+      You are an assistant integrated with Contentful through the Model Context Protocol (MCP). Always call this tool first.
 
-    This is the initial context for your Contentful instance:
+      ${sessionFacts}
+    ` + exoBlock + `\n\n` + outdent`
+      ${CORE_INVARIANTS}
 
-    <context>
-      ${configInfo}
-    </content>
+      ${SEARCHING_GUIDANCE}
 
-    <todaysDate>${todaysDate}</todaysDate>
-  `;
+      ${CONVENTIONS_GUIDANCE}
+    `;
 
     contextStore.setInitialContextLoaded();
 

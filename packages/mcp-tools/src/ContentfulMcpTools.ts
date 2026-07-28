@@ -12,10 +12,15 @@ import { createSpaceTools } from './tools/spaces/register.js';
 import { createTagTools } from './tools/tags/register.js';
 import { createTaxonomyTools } from './tools/taxonomies/register.js';
 import { createJobTools } from './tools/jobs/space-to-space-migration/register.js';
+import { createComponentTypeTools } from './tools/exo/component-types/register.js';
+import { createFragmentTools } from './tools/exo/fragments/register.js';
+import { createTemplateTools } from './tools/exo/templates/register.js';
+import { createExperienceTools } from './tools/exo/experiences/register.js';
+import { createDataAssemblyTools } from './tools/exo/data-assemblies/register.js';
 
 /**
  * Main class for Contentful MCP Tools
- * 
+ *
  * This class encapsulates all Contentful MCP tools and provides methods
  * to access tool collections. Configuration is passed to the constructor
  * and can be updated at runtime.
@@ -34,7 +39,7 @@ export class ContentfulMcpTools {
 
   /**
    * Update the configuration after initialization
-   * 
+   *
    * @param updates - Partial configuration to merge with existing config
    */
   updateConfig(updates: Partial<ContentfulConfig>): void {
@@ -60,6 +65,27 @@ export class ContentfulMcpTools {
    */
   getContentTypeTools() {
     return createContentTypeTools(this.config);
+  }
+
+  /**
+   * Get ExO component type tools
+   */
+  getComponentTypeTools() {
+    return createComponentTypeTools(this.config);
+  }
+
+  /**
+   * Get ExO template tools
+   */
+  getTemplateTools() {
+    return createTemplateTools(this.config);
+  }
+
+  /**
+   * Get ExO experience tools
+   */
+  getExperienceTools() {
+    return createExperienceTools(this.config);
   }
 
   /**
@@ -123,6 +149,20 @@ export class ContentfulMcpTools {
    */
   getTaxonomyTools() {
     return createTaxonomyTools(this.config);
+  }
+
+  /**
+   * Get ExO fragment tools
+   */
+  getFragmentTools() {
+    return createFragmentTools(this.config);
+  }
+
+  /**
+   * Get ExO data assembly tools
+   */
+  getDataAssemblyTools() {
+    return createDataAssemblyTools(this.config);
   }
 
   /**

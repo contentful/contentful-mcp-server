@@ -37,6 +37,13 @@ const EnvSchema = z.object({
       'Maximum number of IDs allowed in a single bulk-operation tool call (default: 10, max: 100). Mitigates accidental mass operations from AI hallucinations.',
     ),
   ORGANIZATION_ID: z.string().optional().describe('Contentful organization ID'),
+  ENABLE_EXO_TOOLS: z
+    .string()
+    .optional()
+    .transform((v) => v === 'true')
+    .describe(
+      'Opt in to Experience Orchestration (ExO) tools. Set to "true" to register the ExO tool collections (component types, data assemblies, experiences, templates, fragments). Tools register only if the token also holds the exoM1 entitlement in at least one accessible org — both gates must pass. Defaults to off.',
+    ),
   CONTENTFUL_DELIVERY_TOKEN: z
     .string()
     .optional()

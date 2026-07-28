@@ -22,13 +22,44 @@ describe('Package Exports', () => {
     expect(tools).toBeDefined();
   });
 
-  it('should export exactly 1 runtime item (ContentfulMcpTools class)', async () => {
+  it('should export the shared instruction constants for downstream consumers', async () => {
+    const moduleExports = await import('./index.js');
+
+    for (const name of [
+      'CORE_INVARIANTS',
+      'SEARCHING_GUIDANCE',
+      'CONVENTIONS_GUIDANCE',
+      'EXO_DISPOSITION',
+    ] as const) {
+      expect(typeof moduleExports[name]).toBe('string');
+      expect(moduleExports[name].length).toBeGreaterThan(0);
+    }
+  });
+
+  it('should export the exoM1 entitlement helper and feature constant', async () => {
+    const moduleExports = await import('./index.js');
+
+    expect(typeof moduleExports.hasExoM1Entitlement).toBe('function');
+    expect(moduleExports.EXO_M1_FEATURE).toBe('exoM1');
+  });
+
+  it('should export exactly 7 runtime items (class + 4 instruction constants + entitlement helper + feature constant)', async () => {
     // TypeScript types are erased at runtime, so ContentfulConfig won't be in exports
     const moduleExports = await import('./index.js');
     const exportedKeys = Object.keys(moduleExports);
 
-    expect(exportedKeys).toHaveLength(1);
+    expect(exportedKeys).toHaveLength(7);
     expect(exportedKeys).toContain('ContentfulMcpTools');
+    expect(exportedKeys).toEqual(
+      expect.arrayContaining([
+        'CORE_INVARIANTS',
+        'SEARCHING_GUIDANCE',
+        'CONVENTIONS_GUIDANCE',
+        'EXO_DISPOSITION',
+        'hasExoM1Entitlement',
+        'EXO_M1_FEATURE',
+      ]),
+    );
   });
 });
 
@@ -50,6 +81,8 @@ describe('ContentfulMcpTools', () => {
     expect(typeof tools.getAssetTools).toBe('function');
     expect(tools.getContentTypeTools).toBeDefined();
     expect(typeof tools.getContentTypeTools).toBe('function');
+    expect(tools.getComponentTypeTools).toBeDefined();
+    expect(typeof tools.getComponentTypeTools).toBe('function');
     expect(tools.getContextTools).toBeDefined();
     expect(typeof tools.getContextTools).toBe('function');
     expect(tools.getEditorInterfaceTools).toBeDefined();
