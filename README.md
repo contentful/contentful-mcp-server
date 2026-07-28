@@ -1,5 +1,7 @@
 # Contentful MCP Server
 
+[![MCP Toplist](https://mcptoplist.com/badge/glama%2Fcontentful%2Fcontentful-mcp-server.svg)](https://mcptoplist.com/server/glama%2Fcontentful%2Fcontentful-mcp-server)
+
 A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that provides AI assistants with comprehensive tools to interact with [Contentful](https://www.contentful.com/) APIs.
 
 ## 🚀 Example Use Cases
