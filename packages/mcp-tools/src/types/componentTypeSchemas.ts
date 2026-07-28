@@ -1,49 +1,50 @@
 import { z } from 'zod';
 import type {
   JsonValue,
-  ComponentTypeProps,
   ExperienceProps,
   ExoMetadataProps,
   ExperienceMetadataProps,
+  ComponentTypeViewport,
+  ComponentTypeContentProperty,
+  ComponentTypeDesignProperty,
+  ComponentTypeSlotDefinition,
+  TreeNode,
+  ComponentNode,
+  FragmentNode,
+  SlotNode,
+  ExperienceContentBindings,
+  InlineFragmentNode,
 } from 'contentful-management';
 
-// ComponentTypeProps and ExperienceProps are barrel-exported from contentful-management,
-// as are ExoMetadataProps and ExperienceMetadataProps (via common-types).
-//
-// The nested entity types (ComponentTypeViewport, TreeNode, ComponentTypeDesignProperty,
-// ExperienceContentBindings, InlineFragmentNode, etc.) are NOT barrel-exported — the
-// entity files use named export type { ... } rather than export *, so they're
-// inaccessible from the package root and deep path imports are blocked by the exports map.
-//
-// Distribute<T> materializes indexed-access aliases into self-contained structural types,
-// severing the reference to the internal entity module (which would cause TS2742 on
-// declaration emit) while preserving discriminated unions like TreeNode.
+// As of contentful-management 12.11.0 the nested ExO entity types are barrel-exported
+// from the package root, so we import them directly rather than re-deriving them from
+// ComponentTypeProps/ExperienceProps via indexed-access aliases.
+export type {
+  ComponentTypeViewport,
+  ComponentTypeContentProperty,
+  ComponentTypeDesignProperty,
+  ComponentTypeSlotDefinition,
+  TreeNode,
+  ComponentNode,
+  FragmentNode,
+  SlotNode,
+  ExperienceContentBindings,
+  InlineFragmentNode,
+  ExoMetadataProps,
+  ExperienceMetadataProps,
+};
+
+export type ComponentTreeDesignPropertyValue = ComponentNode['designProperties'][string];
+
+// ExperienceSlotNode is still not barrel-exported, so derive it from ExperienceProps.
+// Distribute<T> materializes the indexed-access alias into a self-contained structural
+// type, severing the reference to the internal entity module (which would cause TS2742
+// on declaration emit) while preserving the discriminated union.
 type Distribute<T> = T extends unknown ? { [K in keyof T]: T[K] } : never;
 
-export type ComponentTypeViewport = Distribute<ComponentTypeProps['viewports'][number]>;
-export type ComponentTypeContentProperty = Distribute<
-  ComponentTypeProps['contentProperties'][number]
->;
-export type ComponentTypeDesignProperty = Distribute<
-  ComponentTypeProps['designProperties'][number]
->;
-export type ComponentTypeSlotDefinition = Distribute<
-  NonNullable<ComponentTypeProps['slots']>[number]
->;
-export type TreeNode = Distribute<NonNullable<ComponentTypeProps['componentTree']>[number]>;
-export type ComponentNode = Extract<TreeNode, { nodeType: 'Component' }>;
-export type FragmentNode = Extract<TreeNode, { nodeType: 'Fragment' }>;
-export type SlotNode = Extract<TreeNode, { nodeType: 'Slot' }>;
-export type ComponentTreeDesignPropertyValue = ComponentNode['designProperties'][string];
-export type { ExoMetadataProps, ExperienceMetadataProps };
-
-export type ExperienceContentBindings = Distribute<
-  NonNullable<ExperienceProps['contentBindings']>
->;
 export type ExperienceSlotNode = Distribute<
   NonNullable<ExperienceProps['slots']>[string][number]
 >;
-export type InlineFragmentNode = Extract<ExperienceSlotNode, { nodeType: 'InlineFragment' }>;
 
 // DataTypeDefinition is the bare recursive type ComponentTypeContentProperty extends
 // (id/name/required/defaultValue are added on top) — recover it via the nested
