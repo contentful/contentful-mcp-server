@@ -1,3 +1,9 @@
+## 0.12.4 (2026-07-28)
+
+### 🚀 Features
+
+- add ExO CRUD MCP tools [AIS-71] ([#433](https://github.com/contentful/contentful-mcp-server/pull/433), [#419](https://github.com/contentful/contentful-mcp-server/issues/419), [#420](https://github.com/contentful/contentful-mcp-server/issues/420), [#421](https://github.com/contentful/contentful-mcp-server/issues/421), [#422](https://github.com/contentful/contentful-mcp-server/issues/422), [#425](https://github.com/contentful/contentful-mcp-server/issues/425), [#423](https://github.com/contentful/contentful-mcp-server/issues/423), [#428](https://github.com/contentful/contentful-mcp-server/issues/428), [#432](https://github.com/contentful/contentful-mcp-server/issues/432), [#434](https://github.com/contentful/contentful-mcp-server/issues/434), [#435](https://github.com/contentful/contentful-mcp-server/issues/435), [#437](https://github.com/contentful/contentful-mcp-server/issues/437))
+
 ## 0.12.3 (2026-07-10)
 
 ### 🚀 Features
