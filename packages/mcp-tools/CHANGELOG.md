@@ -1,3 +1,9 @@
+## 0.12.3 (2026-07-10)
+
+### 🚀 Features
+
+- add append_entry_field tool [DX-1295] ([#436](https://github.com/contentful/contentful-mcp-server/pull/436))
+
 ## 0.12.2 (2026-06-18)
 
 This was a version bump only for mcp-tools to align it with other projects, there were no code changes.
