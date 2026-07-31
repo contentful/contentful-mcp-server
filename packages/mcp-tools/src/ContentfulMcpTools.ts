@@ -11,6 +11,7 @@ import { createOrgTools } from './tools/orgs/register.js';
 import { createSpaceTools } from './tools/spaces/register.js';
 import { createTagTools } from './tools/tags/register.js';
 import { createTaxonomyTools } from './tools/taxonomies/register.js';
+import { createUsageTools } from './tools/usage/register.js';
 import { createJobTools } from './tools/jobs/space-to-space-migration/register.js';
 import { createComponentTools } from './tools/exo/components/register.js';
 import { createExperienceFragmentTools } from './tools/exo/experience-fragments/register.js';
@@ -149,6 +150,13 @@ export class ContentfulMcpTools {
    */
   getTaxonomyTools() {
     return createTaxonomyTools(this.config);
+  }
+
+  /**
+   * Get usage tools
+   */
+  getUsageTools() {
+    return createUsageTools(this.config);
   }
 
   /**
