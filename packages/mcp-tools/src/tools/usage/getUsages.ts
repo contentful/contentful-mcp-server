@@ -31,6 +31,13 @@ type SysLink = {
   sys: { type: 'Link'; linkType: string; id: string };
 };
 
+// A response dimension is either a classic Link (id-only families like
+// space/app/function/ai_action/asset) or an embedded-entity block whose
+// sys.type names the entity (e.g. 'Model') and carries the grouped suffixes.
+type DimensionValue =
+  | SysLink
+  | { sys: { type: string; [suffix: string]: unknown } };
+
 type AggregatedUsageItemProps = {
   sys: {
     id: string;
@@ -40,7 +47,7 @@ type AggregatedUsageItemProps = {
       sys: { type: 'Link'; linkType: 'Organization'; id: string };
     };
     unitOfMeasurement: string;
-    dimensions: Record<string, SysLink>;
+    dimensions: Record<string, DimensionValue>;
     accumulation: string;
   };
   dateRange: { start: string; end: string };
@@ -62,31 +69,39 @@ const FilterValueSchema = z.union([
 ]);
 
 // Per-metric allowed dimensions, from the Usage API OpenAPI `MetricDimensions` component.
+// Values are in the wire form used by `group`, `filter`, and `order`.
 // See: https://github.com/contentful/usage-api openapi/v1.oas3.yaml
 export const METRIC_DIMENSIONS = {
-  functions_invocations: ['space_id', 'app_id', 'function_id'],
-  asset_bandwidth: ['space_id', 'asset_id'],
-  api_call_cma: ['space_id'],
-  api_call_cpa: ['space_id'],
-  api_call_cda: ['space_id'],
-  api_call_graphql: ['space_id'],
+  functions_invocations: [
+    'sys.dimensions.space.sys.id',
+    'sys.dimensions.app.sys.id',
+    'sys.dimensions.function.sys.id',
+  ],
+  asset_bandwidth: [
+    'sys.dimensions.space.sys.id',
+    'sys.dimensions.asset.sys.id',
+  ],
+  api_call_cma: ['sys.dimensions.space.sys.id'],
+  api_call_cpa: ['sys.dimensions.space.sys.id'],
+  api_call_cda: ['sys.dimensions.space.sys.id'],
+  api_call_graphql: ['sys.dimensions.space.sys.id'],
   ai_action_invocation: [
-    'space_id',
-    'ai_action_id',
-    'model_provider',
-    'model_id',
+    'sys.dimensions.space.sys.id',
+    'sys.dimensions.ai_action.sys.id',
+    'sys.dimensions.model.sys.provider',
+    'sys.dimensions.model.sys.id',
   ],
   ai_action_word_count: [
-    'space_id',
-    'ai_action_id',
-    'model_provider',
-    'model_id',
+    'sys.dimensions.space.sys.id',
+    'sys.dimensions.ai_action.sys.id',
+    'sys.dimensions.model.sys.provider',
+    'sys.dimensions.model.sys.id',
   ],
   ai_consumption_unit: [
-    'space_id',
-    'ai_action_id',
-    'model_provider',
-    'model_id',
+    'sys.dimensions.space.sys.id',
+    'sys.dimensions.ai_action.sys.id',
+    'sys.dimensions.model.sys.provider',
+    'sys.dimensions.model.sys.id',
   ],
 } as const satisfies Record<AggregatedUsageMetricKey, readonly string[]>;
 
@@ -101,11 +116,13 @@ export const GetUsagesToolParams = z.object({
     .enum(AGGREGATED_USAGE_METRIC_KEYS)
     .describe(
       'Metric to aggregate. Availability depends on the products enabled for the organization. ' +
-        'Allowed dimensions per metric (used by "group", "filter", and "order"): ' +
-        'api_call_cma / api_call_cpa / api_call_cda / api_call_graphql → space_id. ' +
-        'asset_bandwidth → space_id, asset_id. ' +
-        'functions_invocations → space_id, app_id, function_id. ' +
-        'ai_action_invocation / ai_action_word_count / ai_consumption_unit → space_id, ai_action_id, model_provider, model_id.',
+        'Allowed dimensions per metric (used by "group", "filter", and "order", all in the ' +
+        'form sys.dimensions.<name>.sys.<suffix>): ' +
+        'api_call_cma / api_call_cpa / api_call_cda / api_call_graphql → sys.dimensions.space.sys.id. ' +
+        'asset_bandwidth → sys.dimensions.space.sys.id, sys.dimensions.asset.sys.id. ' +
+        'functions_invocations → sys.dimensions.space.sys.id, sys.dimensions.app.sys.id, sys.dimensions.function.sys.id. ' +
+        'ai_action_invocation / ai_action_word_count / ai_consumption_unit → sys.dimensions.space.sys.id, ' +
+        'sys.dimensions.ai_action.sys.id, sys.dimensions.model.sys.provider, sys.dimensions.model.sys.id.',
     ),
   dateGte: z
     .string()
@@ -130,9 +147,10 @@ export const GetUsagesToolParams = z.object({
     .string()
     .optional()
     .describe(
-      'Comma-separated dimension names to group results by. Values must come from ' +
-        'the allowed dimensions for the chosen metricKey (see metricKey description), ' +
-        'e.g. "space_id" or "space_id,function_id".',
+      'Comma-separated dimension keys (in the form sys.dimensions.<name>.sys.<suffix>) ' +
+        'to group results by. Values must come from the allowed dimensions for the chosen ' +
+        'metricKey (see metricKey description), e.g. "sys.dimensions.space.sys.id" or ' +
+        '"sys.dimensions.space.sys.id,sys.dimensions.function.sys.id".',
     ),
   filter: z
     .record(z.string(), FilterValueSchema)
@@ -161,11 +179,13 @@ export const GetUsagesToolParams = z.object({
     .string()
     .optional()
     .describe(
-      'Column to sort by; prefix with "-" for descending (e.g. "-total_usage"). ' +
-        'Allowed columns: space_id, app_id, function_id, asset_id, ai_action_id, ' +
-        'model_provider, model_id, total_usage. When "group" is set, non-synthetic ' +
-        'order columns must be a subset of grouped columns. ' +
-        '"total_usage" sums usage per group across the requested date range.',
+      'Column to sort by, in the form sys.dimensions.<name>.sys.<suffix>; ' +
+        'prefix with "-" for descending (e.g. "-sys.dimensions.space.sys.id"). ' +
+        'Allowed dimension columns match the metricKey (see metricKey description). ' +
+        'The synthetic column "total_usage" is a bare token (e.g. "total_usage" or ' +
+        '"-total_usage") and sums usage per group across the requested date range. ' +
+        'When "group" is set, non-synthetic order columns must be a subset of grouped ' +
+        'columns. Legacy underscore-form tokens (e.g. "space_id") return a 422.',
     ),
 });
 

@@ -144,7 +144,7 @@ describe('getUsagesTool', () => {
       metricKey: 'api_call_cma',
       dateGte: '2026-06-01',
       dateLte: '2026-06-30',
-      group: 'space_id',
+      group: 'sys.dimensions.space.sys.id',
       order: '-total_usage',
       limit: 25,
       skip: 50,
@@ -156,7 +156,7 @@ describe('getUsagesTool', () => {
         params: {
           'date[gte]': '2026-06-01',
           'date[lte]': '2026-06-30',
-          group: 'space_id',
+          group: 'sys.dimensions.space.sys.id',
           order: '-total_usage',
           limit: 25,
           skip: 50,
