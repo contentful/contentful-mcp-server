@@ -141,7 +141,6 @@ Below is a sample configuration:
 |                           | `create_tag`                       | Create new tags with public/private visibility   |
 | **Organizations**         | `list_orgs`                        | List organizations user has access to            |
 |                           | `get_org`                          | Get details of a specific organization           |
-| **Usage**                 | `get_usages`                       | Get aggregated usage metrics for an organization, optionally filtered or grouped by space |
 | **AI Actions**            | `create_ai_action`                 | Create custom AI-powered workflows               |
 |                           | `invoke_ai_action`                 | Invoke AI action with variables (bulk support)   |
 |                           | `get_ai_action_invocation`         | Get AI action invocation details                 |
@@ -165,6 +164,7 @@ Below is a sample configuration:
 |                           | `space_to_space_param_collection`  | Collect parameters for migration workflow        |
 |                           | `export_space`                     | Export space to file for migration               |
 |                           | `import_space`                     | Import space from exported file                  |
+| **Usage**                 | `get_usages`                       | Get aggregated usage metrics for an organization, optionally filtered or grouped by space |
 
 ## 🤝 Contributing
 
