@@ -22,9 +22,11 @@ const FICTION = [
 ];
 
 describe('guidance corpus', () => {
-  const allContent = [CORE_INVARIANTS, SEARCHING_GUIDANCE, CONVENTIONS_GUIDANCE].join(
-    '\n',
-  );
+  const allContent = [
+    CORE_INVARIANTS,
+    SEARCHING_GUIDANCE,
+    CONVENTIONS_GUIDANCE,
+  ].join('\n');
 
   it('has non-empty guidance sections', () => {
     expect(SEARCHING_GUIDANCE.length).toBeGreaterThan(0);
@@ -48,7 +50,7 @@ describe('guidance corpus', () => {
     expect(EXO_DISPOSITION.length).toBeGreaterThan(0);
     expect(EXO_DISPOSITION).toContain('Experience Orchestration');
     // Names the primitives the model should prefer
-    expect(EXO_DISPOSITION).toContain('Component Type');
+    expect(EXO_DISPOSITION).toContain('Components');
     // States the override so it is a default, not a hard rule
     expect(EXO_DISPOSITION.toLowerCase()).toContain('unless the user');
   });

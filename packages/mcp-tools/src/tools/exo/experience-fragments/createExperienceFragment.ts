@@ -14,42 +14,39 @@ import {
   DimensionedDesignPropertyValueSchema,
   ExperienceContentBindingsSchema,
   ExperienceSlotNodeSchema,
-  ExperienceTemplateResourceLinkSchema,
+  ComponentResourceLinkSchema,
 } from '../../../types/exoSchemas.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
-export const CreateExperienceToolParams = BaseToolSchema.extend({
-  name: z.string().describe('The name of the experience'),
-  description: z.string().describe('Description of the experience'),
-  experienceTemplate: ExperienceTemplateResourceLinkSchema.describe(
-    'Resource link to the ExperienceTemplate this experience is backed by',
+export const CreateExperienceFragmentToolParams = BaseToolSchema.extend({
+  name: z.string().describe('The name of the experience fragment'),
+  description: z.string().describe('Description of the experience fragment'),
+  component: ComponentResourceLinkSchema.describe(
+    'Resource link to the component this experience fragment is based on',
   ),
   viewports: z
     .array(ViewportSchema)
-    .describe('Viewport definitions for the experience (may be empty)'),
+    .describe('Viewport definitions (may be empty)'),
   designProperties: z
     .record(z.string(), DimensionedDesignPropertyValueSchema)
     .describe(
-      'Design property values keyed by property ID. Each value is a dimensioned map ' +
-        '(viewport ID → design value). May be an empty object.',
+      'Design property values keyed by property ID (may be empty object)',
     ),
   contentBindings: ExperienceContentBindingsSchema.optional().describe(
-    'Optional content bindings linking this experience to a data assembly',
+    'Optional content bindings for the experience fragment',
   ),
   slots: z
     .record(z.string(), z.array(ExperienceSlotNodeSchema))
     .optional()
-    .describe(
-      'Optional slot contents keyed by slot ID. Each value is an array of ExperienceFragmentNode or InlineExperienceFragmentNode.',
-    ),
+    .describe('Optional slot node definitions keyed by slot ID'),
   metadata: ExperienceMetadataSchema.optional().describe(
     'Optional ExO metadata (tags, concepts)',
   ),
 });
 
-type Params = z.infer<typeof CreateExperienceToolParams>;
+type Params = z.infer<typeof CreateExperienceFragmentToolParams>;
 
-export function createExperienceTool(config: ContentfulConfig) {
+export function createExperienceFragmentTool(config: ContentfulConfig) {
   async function tool(args: Params) {
     assertEnvironmentNotProtected(
       args.environmentId,
@@ -58,12 +55,12 @@ export function createExperienceTool(config: ContentfulConfig) {
 
     const contentfulClient = createToolClient(config, args);
 
-    const experience = await contentfulClient.experience.create(
+    const experienceFragment = await contentfulClient.experienceFragment.create(
       { spaceId: args.spaceId, environmentId: args.environmentId },
       {
         name: args.name,
         description: args.description,
-        experienceTemplate: args.experienceTemplate,
+        component: args.component,
         viewports: args.viewports,
         designProperties: args.designProperties,
         ...(args.contentBindings && { contentBindings: args.contentBindings }),
@@ -72,10 +69,10 @@ export function createExperienceTool(config: ContentfulConfig) {
       },
     );
 
-    return createSuccessResponse('Experience created successfully', {
-      experience,
+    return createSuccessResponse('Experience fragment created successfully', {
+      experienceFragment,
     });
   }
 
-  return withErrorHandling(tool, 'Error creating experience');
+  return withErrorHandling(tool, 'Error creating experience fragment');
 }

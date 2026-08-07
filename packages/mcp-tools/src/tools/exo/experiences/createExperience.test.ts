@@ -1,5 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { mockExperienceCreate, mockExperience, mockArgs } from './mockClient.js';
+import {
+  mockExperienceCreate,
+  mockExperience,
+  mockArgs,
+} from './mockClient.js';
 import { createExperienceTool } from './createExperience.js';
 import { createMockConfig } from '../../../test-helpers/mockConfig.js';
 
@@ -7,11 +11,11 @@ const createArgs = {
   ...mockArgs,
   name: 'Test Experience',
   description: 'A test experience',
-  template: {
+  experienceTemplate: {
     sys: {
       type: 'ResourceLink' as const,
-      linkType: 'Contentful:Template' as const,
-      urn: 'crn:contentful:::content:spaces/test-space-id/environments/test-environment/templates/test-template-id',
+      linkType: 'Contentful:ExperienceTemplate' as const,
+      urn: 'crn:contentful:::experience:spaces/test-space-id/environments/test-environment/experienceTemplates/test-experience-template-id',
     },
   },
   viewports: [],

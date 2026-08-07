@@ -72,11 +72,11 @@ export const mockExperience = {
         id: 'test-environment',
       },
     },
-    template: {
+    experienceTemplate: {
       sys: {
         type: 'ResourceLink' as const,
-        linkType: 'Contentful:Template' as const,
-        urn: 'crn:contentful:::content:spaces/test-space-id/environments/test-environment/templates/test-template-id',
+        linkType: 'Contentful:ExperienceTemplate' as const,
+        urn: 'crn:contentful:::experience:spaces/test-space-id/environments/test-environment/experienceTemplates/test-experience-template-id',
       },
     },
     createdAt: '2023-01-01T00:00:00Z',

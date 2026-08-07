@@ -1,7 +1,4 @@
-import {
-  getExperienceTool,
-  GetExperienceToolParams,
-} from './getExperience.js';
+import { getExperienceTool, GetExperienceToolParams } from './getExperience.js';
 import {
   listExperiencesTool,
   ListExperiencesToolParams,
@@ -41,7 +38,7 @@ export function createExperienceTools(config: ContentfulConfig) {
     getExperience: {
       title: 'get_experience',
       description:
-        'Get details about a specific ExO experience (a concrete page or screen that composes a root ComponentType with content and design settings, backed by a Template).',
+        'Get details about a specific ExO experience (a concrete page or screen that composes a root Component with content and design settings, backed by an ExperienceTemplate).',
       inputParams: GetExperienceToolParams.shape,
       annotations: {
         readOnlyHint: true,
@@ -64,7 +61,8 @@ export function createExperienceTools(config: ContentfulConfig) {
     },
     createExperience: {
       title: 'create_experience',
-      description: 'Create a new ExO experience backed by a Template.',
+      description:
+        'Create a new ExO experience backed by an ExperienceTemplate.',
       inputParams: CreateExperienceToolParams.shape,
       annotations: {
         readOnlyHint: false,

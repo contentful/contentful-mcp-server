@@ -66,29 +66,29 @@ describe('buildConfirmationPreview', () => {
   });
 });
 
-describe('confirmation – componentType', () => {
-  it('builds a stable token for a componentType', () => {
-    const a = buildConfirmToken('componentType', 'ct-1', 3);
-    const b = buildConfirmToken('componentType', 'ct-1', 3);
+describe('confirmation – component', () => {
+  it('builds a stable token for a component', () => {
+    const a = buildConfirmToken('component', 'comp-1', 3);
+    const b = buildConfirmToken('component', 'comp-1', 3);
     expect(a).toBe(b);
     expect(a).toHaveLength(16);
   });
 
   it('changes the token when version changes', () => {
-    const v3 = buildConfirmToken('componentType', 'ct-1', 3);
-    const v4 = buildConfirmToken('componentType', 'ct-1', 4);
+    const v3 = buildConfirmToken('component', 'comp-1', 3);
+    const v4 = buildConfirmToken('component', 'comp-1', 4);
     expect(v3).not.toBe(v4);
   });
 
-  it('uses the component type display name in the preview', () => {
-    const token = buildConfirmToken('componentType', 'ct-1', 1);
+  it('uses the component display name in the preview', () => {
+    const token = buildConfirmToken('component', 'comp-1', 1);
     const preview = buildConfirmationPreview(
-      'componentType',
-      'ct-1',
-      { componentType: { sys: { id: 'ct-1' } } },
+      'component',
+      'comp-1',
+      { component: { sys: { id: 'comp-1' } } },
       token,
     );
-    expect(preview.instructions).toContain('component type');
+    expect(preview.instructions).toContain('component');
     expect(preview.confirmToken).toBe(token);
   });
 });

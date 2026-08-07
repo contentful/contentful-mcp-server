@@ -90,16 +90,16 @@ describe('registerAllTools', () => {
     const standardToolCollections = [
       mcpTools.getAiActionTools(),
       mcpTools.getAssetTools(),
-      mcpTools.getComponentTypeTools(),
+      mcpTools.getComponentTools(),
       mcpTools.getDataAssemblyTools(),
       mcpTools.getExperienceTools(),
-      mcpTools.getTemplateTools(),
+      mcpTools.getExperienceTemplateTools(),
       mcpTools.getContentTypeTools(),
       mcpTools.getContextTools(),
       mcpTools.getEditorInterfaceTools(),
       mcpTools.getEntryTools(),
       mcpTools.getEnvironmentTools(),
-      mcpTools.getFragmentTools(),
+      mcpTools.getExperienceFragmentTools(),
       mcpTools.getLocaleTools(),
       mcpTools.getOrgTools(),
       mcpTools.getSpaceTools(),
@@ -196,8 +196,8 @@ describe('registerAllTools ExO opt-in', () => {
 
     await registerAllTools(mockServer);
 
-    // create_component_type is an ExO tool title
-    expect(registeredToolTitles()).toContain('create_component_type');
+    // create_component is an ExO tool title
+    expect(registeredToolTitles()).toContain('create_component');
     // classic tools still present alongside ExO
     expect(registeredToolTitles()).toContain('list_content_types');
     expect(vi.mocked(ContentfulMcpTools)).toHaveBeenCalledWith(
@@ -210,7 +210,7 @@ describe('registerAllTools ExO opt-in', () => {
 
     await registerAllTools(mockServer);
 
-    expect(registeredToolTitles()).not.toContain('create_component_type');
+    expect(registeredToolTitles()).not.toContain('create_component');
     // classic tools still present
     expect(registeredToolTitles()).toContain('list_content_types');
     expect(vi.mocked(ContentfulMcpTools)).toHaveBeenCalledWith(
@@ -226,7 +226,7 @@ describe('registerAllTools ExO opt-in', () => {
 
     await registerAllTools(mockServer);
 
-    expect(registeredToolTitles()).not.toContain('create_component_type');
+    expect(registeredToolTitles()).not.toContain('create_component');
     expect(registeredToolTitles()).toContain('list_content_types');
     expect(vi.mocked(ContentfulMcpTools)).toHaveBeenCalledWith(
       expect.objectContaining({ exoToolsRegistered: false }),
@@ -246,7 +246,7 @@ describe('registerAllTools ExO opt-in', () => {
 
     await registerAllTools(mockServer);
 
-    expect(registeredToolTitles()).not.toContain('create_component_type');
+    expect(registeredToolTitles()).not.toContain('create_component');
   });
 });
 

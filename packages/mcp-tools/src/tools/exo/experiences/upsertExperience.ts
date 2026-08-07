@@ -14,7 +14,7 @@ import {
   DimensionedDesignPropertyValueSchema,
   ExperienceContentBindingsSchema,
   ExperienceSlotNodeSchema,
-} from '../../../types/componentTypeSchemas.js';
+} from '../../../types/exoSchemas.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
 export const UpsertExperienceToolParams = BaseToolSchema.extend({
@@ -45,9 +45,7 @@ export const UpsertExperienceToolParams = BaseToolSchema.extend({
   slots: z
     .record(z.string(), z.array(ExperienceSlotNodeSchema))
     .optional()
-    .describe(
-      'Slot contents keyed by slot ID; replaces existing if provided',
-    ),
+    .describe('Slot contents keyed by slot ID; replaces existing if provided'),
   metadata: ExperienceMetadataSchema.optional().describe(
     'ExO metadata (tags, concepts); replaces existing if provided',
   ),
@@ -103,7 +101,7 @@ export function upsertExperienceTool(config: ContentfulConfig) {
       ...((args.metadata ?? current.metadata)
         ? { metadata: args.metadata ?? current.metadata }
         : {}),
-    } as Parameters<typeof contentfulClient.experience.upsert>[1]);
+    });
 
     return createSuccessResponse('Experience updated successfully', {
       experience,
