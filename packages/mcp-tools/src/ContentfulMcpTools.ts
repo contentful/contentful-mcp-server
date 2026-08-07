@@ -12,9 +12,9 @@ import { createSpaceTools } from './tools/spaces/register.js';
 import { createTagTools } from './tools/tags/register.js';
 import { createTaxonomyTools } from './tools/taxonomies/register.js';
 import { createJobTools } from './tools/jobs/space-to-space-migration/register.js';
-import { createComponentTypeTools } from './tools/exo/component-types/register.js';
-import { createFragmentTools } from './tools/exo/fragments/register.js';
-import { createTemplateTools } from './tools/exo/templates/register.js';
+import { createComponentTools } from './tools/exo/components/register.js';
+import { createExperienceFragmentTools } from './tools/exo/experience-fragments/register.js';
+import { createExperienceTemplateTools } from './tools/exo/experience-templates/register.js';
 import { createExperienceTools } from './tools/exo/experiences/register.js';
 import { createDataAssemblyTools } from './tools/exo/data-assemblies/register.js';
 
@@ -68,17 +68,17 @@ export class ContentfulMcpTools {
   }
 
   /**
-   * Get ExO component type tools
+   * Get ExO component tools
    */
-  getComponentTypeTools() {
-    return createComponentTypeTools(this.config);
+  getComponentTools() {
+    return createComponentTools(this.config);
   }
 
   /**
-   * Get ExO template tools
+   * Get ExO experience template tools
    */
-  getTemplateTools() {
-    return createTemplateTools(this.config);
+  getExperienceTemplateTools() {
+    return createExperienceTemplateTools(this.config);
   }
 
   /**
@@ -152,10 +152,10 @@ export class ContentfulMcpTools {
   }
 
   /**
-   * Get ExO fragment tools
+   * Get ExO experience fragment tools
    */
-  getFragmentTools() {
-    return createFragmentTools(this.config);
+  getExperienceFragmentTools() {
+    return createExperienceFragmentTools(this.config);
   }
 
   /**
@@ -172,4 +172,3 @@ export class ContentfulMcpTools {
     return createJobTools(this.config);
   }
 }
-

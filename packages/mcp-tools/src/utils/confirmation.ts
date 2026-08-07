@@ -9,10 +9,10 @@ export type DestructiveResource =
   | 'locale'
   | 'concept'
   | 'conceptScheme'
-  | 'componentType'
+  | 'component'
   | 'experience'
-  | 'fragment'
-  | 'template'
+  | 'experienceFragment'
+  | 'experienceTemplate'
   | 'dataAssembly';
 
 export const CONFIRMATION_MESSAGE_PREFIX = 'Confirmation required to delete';
@@ -50,10 +50,10 @@ const RESOURCE_DISPLAY_NAME: Record<DestructiveResource, string> = {
   locale: 'locale',
   concept: 'concept',
   conceptScheme: 'concept scheme',
-  componentType: 'component type',
+  component: 'component',
   experience: 'experience',
-  fragment: 'fragment',
-  template: 'template',
+  experienceFragment: 'experience fragment',
+  experienceTemplate: 'experience template',
   dataAssembly: 'data assembly',
 };
 

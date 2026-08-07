@@ -87,11 +87,11 @@ export async function registerAllTools(server: McpServer): Promise<void> {
     taxonomyTools,
     ...(registerExoTools
       ? [
-          tools.getComponentTypeTools(),
+          tools.getComponentTools(),
           tools.getDataAssemblyTools(),
           tools.getExperienceTools(),
-          tools.getTemplateTools(),
-          tools.getFragmentTools(),
+          tools.getExperienceTemplateTools(),
+          tools.getExperienceFragmentTools(),
         ]
       : []),
   ];

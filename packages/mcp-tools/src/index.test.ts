@@ -81,8 +81,8 @@ describe('ContentfulMcpTools', () => {
     expect(typeof tools.getAssetTools).toBe('function');
     expect(tools.getContentTypeTools).toBeDefined();
     expect(typeof tools.getContentTypeTools).toBe('function');
-    expect(tools.getComponentTypeTools).toBeDefined();
-    expect(typeof tools.getComponentTypeTools).toBe('function');
+    expect(tools.getComponentTools).toBeDefined();
+    expect(typeof tools.getComponentTools).toBe('function');
     expect(tools.getContextTools).toBeDefined();
     expect(typeof tools.getContextTools).toBe('function');
     expect(tools.getEditorInterfaceTools).toBeDefined();
