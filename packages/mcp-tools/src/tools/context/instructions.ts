@@ -16,7 +16,7 @@ export const CORE_INVARIANTS = `# Core operating rules
 
 export const SEARCHING_GUIDANCE = `# Searching for content
 
-- **Schema first.** When users ask about specific content, discover the relevant schema before searching: list the environment's available types and inspect a type's fields so you query on real field names. This prevents wasted queries. Use whichever primitives the environment exposes — classic content types and entries, or Experience Orchestration component types and experiences.
+- **Schema first.** When users ask about specific content, discover the relevant schema before searching: list the environment's available types and inspect a type's fields so you query on real field names. This prevents wasted queries. Use whichever primitives the environment exposes — classic content types and entries, or Experience Orchestration components and experiences.
 - **Then search.** Query using the correct type and field names. Prefer semantic search when the request is conceptual rather than an exact field match.
 - **Retry thoughtfully.** If a query returns no results, retry 2-3 times: relax filters, use more general terms, or check for typos in field names.
 - **Multi-step reference queries.** For requests that span references (e.g. "posts by Magnus"), first inspect the schema to confirm the reference field, then query for the referenced item to get its ID, then filter the primary query on that ID. If several items match, show them all and ask.`;
@@ -31,4 +31,4 @@ export const CONVENTIONS_GUIDANCE = `# Response and workflow conventions
 
 export const EXO_DISPOSITION = `# Tool disposition: Experience Orchestration by default
 
-Experience Orchestration (ExO) tools are enabled. Use ExO primitives — Component Types, Experiences, Templates, Fragments, and Data Assemblies — for all content modeling and authoring. Do not create classic content types or entries unless the user explicitly instructs you to. If you are unsure how to model something with ExO, inspect the tool schemas and proceed with ExO.`;
+Experience Orchestration (ExO) tools are enabled. Use ExO primitives — Components, Experiences, Experience Templates, Experience Fragments, and Data Assemblies — for all content modeling and authoring. Do not create classic content types or entries unless the user explicitly instructs you to. If you are unsure how to model something with ExO, inspect the tool schemas and proceed with ExO.`;
