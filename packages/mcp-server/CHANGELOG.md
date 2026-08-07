@@ -1,3 +1,13 @@
+## 1.15.0 (2026-08-07)
+
+### 🚀 Features
+
+- migrate ExO tools onto the renamed entity model [AIS-348] ([#459](https://github.com/contentful/contentful-mcp-server/pull/459))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.5
+
 ## 1.14.0 (2026-07-28)
 
 ### 🚀 Features
