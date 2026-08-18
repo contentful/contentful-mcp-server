@@ -164,6 +164,7 @@ Below is a sample configuration:
 |                           | `space_to_space_param_collection`  | Collect parameters for migration workflow        |
 |                           | `export_space`                     | Export space to file for migration               |
 |                           | `import_space`                     | Import space from exported file                  |
+| **Usage**                 | `get_usages`                       | Get aggregated usage metrics for an organization, optionally filtered or grouped by space |
 
 ## 🤝 Contributing
 

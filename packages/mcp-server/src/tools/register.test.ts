@@ -105,6 +105,7 @@ describe('registerAllTools', () => {
       mcpTools.getSpaceTools(),
       mcpTools.getTagTools(),
       mcpTools.getTaxonomyTools(),
+      mcpTools.getUsageTools(),
     ];
 
     const expectedStandardToolCount = standardToolCollections.reduce(

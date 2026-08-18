@@ -6,7 +6,7 @@ import { dirname, resolve } from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const serverPath = resolve(__dirname, '../build/index.js');
+const serverPath = resolve(__dirname, '../dist/index.js');
 
 const args = ['npx', '@modelcontextprotocol/inspector', 'node', serverPath];
 
