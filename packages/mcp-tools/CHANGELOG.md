@@ -1,3 +1,10 @@
+## 0.12.6 (2026-08-18)
+
+### 🚀 Features
+
+- **usage:** use long-form dimension keys in get_usages [MOI-6821] ([#1101](https://github.com/contentful/contentful-mcp-server/issues/1101))
+- add get_usages MCP tool [MOI-6821] ([#3088](https://github.com/contentful/contentful-mcp-server/issues/3088))
+
 ## 0.12.5 (2026-08-07)
 
 ### 🚀 Features
