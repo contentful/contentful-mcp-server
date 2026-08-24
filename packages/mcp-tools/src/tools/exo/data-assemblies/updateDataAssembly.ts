@@ -5,7 +5,7 @@ import {
 } from '../../../utils/response.js';
 import {
   BaseToolSchema,
-  createToolClient,
+  createExoToolClient,
   assertEnvironmentNotProtected,
 } from '../../../utils/tools.js';
 import {
@@ -66,7 +66,7 @@ export function updateDataAssemblyTool(config: ContentfulConfig) {
       dataAssemblyId: args.dataAssemblyId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = createExoToolClient(config, args);
 
     // Read before write: fetch current state to preserve fields the caller did not supply.
     const current = await contentfulClient.dataAssembly.get(params);

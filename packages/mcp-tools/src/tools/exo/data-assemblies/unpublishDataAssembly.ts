@@ -5,7 +5,7 @@ import {
 } from '../../../utils/response.js';
 import {
   BaseToolSchema,
-  createToolClient,
+  createExoToolClient,
   assertEnvironmentNotProtected,
 } from '../../../utils/tools.js';
 import type { ContentfulConfig } from '../../../config/types.js';
@@ -37,7 +37,7 @@ export function unpublishDataAssemblyTool(config: ContentfulConfig) {
       dataAssemblyId: args.dataAssemblyId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = createExoToolClient(config, args);
 
     // Read before write: the unpublish endpoint requires the current version.
     const current = await contentfulClient.dataAssembly.get(params);

@@ -5,7 +5,7 @@ import {
 } from '../../../utils/response.js';
 import {
   BaseToolSchema,
-  createToolClient,
+  createExoToolClient,
   assertEnvironmentNotProtected,
 } from '../../../utils/tools.js';
 import {
@@ -53,7 +53,7 @@ export function createExperienceFragmentTool(config: ContentfulConfig) {
       config.protectedEnvironments,
     );
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = createExoToolClient(config, args);
 
     const experienceFragment = await contentfulClient.experienceFragment.create(
       { spaceId: args.spaceId, environmentId: args.environmentId },
