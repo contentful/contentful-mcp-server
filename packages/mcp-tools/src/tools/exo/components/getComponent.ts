@@ -3,7 +3,7 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../../utils/response.js';
-import { BaseToolSchema, createToolClient } from '../../../utils/tools.js';
+import { BaseToolSchema, createExoToolClient } from '../../../utils/tools.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
 export const GetComponentToolParams = BaseToolSchema.extend({
@@ -16,7 +16,7 @@ type Params = z.infer<typeof GetComponentToolParams>;
 
 export function getComponentTool(config: ContentfulConfig) {
   async function tool(args: Params) {
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = createExoToolClient(config, args);
 
     const component = await contentfulClient.component.get({
       spaceId: args.spaceId,

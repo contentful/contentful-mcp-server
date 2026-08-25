@@ -5,7 +5,7 @@ import {
 } from '../../../utils/response.js';
 import {
   BaseToolSchema,
-  createToolClient,
+  createExoToolClient,
   assertEnvironmentNotProtected,
 } from '../../../utils/tools.js';
 import type { ContentfulConfig } from '../../../config/types.js';
@@ -37,7 +37,7 @@ export function unpublishComponentTool(config: ContentfulConfig) {
       componentId: args.componentId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = createExoToolClient(config, args);
 
     // Read before write: the unpublish endpoint requires the current version.
     const current = await contentfulClient.component.get(params);

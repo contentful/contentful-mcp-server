@@ -41,6 +41,7 @@ export async function registerAllTools(server: McpServer): Promise<void> {
     organizationId: env.data.ORGANIZATION_ID,
     appId: env.data.APP_ID,
     mcpVersion: getVersion(),
+    mcpSource: 'local' as const,
     deliveryToken: env.data.CONTENTFUL_DELIVERY_TOKEN,
     hostDelivery: env.data.CONTENTFUL_DELIVERY_HOST,
     protectedEnvironments,

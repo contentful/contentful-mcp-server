@@ -16,6 +16,8 @@ export interface ContentfulConfig {
   appId?: string;
   /** Version number to use for MCP tool calls */
   mcpVersion: string;
+  /** Which MCP server surface is issuing the call. Threaded into the client-identifying headers for Datadog attribution. Defaults to 'local' when unset. */
+  mcpSource?: 'local' | 'remote';
   /** Contentful CDA token for exporting only published content */
   deliveryToken?: string;
   /** Contentful Delivery API host (used with deliveryToken for custom CDA endpoints) */

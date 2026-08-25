@@ -5,7 +5,7 @@ import {
 } from '../../../utils/response.js';
 import {
   BaseToolSchema,
-  createToolClient,
+  createExoToolClient,
   assertEnvironmentNotProtected,
 } from '../../../utils/tools.js';
 import {
@@ -75,7 +75,7 @@ export function upsertExperienceTemplateTool(config: ContentfulConfig) {
       experienceTemplateId: args.experienceTemplateId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = createExoToolClient(config, args);
 
     // Read before write: fetch current state to obtain sys.version and to
     // preserve fields the caller did not supply.

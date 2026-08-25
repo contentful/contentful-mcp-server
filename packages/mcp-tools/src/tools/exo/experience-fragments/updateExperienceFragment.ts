@@ -5,7 +5,7 @@ import {
 } from '../../../utils/response.js';
 import {
   BaseToolSchema,
-  createToolClient,
+  createExoToolClient,
   assertEnvironmentNotProtected,
 } from '../../../utils/tools.js';
 import {
@@ -69,7 +69,7 @@ export function updateExperienceFragmentTool(config: ContentfulConfig) {
       experienceFragmentId: args.experienceFragmentId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = createExoToolClient(config, args);
 
     // Read before write: fetch current state to preserve fields the caller did not supply.
     const current = await contentfulClient.experienceFragment.get(params);

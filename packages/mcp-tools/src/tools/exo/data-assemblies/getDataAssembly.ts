@@ -3,7 +3,7 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../../utils/response.js';
-import { BaseToolSchema, createToolClient } from '../../../utils/tools.js';
+import { BaseToolSchema, createExoToolClient } from '../../../utils/tools.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
 export const GetDataAssemblyToolParams = BaseToolSchema.extend({
@@ -14,7 +14,7 @@ type Params = z.infer<typeof GetDataAssemblyToolParams>;
 
 export function getDataAssemblyTool(config: ContentfulConfig) {
   async function tool(args: Params) {
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = createExoToolClient(config, args);
 
     const dataAssembly = await contentfulClient.dataAssembly.get({
       spaceId: args.spaceId,

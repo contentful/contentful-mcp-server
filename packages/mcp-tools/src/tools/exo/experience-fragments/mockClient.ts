@@ -38,7 +38,7 @@ vi.mock('../../../utils/tools.js', async (importOriginal) => {
   const org = await importOriginal<typeof import('../../../utils/tools.js')>();
   return {
     ...org,
-    createToolClient: mockCreateToolClient,
+    createExoToolClient: mockCreateToolClient,
   };
 });
 

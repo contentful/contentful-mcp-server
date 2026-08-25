@@ -3,7 +3,7 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../../utils/response.js';
-import { BaseToolSchema, createToolClient } from '../../../utils/tools.js';
+import { BaseToolSchema, createExoToolClient } from '../../../utils/tools.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
 export const GetExperienceFragmentToolParams = BaseToolSchema.extend({
@@ -16,7 +16,7 @@ type Params = z.infer<typeof GetExperienceFragmentToolParams>;
 
 export function getExperienceFragmentTool(config: ContentfulConfig) {
   async function tool(args: Params) {
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = createExoToolClient(config, args);
 
     const experienceFragment = await contentfulClient.experienceFragment.get({
       spaceId: args.spaceId,

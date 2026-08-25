@@ -5,7 +5,7 @@ import {
 } from '../../../utils/response.js';
 import {
   BaseToolSchema,
-  createToolClient,
+  createExoToolClient,
   assertEnvironmentNotProtected,
 } from '../../../utils/tools.js';
 import {
@@ -48,7 +48,7 @@ export function deleteExperienceTemplateTool(config: ContentfulConfig) {
       experienceTemplateId: args.experienceTemplateId,
     };
 
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = createExoToolClient(config, args);
     const experienceTemplate =
       await contentfulClient.experienceTemplate.get(params);
 

@@ -3,7 +3,7 @@ import {
   createSuccessResponse,
   withErrorHandling,
 } from '../../../utils/response.js';
-import { BaseToolSchema, createToolClient } from '../../../utils/tools.js';
+import { BaseToolSchema, createExoToolClient } from '../../../utils/tools.js';
 import { summarizeData } from '../../../utils/summarizer.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
@@ -30,7 +30,7 @@ type Params = z.infer<typeof ListComponentsToolParams>;
 
 export function listComponentsTool(config: ContentfulConfig) {
   async function tool(args: Params) {
-    const contentfulClient = createToolClient(config, args);
+    const contentfulClient = createExoToolClient(config, args);
 
     // CursorPaginationParams is a discriminated union (pageNext/pagePrev are
     // mutually exclusive via `?: never`), so we pick one cursor arm explicitly
