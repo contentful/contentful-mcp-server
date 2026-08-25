@@ -1,3 +1,9 @@
+## 0.12.7 (2026-08-25)
+
+### 🚀 Features
+
+- tag ExO MCP tool calls for Datadog attribution [] ([#461](https://github.com/contentful/contentful-mcp-server/pull/461))
+
 ## 0.12.6 (2026-08-18)
 
 ### 🚀 Features
