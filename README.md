@@ -168,6 +168,7 @@ Below is a sample configuration:
 |                           | `publish_ai_action`        | Publish AI actions for use                       |
 |                           | `unpublish_ai_action`      | Unpublish AI actions                             |
 |                           | `delete_ai_action`         | Remove AI actions                                |
+| **Usage**                 | `get_usages`               | Get aggregated usage metrics for an organization, optionally filtered or grouped by space |
 
 ## 🤝 Contributing and Development
 

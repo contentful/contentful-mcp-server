@@ -71,6 +71,7 @@ export async function registerAllTools(server: McpServer): Promise<void> {
   const spaceTools = tools.getSpaceTools();
   const tagTools = tools.getTagTools();
   const taxonomyTools = tools.getTaxonomyTools();
+  const usageTools = tools.getUsageTools();
 
   // ExO collections appended only when both gates pass.
   const allToolCollections = [
@@ -86,6 +87,7 @@ export async function registerAllTools(server: McpServer): Promise<void> {
     spaceTools,
     tagTools,
     taxonomyTools,
+    usageTools,
     ...(registerExoTools
       ? [
           tools.getComponentTools(),

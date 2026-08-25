@@ -1,3 +1,17 @@
+## 1.16.0 (2026-08-18)
+
+### 🚀 Features
+
+- add get_usages MCP tool [MOI-6821] ([#3088](https://github.com/contentful/contentful-mcp-server/issues/3088))
+
+### 🩹 Fixes
+
+- point inspect script at dist/ output ([cd62338](https://github.com/contentful/contentful-mcp-server/commit/cd62338))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.6
+
 ## 1.15.0 (2026-08-07)
 
 ### 🚀 Features
