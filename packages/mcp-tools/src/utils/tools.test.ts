@@ -34,9 +34,9 @@ describe('client-identifying headers', () => {
 
     const headers = getCapturedHeaders();
     expect(headers['X-Contentful-User-Agent-Tool']).toBe(
-      'contentful-mcp/0.0.0',
+      'contentful-mcp/local-0.0.0',
     );
-    expect(headers['User-Agent']).toBe('contentful-mcp/0.0.0');
+    expect(headers['User-Agent']).toBe('contentful-mcp/local-0.0.0');
   });
 
   it('createExoToolClient tags ExO calls with the -exo marker on both headers', () => {
@@ -44,18 +44,47 @@ describe('client-identifying headers', () => {
 
     const headers = getCapturedHeaders();
     expect(headers['X-Contentful-User-Agent-Tool']).toBe(
-      'contentful-mcp-exo/0.0.0',
+      'contentful-mcp-exo/local-0.0.0',
     );
-    expect(headers['User-Agent']).toBe('contentful-mcp-exo/0.0.0');
+    expect(headers['User-Agent']).toBe('contentful-mcp-exo/local-0.0.0');
   });
 
   it('createClientConfig (org-level) uses the classic, non-exo marker', () => {
     const config = createClientConfig(createMockConfig());
     const headers = config.headers as Record<string, string>;
     expect(headers['X-Contentful-User-Agent-Tool']).toBe(
-      'contentful-mcp/0.0.0',
+      'contentful-mcp/local-0.0.0',
     );
-    expect(headers['User-Agent']).toBe('contentful-mcp/0.0.0');
+    expect(headers['User-Agent']).toBe('contentful-mcp/local-0.0.0');
+  });
+
+  it('defaults to the local source when mcpSource is unset', () => {
+    createToolClient(createMockConfig({ mcpSource: undefined }), args);
+
+    const headers = getCapturedHeaders();
+    expect(headers['X-Contentful-User-Agent-Tool']).toBe(
+      'contentful-mcp/local-0.0.0',
+    );
+  });
+
+  it('tags calls from the remote server with the remote source', () => {
+    createToolClient(createMockConfig({ mcpSource: 'remote' }), args);
+
+    const headers = getCapturedHeaders();
+    expect(headers['X-Contentful-User-Agent-Tool']).toBe(
+      'contentful-mcp/remote-0.0.0',
+    );
+    expect(headers['User-Agent']).toBe('contentful-mcp/remote-0.0.0');
+  });
+
+  it('combines the remote source with the -exo marker', () => {
+    createExoToolClient(createMockConfig({ mcpSource: 'remote' }), args);
+
+    const headers = getCapturedHeaders();
+    expect(headers['X-Contentful-User-Agent-Tool']).toBe(
+      'contentful-mcp-exo/remote-0.0.0',
+    );
+    expect(headers['User-Agent']).toBe('contentful-mcp-exo/remote-0.0.0');
   });
 });
 

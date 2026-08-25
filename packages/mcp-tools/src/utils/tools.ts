@@ -12,13 +12,16 @@ export const BaseToolSchema = z.object({
  * distinguishing `-exo` suffix so Datadog can filter them out from classic CMA
  * calls on the `user-agent` header, which downstream services already capture
  * on their APM spans (unlike this same value on `X-Contentful-User-Agent-Tool`,
- * which today isn't captured anywhere for the ExO-backing services).
+ * which today isn't captured anywhere for the ExO-backing services). The version
+ * segment is prefixed with `config.mcpSource` (`local` or `remote`) so Datadog can
+ * also distinguish traffic from the stdio/local server versus the hosted remote server.
  */
 function buildUserAgentToolValue(
   config: ContentfulConfig,
   options?: { exo?: boolean },
 ): string {
-  return `contentful-mcp${options?.exo ? '-exo' : ''}/${config.mcpVersion}`;
+  const source = config.mcpSource ?? 'local';
+  return `contentful-mcp${options?.exo ? '-exo' : ''}/${source}-${config.mcpVersion}`;
 }
 
 /**
