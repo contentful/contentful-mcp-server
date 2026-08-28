@@ -1,6 +1,7 @@
 import type { ContentfulConfig } from './config/types.js';
 import { createAiActionTools } from './tools/ai-actions/register.js';
 import { createAssetTools } from './tools/assets/register.js';
+import { createContentPreviewTools } from './tools/content-previews/register.js';
 import { createContentTypeTools } from './tools/content-types/register.js';
 import { createContextTools } from './tools/context/register.js';
 import { createEditorInterfaceTools } from './tools/editor-interfaces/register.js';
@@ -59,6 +60,13 @@ export class ContentfulMcpTools {
    */
   getAssetTools() {
     return createAssetTools(this.config);
+  }
+
+  /**
+   * Get content preview tools
+   */
+  getContentPreviewTools() {
+    return createContentPreviewTools(this.config);
   }
 
   /**
