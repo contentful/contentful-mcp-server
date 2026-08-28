@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import {
   createSuccessResponse,
+  formatErrorMessage,
   withErrorHandling,
 } from '../../utils/response.js';
 import {
@@ -77,8 +78,8 @@ export function archiveAssetTool(config: ContentfulConfig) {
       } catch (error) {
         const errorMessage =
           successfullyArchived.length > 0
-            ? `Failed to archive asset '${assetId}' after successfully archiving ${successfullyArchived.length} asset(s): [${successfullyArchived.join(', ')}]. Original error: ${error instanceof Error ? error.message : String(error)}`
-            : `Failed to archive asset '${assetId}': ${error instanceof Error ? error.message : String(error)}`;
+            ? `Failed to archive asset '${assetId}' after successfully archiving ${successfullyArchived.length} asset(s): [${successfullyArchived.join(', ')}]. Original error: ${formatErrorMessage(error)}`
+            : `Failed to archive asset '${assetId}': ${formatErrorMessage(error)}`;
 
         throw new Error(errorMessage);
       }

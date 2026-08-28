@@ -67,7 +67,7 @@ describe('unpublishAiAction', () => {
     const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse('AI action unpublish failed', {
-      status: error,
+      status: error.message,
       aiActionId: 'test-ai-action-id',
     });
     expect(result).toEqual({
@@ -88,7 +88,7 @@ describe('unpublishAiAction', () => {
     const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse('AI action unpublish failed', {
-      status: error,
+      status: error.message,
       aiActionId: 'test-ai-action-id',
     });
     expect(result).toEqual({

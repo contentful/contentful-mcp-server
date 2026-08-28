@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import {
   createSuccessResponse,
+  formatErrorMessage,
   withErrorHandling,
 } from '../../utils/response.js';
 import {
@@ -76,8 +77,8 @@ export function unarchiveEntryTool(config: ContentfulConfig) {
       } catch (error) {
         const errorMessage =
           successfullyUnarchived.length > 0
-            ? `Failed to unarchive entry '${entryId}' after successfully unarchiving ${successfullyUnarchived.length} entry(s): [${successfullyUnarchived.join(', ')}]. Original error: ${error instanceof Error ? error.message : String(error)}`
-            : `Failed to unarchive entry '${entryId}': ${error instanceof Error ? error.message : String(error)}`;
+            ? `Failed to unarchive entry '${entryId}' after successfully unarchiving ${successfullyUnarchived.length} entry(s): [${successfullyUnarchived.join(', ')}]. Original error: ${formatErrorMessage(error)}`
+            : `Failed to unarchive entry '${entryId}': ${formatErrorMessage(error)}`;
 
         throw new Error(errorMessage);
       }

@@ -72,7 +72,7 @@ describe('publishAiAction', () => {
     const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse('AI action publish failed', {
-      status: error,
+      status: error.message,
       aiActionId: 'test-ai-action-id',
     });
     expect(result).toEqual({

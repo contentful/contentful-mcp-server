@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import {
   createSuccessResponse,
+  formatErrorMessage,
   withErrorHandling,
 } from '../../utils/response.js';
 import {
@@ -76,8 +77,8 @@ export function archiveEntryTool(config: ContentfulConfig) {
       } catch (error) {
         const errorMessage =
           successfullyArchived.length > 0
-            ? `Failed to archive entry '${entryId}' after successfully archiving ${successfullyArchived.length} entry(s): [${successfullyArchived.join(', ')}]. Original error: ${error instanceof Error ? error.message : String(error)}`
-            : `Failed to archive entry '${entryId}': ${error instanceof Error ? error.message : String(error)}`;
+            ? `Failed to archive entry '${entryId}' after successfully archiving ${successfullyArchived.length} entry(s): [${successfullyArchived.join(', ')}]. Original error: ${formatErrorMessage(error)}`
+            : `Failed to archive entry '${entryId}': ${formatErrorMessage(error)}`;
 
         throw new Error(errorMessage);
       }
