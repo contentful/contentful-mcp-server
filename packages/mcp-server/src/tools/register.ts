@@ -61,6 +61,7 @@ export async function registerAllTools(server: McpServer): Promise<void> {
   // Classic (always-registered) tool collections
   const aiActionTools = tools.getAiActionTools();
   const assetTools = tools.getAssetTools();
+  const contentPreviewTools = tools.getContentPreviewTools();
   const contentTypeTools = tools.getContentTypeTools();
   const contextTools = tools.getContextTools();
   const editorInterfaceTools = tools.getEditorInterfaceTools();
@@ -77,6 +78,7 @@ export async function registerAllTools(server: McpServer): Promise<void> {
   const allToolCollections = [
     aiActionTools,
     assetTools,
+    contentPreviewTools,
     contentTypeTools,
     contextTools,
     editorInterfaceTools,

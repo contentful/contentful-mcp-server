@@ -152,6 +152,8 @@ Below is a sample configuration:
 |                           | `list_environments`        | List environments                                |
 |                           | `create_environment`       | Create new environments                          |
 |                           | `delete_environment`       | Remove environments                              |
+| **Content Preview**       | `list_content_previews`    | List content previews and their URL templates    |
+|                           | `get_entry_preview_url`    | Resolve the draft-preview URL for an entry       |
 | **Locales**               | `list_locales`             | List all locales in your environment             |
 |                           | `get_locale`               | Retrieve specific locale information             |
 |                           | `create_locale`            | Create new locales for multi-language content    |

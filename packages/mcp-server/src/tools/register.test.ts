@@ -90,6 +90,7 @@ describe('registerAllTools', () => {
     const standardToolCollections = [
       mcpTools.getAiActionTools(),
       mcpTools.getAssetTools(),
+      mcpTools.getContentPreviewTools(),
       mcpTools.getComponentTools(),
       mcpTools.getDataAssemblyTools(),
       mcpTools.getExperienceTools(),
