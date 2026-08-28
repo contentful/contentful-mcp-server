@@ -165,7 +165,7 @@ describe('unpublishAsset', () => {
     const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse('Asset unpublish failed', {
-      status: unpublishError,
+      status: unpublishError.message,
       assetId: mockArgs.assetId,
     });
     expect(result).toEqual({
@@ -186,7 +186,7 @@ describe('unpublishAsset', () => {
     const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse('Asset unpublish failed', {
-      status: error,
+      status: error.message,
       assetId: mockArgs.assetId,
     });
     expect(result).toEqual({

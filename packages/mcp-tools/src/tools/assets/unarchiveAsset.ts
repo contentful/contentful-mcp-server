@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import {
   createSuccessResponse,
+  formatErrorMessage,
   withErrorHandling,
 } from '../../utils/response.js';
 import {
@@ -77,8 +78,8 @@ export function unarchiveAssetTool(config: ContentfulConfig) {
       } catch (error) {
         const errorMessage =
           successfullyUnarchived.length > 0
-            ? `Failed to unarchive asset '${assetId}' after successfully unarchiving ${successfullyUnarchived.length} asset(s): [${successfullyUnarchived.join(', ')}]. Original error: ${error instanceof Error ? error.message : String(error)}`
-            : `Failed to unarchive asset '${assetId}': ${error instanceof Error ? error.message : String(error)}`;
+            ? `Failed to unarchive asset '${assetId}' after successfully unarchiving ${successfullyUnarchived.length} asset(s): [${successfullyUnarchived.join(', ')}]. Original error: ${formatErrorMessage(error)}`
+            : `Failed to unarchive asset '${assetId}': ${formatErrorMessage(error)}`;
 
         throw new Error(errorMessage);
       }

@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import {
   createSuccessResponse,
+  formatErrorMessage,
   withErrorHandling,
 } from '../../../utils/response.js';
 import { BaseToolSchema, createClientConfig } from '../../../utils/tools.js';
@@ -152,9 +153,7 @@ export function createExportSpaceTool(config: ContentfulConfig) {
         editorInterfaces: result.editorInterfaces?.length || 0,
       });
     } catch (error) {
-      throw new Error(
-        `Failed to export space: ${error instanceof Error ? error.message : String(error)}`,
-      );
+      throw new Error(`Failed to export space: ${formatErrorMessage(error)}`);
     }
   }
 

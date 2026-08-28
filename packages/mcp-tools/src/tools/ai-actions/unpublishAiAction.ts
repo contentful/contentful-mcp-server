@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import {
   createSuccessResponse,
+  formatErrorMessage,
   withErrorHandling,
 } from '../../utils/response.js';
 import {
@@ -40,7 +41,7 @@ export function unpublishAiActionTool(config: ContentfulConfig) {
       });
     } catch (error) {
       return createSuccessResponse('AI action unpublish failed', {
-        status: error,
+        status: formatErrorMessage(error),
         aiActionId: args.aiActionId,
       });
     }

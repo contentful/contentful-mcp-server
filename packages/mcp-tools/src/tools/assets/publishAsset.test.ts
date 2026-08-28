@@ -164,7 +164,7 @@ describe('publishAsset', () => {
     const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse('Asset publish failed', {
-      status: publishError,
+      status: publishError.message,
       assetId: mockArgs.assetId,
     });
     expect(result).toEqual({
@@ -185,7 +185,7 @@ describe('publishAsset', () => {
     const result = await tool(mockArgs);
 
     const expectedResponse = formatResponse('Asset publish failed', {
-      status: error,
+      status: error.message,
       assetId: mockArgs.assetId,
     });
     expect(result).toEqual({

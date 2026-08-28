@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import {
   createSuccessResponse,
+  formatErrorMessage,
   withErrorHandling,
 } from '../../utils/response.js';
 import {
@@ -89,7 +90,7 @@ export function publishAssetTool(config: ContentfulConfig) {
         });
       } catch (error) {
         return createSuccessResponse('Asset publish failed', {
-          status: error,
+          status: formatErrorMessage(error),
           assetId: assetIds[0],
         });
       }
