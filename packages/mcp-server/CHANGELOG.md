@@ -1,3 +1,13 @@
+## 1.18.0 (2026-08-28)
+
+### 🚀 Features
+
+- add content preview tools for reading preview URLs [AIS-479] ([#462](https://github.com/contentful/contentful-mcp-server/pull/462))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.8
+
 ## 1.17.0 (2026-08-25)
 
 ### 🚀 Features

@@ -1,3 +1,13 @@
+## 0.12.8 (2026-08-28)
+
+### 🚀 Features
+
+- add content preview tools for reading preview URLs [AIS-479] ([#462](https://github.com/contentful/contentful-mcp-server/pull/462))
+
+### 🩹 Fixes
+
+- sanitize serialized Contentful SDK errors ([#460](https://github.com/contentful/contentful-mcp-server/pull/460))
+
 ## 0.12.7 (2026-08-25)
 
 ### 🚀 Features
