@@ -1,3 +1,13 @@
+## 0.12.9 (2026-09-01)
+
+### 🚀 Features
+
+- add ExO design token tools ([#463](https://github.com/contentful/contentful-mcp-server/pull/463))
+
+### 🩹 Fixes
+
+- allow create_component to accept an optional component ID ([#464](https://github.com/contentful/contentful-mcp-server/pull/464))
+
 ## 0.12.8 (2026-08-28)
 
 ### 🚀 Features

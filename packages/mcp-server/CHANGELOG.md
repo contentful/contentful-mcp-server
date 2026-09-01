@@ -1,3 +1,13 @@
+## 1.19.0 (2026-09-01)
+
+### 🚀 Features
+
+- add ExO design token tools ([#463](https://github.com/contentful/contentful-mcp-server/pull/463))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.9
+
 ## 1.18.0 (2026-08-28)
 
 ### 🚀 Features
