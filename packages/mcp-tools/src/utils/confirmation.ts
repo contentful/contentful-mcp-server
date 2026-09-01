@@ -13,7 +13,8 @@ export type DestructiveResource =
   | 'experience'
   | 'experienceFragment'
   | 'experienceTemplate'
-  | 'dataAssembly';
+  | 'dataAssembly'
+  | 'designToken';
 
 export const CONFIRMATION_MESSAGE_PREFIX = 'Confirmation required to delete';
 
@@ -55,6 +56,7 @@ const RESOURCE_DISPLAY_NAME: Record<DestructiveResource, string> = {
   experienceFragment: 'experience fragment',
   experienceTemplate: 'experience template',
   dataAssembly: 'data assembly',
+  designToken: 'design token',
 };
 
 /**

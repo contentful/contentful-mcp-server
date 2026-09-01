@@ -227,7 +227,7 @@ export const ContentPropertySchema = z.intersection(
 // ── Design property ───────────────────────────────────────────────────────────
 // Matches CMA.js ComponentTypeDesignProperty = StringDesignProperty | BooleanDesignProperty | TokenBackedDesignProperty
 
-const DTCG_DESIGN_PROPERTY_TYPES = [
+export const DTCG_DESIGN_PROPERTY_TYPES = [
   'DTCG.Color',
   'DTCG.Dimension',
   'DTCG.FontFamily',
