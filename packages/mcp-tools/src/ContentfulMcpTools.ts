@@ -19,6 +19,7 @@ import { createExperienceFragmentTools } from './tools/exo/experience-fragments/
 import { createExperienceTemplateTools } from './tools/exo/experience-templates/register.js';
 import { createExperienceTools } from './tools/exo/experiences/register.js';
 import { createDataAssemblyTools } from './tools/exo/data-assemblies/register.js';
+import { createDesignTokenTools } from './tools/exo/design-tokens/register.js';
 
 /**
  * Main class for Contentful MCP Tools
@@ -179,6 +180,13 @@ export class ContentfulMcpTools {
    */
   getDataAssemblyTools() {
     return createDataAssemblyTools(this.config);
+  }
+
+  /**
+   * Get ExO design token tools
+   */
+  getDesignTokenTools() {
+    return createDesignTokenTools(this.config);
   }
 
   /**

@@ -93,6 +93,7 @@ describe('registerAllTools', () => {
       mcpTools.getContentPreviewTools(),
       mcpTools.getComponentTools(),
       mcpTools.getDataAssemblyTools(),
+      mcpTools.getDesignTokenTools(),
       mcpTools.getExperienceTools(),
       mcpTools.getExperienceTemplateTools(),
       mcpTools.getContentTypeTools(),

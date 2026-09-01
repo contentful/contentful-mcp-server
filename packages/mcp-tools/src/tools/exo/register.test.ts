@@ -5,11 +5,12 @@ import { createExperienceTemplateTools } from './experience-templates/register.j
 import { createExperienceFragmentTools } from './experience-fragments/register.js';
 import { createExperienceTools } from './experiences/register.js';
 import { createDataAssemblyTools } from './data-assemblies/register.js';
+import { createDesignTokenTools } from './design-tokens/register.js';
 
 /**
  * The ExO tool `title` strings are the names the MCP client actually calls, and
  * nothing else in the suite asserts them — a typo would ship silently and only
- * surface as a missing tool at runtime. This locks the full set of 37.
+ * surface as a missing tool at runtime. This locks the full set of 41.
  */
 const EXPECTED_TITLES = [
   // components (7)
@@ -54,6 +55,12 @@ const EXPECTED_TITLES = [
   'publish_data_assembly',
   'unpublish_data_assembly',
   'update_data_assembly',
+  // design-tokens (4) — no create/publish/unpublish: upsert both creates and
+  // updates, and every upsert auto-publishes server-side
+  'delete_design_token',
+  'get_design_token',
+  'list_design_tokens',
+  'upsert_design_token',
 ].sort();
 
 describe('ExO tool registration', () => {
@@ -65,12 +72,13 @@ describe('ExO tool registration', () => {
     createExperienceFragmentTools(config),
     createExperienceTools(config),
     createDataAssemblyTools(config),
+    createDesignTokenTools(config),
   ]
     .flatMap((collection) => Object.values(collection))
     .map((entry) => entry.title)
     .sort();
 
-  it('registers exactly the expected 37 ExO tool titles', () => {
+  it('registers exactly the expected 41 ExO tool titles', () => {
     // Exact set equality, so this also fails on any surviving pre-rename name
     // (`*_component_type`, bare `*_template`, bare `*_fragment`).
     expect(allTitles).toEqual(EXPECTED_TITLES);

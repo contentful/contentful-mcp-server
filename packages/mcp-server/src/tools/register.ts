@@ -94,6 +94,7 @@ export async function registerAllTools(server: McpServer): Promise<void> {
       ? [
           tools.getComponentTools(),
           tools.getDataAssemblyTools(),
+          tools.getDesignTokenTools(),
           tools.getExperienceTools(),
           tools.getExperienceTemplateTools(),
           tools.getExperienceFragmentTools(),
