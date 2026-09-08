@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/contentful-contentful-mcp-server-badge.png)](https://mseep.ai/app/contentful-contentful-mcp-server)
+
 # Contentful MCP Server
 
 A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server that provides AI assistants with comprehensive tools to interact with [Contentful](https://www.contentful.com/) APIs.
