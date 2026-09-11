@@ -130,11 +130,6 @@ describe('paramCollection', () => {
           mimetype_group: 'image',
           limit: 50,
         },
-        host: 'custom.contentful.com',
-        proxy: 'http://proxy:8080',
-        headers: {
-          'X-Custom-Header': 'value',
-        },
         maxAllowedLimit: 500,
         useVerboseRenderer: true,
         errorLogFile: '/logs/export-errors.log',
@@ -174,16 +169,9 @@ describe('paramCollection', () => {
         assetsDirectory: '/assets',
         timeout: 5000,
         retryLimit: 15,
-        host: 'eu.contentful.com',
-        proxy: 'user:pass@proxy:8080',
-        rawProxy: true,
         rateLimit: 10,
-        headers: {
-          Authorization: 'Bearer token',
-        },
         errorLogFile: '/logs/import-errors.log',
         useVerboseRenderer: false,
-        config: '/config/import.json',
       },
     };
 
@@ -199,6 +187,75 @@ describe('paramCollection', () => {
     expect(responseText).toContain('<timeout>5000</timeout>');
     expect(responseText).toContain('<retryLimit>15</retryLimit>');
     expect(responseText).toContain('<rateLimit>10</rateLimit>');
+  });
+
+  it('omits server-owned options from confirmed workflow parameters', async () => {
+    const testArgs = {
+      ...mockArgs,
+      confirmation: true,
+      export: {
+        spaceId: 'source-space',
+        environmentId: 'master',
+        exportDir: '/exports',
+        deliveryToken: 'untrusted-delivery-token',
+        host: 'untrusted.example',
+        hostDelivery: 'untrusted-cdn.example',
+        proxy: 'http://untrusted.example:8080',
+        rawProxy: true,
+        headers: { Authorization: 'Bearer untrusted' },
+        config: '/tmp/untrusted-export.json',
+      },
+      import: {
+        spaceId: 'target-space',
+        environmentId: 'master',
+        contentFile: '/exports/export.json',
+        managementToken: 'untrusted-management-token',
+        host: 'untrusted.example',
+        proxy: 'http://untrusted.example:8080',
+        rawProxy: true,
+        headers: { Authorization: 'Bearer untrusted' },
+        config: '/tmp/untrusted-import.json',
+      },
+    };
+
+    const result = await createParamCollectionTool(testArgs);
+    const responseText = result.content[0].text;
+
+    expect(responseText).toContain('<spaceId>source-space</spaceId>');
+    expect(responseText).toContain('<spaceId>target-space</spaceId>');
+    for (const value of [
+      'untrusted-delivery-token',
+      'untrusted.example',
+      'untrusted-cdn.example',
+      'http://untrusted.example:8080',
+      'Bearer untrusted',
+      '/tmp/untrusted-export.json',
+      'untrusted-management-token',
+      '/tmp/untrusted-import.json',
+    ]) {
+      expect(responseText).not.toContain(value);
+    }
+  });
+
+  it('does not advertise server-owned migration options', async () => {
+    const result = await createParamCollectionTool({
+      ...mockArgs,
+      confirmation: false,
+    });
+    const responseText = result.content[0].text;
+
+    for (const field of [
+      'deliveryToken',
+      'host',
+      'hostDelivery',
+      'proxy',
+      'rawProxy',
+      'headers',
+      'config',
+      'managementToken',
+    ]) {
+      expect(responseText).not.toContain(field);
+    }
   });
 
   it('should handle query parameters for entries and assets', async () => {

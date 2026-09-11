@@ -27,11 +27,6 @@ export const ParamCollectionToolParams = BaseToolSchema.extend({
         .string()
         .optional()
         .describe('ID of the environment in the source space'),
-      deliveryToken: z
-        .string()
-        .optional()
-        .describe('CDA token to export only published content (excludes tags)'),
-
       exportDir: z.string().optional().describe('Path to export JSON output'),
       saveFile: z
         .boolean()
@@ -85,18 +80,7 @@ export const ParamCollectionToolParams = BaseToolSchema.extend({
         .optional()
         .describe('Download asset files to disk'),
 
-      host: z.string().optional().describe('Management API host'),
-      hostDelivery: z.string().optional().describe('Delivery API host'),
-      proxy: z.string().optional().describe('HTTP/HTTPS proxy config'),
-      rawProxy: z
-        .boolean()
-        .optional()
-        .describe('Pass raw proxy config directly to Axios'),
       maxAllowedLimit: z.number().optional().describe('Page size for requests'),
-      headers: z
-        .record(z.any())
-        .optional()
-        .describe('Additional headers to include in requests'),
 
       errorLogFile: z
         .string()
@@ -106,10 +90,6 @@ export const ParamCollectionToolParams = BaseToolSchema.extend({
         .boolean()
         .optional()
         .describe('Line-by-line logging, useful for CI'),
-      config: z
-        .string()
-        .optional()
-        .describe('Path to a JSON config file with all options'),
     })
     .optional(),
 
@@ -170,33 +150,16 @@ export const ParamCollectionToolParams = BaseToolSchema.extend({
         .optional()
         .describe('Max retries for asset processing'),
 
-      host: z.string().optional().describe('Management API host'),
-      proxy: z
-        .string()
-        .optional()
-        .describe('HTTP/HTTPS proxy string (host:port or user:pass@host:port)'),
-      rawProxy: z
-        .boolean()
-        .optional()
-        .describe('Pass proxy config directly to Axios'),
       rateLimit: z
         .number()
         .optional()
         .describe('Max requests per second to the API'),
-      headers: z
-        .record(z.any())
-        .optional()
-        .describe('Additional headers to attach to requests'),
 
       errorLogFile: z.string().optional().describe('Path to error log file'),
       useVerboseRenderer: z
         .boolean()
         .optional()
         .describe('Line-by-line progress output (good for CI)'),
-      config: z
-        .string()
-        .optional()
-        .describe('Path to config JSON file (merged with CLI args)'),
     })
     .optional(),
 });
@@ -210,8 +173,6 @@ spaceId                 // [string] [required] - ID of the space with source dat
     `,
     optionalParams: `
 environmentId           // [string] [default: 'master'] - ID of the environment in the source space
-deliveryToken           // [string] - CDA token to export only published content (excludes tags)
-
 exportDir               // [string] [default: process.cwd()] - Path to export JSON output
 saveFile                // [boolean] [default: true] - Save the export as a JSON file
 contentFile             // [string] - Filename for exported data
@@ -231,22 +192,15 @@ queryEntries            // [array] - Export only entries that match query parame
 queryAssets             // [array] - Export only assets that match query parameters
 downloadAssets          // [boolean] - Download asset files to disk
 
-host                    // [string] [default: 'api.contentful.com'] - Management API host
-hostDelivery            // [string] [default: 'cdn.contentful.com'] - Delivery API host
-proxy                   // [string] - HTTP/HTTPS proxy config
-rawProxy                // [boolean] - Pass raw proxy config directly to Axios
 maxAllowedLimit         // [number] [default: 1000] - Page size for requests
-headers                 // [object] - Additional headers to include in requests
 
 errorLogFile            // [string] - Path to error log output file
 useVerboseRenderer      // [boolean] [default: false] - Line-by-line logging, useful for CI
-config                  // [string] - Path to a JSON config file with all options
     `,
   },
   import: {
     requiredParams: `
 spaceId                 // [string] [required] - ID of the space to import into
-managementToken         // [string] [required] - Contentful Management API token
     `,
     optionalParams: `
 environmentId           // [string] [default: 'master'] - Target environment in destination space
@@ -265,30 +219,64 @@ assetsDirectory         // [string] - Path to directory containing exported asse
 timeout                 // [number] [default: 3000] - Time between retries during asset processing (ms)
 retryLimit              // [number] [default: 10] - Max retries for asset processing
 
-host                    // [string] [default: 'api.contentful.com'] - Management API host
-proxy                   // [string] - HTTP/HTTPS proxy string (host:port or user:pass@host:port)
-rawProxy                // [boolean] - Pass proxy config directly to Axios
 rateLimit               // [number] [default: 7] - Max requests per second to the API
-headers                 // [object] - Additional headers to attach to requests
 
 errorLogFile            // [string] - Path to error log file
 useVerboseRenderer      // [boolean] [default: false] - Line-by-line progress output (good for CI)
-config                  // [string] - Path to config JSON file (merged with CLI args)
     `,
   },
 };
 
 async function tool(args: Params) {
-  // Extract export and import parameters, filtering out undefined values
   const exportParams = args.export
     ? Object.fromEntries(
-        Object.entries(args.export).filter(([, value]) => value !== undefined),
+        Object.entries({
+          spaceId: args.export.spaceId,
+          environmentId: args.export.environmentId,
+          exportDir: args.export.exportDir,
+          saveFile: args.export.saveFile,
+          contentFile: args.export.contentFile,
+          includeDrafts: args.export.includeDrafts,
+          includeArchived: args.export.includeArchived,
+          skipContentModel: args.export.skipContentModel,
+          skipEditorInterfaces: args.export.skipEditorInterfaces,
+          skipContent: args.export.skipContent,
+          skipRoles: args.export.skipRoles,
+          skipTags: args.export.skipTags,
+          skipWebhooks: args.export.skipWebhooks,
+          stripTags: args.export.stripTags,
+          contentOnly: args.export.contentOnly,
+          queryEntries: args.export.queryEntries,
+          queryAssets: args.export.queryAssets,
+          downloadAssets: args.export.downloadAssets,
+          maxAllowedLimit: args.export.maxAllowedLimit,
+          errorLogFile: args.export.errorLogFile,
+          useVerboseRenderer: args.export.useVerboseRenderer,
+        }).filter(([, value]) => value !== undefined),
       )
     : {};
 
   const importParams = args.import
     ? Object.fromEntries(
-        Object.entries(args.import).filter(([, value]) => value !== undefined),
+        Object.entries({
+          spaceId: args.import.spaceId,
+          environmentId: args.import.environmentId,
+          contentFile: args.import.contentFile,
+          content: args.import.content,
+          contentModelOnly: args.import.contentModelOnly,
+          skipContentModel: args.import.skipContentModel,
+          skipLocales: args.import.skipLocales,
+          skipContentUpdates: args.import.skipContentUpdates,
+          skipContentPublishing: args.import.skipContentPublishing,
+          uploadAssets: args.import.uploadAssets,
+          skipAssetUpdates: args.import.skipAssetUpdates,
+          assetsDirectory: args.import.assetsDirectory,
+          timeout: args.import.timeout,
+          retryLimit: args.import.retryLimit,
+          rateLimit: args.import.rateLimit,
+          errorLogFile: args.import.errorLogFile,
+          useVerboseRenderer: args.import.useVerboseRenderer,
+        }).filter(([, value]) => value !== undefined),
       )
     : {};
 
