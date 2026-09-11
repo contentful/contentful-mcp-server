@@ -112,18 +112,39 @@ export function createExportSpaceTool(config: ContentfulConfig) {
       throw new Error('Contentful management token is not configured');
     }
 
-    // host, deliveryToken, and hostDelivery are always sourced from server config
-    // — never from LLM-controlled args. Zod strips unknown fields before this
-    // point, so ...args only contains schema-declared fields.
+    const safeOptions = Object.fromEntries(
+      Object.entries({
+        spaceId: args.spaceId,
+        environmentId: args.environmentId || 'master',
+        exportDir: args.exportDir || process.cwd(),
+        contentFile:
+          args.contentFile || `contentful-export-${args.spaceId}.json`,
+        saveFile: args.saveFile,
+        includeDrafts: args.includeDrafts,
+        includeArchived: args.includeArchived,
+        skipContentModel: args.skipContentModel,
+        skipEditorInterfaces: args.skipEditorInterfaces,
+        skipContent: args.skipContent,
+        skipRoles: args.skipRoles,
+        skipTags: args.skipTags,
+        skipWebhooks: args.skipWebhooks,
+        stripTags: args.stripTags,
+        contentOnly: args.contentOnly,
+        queryEntries: args.queryEntries,
+        queryAssets: args.queryAssets,
+        downloadAssets: args.downloadAssets,
+        maxAllowedLimit: args.maxAllowedLimit,
+        errorLogFile: args.errorLogFile,
+        useVerboseRenderer: args.useVerboseRenderer,
+      }).filter(([, value]) => value !== undefined),
+    );
+
     const exportOptions = {
-      ...args,
+      ...safeOptions,
       managementToken,
       host: config.host ?? 'api.contentful.com',
       ...(config.deliveryToken && { deliveryToken: config.deliveryToken }),
       ...(config.hostDelivery && { hostDelivery: config.hostDelivery }),
-      environmentId: args.environmentId || 'master',
-      exportDir: args.exportDir || process.cwd(),
-      contentFile: args.contentFile || `contentful-export-${args.spaceId}.json`,
     } as any;
 
     try {
