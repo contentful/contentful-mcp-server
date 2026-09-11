@@ -1,9 +1,10 @@
-import { createExportSpaceTool, ExportSpaceToolParams } from './exportSpace.js';
+import { createExportSpaceTool } from './exportSpace.js';
 import {
   ParamCollectionToolParams,
   createParamCollectionTool,
 } from './paramCollection.js';
-import { ImportSpaceToolParams, createImportSpaceTool } from './importSpace.js';
+import { createImportSpaceTool } from './importSpace.js';
+import { ExportParamsSchema, ImportParamsSchema } from './types.js';
 import {
   SpaceToSpaceMigrationHandlerToolParams,
   makeSpaceToSpaceMigrationHandlerTool,
@@ -32,7 +33,7 @@ export function createJobTools(config: ContentfulConfig) {
     exportSpace: {
       title: 'export_space',
       description: 'Export a space to a file',
-      inputParams: ExportSpaceToolParams.shape,
+      inputParams: ExportParamsSchema.shape,
       annotations: {
         readOnlyHint: true,
         destructiveHint: false,
@@ -44,7 +45,7 @@ export function createJobTools(config: ContentfulConfig) {
       title: 'import_space',
       description:
         'Import a space from a file. Step 4 of the space to space migration workflow.',
-      inputParams: ImportSpaceToolParams.shape,
+      inputParams: ImportParamsSchema.shape,
       annotations: {
         readOnlyHint: false,
         destructiveHint: false,

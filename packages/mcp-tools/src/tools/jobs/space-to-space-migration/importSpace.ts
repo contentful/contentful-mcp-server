@@ -10,8 +10,6 @@ import {
 import type { ContentfulConfig } from '../../../config/types.js';
 import { ImportParamsSchema, type ImportParams } from './types.js';
 
-export { ImportParamsSchema as ImportSpaceToolParams } from './types.js';
-
 export function createImportSpaceTool(config: ContentfulConfig) {
   async function tool(args: ImportParams) {
     const targetEnvironmentId = args.environmentId || 'master';

@@ -8,14 +8,12 @@ import { unarchiveAssetTool } from '../tools/assets/unarchiveAsset.js';
 import { unpublishAssetTool } from '../tools/assets/unpublishAsset.js';
 import { archiveEntryTool } from '../tools/entries/archiveEntry.js';
 import { unarchiveEntryTool } from '../tools/entries/unarchiveEntry.js';
+import { createExportSpaceTool } from '../tools/jobs/space-to-space-migration/exportSpace.js';
+import { createImportSpaceTool } from '../tools/jobs/space-to-space-migration/importSpace.js';
 import {
-  createExportSpaceTool,
-  ExportSpaceToolParams,
-} from '../tools/jobs/space-to-space-migration/exportSpace.js';
-import {
-  createImportSpaceTool,
-  ImportSpaceToolParams,
-} from '../tools/jobs/space-to-space-migration/importSpace.js';
+  ExportParamsSchema,
+  ImportParamsSchema,
+} from '../tools/jobs/space-to-space-migration/types.js';
 import { createMockConfig } from '../test-helpers/mockConfig.js';
 import { createSdkError } from '../test-helpers/sdkError.js';
 import { createToolClient } from './tools.js';
@@ -105,7 +103,7 @@ describe('tools that add error context', () => {
       mock: mockExport,
       run: () =>
         createExportSpaceTool(config)(
-          ExportSpaceToolParams.parse({ ...baseParams, saveFile: false }),
+          ExportParamsSchema.parse({ ...baseParams, saveFile: false }),
         ),
     },
     {
@@ -113,7 +111,7 @@ describe('tools that add error context', () => {
       mock: mockImport,
       run: () =>
         createImportSpaceTool(config)(
-          ImportSpaceToolParams.parse({ ...baseParams, content: {} }),
+          ImportParamsSchema.parse({ ...baseParams, content: {} }),
         ),
     },
   ])(

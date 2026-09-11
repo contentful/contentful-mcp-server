@@ -7,8 +7,6 @@ import { createClientConfig } from '../../../utils/tools.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 import { ExportParamsSchema, type ExportParams } from './types.js';
 
-export { ExportParamsSchema as ExportSpaceToolParams } from './types.js';
-
 export function createExportSpaceTool(config: ContentfulConfig) {
   async function tool(args: ExportParams) {
     // Get management token from the same config used by other MCP tools
