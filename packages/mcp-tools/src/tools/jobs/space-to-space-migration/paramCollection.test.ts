@@ -3,6 +3,20 @@ import { createParamCollectionTool } from './paramCollection.js';
 import { formatResponse } from '../../../utils/formatters.js';
 import { mockParamCollectionArgs, mockArgs } from './mockClient.js';
 
+// Server-owned transport/connection options that must never be advertised
+// or forwarded by the param collection tool, regardless of what a caller
+// sends.
+const SERVER_OWNED_FIELDS = [
+  'deliveryToken',
+  'host',
+  'hostDelivery',
+  'proxy',
+  'rawProxy',
+  'headers',
+  'config',
+  'managementToken',
+] as const;
+
 describe('paramCollection', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -157,17 +171,20 @@ describe('paramCollection', () => {
     expect(responseText).toContain(
       '<useVerboseRenderer>true</useVerboseRenderer>',
     );
-    for (const field of [
-      'deliveryToken',
-      'host',
-      'hostDelivery',
-      'proxy',
-      'rawProxy',
-      'headers',
-      'config',
-      'managementToken',
-    ]) {
+    for (const field of SERVER_OWNED_FIELDS) {
       expect(responseText).not.toContain(`<${field}>`);
+    }
+    for (const value of [
+      'untrusted-delivery-token',
+      'untrusted.example',
+      'untrusted-cdn.example',
+      'http://untrusted.example:8080',
+      '<rawProxy>true</rawProxy>',
+      'X-Test-Header',
+      '/tmp/untrusted-export.json',
+      'untrusted-management-token',
+    ]) {
+      expect(responseText).not.toContain(value);
     }
   });
 
@@ -215,16 +232,7 @@ describe('paramCollection', () => {
     expect(responseText).toContain('<timeout>5000</timeout>');
     expect(responseText).toContain('<retryLimit>15</retryLimit>');
     expect(responseText).toContain('<rateLimit>10</rateLimit>');
-    for (const field of [
-      'deliveryToken',
-      'host',
-      'hostDelivery',
-      'proxy',
-      'rawProxy',
-      'headers',
-      'config',
-      'managementToken',
-    ]) {
+    for (const field of SERVER_OWNED_FIELDS) {
       expect(responseText).not.toContain(`<${field}>`);
     }
     for (const value of [
@@ -275,16 +283,7 @@ describe('paramCollection', () => {
 
     expect(responseText).toContain('<spaceId>source-space</spaceId>');
     expect(responseText).toContain('<spaceId>target-space</spaceId>');
-    for (const field of [
-      'deliveryToken',
-      'host',
-      'hostDelivery',
-      'proxy',
-      'rawProxy',
-      'headers',
-      'config',
-      'managementToken',
-    ]) {
+    for (const field of SERVER_OWNED_FIELDS) {
       expect(responseText).not.toContain(`<${field}>`);
     }
     for (const value of [
@@ -308,20 +307,35 @@ describe('paramCollection', () => {
     });
     const responseText = result.content[0].text;
 
-    for (const field of [
-      'deliveryToken',
-      'host',
-      'hostDelivery',
-      'proxy',
-      'rawProxy',
-      'headers',
-      'config',
-      'managementToken',
-    ]) {
+    for (const field of SERVER_OWNED_FIELDS) {
       expect(responseText).not.toContain(`<${field}>`);
       expect(responseText).not.toMatch(
         new RegExp(`\\n[ \\t]*${field}[ \\t]+//`),
       );
+    }
+  });
+
+  it('does not false-positive on server-owned field names appearing as substrings of supported field values', async () => {
+    const testArgs = {
+      ...mockArgs,
+      confirmation: false,
+      export: {
+        spaceId: 'source-space',
+        // Contains the substrings "host" and "config" without being the
+        // server-owned `host`/`config` fields themselves.
+        errorLogFile: '/var/log/localhost-config-export.log',
+      },
+    };
+
+    const tool = createParamCollectionTool;
+    const result = await tool(testArgs);
+
+    const responseText = result.content[0].text;
+    expect(responseText).toContain(
+      '<errorLogFile>/var/log/localhost-config-export.log</errorLogFile>',
+    );
+    for (const field of SERVER_OWNED_FIELDS) {
+      expect(responseText).not.toContain(`<${field}>`);
     }
   });
 
