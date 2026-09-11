@@ -5,6 +5,28 @@ import {
   EntryQuerySchema,
 } from '../../../types/querySchema.js';
 
+/**
+ * Contentful's search API supports dynamic filter keys scoped to these
+ * prefixes (e.g. `fields.<id>`, `fields.<id>[ne]`, `sys.id`) that can't be
+ * statically enumerated since they depend on the customer's content model.
+ * Any other unrecognized key is dropped rather than forwarded untouched.
+ */
+const DYNAMIC_QUERY_KEY_PATTERN = /^(fields|sys|metadata)\./;
+
+function stripUnsupportedQueryKeys(knownKeys: readonly string[]) {
+  const knownKeySet = new Set(knownKeys);
+  return (value: unknown) => {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) {
+      return value;
+    }
+    return Object.fromEntries(
+      Object.entries(value as Record<string, unknown>).filter(
+        ([key]) => knownKeySet.has(key) || DYNAMIC_QUERY_KEY_PATTERN.test(key),
+      ),
+    );
+  };
+}
+
 export const ExportParamsSchema = BaseToolSchema.extend({
   exportDir: z
     .string()
@@ -72,9 +94,11 @@ export const ExportParamsSchema = BaseToolSchema.extend({
     .default(false)
     .describe('Only export assets and entries'),
   queryEntries: EntryQuerySchema.passthrough()
+    .transform(stripUnsupportedQueryKeys(Object.keys(EntryQuerySchema.shape)))
     .optional()
     .describe('Export only entries that match query parameters'),
   queryAssets: AssetQuerySchema.passthrough()
+    .transform(stripUnsupportedQueryKeys(Object.keys(AssetQuerySchema.shape)))
     .optional()
     .describe('Export only assets that match query parameters'),
   downloadAssets: z
