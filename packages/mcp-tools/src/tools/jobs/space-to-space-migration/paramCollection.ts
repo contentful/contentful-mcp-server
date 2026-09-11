@@ -4,10 +4,7 @@ import {
   withErrorHandling,
 } from '../../../utils/response.js';
 import { BaseToolSchema } from '../../../utils/tools.js';
-import {
-  EntryQuerySchema,
-  AssetQuerySchema,
-} from '../../../types/querySchema.js';
+import { ExportParamsSchema, ImportParamsSchema } from './types.js';
 
 export const ParamCollectionToolParams = BaseToolSchema.extend({
   confirmation: z
@@ -17,151 +14,8 @@ export const ParamCollectionToolParams = BaseToolSchema.extend({
       'User confirmation that they are ready to proceed with the workflow',
     ),
 
-  export: z
-    .object({
-      spaceId: z
-        .string()
-        .optional()
-        .describe('ID of the space with source data'),
-      environmentId: z
-        .string()
-        .optional()
-        .describe('ID of the environment in the source space'),
-      exportDir: z.string().optional().describe('Path to export JSON output'),
-      saveFile: z
-        .boolean()
-        .optional()
-        .describe('Save the export as a JSON file'),
-      contentFile: z.string().optional().describe('Filename for exported data'),
-
-      includeDrafts: z
-        .boolean()
-        .optional()
-        .describe('Include drafts in exported entries'),
-      includeArchived: z
-        .boolean()
-        .optional()
-        .describe('Include archived entries'),
-      skipContentModel: z
-        .boolean()
-        .optional()
-        .describe('Skip exporting content models'),
-      skipEditorInterfaces: z
-        .boolean()
-        .optional()
-        .describe('Skip exporting editor interfaces'),
-      skipContent: z
-        .boolean()
-        .optional()
-        .describe('Skip exporting entries and assets'),
-      skipRoles: z
-        .boolean()
-        .optional()
-        .describe('Skip exporting roles and permissions'),
-      skipTags: z.boolean().optional().describe('Skip exporting tags'),
-      skipWebhooks: z.boolean().optional().describe('Skip exporting webhooks'),
-      stripTags: z
-        .boolean()
-        .optional()
-        .describe('Remove tags from entries and assets'),
-      contentOnly: z
-        .boolean()
-        .optional()
-        .describe('Export only entries and assets'),
-
-      queryEntries: EntryQuerySchema.optional().describe(
-        'Export only entries that match query parameters',
-      ),
-      queryAssets: AssetQuerySchema.optional().describe(
-        'Export only assets that match query parameters',
-      ),
-      downloadAssets: z
-        .boolean()
-        .optional()
-        .describe('Download asset files to disk'),
-
-      maxAllowedLimit: z.number().optional().describe('Page size for requests'),
-
-      errorLogFile: z
-        .string()
-        .optional()
-        .describe('Path to error log output file'),
-      useVerboseRenderer: z
-        .boolean()
-        .optional()
-        .describe('Line-by-line logging, useful for CI'),
-    })
-    .optional(),
-
-  import: z
-    .object({
-      spaceId: z.string().optional().describe('ID of the space to import into'),
-      environmentId: z
-        .string()
-        .optional()
-        .describe('Target environment in destination space'),
-      contentFile: z
-        .string()
-        .optional()
-        .describe('Path to JSON file containing the content to import'),
-      content: z
-        .record(z.any())
-        .optional()
-        .describe(
-          'JS object containing import content (must match expected structure)',
-        ),
-
-      contentModelOnly: z
-        .boolean()
-        .optional()
-        .describe('Import only content types'),
-      skipContentModel: z
-        .boolean()
-        .optional()
-        .describe('Skip importing content types and locales'),
-      skipLocales: z.boolean().optional().describe('Skip importing locales'),
-      skipContentUpdates: z
-        .boolean()
-        .optional()
-        .describe('Do not update existing content'),
-      skipContentPublishing: z
-        .boolean()
-        .optional()
-        .describe('Create but do not publish content'),
-
-      uploadAssets: z
-        .boolean()
-        .optional()
-        .describe('Upload asset files (requires assetsDirectory)'),
-      skipAssetUpdates: z
-        .boolean()
-        .optional()
-        .describe('Do not update existing assets'),
-      assetsDirectory: z
-        .string()
-        .optional()
-        .describe('Path to directory containing exported asset files'),
-      timeout: z
-        .number()
-        .optional()
-        .describe('Time between retries during asset processing (ms)'),
-      retryLimit: z
-        .number()
-        .optional()
-        .describe('Max retries for asset processing'),
-
-      rateLimit: z
-        .number()
-        .optional()
-        .describe('Max requests per second to the API'),
-
-      errorLogFile: z.string().optional().describe('Path to error log file'),
-      useVerboseRenderer: z
-        .boolean()
-        .optional()
-        .describe('Line-by-line progress output (good for CI)'),
-    })
-    .optional(),
+  export: ExportParamsSchema.partial().optional(),
+  import: ImportParamsSchema.partial().optional(),
 });
 
 type Params = z.infer<typeof ParamCollectionToolParams>;
@@ -229,55 +83,11 @@ useVerboseRenderer      // [boolean] [default: false] - Line-by-line progress ou
 
 async function tool(args: Params) {
   const exportParams = args.export
-    ? Object.fromEntries(
-        Object.entries({
-          spaceId: args.export.spaceId,
-          environmentId: args.export.environmentId,
-          exportDir: args.export.exportDir,
-          saveFile: args.export.saveFile,
-          contentFile: args.export.contentFile,
-          includeDrafts: args.export.includeDrafts,
-          includeArchived: args.export.includeArchived,
-          skipContentModel: args.export.skipContentModel,
-          skipEditorInterfaces: args.export.skipEditorInterfaces,
-          skipContent: args.export.skipContent,
-          skipRoles: args.export.skipRoles,
-          skipTags: args.export.skipTags,
-          skipWebhooks: args.export.skipWebhooks,
-          stripTags: args.export.stripTags,
-          contentOnly: args.export.contentOnly,
-          queryEntries: args.export.queryEntries,
-          queryAssets: args.export.queryAssets,
-          downloadAssets: args.export.downloadAssets,
-          maxAllowedLimit: args.export.maxAllowedLimit,
-          errorLogFile: args.export.errorLogFile,
-          useVerboseRenderer: args.export.useVerboseRenderer,
-        }).filter(([, value]) => value !== undefined),
-      )
+    ? ExportParamsSchema.partial().parse(args.export)
     : {};
 
   const importParams = args.import
-    ? Object.fromEntries(
-        Object.entries({
-          spaceId: args.import.spaceId,
-          environmentId: args.import.environmentId,
-          contentFile: args.import.contentFile,
-          content: args.import.content,
-          contentModelOnly: args.import.contentModelOnly,
-          skipContentModel: args.import.skipContentModel,
-          skipLocales: args.import.skipLocales,
-          skipContentUpdates: args.import.skipContentUpdates,
-          skipContentPublishing: args.import.skipContentPublishing,
-          uploadAssets: args.import.uploadAssets,
-          skipAssetUpdates: args.import.skipAssetUpdates,
-          assetsDirectory: args.import.assetsDirectory,
-          timeout: args.import.timeout,
-          retryLimit: args.import.retryLimit,
-          rateLimit: args.import.rateLimit,
-          errorLogFile: args.import.errorLogFile,
-          useVerboseRenderer: args.import.useVerboseRenderer,
-        }).filter(([, value]) => value !== undefined),
-      )
+    ? ImportParamsSchema.partial().parse(args.import)
     : {};
 
   const params = {

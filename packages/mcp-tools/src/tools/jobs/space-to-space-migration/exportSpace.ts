@@ -1,109 +1,16 @@
-import { z } from 'zod';
 import {
   createSuccessResponse,
   formatErrorMessage,
   withErrorHandling,
 } from '../../../utils/response.js';
-import { BaseToolSchema, createClientConfig } from '../../../utils/tools.js';
+import { createClientConfig } from '../../../utils/tools.js';
 import type { ContentfulConfig } from '../../../config/types.js';
-import {
-  EntryQuerySchema,
-  AssetQuerySchema,
-} from '../../../types/querySchema.js';
+import { ExportParamsSchema, type ExportParams } from './types.js';
 
-export const ExportSpaceToolParams = BaseToolSchema.extend({
-  exportDir: z
-    .string()
-    .optional()
-    .describe(
-      'Directory to save the exported space data (optional, defaults to current directory)',
-    ),
-  saveFile: z
-    .boolean()
-    .optional()
-    .default(true)
-    .describe('Save the exported space data to a file'),
-  contentFile: z
-    .string()
-    .optional()
-    .describe('Custom filename for the exported space data (optional)'),
-  includeDrafts: z
-    .boolean()
-    .optional()
-    .default(false)
-    .describe('Include draft entries in the export'),
-  includeArchived: z
-    .boolean()
-    .optional()
-    .default(false)
-    .describe('Include archived entries in the export'),
-  skipContentModel: z
-    .boolean()
-    .optional()
-    .default(false)
-    .describe('Skip exporting content types'),
-  skipEditorInterfaces: z
-    .boolean()
-    .optional()
-    .default(false)
-    .describe('Skip exporting editor interfaces'),
-  skipContent: z
-    .boolean()
-    .optional()
-    .default(false)
-    .describe('Skip exporting entries and assets'),
-  skipRoles: z
-    .boolean()
-    .optional()
-    .default(false)
-    .describe('Skip exporting roles and permissions'),
-  skipTags: z
-    .boolean()
-    .optional()
-    .default(false)
-    .describe('Skip exporting tags'),
-  skipWebhooks: z
-    .boolean()
-    .optional()
-    .default(false)
-    .describe('Skip exporting webhooks'),
-  stripTags: z
-    .boolean()
-    .optional()
-    .default(false)
-    .describe('Untag assets and entries'),
-  contentOnly: z
-    .boolean()
-    .optional()
-    .default(false)
-    .describe('Only export assets and entries'),
-  queryEntries: EntryQuerySchema.optional().describe(
-    'Export only entries that match query parameters',
-  ),
-  queryAssets: AssetQuerySchema.optional().describe(
-    'Export only assets that match query parameters',
-  ),
-  downloadAssets: z
-    .boolean()
-    .optional()
-    .default(false)
-    .describe('Download actual asset files'),
-  maxAllowedLimit: z
-    .number()
-    .optional()
-    .default(1000)
-    .describe('Maximum number of items per request'),
-  errorLogFile: z.string().optional().describe('Path to error log output file'),
-  useVerboseRenderer: z
-    .boolean()
-    .optional()
-    .describe('Line-by-line logging, useful for CI'),
-});
-
-type Params = z.infer<typeof ExportSpaceToolParams>;
+export { ExportParamsSchema as ExportSpaceToolParams } from './types.js';
 
 export function createExportSpaceTool(config: ContentfulConfig) {
-  async function tool(args: Params) {
+  async function tool(args: ExportParams) {
     // Get management token from the same config used by other MCP tools
     const clientConfig = createClientConfig(config);
     const managementToken = clientConfig.accessToken;
@@ -112,32 +19,12 @@ export function createExportSpaceTool(config: ContentfulConfig) {
       throw new Error('Contentful management token is not configured');
     }
 
-    const safeOptions = Object.fromEntries(
-      Object.entries({
-        spaceId: args.spaceId,
-        environmentId: args.environmentId || 'master',
-        exportDir: args.exportDir || process.cwd(),
-        contentFile:
-          args.contentFile || `contentful-export-${args.spaceId}.json`,
-        saveFile: args.saveFile,
-        includeDrafts: args.includeDrafts,
-        includeArchived: args.includeArchived,
-        skipContentModel: args.skipContentModel,
-        skipEditorInterfaces: args.skipEditorInterfaces,
-        skipContent: args.skipContent,
-        skipRoles: args.skipRoles,
-        skipTags: args.skipTags,
-        skipWebhooks: args.skipWebhooks,
-        stripTags: args.stripTags,
-        contentOnly: args.contentOnly,
-        queryEntries: args.queryEntries,
-        queryAssets: args.queryAssets,
-        downloadAssets: args.downloadAssets,
-        maxAllowedLimit: args.maxAllowedLimit,
-        errorLogFile: args.errorLogFile,
-        useVerboseRenderer: args.useVerboseRenderer,
-      }).filter(([, value]) => value !== undefined),
-    );
+    const safeOptions = ExportParamsSchema.parse({
+      ...args,
+      environmentId: args.environmentId || 'master',
+      exportDir: args.exportDir || process.cwd(),
+      contentFile: args.contentFile || `contentful-export-${args.spaceId}.json`,
+    });
 
     const exportOptions = {
       ...safeOptions,

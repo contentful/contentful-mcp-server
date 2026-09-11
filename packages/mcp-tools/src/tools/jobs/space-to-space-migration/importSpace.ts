@@ -1,92 +1,19 @@
-import { z } from 'zod';
 import {
   createSuccessResponse,
   formatErrorMessage,
   withErrorHandling,
 } from '../../../utils/response.js';
 import {
-  BaseToolSchema,
   createClientConfig,
   assertEnvironmentNotProtected,
 } from '../../../utils/tools.js';
 import type { ContentfulConfig } from '../../../config/types.js';
+import { ImportParamsSchema, type ImportParams } from './types.js';
 
-export const ImportSpaceToolParams = BaseToolSchema.extend({
-  contentFile: z
-    .string()
-    .optional()
-    .describe('Path to JSON file containing the content to import'),
-  content: z
-    .record(z.any())
-    .optional()
-    .describe(
-      'JS object containing import content (must match expected structure)',
-    ),
-  contentModelOnly: z
-    .boolean()
-    .optional()
-    .default(false)
-    .describe('Import only content types'),
-  skipContentModel: z
-    .boolean()
-    .optional()
-    .default(false)
-    .describe('Skip importing content types and locales'),
-  skipLocales: z
-    .boolean()
-    .optional()
-    .default(false)
-    .describe('Skip importing locales'),
-  skipContentUpdates: z
-    .boolean()
-    .optional()
-    .default(false)
-    .describe('Do not update existing content'),
-  skipContentPublishing: z
-    .boolean()
-    .optional()
-    .default(false)
-    .describe('Create but do not publish content'),
-  uploadAssets: z
-    .boolean()
-    .optional()
-    .default(false)
-    .describe('Upload asset files (requires assetsDirectory)'),
-  skipAssetUpdates: z
-    .boolean()
-    .optional()
-    .default(false)
-    .describe('Do not update existing assets'),
-  assetsDirectory: z
-    .string()
-    .optional()
-    .describe('Path to directory containing exported asset files'),
-  timeout: z
-    .number()
-    .optional()
-    .default(3000)
-    .describe('Time between retries during asset processing (ms)'),
-  retryLimit: z
-    .number()
-    .optional()
-    .default(10)
-    .describe('Max retries for asset processing'),
-  rateLimit: z
-    .number()
-    .optional()
-    .default(7)
-    .describe('Max requests per second to the API'),
-  errorLogFile: z.string().optional().describe('Path to error log file'),
-  useVerboseRenderer: z
-    .boolean()
-    .optional()
-    .describe('Line-by-line progress output (good for CI)'),
-});
-
-type Params = z.infer<typeof ImportSpaceToolParams>;
+export { ImportParamsSchema as ImportSpaceToolParams } from './types.js';
 
 export function createImportSpaceTool(config: ContentfulConfig) {
-  async function tool(args: Params) {
+  async function tool(args: ImportParams) {
     const targetEnvironmentId = args.environmentId || 'master';
     assertEnvironmentNotProtected(
       targetEnvironmentId,
@@ -101,27 +28,10 @@ export function createImportSpaceTool(config: ContentfulConfig) {
       throw new Error('Contentful management token is not configured');
     }
 
-    const safeOptions = Object.fromEntries(
-      Object.entries({
-        spaceId: args.spaceId,
-        environmentId: targetEnvironmentId,
-        contentFile: args.contentFile,
-        content: args.content,
-        contentModelOnly: args.contentModelOnly,
-        skipContentModel: args.skipContentModel,
-        skipLocales: args.skipLocales,
-        skipContentUpdates: args.skipContentUpdates,
-        skipContentPublishing: args.skipContentPublishing,
-        uploadAssets: args.uploadAssets,
-        skipAssetUpdates: args.skipAssetUpdates,
-        assetsDirectory: args.assetsDirectory,
-        timeout: args.timeout,
-        retryLimit: args.retryLimit,
-        rateLimit: args.rateLimit,
-        errorLogFile: args.errorLogFile,
-        useVerboseRenderer: args.useVerboseRenderer,
-      }).filter(([, value]) => value !== undefined),
-    );
+    const safeOptions = ImportParamsSchema.parse({
+      ...args,
+      environmentId: targetEnvironmentId,
+    });
 
     const importOptions = {
       ...safeOptions,
