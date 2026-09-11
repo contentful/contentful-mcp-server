@@ -108,7 +108,7 @@ describe('paramCollection', () => {
     expect(result.content[0].text).toContain('<currentParams/>');
   });
 
-  it('should handle complex export parameters', async () => {
+  it('should preserve supported export parameters and filter server-owned options', async () => {
     const testArgs = {
       ...mockArgs,
       confirmation: false,
@@ -130,12 +130,17 @@ describe('paramCollection', () => {
           mimetype_group: 'image',
           limit: 50,
         },
+        deliveryToken: 'untrusted-delivery-token',
         host: 'untrusted.example',
+        hostDelivery: 'untrusted-cdn.example',
         proxy: 'http://untrusted.example:8080',
+        rawProxy: true,
         headers: { 'X-Test-Header': 'value' },
         maxAllowedLimit: 500,
         useVerboseRenderer: true,
         errorLogFile: '/logs/export-errors.log',
+        config: '/tmp/untrusted-export.json',
+        managementToken: 'untrusted-management-token',
       },
     };
 
@@ -152,9 +157,21 @@ describe('paramCollection', () => {
     expect(responseText).toContain(
       '<useVerboseRenderer>true</useVerboseRenderer>',
     );
+    for (const field of [
+      'deliveryToken',
+      'host',
+      'hostDelivery',
+      'proxy',
+      'rawProxy',
+      'headers',
+      'config',
+      'managementToken',
+    ]) {
+      expect(responseText).not.toContain(`<${field}>`);
+    }
   });
 
-  it('should handle complex import parameters', async () => {
+  it('should preserve supported import parameters and filter server-owned options', async () => {
     const testArgs = {
       ...mockArgs,
       confirmation: false,
@@ -172,7 +189,9 @@ describe('paramCollection', () => {
         assetsDirectory: '/assets',
         timeout: 5000,
         retryLimit: 15,
+        deliveryToken: 'untrusted-delivery-token',
         host: 'untrusted.example',
+        hostDelivery: 'untrusted-cdn.example',
         proxy: 'http://untrusted.example:8080',
         rawProxy: true,
         rateLimit: 10,
@@ -180,6 +199,7 @@ describe('paramCollection', () => {
         errorLogFile: '/logs/import-errors.log',
         useVerboseRenderer: false,
         config: '/tmp/untrusted-import.json',
+        managementToken: 'untrusted-management-token',
       },
     };
 
@@ -195,12 +215,27 @@ describe('paramCollection', () => {
     expect(responseText).toContain('<timeout>5000</timeout>');
     expect(responseText).toContain('<retryLimit>15</retryLimit>');
     expect(responseText).toContain('<rateLimit>10</rateLimit>');
+    for (const field of [
+      'deliveryToken',
+      'host',
+      'hostDelivery',
+      'proxy',
+      'rawProxy',
+      'headers',
+      'config',
+      'managementToken',
+    ]) {
+      expect(responseText).not.toContain(`<${field}>`);
+    }
     for (const value of [
+      'untrusted-delivery-token',
       'untrusted.example',
+      'untrusted-cdn.example',
       'http://untrusted.example:8080',
       '<rawProxy>true</rawProxy>',
       'Bearer untrusted',
       '/tmp/untrusted-import.json',
+      'untrusted-management-token',
     ]) {
       expect(responseText).not.toContain(value);
     }
@@ -240,6 +275,18 @@ describe('paramCollection', () => {
 
     expect(responseText).toContain('<spaceId>source-space</spaceId>');
     expect(responseText).toContain('<spaceId>target-space</spaceId>');
+    for (const field of [
+      'deliveryToken',
+      'host',
+      'hostDelivery',
+      'proxy',
+      'rawProxy',
+      'headers',
+      'config',
+      'managementToken',
+    ]) {
+      expect(responseText).not.toContain(`<${field}>`);
+    }
     for (const value of [
       'untrusted-delivery-token',
       'untrusted.example',
@@ -271,7 +318,10 @@ describe('paramCollection', () => {
       'config',
       'managementToken',
     ]) {
-      expect(responseText).not.toContain(field);
+      expect(responseText).not.toContain(`<${field}>`);
+      expect(responseText).not.toMatch(
+        new RegExp(`\\n[ \\t]*${field}[ \\t]+//`),
+      );
     }
   });
 
