@@ -101,14 +101,32 @@ export function createImportSpaceTool(config: ContentfulConfig) {
       throw new Error('Contentful management token is not configured');
     }
 
-    // host is always sourced from server config — never from LLM-controlled args.
-    // Zod strips unknown fields before this point, so ...args only contains
-    // schema-declared fields.
+    const safeOptions = Object.fromEntries(
+      Object.entries({
+        spaceId: args.spaceId,
+        environmentId: targetEnvironmentId,
+        contentFile: args.contentFile,
+        content: args.content,
+        contentModelOnly: args.contentModelOnly,
+        skipContentModel: args.skipContentModel,
+        skipLocales: args.skipLocales,
+        skipContentUpdates: args.skipContentUpdates,
+        skipContentPublishing: args.skipContentPublishing,
+        uploadAssets: args.uploadAssets,
+        skipAssetUpdates: args.skipAssetUpdates,
+        assetsDirectory: args.assetsDirectory,
+        timeout: args.timeout,
+        retryLimit: args.retryLimit,
+        rateLimit: args.rateLimit,
+        errorLogFile: args.errorLogFile,
+        useVerboseRenderer: args.useVerboseRenderer,
+      }).filter(([, value]) => value !== undefined),
+    );
+
     const importOptions = {
-      ...args,
+      ...safeOptions,
       managementToken,
       host: config.host ?? 'api.contentful.com',
-      environmentId: targetEnvironmentId,
     } as any;
 
     try {

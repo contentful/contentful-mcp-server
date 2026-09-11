@@ -105,21 +105,42 @@ describe('importSpace', () => {
     expect(result.content[0].text).toContain('Space imported successfully');
   });
 
-  it('should always use config host, ignoring any host provided in args (GHSA-2xhg-73j7-rrgx)', async () => {
-    const customHostConfig = createMockConfig({
-      host: 'eu.api.contentful.com',
-    });
-    const testArgs = createImportTestArgs({
-      content: { contentTypes: [], entries: [] },
-    });
-
+  it('forwards only safe import options and server-configured endpoints', async () => {
+    const customHostConfig = createMockConfig({ host: 'api.example.com' });
     const tool = createImportSpaceTool(customHostConfig);
-    await tool(testArgs);
 
-    const calledWith = mockContentfulImport.mock.calls[0][0];
-    expect(calledWith.host).toBe('eu.api.contentful.com');
-    expect(calledWith.proxy).toBeUndefined();
-    expect(calledWith.rawProxy).toBeUndefined();
+    await tool(
+      createImportTestArgs({
+        content: { contentTypes: [], entries: [] },
+        host: 'untrusted.example',
+        proxy: 'http://untrusted.example:8080',
+        rawProxy: true,
+        headers: { Authorization: 'Bearer untrusted' },
+        config: '/tmp/untrusted-import.json',
+        deliveryToken: 'untrusted-delivery-token',
+        hostDelivery: 'untrusted-cdn.example',
+        managementToken: 'untrusted-management-token',
+      }),
+    );
+
+    const forwarded = mockContentfulImport.mock.calls[0][0] as Record<
+      string,
+      unknown
+    >;
+    expect(forwarded).toMatchObject({
+      managementToken: customHostConfig.accessToken,
+      host: customHostConfig.host,
+    });
+    for (const key of [
+      'proxy',
+      'rawProxy',
+      'headers',
+      'config',
+      'deliveryToken',
+      'hostDelivery',
+    ]) {
+      expect(forwarded).not.toHaveProperty(key);
+    }
   });
 
   it('should return error when environment is protected', async () => {
