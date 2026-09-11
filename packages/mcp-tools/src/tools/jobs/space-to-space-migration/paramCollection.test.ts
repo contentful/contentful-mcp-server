@@ -195,6 +195,15 @@ describe('paramCollection', () => {
     expect(responseText).toContain('<timeout>5000</timeout>');
     expect(responseText).toContain('<retryLimit>15</retryLimit>');
     expect(responseText).toContain('<rateLimit>10</rateLimit>');
+    for (const value of [
+      'untrusted.example',
+      'http://untrusted.example:8080',
+      '<rawProxy>true</rawProxy>',
+      'Bearer untrusted',
+      '/tmp/untrusted-import.json',
+    ]) {
+      expect(responseText).not.toContain(value);
+    }
   });
 
   it('omits server-owned options from confirmed workflow parameters', async () => {
