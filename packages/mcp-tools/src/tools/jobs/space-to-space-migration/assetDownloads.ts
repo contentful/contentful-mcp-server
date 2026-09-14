@@ -1,9 +1,5 @@
-import { isAbsolute, join, relative, resolve, sep } from 'node:path';
-
-// @ts-expect-error contentful-export does not publish types for its internal download task.
-import createDownloadAssetsTask from 'contentful-export/dist/tasks/download-assets.js';
-// @ts-expect-error contentful-export does not publish types for its option parser.
-import parseExportOptions from 'contentful-export/dist/parseOptions.js';
+import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path';
+import { mkdir, writeFile } from 'node:fs/promises';
 
 export interface AssetDownloadOptions {
   exportDir: string;
@@ -55,13 +51,41 @@ export function assertAssetDownloadPathsContained(
   }
 }
 
+/**
+ * Downloads a single asset URL to its computed path beneath exportDir.
+ * Deliberately basic: no retries, no timeout override, no embargoed-asset
+ * URL signing. Contentful-export's own download task provides those; this
+ * exists only until it exposes a public entry point we can call instead of
+ * reaching into its dist/ internals.
+ */
+export async function downloadAsset(
+  exportDir: string,
+  url: string,
+): Promise<string> {
+  const destination = getDownloadPath(exportDir, url);
+  const requestUrl = url.startsWith('//') ? `https:${url}` : url;
+
+  const response = await fetch(requestUrl);
+  if (!response.ok) {
+    throw new Error(
+      `Failed to download asset from ${requestUrl}: ${response.status} ${response.statusText}`,
+    );
+  }
+
+  const body = Buffer.from(await response.arrayBuffer());
+  await mkdir(dirname(destination), { recursive: true });
+  await writeFile(destination, body);
+
+  return destination;
+}
+
 export async function downloadAssetsSafely(
   options: AssetDownloadOptions,
   assets: unknown[],
 ): Promise<void> {
   assertAssetDownloadPathsContained(options.exportDir, assets);
 
-  const parsedOptions = parseExportOptions(options);
-  const downloadAssets = createDownloadAssetsTask(parsedOptions);
-  await downloadAssets({ data: { assets } }, { output: '' });
+  for (const url of getAssetUrls(assets)) {
+    await downloadAsset(options.exportDir, url);
+  }
 }

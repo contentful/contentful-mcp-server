@@ -11,6 +11,7 @@ import {
   getAssetUrls,
   getDownloadPath,
   assertAssetDownloadPathsContained,
+  downloadAsset,
   downloadAssetsSafely,
 } from './assetDownloads.js';
 
@@ -134,11 +135,102 @@ describe('assertAssetDownloadPathsContained', () => {
   });
 });
 
+describe('downloadAsset', () => {
+  const temporaryDirectories: string[] = [];
+
+  afterEach(async () => {
+    vi.unstubAllGlobals();
+    await Promise.all(
+      temporaryDirectories
+        .splice(0)
+        .map((directory) => rm(directory, { recursive: true, force: true })),
+    );
+  });
+
+  async function withTempExportDir(): Promise<string> {
+    const temporaryDirectory = await mkdtemp(
+      join(tmpdir(), 'contentful-mcp-asset-download-'),
+    );
+    temporaryDirectories.push(temporaryDirectory);
+    return join(temporaryDirectory, 'export');
+  }
+
+  it('writes the response body to the computed download path, creating directories as needed', async () => {
+    const exportDir = await withTempExportDir();
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      arrayBuffer: async () => Buffer.from('safe asset'),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const destination = await downloadAsset(
+      exportDir,
+      'https://a.example.com/nested/safe.txt',
+    );
+
+    expect(destination).toBe(
+      join(exportDir, 'a.example.com', 'nested', 'safe.txt'),
+    );
+    await expect(readFile(destination, 'utf8')).resolves.toBe('safe asset');
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://a.example.com/nested/safe.txt',
+    );
+  });
+
+  it('normalizes a protocol-relative URL to https before fetching', async () => {
+    const exportDir = await withTempExportDir();
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      statusText: 'OK',
+      arrayBuffer: async () => Buffer.from('safe asset'),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    await downloadAsset(exportDir, '//a.example.com/safe.txt');
+
+    expect(fetchMock).toHaveBeenCalledWith('https://a.example.com/safe.txt');
+  });
+
+  it('throws, without writing anything, when the response is not ok', async () => {
+    const exportDir = await withTempExportDir();
+    const fetchMock = vi.fn().mockResolvedValue({
+      ok: false,
+      status: 404,
+      statusText: 'Not Found',
+      arrayBuffer: async () => Buffer.from(''),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+    const mkdirSpy = vi.spyOn(fs.promises, 'mkdir');
+
+    await expect(
+      downloadAsset(exportDir, 'https://a.example.com/missing.txt'),
+    ).rejects.toThrow(/404/);
+
+    expect(mkdirSpy).not.toHaveBeenCalled();
+  });
+
+  it('propagates a network-level fetch failure', async () => {
+    const exportDir = await withTempExportDir();
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockRejectedValue(new Error('network down')),
+    );
+
+    await expect(
+      downloadAsset(exportDir, 'https://a.example.com/safe.txt'),
+    ).rejects.toThrow('network down');
+  });
+});
+
 describe('downloadAssetsSafely', () => {
   const temporaryDirectories: string[] = [];
 
   afterEach(async () => {
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
     await Promise.all(
       temporaryDirectories
         .splice(0)
@@ -147,8 +239,9 @@ describe('downloadAssetsSafely', () => {
   });
 
   it('rejects an unsafe asset list before doing any filesystem or network work', async () => {
+    const fetchMock = vi.fn();
+    vi.stubGlobal('fetch', fetchMock);
     const mkdirSpy = vi.spyOn(fs.promises, 'mkdir');
-    const createWriteStreamSpy = vi.spyOn(fs, 'createWriteStream');
 
     await expect(
       downloadAssetsSafely(
@@ -158,13 +251,75 @@ describe('downloadAssetsSafely', () => {
     ).rejects.toThrow('Asset download path escapes the export directory');
 
     expect(mkdirSpy).not.toHaveBeenCalled();
-    expect(createWriteStreamSpy).not.toHaveBeenCalled();
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  // A single end-to-end smoke test exercising the real contentful-export
-  // download task, to catch integration breaks (option shape, task wiring)
-  // that the unit tests above can't see.
-  it('downloads a safe asset URL to the expected path on disk', async () => {
+  it('downloads every safe asset URL to its computed path', async () => {
+    const temporaryDirectory = await mkdtemp(
+      join(tmpdir(), 'contentful-mcp-asset-download-'),
+    );
+    temporaryDirectories.push(temporaryDirectory);
+    const exportDir = join(temporaryDirectory, 'export');
+
+    const bodies: Record<string, string> = {
+      'https://a.example.com/one.txt': 'one',
+      'https://a.example.com/two.txt': 'two',
+    };
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async (url: string) => ({
+        ok: true,
+        status: 200,
+        statusText: 'OK',
+        arrayBuffer: async () => Buffer.from(bodies[url]),
+      })),
+    );
+
+    await downloadAssetsSafely(
+      { exportDir, spaceId: 'example-space', managementToken: 'example-token' },
+      [
+        assetWithUrl('https://a.example.com/one.txt', 'asset-one'),
+        assetWithUrl('https://a.example.com/two.txt', 'asset-two'),
+      ],
+    );
+
+    await expect(
+      readFile(join(exportDir, 'a.example.com', 'one.txt'), 'utf8'),
+    ).resolves.toBe('one');
+    await expect(
+      readFile(join(exportDir, 'a.example.com', 'two.txt'), 'utf8'),
+    ).resolves.toBe('two');
+  });
+
+  it('propagates a download failure for one asset without swallowing it', async () => {
+    const temporaryDirectory = await mkdtemp(
+      join(tmpdir(), 'contentful-mcp-asset-download-'),
+    );
+    temporaryDirectories.push(temporaryDirectory);
+    const exportDir = join(temporaryDirectory, 'export');
+
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 500,
+        statusText: 'Internal Server Error',
+        arrayBuffer: async () => Buffer.from(''),
+      }),
+    );
+
+    await expect(
+      downloadAssetsSafely(
+        { exportDir, spaceId: 'example-space', managementToken: 'example-token' },
+        [assetWithUrl('https://a.example.com/broken.txt')],
+      ),
+    ).rejects.toThrow(/500/);
+  });
+
+  // A single end-to-end smoke test against a real HTTP server, to catch
+  // integration breaks (fetch usage, path handling) that the mocked-fetch
+  // unit tests above can't see.
+  it('downloads a safe asset URL from a real server to the expected path on disk', async () => {
     const temporaryDirectory = await mkdtemp(
       join(tmpdir(), 'contentful-mcp-asset-download-'),
     );
