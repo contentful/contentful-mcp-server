@@ -70,8 +70,6 @@ describe('paramCollection', () => {
           export: {
             spaceId: 'source-space-id',
             environmentId: 'master',
-            exportDir: '/test/export',
-            contentFile: 'export.json',
           },
           import: {
             spaceId: 'target-space-id',
@@ -92,6 +90,30 @@ describe('paramCollection', () => {
         },
       ],
     });
+  });
+
+  it('does not return caller-selected export paths', async () => {
+    const result = await createParamCollectionTool({
+      ...mockArgs,
+      confirmation: true,
+      export: {
+        spaceId: 'source-space',
+        exportDir: '/etc',
+        contentFile: '../../outside.json',
+        errorLogFile: '/var/log/outside.log',
+        config: '/etc/export.json',
+      },
+    } as never);
+
+    const responseText = result.content[0].text;
+    expect(responseText).toContain('<spaceId>source-space</spaceId>');
+    expect(responseText).not.toContain('<exportDir>');
+    expect(responseText).not.toContain('<contentFile>');
+    expect(responseText).not.toContain('<errorLogFile>');
+    expect(responseText).not.toContain('<config>');
+    expect(responseText).not.toContain('/etc');
+    expect(responseText).not.toContain('/var/log/outside.log');
+    expect(responseText).not.toContain('../../outside.json');
   });
 
   it('should handle empty export and import parameters', async () => {
@@ -319,11 +341,11 @@ describe('paramCollection', () => {
     const testArgs = {
       ...mockArgs,
       confirmation: false,
-      export: {
-        spaceId: 'source-space',
+      import: {
+        spaceId: 'target-space',
         // Contains the substrings "host" and "config" without being the
         // server-owned `host`/`config` fields themselves.
-        errorLogFile: '/var/log/localhost-config-export.log',
+        errorLogFile: '/var/log/localhost-config-import.log',
       },
     };
 
@@ -332,7 +354,7 @@ describe('paramCollection', () => {
 
     const responseText = result.content[0].text;
     expect(responseText).toContain(
-      '<errorLogFile>/var/log/localhost-config-export.log</errorLogFile>',
+      '<errorLogFile>/var/log/localhost-config-import.log</errorLogFile>',
     );
     for (const field of SERVER_OWNED_FIELDS) {
       expect(responseText).not.toContain(`<${field}>`);

@@ -148,8 +148,6 @@ export const mockParamCollectionArgs = {
   export: {
     spaceId: 'source-space-id',
     environmentId: 'master',
-    exportDir: '/test/export',
-    contentFile: 'export.json',
   },
   import: {
     spaceId: 'target-space-id',

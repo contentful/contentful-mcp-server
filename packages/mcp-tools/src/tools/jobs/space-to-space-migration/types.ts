@@ -28,21 +28,11 @@ function stripUnsupportedQueryKeys(knownKeys: readonly string[]) {
 }
 
 export const ExportParamsSchema = BaseToolSchema.extend({
-  exportDir: z
-    .string()
-    .optional()
-    .describe(
-      'Directory to save the exported space data (optional, defaults to current directory)',
-    ),
   saveFile: z
     .boolean()
     .optional()
     .default(true)
     .describe('Save the exported space data to a file'),
-  contentFile: z
-    .string()
-    .optional()
-    .describe('Custom filename for the exported space data (optional)'),
   includeDrafts: z
     .boolean()
     .optional()
@@ -111,7 +101,6 @@ export const ExportParamsSchema = BaseToolSchema.extend({
     .optional()
     .default(1000)
     .describe('Maximum number of items per request'),
-  errorLogFile: z.string().optional().describe('Path to error log output file'),
   useVerboseRenderer: z
     .boolean()
     .optional()

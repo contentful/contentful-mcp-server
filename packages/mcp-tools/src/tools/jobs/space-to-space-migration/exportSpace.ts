@@ -6,8 +6,15 @@ import {
 import { createClientConfig } from '../../../utils/tools.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 import { ExportParamsSchema, type ExportParams } from './types.js';
+import { createExportArtifact, type ExportArtifact } from './exportArtifact.js';
+import { downloadAssetsSafely } from './assetDownloads.js';
 
-export function createExportSpaceTool(config: ContentfulConfig) {
+export type ExportArtifactFactory = () => Promise<ExportArtifact>;
+
+export function createExportSpaceTool(
+  config: ContentfulConfig,
+  createArtifact: ExportArtifactFactory = createExportArtifact,
+) {
   async function tool(args: ExportParams) {
     // Get management token from the same config used by other MCP tools
     const clientConfig = createClientConfig(config);
@@ -17,38 +24,40 @@ export function createExportSpaceTool(config: ContentfulConfig) {
       throw new Error('Contentful management token is not configured');
     }
 
+    const artifact = await createArtifact();
+
     const safeOptions = ExportParamsSchema.parse({
       ...args,
       environmentId: args.environmentId || 'master',
-      exportDir: args.exportDir || process.cwd(),
-      contentFile: args.contentFile || `contentful-export-${args.spaceId}.json`,
     });
 
     const exportOptions = {
       ...safeOptions,
+      downloadAssets: false,
       managementToken,
       host: config.host ?? 'api.contentful.com',
       ...(config.deliveryToken && { deliveryToken: config.deliveryToken }),
       ...(config.hostDelivery && { hostDelivery: config.hostDelivery }),
+      exportDir: artifact.exportDir,
+      contentFile: artifact.contentFile,
+      errorLogFile: artifact.errorLogFile,
     } as any;
 
     try {
       const contentfulExport = await import('contentful-export');
-      const path = await import('path');
 
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore The runtime default export is callable even though the import is typed as a module namespace here.
       const result = await contentfulExport.default(exportOptions);
 
-      const exportPath = path.join(
-        exportOptions.exportDir,
-        exportOptions.contentFile,
-      );
+      if (args.downloadAssets && result.assets) {
+        await downloadAssetsSafely(exportOptions, result.assets);
+      }
 
       return createSuccessResponse('Space exported successfully', {
         spaceId: args.spaceId,
         environmentId: args.environmentId || 'master',
-        exportPath,
+        exportPath: artifact.exportPath,
         contentTypes: result.contentTypes?.length || 0,
         entries: result.entries?.length || 0,
         assets: result.assets?.length || 0,
