@@ -1,3 +1,14 @@
+## 0.12.10 (2026-09-14)
+
+### 🩹 Fixes
+
+- scope queryEntries/queryAssets passthrough to dynamic filter keys ([56a087a](https://github.com/contentful/contentful-mcp-server/commit/56a087a))
+- align migration schema consumers ([aed879b](https://github.com/contentful/contentful-mcp-server/commit/aed879b))
+- centralize migration option schemas ([c0c168e](https://github.com/contentful/contentful-mcp-server/commit/c0c168e))
+- restrict migration workflow parameters ([4564dff](https://github.com/contentful/contentful-mcp-server/commit/4564dff))
+- allowlist import migration options ([fafc717](https://github.com/contentful/contentful-mcp-server/commit/fafc717))
+- allowlist export migration options ([de2d90f](https://github.com/contentful/contentful-mcp-server/commit/de2d90f))
+
 ## 0.12.9 (2026-09-01)
 
 ### 🚀 Features
