@@ -16,7 +16,7 @@ interface ExportedAsset {
   };
 }
 
-function getAssetUrls(assets: unknown[]): string[] {
+export function getAssetUrls(assets: unknown[]): string[] {
   return assets.flatMap((asset) => {
     const files = (asset as ExportedAsset).fields?.file;
     if (!files) {
@@ -29,7 +29,7 @@ function getAssetUrls(assets: unknown[]): string[] {
   });
 }
 
-function getDownloadPath(exportDir: string, url: string): string {
+export function getDownloadPath(exportDir: string, url: string): string {
   const parsedUrl = new URL(url.startsWith('//') ? `https:${url}` : url);
   const decodedPathname = decodeURIComponent(parsedUrl.pathname);
   return join(exportDir, parsedUrl.host, decodedPathname);
