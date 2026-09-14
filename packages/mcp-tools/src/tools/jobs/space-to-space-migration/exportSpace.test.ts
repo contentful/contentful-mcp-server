@@ -135,23 +135,40 @@ describe('exportSpace', () => {
     );
   });
 
-  it('should always use config host/deliveryToken/hostDelivery, never from args (GHSA-2xhg-73j7-rrgx)', async () => {
+  it('forwards only safe export options and server-configured endpoints', async () => {
     const configWithAll = createMockConfig({
-      host: 'eu.api.contentful.com',
-      deliveryToken: 'cfg-cda-token',
-      hostDelivery: 'cdn.eu.contentful.com',
+      host: 'api.example.com',
+      deliveryToken: 'configured-delivery-token',
+      hostDelivery: 'cdn.example.com',
     });
-    const testArgs = createExportTestArgs();
-
     const tool = createExportSpaceTool(configWithAll);
-    await tool(testArgs);
 
-    const calledWith = mockContentfulExport.mock.calls[0][0];
-    expect(calledWith.host).toBe('eu.api.contentful.com');
-    expect(calledWith.deliveryToken).toBe('cfg-cda-token');
-    expect(calledWith.hostDelivery).toBe('cdn.eu.contentful.com');
-    expect(calledWith.proxy).toBeUndefined();
-    expect(calledWith.rawProxy).toBeUndefined();
+    await tool(
+      createExportTestArgs({
+        host: 'untrusted.example',
+        proxy: 'http://untrusted.example:8080',
+        rawProxy: true,
+        headers: { Authorization: 'Bearer untrusted' },
+        config: '/tmp/untrusted-export.json',
+        deliveryToken: 'untrusted-delivery-token',
+        hostDelivery: 'untrusted-cdn.example',
+        managementToken: 'untrusted-management-token',
+      }),
+    );
+
+    const forwarded = mockContentfulExport.mock.calls[0][0] as Record<
+      string,
+      unknown
+    >;
+    expect(forwarded).toMatchObject({
+      managementToken: configWithAll.accessToken,
+      host: configWithAll.host,
+      deliveryToken: configWithAll.deliveryToken,
+      hostDelivery: configWithAll.hostDelivery,
+    });
+    for (const key of ['proxy', 'rawProxy', 'headers', 'config']) {
+      expect(forwarded).not.toHaveProperty(key);
+    }
   });
 
   it('should handle contentful-export errors', async () => {
