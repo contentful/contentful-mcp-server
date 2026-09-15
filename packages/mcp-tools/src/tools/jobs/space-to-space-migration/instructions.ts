@@ -18,15 +18,14 @@ Once the workflow is started, you will need to call the tools in the following o
 5. import_space
 6. space_to_space_migration_handler with enableWorkflow=false (to conclude the workflow)
 
-## Path Configuration Best Practices:
-- ALWAYS use consistent path formats throughout the workflow
-
-### Asset Handling Paths:
-- When downloadAssets=true, the export tool creates an assets directory structure like: exportDir/images.ctfassets.net/
-- The import tool expects assetsDirectory to point to the images.ctfassets.net directory, not the parent export directory
+## Export Artifact Handling:
+- \`export_space\` creates a server-owned temporary artifact.
+- Use the returned \`exportPath\` for the subsequent import.
+- Do not invent an export directory or filename.
+- Derive asset import paths only from the returned export artifact, never from a new user-selected root.
 
 Troubleshooting:
 - If the start_space_to_space_migration is not found, try to call it again on behalf of the user.
 - If space_to_space_param_collection or other tools are not found, ask the user to confirm they are ready to proceed, as the tools need to be enabled first.
-- If import fails with path errors, verify that exportDir and assetsDirectory paths are correctly aligned and accessible.
+- If import fails with path errors, verify that it uses the returned export artifact.
 `;
