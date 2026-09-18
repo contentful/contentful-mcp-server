@@ -48,4 +48,35 @@ export const testUsageCollection = {
       data: [1200, 980, 1430],
     },
   ],
+  dataLastUpdatedAt: '2026-06-30T12:00:00Z',
+};
+
+export const testMonthlyActiveProfilesCollection = {
+  sys: { type: 'Array' as const },
+  total: 1,
+  skip: 0,
+  limit: 100,
+  items: [
+    {
+      sys: {
+        id: 'mock-maps-metric-id',
+        type: 'AggregatedUsage',
+        key: 'monthly_active_profiles',
+        organization: {
+          sys: {
+            type: 'Link' as const,
+            linkType: 'Organization' as const,
+            id: 'test-org-id',
+          },
+        },
+        unitOfMeasurement: 'profiles',
+        dimensions: {},
+        accumulation: 'integrate',
+      },
+      dateRange: { start: '2026-06-01', end: '2026-06-30' },
+      granularity: 'P1M',
+      data: [4200],
+    },
+  ],
+  dataLastUpdatedAt: '2026-06-30T12:00:00Z',
 };
