@@ -1,3 +1,9 @@
+## 0.12.11 (2026-09-21)
+
+### 🩹 Fixes
+
+- secure export file paths ([#475](https://github.com/contentful/contentful-mcp-server/pull/475))
+
 ## 0.12.10 (2026-09-14)
 
 ### 🩹 Fixes

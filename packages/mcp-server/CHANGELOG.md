@@ -1,3 +1,13 @@
+## 1.19.2 (2026-09-21)
+
+### 🩹 Fixes
+
+- secure export file paths ([#475](https://github.com/contentful/contentful-mcp-server/pull/475))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.11
+
 ## 1.19.1 (2026-09-14)
 
 ### 🧱 Updated Dependencies
