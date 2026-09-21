@@ -17,6 +17,12 @@ const SERVER_OWNED_FIELDS = [
   'managementToken',
 ] as const;
 
+const REMOVED_EXPORT_PATH_FIELDS = [
+  'exportDir',
+  'contentFile',
+  'errorLogFile',
+] as const;
+
 describe('paramCollection', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -70,8 +76,6 @@ describe('paramCollection', () => {
           export: {
             spaceId: 'source-space-id',
             environmentId: 'master',
-            exportDir: '/test/export',
-            contentFile: 'export.json',
           },
           import: {
             spaceId: 'target-space-id',
@@ -183,8 +187,14 @@ describe('paramCollection', () => {
       'X-Test-Header',
       '/tmp/untrusted-export.json',
       'untrusted-management-token',
+      '/exports',
+      'backup.json',
+      '/logs/export-errors.log',
     ]) {
       expect(responseText).not.toContain(value);
+    }
+    for (const field of REMOVED_EXPORT_PATH_FIELDS) {
+      expect(responseText).not.toContain(`<${field}>`);
     }
   });
 
@@ -313,16 +323,23 @@ describe('paramCollection', () => {
         new RegExp(`\\n[ \\t]*${field}[ \\t]+//`),
       );
     }
+    const exportParamsSection =
+      responseText.match(/<export>[\s\S]*?<\/export>/)?.[0] ?? '';
+    for (const field of REMOVED_EXPORT_PATH_FIELDS) {
+      expect(exportParamsSection).not.toMatch(
+        new RegExp(`\\n[ \\t]*${field}[ \\t]+//`),
+      );
+    }
   });
 
-  it('does not false-positive on server-owned field names appearing as substrings of supported field values', async () => {
+  it('does not accept removed export path controls even when their values contain supported field names', async () => {
     const testArgs = {
       ...mockArgs,
       confirmation: false,
       export: {
         spaceId: 'source-space',
-        // Contains the substrings "host" and "config" without being the
-        // server-owned `host`/`config` fields themselves.
+        // These values contain the substrings "host" and "config", but the
+        // export path controls are no longer part of the LLM-facing schema.
         errorLogFile: '/var/log/localhost-config-export.log',
       },
     };
@@ -331,9 +348,8 @@ describe('paramCollection', () => {
     const result = await tool(testArgs);
 
     const responseText = result.content[0].text;
-    expect(responseText).toContain(
-      '<errorLogFile>/var/log/localhost-config-export.log</errorLogFile>',
-    );
+    expect(responseText).not.toContain('/var/log/localhost-config-export.log');
+    expect(responseText).not.toContain('<errorLogFile>');
     for (const field of SERVER_OWNED_FIELDS) {
       expect(responseText).not.toContain(`<${field}>`);
     }

@@ -14,6 +14,7 @@ const mockEnvData: Record<string, string | boolean | undefined> = {
   ORGANIZATION_ID: 'test-org-id',
   APP_ID: 'test-app-id',
   PROTECTED_ENVIRONMENTS: undefined,
+  EXPORT_BASE_DIR: undefined,
   ENABLE_EXO_TOOLS: true,
 };
 
@@ -54,6 +55,7 @@ describe('registerAllTools', () => {
   beforeEach(() => {
     // Reset PROTECTED_ENVIRONMENTS to absent for existing tests
     mockEnvData.PROTECTED_ENVIRONMENTS = undefined;
+    mockEnvData.EXPORT_BASE_DIR = undefined;
 
     // Default ExO tools on so existing tests keep seeing the full tool surface
     mockEnvData.ENABLE_EXO_TOOLS = true;
@@ -295,6 +297,23 @@ describe('registerAllTools — PROTECTED_ENVIRONMENTS parsing', () => {
     await registerAllTools(mockServer);
     expect(vi.mocked(ContentfulMcpTools)).toHaveBeenCalledWith(
       expect.objectContaining({ protectedEnvironments: undefined }),
+    );
+  });
+});
+
+describe('registerAllTools — export directory configuration', () => {
+  it('passes the server-controlled export base directory to the tools', async () => {
+    mockEnvData.EXPORT_BASE_DIR = '/var/lib/contentful-mcp/exports';
+    const mockServer = {
+      registerTool: vi.fn(() => ({ disable: vi.fn() })),
+    } as unknown as McpServer;
+
+    await registerAllTools(mockServer);
+
+    expect(vi.mocked(ContentfulMcpTools)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        exportBaseDir: '/var/lib/contentful-mcp/exports',
+      }),
     );
   });
 });

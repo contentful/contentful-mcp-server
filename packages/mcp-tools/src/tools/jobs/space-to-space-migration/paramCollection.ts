@@ -27,9 +27,7 @@ spaceId                 // [string] [required] - ID of the space with source dat
     `,
     optionalParams: `
 environmentId           // [string] [default: 'master'] - ID of the environment in the source space
-exportDir               // [string] [default: process.cwd()] - Path to export JSON output
 saveFile                // [boolean] [default: true] - Save the export as a JSON file
-contentFile             // [string] - Filename for exported data
 
 includeDrafts           // [boolean] [default: false] - Include drafts in exported entries
 includeArchived         // [boolean] [default: false] - Include archived entries
@@ -48,7 +46,6 @@ downloadAssets          // [boolean] - Download asset files to disk
 
 maxAllowedLimit         // [number] [default: 1000] - Page size for requests
 
-errorLogFile            // [string] - Path to error log output file
 useVerboseRenderer      // [boolean] [default: false] - Line-by-line logging, useful for CI
     `,
   },
