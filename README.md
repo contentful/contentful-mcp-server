@@ -75,6 +75,7 @@ npm run build
 | `ENVIRONMENT_ID`                     | ❌ No    | `master`             | Target environment within your space                                                                                                                 |
 | `PROTECTED_ENVIRONMENTS`             | ❌ No    | -                    | Comma-separated environment IDs blocked from write/delete operations (e.g. `master,staging`). See [Protected environments](#protected-environments). |
 | `CONTENTFUL_HOST`                    | ❌ No    | `api.contentful.com` | Contentful API host                                                                                                                                  |
+| `EXPORT_BASE_DIR`                    | ❌ No    | `process.cwd()`     | Server-controlled root directory for `export_space` output                                                                                           |
 | `NODE_ENV`                           | ❌ No    | `production`         | Node Environment to run in                                                                                                                           |
 
 ### Protected environments

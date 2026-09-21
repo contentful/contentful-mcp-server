@@ -1,4 +1,4 @@
-import { beforeAll, describe, expect, it, vi } from 'vitest';
+import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { publishAiActionTool } from '../tools/ai-actions/publishAiAction.js';
 import { unpublishAiActionTool } from '../tools/ai-actions/unpublishAiAction.js';
@@ -27,14 +27,30 @@ const { mockExport, mockImport } = vi.hoisted(() => ({
   mockExport: vi.fn(),
   mockImport: vi.fn(),
 }));
+const { mockMkdir, mockMkdtemp, mockRealpath } = vi.hoisted(() => ({
+  mockMkdir: vi.fn(),
+  mockMkdtemp: vi.fn(),
+  mockRealpath: vi.fn(),
+}));
 vi.mock('contentful-export', () => ({ default: mockExport }));
 vi.mock('contentful-import', () => ({ default: mockImport }));
+vi.mock('node:fs/promises', () => ({
+  mkdir: mockMkdir,
+  mkdtemp: mockMkdtemp,
+  realpath: mockRealpath,
+}));
 
 const config = createMockConfig({ host: 'contentful.invalid' });
 const baseParams = { spaceId: 'test-space', environmentId: 'test-environment' };
 let error: Error;
 beforeAll(async () => {
   error = await createSdkError();
+});
+
+beforeEach(() => {
+  mockMkdir.mockResolvedValue(undefined);
+  mockRealpath.mockImplementation(async (directory) => directory);
+  mockMkdtemp.mockImplementation(async (prefix) => `${prefix}test-directory`);
 });
 
 function expectSanitizedDiagnostics(text: string) {

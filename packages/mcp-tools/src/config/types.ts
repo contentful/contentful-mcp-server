@@ -22,6 +22,8 @@ export interface ContentfulConfig {
   deliveryToken?: string;
   /** Contentful Delivery API host (used with deliveryToken for custom CDA endpoints) */
   hostDelivery?: string;
+  /** Server-controlled root directory for space export output */
+  exportBaseDir?: string;
   /** Environment IDs that are protected from write/delete operations */
   protectedEnvironments?: string[];
   /** Maximum number of IDs allowed in a single bulk-operation tool call. Defaults to 10 when unset. */

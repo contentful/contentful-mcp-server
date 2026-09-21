@@ -56,6 +56,12 @@ const EnvSchema = z.object({
     .describe(
       'Contentful Delivery API host (used with CONTENTFUL_DELIVERY_TOKEN for custom CDA endpoints)',
     ),
+  EXPORT_BASE_DIR: z
+    .string()
+    .optional()
+    .describe(
+      'Server-controlled root directory for space export output (defaults to the current working directory)',
+    ),
 });
 
 export const env = EnvSchema.safeParse(process.env);

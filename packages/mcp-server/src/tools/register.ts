@@ -44,6 +44,7 @@ export async function registerAllTools(server: McpServer): Promise<void> {
     mcpSource: 'local' as const,
     deliveryToken: env.data.CONTENTFUL_DELIVERY_TOKEN,
     hostDelivery: env.data.CONTENTFUL_DELIVERY_HOST,
+    exportBaseDir: env.data.EXPORT_BASE_DIR,
     protectedEnvironments,
     maxBulkSize,
   };
