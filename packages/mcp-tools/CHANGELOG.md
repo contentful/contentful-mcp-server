@@ -1,3 +1,9 @@
+## 0.12.12 (2026-09-22)
+
+### 🚀 Features
+
+- add MAPs to getUsages [MOI-7439] ([#474](https://github.com/contentful/contentful-mcp-server/pull/474))
+
 ## 0.12.11 (2026-09-21)
 
 ### 🩹 Fixes
