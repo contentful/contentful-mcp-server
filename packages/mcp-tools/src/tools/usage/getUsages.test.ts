@@ -3,6 +3,7 @@ import {
   mockRawGet,
   mockCreateClient,
   testUsageCollection,
+  testMonthlyActiveProfilesCollection,
 } from './mockClient.js';
 import { getUsagesTool } from './getUsages.js';
 import { formatResponse } from '../../utils/formatters.js';
@@ -57,6 +58,51 @@ describe('getUsagesTool', () => {
       skip: testUsageCollection.skip,
       metricKey: 'api_call_cma',
       organizationId: 'test-org-id',
+      dataLastUpdatedAt: testUsageCollection.dataLastUpdatedAt,
+    });
+
+    expect(result).toEqual({
+      content: [{ type: 'text', text: expectedResponse }],
+    });
+  });
+
+  it('accepts metricKey "monthly_active_profiles" and surfaces dataLastUpdatedAt', async () => {
+    mockRawGet.mockResolvedValue(testMonthlyActiveProfilesCollection);
+
+    const tool = getUsagesTool(mockConfig);
+    const result = await tool({
+      organizationId: 'test-org-id',
+      metricKey: 'monthly_active_profiles',
+      dateGte: '2026-06-01',
+      dateLte: '2026-06-30',
+      granularity: 'P1M',
+    });
+
+    expect(mockRawGet).toHaveBeenCalledWith(
+      '/organizations/test-org-id/usages/monthly_active_profiles',
+      {
+        params: {
+          'date[gte]': '2026-06-01',
+          'date[lte]': '2026-06-30',
+          granularity: 'P1M',
+        },
+      },
+    );
+
+    const summarized = summarizeData(testMonthlyActiveProfilesCollection, {
+      maxItems: 10,
+      remainingMessage:
+        'To see more usage buckets, please ask me to retrieve the next page using the skip parameter.',
+    });
+
+    const expectedResponse = formatResponse('Usage retrieved successfully', {
+      usage: summarized,
+      total: testMonthlyActiveProfilesCollection.total,
+      limit: testMonthlyActiveProfilesCollection.limit,
+      skip: testMonthlyActiveProfilesCollection.skip,
+      metricKey: 'monthly_active_profiles',
+      organizationId: 'test-org-id',
+      dataLastUpdatedAt: testMonthlyActiveProfilesCollection.dataLastUpdatedAt,
     });
 
     expect(result).toEqual({

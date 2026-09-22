@@ -23,6 +23,7 @@ export const AGGREGATED_USAGE_METRIC_KEYS = [
   'ai_action_invocation',
   'ai_action_word_count',
   'ai_consumption_unit',
+  'monthly_active_profiles',
 ] as const;
 
 type AggregatedUsageMetricKey = (typeof AGGREGATED_USAGE_METRIC_KEYS)[number];
@@ -61,6 +62,7 @@ type AggregatedUsageCollectionProps = {
   skip: number;
   limit: number;
   items: AggregatedUsageItemProps[];
+  dataLastUpdatedAt?: string;
 };
 
 const FilterValueSchema = z.union([
@@ -103,6 +105,7 @@ export const METRIC_DIMENSIONS = {
     'sys.dimensions.model.sys.provider',
     'sys.dimensions.model.sys.id',
   ],
+  monthly_active_profiles: [],
 } as const satisfies Record<AggregatedUsageMetricKey, readonly string[]>;
 
 export const GetUsagesToolParams = z.object({
@@ -122,7 +125,9 @@ export const GetUsagesToolParams = z.object({
         'asset_bandwidth → sys.dimensions.space.sys.id, sys.dimensions.asset.sys.id. ' +
         'functions_invocations → sys.dimensions.space.sys.id, sys.dimensions.app.sys.id, sys.dimensions.function.sys.id. ' +
         'ai_action_invocation / ai_action_word_count / ai_consumption_unit → sys.dimensions.space.sys.id, ' +
-        'sys.dimensions.ai_action.sys.id, sys.dimensions.model.sys.provider, sys.dimensions.model.sys.id.',
+        'sys.dimensions.ai_action.sys.id, sys.dimensions.model.sys.provider, sys.dimensions.model.sys.id. ' +
+        'monthly_active_profiles (MAPs) has no dimensions — do not pass "group", "filter", or "order" ' +
+        'with it. MAPs is calendar-month only: use granularity="P1M" ("P1D" is not meaningful for it).',
     ),
   dateGte: z
     .string()
@@ -244,6 +249,7 @@ export function getUsagesTool(config: ContentfulConfig) {
       skip: collection.skip,
       metricKey,
       organizationId,
+      dataLastUpdatedAt: collection.dataLastUpdatedAt,
     });
   }
 
