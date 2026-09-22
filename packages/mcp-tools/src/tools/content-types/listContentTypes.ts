@@ -4,7 +4,11 @@ import {
   withErrorHandling,
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
-import { summarizeData } from '../../utils/summarizer.js';
+import {
+  summarizeData,
+  offsetRemainingMessage,
+  CURSOR_REMAINING_MESSAGE,
+} from '../../utils/summarizer.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
 export const ListContentTypesToolParams = BaseToolSchema.extend({
@@ -99,8 +103,7 @@ export function listContentTypesTool(config: ContentfulConfig) {
         },
         {
           maxItems: 10,
-          remainingMessage:
-            'To retrieve the full collection, ask me to continue with cursor pagination (cursor: true) using the pageNext token, rather than repeatedly increasing skip.',
+          remainingMessage: CURSOR_REMAINING_MESSAGE,
         },
       );
 
@@ -130,8 +133,7 @@ export function listContentTypesTool(config: ContentfulConfig) {
       },
       {
         maxItems: 10,
-        remainingMessage:
-          'To see more content types, please ask me to retrieve the next page. If you need the entire collection, ask me to use cursor pagination (cursor: true) instead of repeatedly increasing skip.',
+        remainingMessage: offsetRemainingMessage('content types'),
       },
     );
 

@@ -5,14 +5,26 @@ export interface SummarizeOptions {
   remainingMessage?: string;
 }
 
+/**
+ * Guidance shown when an offset-paginated response is truncated. Kept as a
+ * shared template so the cursor-pagination steer can't drift between tools.
+ */
+export function offsetRemainingMessage(itemLabel: string): string {
+  return `To see more ${itemLabel}, please ask me to retrieve the next page. If you need the entire collection, ask me to use cursor pagination (cursor: true) instead of repeatedly increasing skip.`;
+}
+
+/** Guidance shown when a cursor-paginated response is truncated. */
+export const CURSOR_REMAINING_MESSAGE =
+  'To retrieve the full collection, ask me to continue with cursor pagination (cursor: true) using the pageNext token, rather than repeatedly increasing skip.';
+
+const DEFAULT_REMAINING_MESSAGE = offsetRemainingMessage('items');
+
 export const summarizeData = (
   data: unknown,
   options: SummarizeOptions = {},
 ): Record<string, unknown> | Array<unknown> => {
-  const {
-    maxItems = 3,
-    remainingMessage = 'To see more items, please ask me to retrieve the next page. If you need the entire collection, ask me to use cursor pagination (cursor: true) instead of repeatedly increasing skip.',
-  } = options;
+  const { maxItems = 3, remainingMessage = DEFAULT_REMAINING_MESSAGE } =
+    options;
 
   // Handle Contentful-style responses with items and total
   if (data && typeof data === 'object' && 'items' in data && 'total' in data) {

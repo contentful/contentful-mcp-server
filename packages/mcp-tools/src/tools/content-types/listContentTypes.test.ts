@@ -9,6 +9,16 @@ import { listContentTypesTool } from './listContentTypes.js';
 import { formatResponse } from '../../utils/formatters.js';
 import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
+function toExpectedContentTypeItems(
+  items: typeof mockContentTypesResponse.items,
+) {
+  return items.map((contentType) => ({
+    ...contentType,
+    id: contentType.sys.id,
+    fieldsCount: contentType.fields.length,
+  }));
+}
+
 describe('listContentTypes', () => {
   const mockConfig = createMockConfig();
   it('should list content types with default parameters', async () => {
@@ -17,11 +27,9 @@ describe('listContentTypes', () => {
     const tool = listContentTypesTool(mockConfig);
     const result = await tool(mockArgs);
 
-    const expectedItems = mockContentTypesResponse.items.map((contentType) => ({
-      ...contentType,
-      id: contentType.sys.id,
-      fieldsCount: contentType.fields.length,
-    }));
+    const expectedItems = toExpectedContentTypeItems(
+      mockContentTypesResponse.items,
+    );
 
     const expectedResponse = formatResponse(
       'Content types retrieved successfully',
@@ -64,11 +72,7 @@ describe('listContentTypes', () => {
     const tool = listContentTypesTool(mockConfig);
     const result = await tool(testArgs);
 
-    const expectedItems = customResponse.items.map((contentType) => ({
-      ...contentType,
-      id: contentType.sys.id,
-      fieldsCount: contentType.fields.length,
-    }));
+    const expectedItems = toExpectedContentTypeItems(customResponse.items);
 
     const expectedResponse = formatResponse(
       'Content types retrieved successfully',
@@ -173,11 +177,9 @@ describe('listContentTypes', () => {
       },
     });
 
-    const expectedItems = mockContentTypesResponse.items.map((contentType) => ({
-      ...contentType,
-      id: contentType.sys.id,
-      fieldsCount: contentType.fields.length,
-    }));
+    const expectedItems = toExpectedContentTypeItems(
+      mockContentTypesResponse.items,
+    );
 
     const expectedResponse = formatResponse(
       'Content types retrieved successfully',
