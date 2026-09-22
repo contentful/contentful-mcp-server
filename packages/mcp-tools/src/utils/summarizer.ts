@@ -11,7 +11,7 @@ export const summarizeData = (
 ): Record<string, unknown> | Array<unknown> => {
   const {
     maxItems = 3,
-    remainingMessage = 'To see more items, please ask me to retrieve the next page.',
+    remainingMessage = 'To see more items, please ask me to retrieve the next page. If you need the entire collection, ask me to use cursor pagination (cursor: true) instead of repeatedly increasing skip.',
   } = options;
 
   // Handle Contentful-style responses with items and total

@@ -5,6 +5,7 @@ import { summarizeData } from '../../utils/summarizer.js';
 import {
   setupMockClient,
   mockEntryGetMany,
+  mockEntryGetManyWithCursor,
   mockEntry,
   mockArgs,
 } from './mockClient.js';
@@ -191,6 +192,57 @@ describe('searchEntries', () => {
         limit: 10,
         skip: 0,
       },
+    });
+  });
+
+  it('should use cursor-based pagination when cursor: true is set', async () => {
+    const testArgs = {
+      ...mockArgs,
+      query: {
+        content_type: 'test-content-type',
+        limit: 2,
+        cursor: true,
+        pageNext: 'next-cursor-token',
+      },
+    };
+
+    const mockEntries = {
+      items: [{ mockEntry }],
+      limit: 2,
+      pages: { next: 'another-cursor-token' },
+    };
+
+    const mockSummarized = {
+      items: mockEntries.items,
+      pages: mockEntries.pages,
+    };
+
+    mockEntryGetManyWithCursor.mockResolvedValue(mockEntries);
+    vi.mocked(summarizeData).mockReturnValue(mockSummarized);
+
+    const tool = searchEntriesTool(mockConfig);
+    const result = await tool(testArgs);
+
+    expect(mockEntryGetManyWithCursor).toHaveBeenCalledWith({
+      spaceId: testArgs.spaceId,
+      environmentId: testArgs.environmentId,
+      query: {
+        content_type: 'test-content-type',
+        limit: 2,
+        pageNext: 'next-cursor-token',
+      },
+    });
+
+    const expectedResponse = formatResponse('Entries retrieved successfully', {
+      entries: mockSummarized,
+    });
+    expect(result).toEqual({
+      content: [
+        {
+          type: 'text',
+          text: expectedResponse,
+        },
+      ],
     });
   });
 

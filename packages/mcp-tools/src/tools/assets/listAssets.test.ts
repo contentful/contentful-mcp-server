@@ -3,6 +3,7 @@ import { listAssetsTool } from './listAssets.js';
 import {
   setupMockClient,
   mockAssetGetMany,
+  mockAssetGetManyWithCursor,
   mockArgs,
   mockAssetsResponse,
 } from './mockClient.js';
@@ -130,6 +131,43 @@ describe('listAssets', () => {
 
     const tool = listAssetsTool(mockConfig);
     const result = await tool(mockArgs);
+
+    expect(result).toEqual({
+      content: [
+        {
+          type: 'text',
+          text: expect.stringContaining('Assets retrieved successfully'),
+        },
+      ],
+    });
+  });
+
+  it('should use cursor-based pagination when cursor: true is set', async () => {
+    const testArgs = {
+      ...mockArgs,
+      cursor: true,
+      pageNext: 'next-cursor-token',
+      limit: 2,
+    };
+
+    mockAssetGetManyWithCursor.mockResolvedValue({
+      ...mockAssetsResponse,
+      limit: 2,
+      pages: { next: 'another-cursor-token' },
+    });
+
+    const tool = listAssetsTool(mockConfig);
+    const result = await tool(testArgs);
+
+    expect(mockAssetGetManyWithCursor).toHaveBeenCalledWith({
+      spaceId: testArgs.spaceId,
+      environmentId: testArgs.environmentId,
+      query: {
+        limit: 2,
+        pageNext: 'next-cursor-token',
+      },
+    });
+    expect(mockAssetGetMany).not.toHaveBeenCalled();
 
     expect(result).toEqual({
       content: [

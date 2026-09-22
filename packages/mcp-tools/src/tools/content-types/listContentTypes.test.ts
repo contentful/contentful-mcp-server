@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   mockContentTypeGetMany,
+  mockContentTypeGetManyWithCursor,
   mockContentTypesResponse,
   mockArgs,
 } from './mockClient.js';
@@ -133,6 +134,62 @@ describe('listContentTypes', () => {
         total: 0,
         limit: 10,
         skip: 0,
+      },
+    );
+
+    expect(result).toEqual({
+      content: [
+        {
+          type: 'text',
+          text: expectedResponse,
+        },
+      ],
+    });
+  });
+
+  it('should use cursor-based pagination when cursor: true is set', async () => {
+    const testArgs = {
+      ...mockArgs,
+      cursor: true,
+      pageNext: 'next-cursor-token',
+      limit: 5,
+    };
+
+    mockContentTypeGetManyWithCursor.mockResolvedValue({
+      ...mockContentTypesResponse,
+      limit: 5,
+      pages: { next: 'another-cursor-token' },
+    });
+
+    const tool = listContentTypesTool(mockConfig);
+    const result = await tool(testArgs);
+
+    expect(mockContentTypeGetManyWithCursor).toHaveBeenCalledWith({
+      spaceId: testArgs.spaceId,
+      environmentId: testArgs.environmentId,
+      query: {
+        limit: 5,
+        pageNext: 'next-cursor-token',
+      },
+    });
+
+    const expectedItems = mockContentTypesResponse.items.map((contentType) => ({
+      ...contentType,
+      id: contentType.sys.id,
+      fieldsCount: contentType.fields.length,
+    }));
+
+    const expectedResponse = formatResponse(
+      'Content types retrieved successfully',
+      {
+        contentTypes: {
+          ...mockContentTypesResponse,
+          limit: 5,
+          pages: { next: 'another-cursor-token' },
+          items: expectedItems,
+        },
+        limit: 5,
+        pages: { next: 'another-cursor-token' },
       },
     );
 
