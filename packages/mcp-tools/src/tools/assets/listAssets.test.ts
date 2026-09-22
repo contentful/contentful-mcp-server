@@ -177,6 +177,7 @@ describe('listAssets', () => {
         },
       ],
     });
+    expect(result.content[0].text).toContain('another-cursor-token');
   });
 
   it('should handle errors when asset listing fails', async () => {

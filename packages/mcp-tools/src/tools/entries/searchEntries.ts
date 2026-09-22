@@ -6,8 +6,8 @@ import {
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
 import {
   summarizeData,
+  summarizeCursorData,
   offsetRemainingMessage,
-  CURSOR_REMAINING_MESSAGE,
 } from '../../utils/summarizer.js';
 import { searchLimit } from '../../utils/limits.js';
 import { normalizeArrayFilters } from '../../utils/queryParams.js';
@@ -168,13 +168,14 @@ export function searchEntriesTool(config: ContentfulConfig) {
         >[0]['query'],
       });
 
-      const summarized = summarizeData(entries, {
+      const summarized = summarizeCursorData(entries, {
         maxItems: searchLimit(limit),
-        remainingMessage: CURSOR_REMAINING_MESSAGE,
       });
 
       return createSuccessResponse('Entries retrieved successfully', {
         entries: summarized,
+        limit: entries.limit,
+        pages: entries.pages,
       });
     }
 

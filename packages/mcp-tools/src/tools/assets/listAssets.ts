@@ -6,8 +6,8 @@ import {
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
 import {
   summarizeData,
+  summarizeCursorData,
   offsetRemainingMessage,
-  CURSOR_REMAINING_MESSAGE,
 } from '../../utils/summarizer.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
@@ -135,14 +135,13 @@ export function listAssetsTool(config: ContentfulConfig) {
 
       const summarizedAssets = summarizeAssetItems(assets.items, locale);
 
-      const summarized = summarizeData(
+      const summarized = summarizeCursorData(
         {
           ...assets,
           items: summarizedAssets,
         },
         {
           maxItems: 3,
-          remainingMessage: CURSOR_REMAINING_MESSAGE,
         },
       );
 

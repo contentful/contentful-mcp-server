@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { searchEntriesTool } from './searchEntries.js';
 import { formatResponse } from '../../utils/formatters.js';
-import { summarizeData } from '../../utils/summarizer.js';
+import { summarizeData, summarizeCursorData } from '../../utils/summarizer.js';
 import {
   setupMockClient,
   mockEntryGetMany,
@@ -218,7 +218,7 @@ describe('searchEntries', () => {
     };
 
     mockEntryGetManyWithCursor.mockResolvedValue(mockEntries);
-    vi.mocked(summarizeData).mockReturnValue(mockSummarized);
+    vi.mocked(summarizeCursorData).mockReturnValue(mockSummarized);
 
     const tool = searchEntriesTool(mockConfig);
     const result = await tool(testArgs);
@@ -235,6 +235,8 @@ describe('searchEntries', () => {
 
     const expectedResponse = formatResponse('Entries retrieved successfully', {
       entries: mockSummarized,
+      limit: mockEntries.limit,
+      pages: mockEntries.pages,
     });
     expect(result).toEqual({
       content: [
@@ -244,6 +246,7 @@ describe('searchEntries', () => {
         },
       ],
     });
+    expect(result.content[0].text).toContain('another-cursor-token');
   });
 
   it('should handle errors when search fails', async () => {

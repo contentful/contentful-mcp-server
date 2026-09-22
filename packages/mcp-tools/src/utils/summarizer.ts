@@ -5,6 +5,11 @@ export interface SummarizeOptions {
   remainingMessage?: string;
 }
 
+export interface CursorPaginatedLike {
+  items: unknown[];
+  pages?: { next?: string; prev?: string };
+}
+
 /**
  * Guidance shown when an offset-paginated response is truncated. Kept as a
  * shared template so the cursor-pagination steer can't drift between tools.
@@ -68,4 +73,29 @@ export const summarizeData = (
 
   // Return non-array data as-is (cast to expected return type)
   return data as Record<string, unknown>;
+};
+
+/**
+ * Truncates a cursor-paginated response (no total/skip) for display, preserving
+ * `pages` so callers can keep following pageNext/pagePrev instead of the skip
+ * field summarizeData() attaches for offset-paginated responses.
+ */
+export const summarizeCursorData = (
+  data: CursorPaginatedLike,
+  options: Pick<SummarizeOptions, 'maxItems' | 'remainingMessage'> = {},
+): Record<string, unknown> => {
+  const { maxItems = 3, remainingMessage = CURSOR_REMAINING_MESSAGE } =
+    options;
+
+  if (data.items.length <= maxItems) {
+    return data as unknown as Record<string, unknown>;
+  }
+
+  return {
+    ...data,
+    items: data.items.slice(0, maxItems),
+    showing: maxItems,
+    remaining: data.items.length - maxItems,
+    message: remainingMessage,
+  };
 };
