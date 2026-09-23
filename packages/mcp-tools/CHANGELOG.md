@@ -1,3 +1,9 @@
+## 0.12.13 (2026-09-23)
+
+### 🚀 Features
+
+- add Release entity tools to mcp-tools [AIS-626] ([#477](https://github.com/contentful/contentful-mcp-server/pull/477))
+
 ## 0.12.12 (2026-09-22)
 
 ### 🚀 Features
