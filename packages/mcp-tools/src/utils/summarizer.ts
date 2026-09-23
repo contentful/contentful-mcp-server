@@ -22,14 +22,37 @@ export function offsetRemainingMessage(itemLabel: string): string {
 export const CURSOR_REMAINING_MESSAGE =
   'To retrieve the full collection, ask me to continue with cursor pagination (cursor: true) using the pageNext token, rather than repeatedly increasing skip.';
 
+export const DEFAULT_MAX_ITEMS = 3;
+
 const DEFAULT_REMAINING_MESSAGE = offsetRemainingMessage('items');
+
+/**
+ * Shared truncation core: slices `items` to `maxItems` and builds the
+ * showing/remaining/message fields common to both offset- and cursor-mode
+ * summarization. Callers merge in whichever pagination fields (skip vs.
+ * pages) apply to their response shape.
+ */
+function truncateItems(
+  items: unknown[],
+  maxItems: number,
+  remainingMessage: string,
+) {
+  return {
+    items: items.slice(0, maxItems),
+    showing: maxItems,
+    remaining: items.length - maxItems,
+    message: remainingMessage,
+  };
+}
 
 export const summarizeData = (
   data: unknown,
   options: SummarizeOptions = {},
 ): Record<string, unknown> | Array<unknown> => {
-  const { maxItems = 3, remainingMessage = DEFAULT_REMAINING_MESSAGE } =
-    options;
+  const {
+    maxItems = DEFAULT_MAX_ITEMS,
+    remainingMessage = DEFAULT_REMAINING_MESSAGE,
+  } = options;
 
   // Handle Contentful-style responses with items and total
   if (data && typeof data === 'object' && 'items' in data && 'total' in data) {
@@ -46,11 +69,8 @@ export const summarizeData = (
     }
 
     return {
-      items: items.slice(0, maxItems),
-      total: total,
-      showing: maxItems,
-      remaining: total - maxItems,
-      message: remainingMessage,
+      ...truncateItems(items, maxItems, remainingMessage),
+      total,
       skip: maxItems, // Add skip value for next page
     };
   }
@@ -62,11 +82,8 @@ export const summarizeData = (
     }
 
     return {
-      items: data.slice(0, maxItems),
+      ...truncateItems(data, maxItems, remainingMessage),
       total: data.length,
-      showing: maxItems,
-      remaining: data.length - maxItems,
-      message: remainingMessage,
       skip: maxItems, // Add skip value for next page
     };
   }
@@ -84,8 +101,10 @@ export const summarizeCursorData = (
   data: CursorPaginatedLike,
   options: Pick<SummarizeOptions, 'maxItems' | 'remainingMessage'> = {},
 ): Record<string, unknown> => {
-  const { maxItems = 3, remainingMessage = CURSOR_REMAINING_MESSAGE } =
-    options;
+  const {
+    maxItems = DEFAULT_MAX_ITEMS,
+    remainingMessage = CURSOR_REMAINING_MESSAGE,
+  } = options;
 
   if (data.items.length <= maxItems) {
     return data as unknown as Record<string, unknown>;
@@ -93,9 +112,6 @@ export const summarizeCursorData = (
 
   return {
     ...data,
-    items: data.items.slice(0, maxItems),
-    showing: maxItems,
-    remaining: data.items.length - maxItems,
-    message: remainingMessage,
+    ...truncateItems(data.items, maxItems, remainingMessage),
   };
 };

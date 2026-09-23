@@ -9,7 +9,7 @@ import type { ContentfulConfig } from '../../../config/types.js';
 import { summarizeData } from '../../../utils/summarizer.js';
 
 const CONCEPTS_REMAINING_MESSAGE =
-  'To see more concepts, please ask me to retrieve the next page using the limit parameter.';
+  'This tool has no next-page parameter. To see more concepts, ask me to retry with a higher limit.';
 
 export const ListConceptsToolParams = z.object({
   organizationId: z.string().describe('The ID of the Contentful organization'),
