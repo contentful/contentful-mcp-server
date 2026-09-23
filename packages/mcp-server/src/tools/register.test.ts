@@ -107,6 +107,7 @@ describe('registerAllTools', () => {
       mcpTools.getLocaleTools(),
       mcpTools.getOrgTools(),
       mcpTools.getSpaceTools(),
+      mcpTools.getReleaseTools(),
       mcpTools.getTagTools(),
       mcpTools.getTaxonomyTools(),
       mcpTools.getUsageTools(),

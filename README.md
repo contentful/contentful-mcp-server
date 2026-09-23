@@ -75,7 +75,7 @@ npm run build
 | `ENVIRONMENT_ID`                     | ❌ No    | `master`             | Target environment within your space                                                                                                                 |
 | `PROTECTED_ENVIRONMENTS`             | ❌ No    | -                    | Comma-separated environment IDs blocked from write/delete operations (e.g. `master,staging`). See [Protected environments](#protected-environments). |
 | `CONTENTFUL_HOST`                    | ❌ No    | `api.contentful.com` | Contentful API host                                                                                                                                  |
-| `EXPORT_BASE_DIR`                    | ❌ No    | `process.cwd()`     | Server-controlled root directory for `export_space` output                                                                                           |
+| `EXPORT_BASE_DIR`                    | ❌ No    | `process.cwd()`      | Server-controlled root directory for `export_space` output                                                                                           |
 | `NODE_ENV`                           | ❌ No    | `production`         | Node Environment to run in                                                                                                                           |
 
 ### Protected environments
@@ -122,55 +122,65 @@ Below is a sample configuration:
 
 ## 🛠️ Available Tools
 
-| Category                  | Tool Name                  | Description                                      |
-| ------------------------- | -------------------------- | ------------------------------------------------ |
-| **Context & Setup**       | `get_initial_context`      | Initialize connection and get usage instructions |
-| **Content Types**         | `list_content_types`       | List all content types                           |
-|                           | `get_content_type`         | Get detailed content type information            |
-|                           | `create_content_type`      | Create new content types                         |
-|                           | `update_content_type`      | Modify existing content types                    |
-|                           | `publish_content_type`     | Publish content type changes                     |
-|                           | `unpublish_content_type`   | Unpublish content types                          |
-|                           | `delete_content_type`      | Remove content types                             |
-| **Entries**               | `search_entries`           | Search and filter entries                        |
-|                           | `semantic_search`          | Find entries by meaning (vector search)          |
-|                           | `get_entry`                | Retrieve specific entries                        |
-|                           | `get_entry_snapshot`       | Retrieve entry version history (snapshots)       |
-|                           | `create_entry`             | Create new content entries                       |
-|                           | `update_entry`             | Modify existing entries                          |
-|                           | `publish_entry`            | Publish entries (single or bulk)                 |
-|                           | `unpublish_entry`          | Unpublish entries (single or bulk)               |
-|                           | `delete_entry`             | Remove entries                                   |
-| **Assets**                | `upload_asset`             | Upload new assets                                |
-|                           | `list_assets`              | List and browse assets                           |
-|                           | `get_asset`                | Retrieve specific assets                         |
-|                           | `update_asset`             | Modify asset metadata                            |
-|                           | `publish_asset`            | Publish assets (single or bulk)                  |
-|                           | `unpublish_asset`          | Unpublish assets (single or bulk)                |
-|                           | `delete_asset`             | Remove assets                                    |
-| **Spaces & Environments** | `list_spaces`              | List available spaces                            |
-|                           | `get_space`                | Get space details                                |
-|                           | `list_environments`        | List environments                                |
-|                           | `create_environment`       | Create new environments                          |
-|                           | `delete_environment`       | Remove environments                              |
-| **Content Preview**       | `list_content_previews`    | List content previews and their URL templates    |
-|                           | `get_entry_preview_url`    | Resolve the draft-preview URL for an entry       |
-| **Locales**               | `list_locales`             | List all locales in your environment             |
-|                           | `get_locale`               | Retrieve specific locale information             |
-|                           | `create_locale`            | Create new locales for multi-language content    |
-|                           | `update_locale`            | Modify existing locale settings                  |
-|                           | `delete_locale`            | Remove locales from environment                  |
-| **Tags**                  | `list_tags`                | List all tags                                    |
-|                           | `create_tag`               | Create new tags                                  |
-| **AI Actions**            | `create_ai_action`         | Create custom AI-powered workflows               |
-|                           | `invoke_ai_action`         | Invoke an AI action with variables               |
-|                           | `get_ai_action_invocation` | Get AI action invocation details                 |
-|                           | `get_ai_action`            | Retrieve AI action details and configuration     |
-|                           | `list_ai_actions`          | List AI actions in a space                       |
-|                           | `update_ai_action`         | Update existing AI actions                       |
-|                           | `publish_ai_action`        | Publish AI actions for use                       |
-|                           | `unpublish_ai_action`      | Unpublish AI actions                             |
-|                           | `delete_ai_action`         | Remove AI actions                                |
+| Category                  | Tool Name                  | Description                                                                               |
+| ------------------------- | -------------------------- | ----------------------------------------------------------------------------------------- |
+| **Context & Setup**       | `get_initial_context`      | Initialize connection and get usage instructions                                          |
+| **Content Types**         | `list_content_types`       | List all content types                                                                    |
+|                           | `get_content_type`         | Get detailed content type information                                                     |
+|                           | `create_content_type`      | Create new content types                                                                  |
+|                           | `update_content_type`      | Modify existing content types                                                             |
+|                           | `publish_content_type`     | Publish content type changes                                                              |
+|                           | `unpublish_content_type`   | Unpublish content types                                                                   |
+|                           | `delete_content_type`      | Remove content types                                                                      |
+| **Entries**               | `search_entries`           | Search and filter entries                                                                 |
+|                           | `semantic_search`          | Find entries by meaning (vector search)                                                   |
+|                           | `get_entry`                | Retrieve specific entries                                                                 |
+|                           | `get_entry_snapshot`       | Retrieve entry version history (snapshots)                                                |
+|                           | `create_entry`             | Create new content entries                                                                |
+|                           | `update_entry`             | Modify existing entries                                                                   |
+|                           | `publish_entry`            | Publish entries (single or bulk)                                                          |
+|                           | `unpublish_entry`          | Unpublish entries (single or bulk)                                                        |
+|                           | `delete_entry`             | Remove entries                                                                            |
+| **Assets**                | `upload_asset`             | Upload new assets                                                                         |
+|                           | `list_assets`              | List and browse assets                                                                    |
+|                           | `get_asset`                | Retrieve specific assets                                                                  |
+|                           | `update_asset`             | Modify asset metadata                                                                     |
+|                           | `publish_asset`            | Publish assets (single or bulk)                                                           |
+|                           | `unpublish_asset`          | Unpublish assets (single or bulk)                                                         |
+|                           | `delete_asset`             | Remove assets                                                                             |
+| **Spaces & Environments** | `list_spaces`              | List available spaces                                                                     |
+|                           | `get_space`                | Get space details                                                                         |
+|                           | `list_environments`        | List environments                                                                         |
+|                           | `create_environment`       | Create new environments                                                                   |
+|                           | `delete_environment`       | Remove environments                                                                       |
+| **Content Preview**       | `list_content_previews`    | List content previews and their URL templates                                             |
+|                           | `get_entry_preview_url`    | Resolve the draft-preview URL for an entry                                                |
+| **Locales**               | `list_locales`             | List all locales in your environment                                                      |
+|                           | `get_locale`               | Retrieve specific locale information                                                      |
+|                           | `create_locale`            | Create new locales for multi-language content                                             |
+|                           | `update_locale`            | Modify existing locale settings                                                           |
+|                           | `delete_locale`            | Remove locales from environment                                                           |
+| **Releases**              | `list_releases`            | List releases (max 10 per request)                                                        |
+|                           | `get_release`              | Retrieve a release                                                                        |
+|                           | `create_release`           | Create a release with Entries/Assets                                                      |
+|                           | `update_release`           | Modify a release's title and/or contents                                                  |
+|                           | `delete_release`           | Remove a release (and its linked release actions)                                         |
+|                           | `publish_release`          | Publish a release (async; check via `get_release_action`)                                 |
+|                           | `unpublish_release`        | Unpublish a release (async; check via `get_release_action`)                               |
+|                           | `validate_release`         | Validate a release, optionally against publish/unpublish                                  |
+|                           | `get_release_action`       | Check the status of a queued release action                                               |
+|                           | `list_release_actions`     | List release actions (max 10 per request)                                                 |
+| **Tags**                  | `list_tags`                | List all tags                                                                             |
+|                           | `create_tag`               | Create new tags                                                                           |
+| **AI Actions**            | `create_ai_action`         | Create custom AI-powered workflows                                                        |
+|                           | `invoke_ai_action`         | Invoke an AI action with variables                                                        |
+|                           | `get_ai_action_invocation` | Get AI action invocation details                                                          |
+|                           | `get_ai_action`            | Retrieve AI action details and configuration                                              |
+|                           | `list_ai_actions`          | List AI actions in a space                                                                |
+|                           | `update_ai_action`         | Update existing AI actions                                                                |
+|                           | `publish_ai_action`        | Publish AI actions for use                                                                |
+|                           | `unpublish_ai_action`      | Unpublish AI actions                                                                      |
+|                           | `delete_ai_action`         | Remove AI actions                                                                         |
 | **Usage**                 | `get_usages`               | Get aggregated usage metrics for an organization, optionally filtered or grouped by space |
 
 ## 🤝 Contributing and Development
