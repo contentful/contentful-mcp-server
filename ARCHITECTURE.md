@@ -19,31 +19,32 @@ graph TD
 
 ## Internal Structure
 
-| Package | Purpose |
-|---|---|
-| `packages/mcp-server` | Thin server shell — connects MCP SDK transport (stdio) to tool registrations. Published as `@contentful/mcp-server` on npm. Entry point: `src/index.ts` |
-| `packages/mcp-tools` | All tool implementations, Zod schemas, CMA client utilities, and domain logic. Published as `@contentful/mcp-tools` on GitHub Packages. Consumed by both local and remote MCP servers |
+| Package               | Purpose                                                                                                                                                                               |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `packages/mcp-server` | Thin server shell — connects MCP SDK transport (stdio) to tool registrations. Published as `@contentful/mcp-server` on npm. Entry point: `src/index.ts`                               |
+| `packages/mcp-tools`  | All tool implementations, Zod schemas, CMA client utilities, and domain logic. Published as `@contentful/mcp-tools` on GitHub Packages. Consumed by both local and remote MCP servers |
 
 ### mcp-tools Internal Layout
 
-| Directory | Purpose |
-|---|---|
-| `src/tools/entries/` | CRUD + publish/unpublish/archive for content entries |
-| `src/tools/content-types/` | Content type management (list, get, create, update, publish) |
-| `src/tools/assets/` | Asset upload, metadata management, publish/unpublish |
-| `src/tools/ai-actions/` | AI Action creation, invocation, and lifecycle management |
-| `src/tools/taxonomies/` | Concept and concept scheme management (taxonomy system) |
-| `src/tools/jobs/space-to-space-migration/` | Multi-step space migration workflow |
-| `src/tools/context/` | Initial context tool + MCP instructions prompt |
-| `src/tools/environments/` | Environment CRUD |
-| `src/tools/locales/` | Locale management |
-| `src/tools/spaces/` | Space listing and details |
-| `src/tools/orgs/` | Organization listing and details |
-| `src/tools/tags/` | Tag management |
-| `src/tools/editor-interfaces/` | Editor interface configuration |
-| `src/config/` | `ContentfulConfig` type definition |
-| `src/types/` | Zod schemas for fields, entries, rich text, taxonomies |
-| `src/utils/` | CMA client factory, response formatting, bulk operations, summarizer |
+| Directory                                  | Purpose                                                              |
+| ------------------------------------------ | -------------------------------------------------------------------- |
+| `src/tools/entries/`                       | CRUD + publish/unpublish/archive for content entries                 |
+| `src/tools/content-types/`                 | Content type management (list, get, create, update, publish)         |
+| `src/tools/assets/`                        | Asset upload, metadata management, publish/unpublish                 |
+| `src/tools/ai-actions/`                    | AI Action creation, invocation, and lifecycle management             |
+| `src/tools/taxonomies/`                    | Concept and concept scheme management (taxonomy system)              |
+| `src/tools/jobs/space-to-space-migration/` | Multi-step space migration workflow                                  |
+| `src/tools/context/`                       | Initial context tool + MCP instructions prompt                       |
+| `src/tools/environments/`                  | Environment CRUD                                                     |
+| `src/tools/locales/`                       | Locale management                                                    |
+| `src/tools/spaces/`                        | Space listing and details                                            |
+| `src/tools/orgs/`                          | Organization listing and details                                     |
+| `src/tools/tags/`                          | Tag management                                                       |
+| `src/tools/releases/`                      | Release CRUD, publish/unpublish/validate, ReleaseAction reads        |
+| `src/tools/editor-interfaces/`             | Editor interface configuration                                       |
+| `src/config/`                              | `ContentfulConfig` type definition                                   |
+| `src/types/`                               | Zod schemas for fields, entries, rich text, taxonomies               |
+| `src/utils/`                               | CMA client factory, response formatting, bulk operations, summarizer |
 
 ## Data Flow
 
@@ -81,28 +82,28 @@ Migration tools are disabled by default and only enabled when the workflow is ac
 
 ## Key Dependencies
 
-| Dependency | Why it's here |
-|---|---|
-| `@modelcontextprotocol/sdk` | MCP protocol implementation — server, transport, tool registration |
-| `contentful-management` | Official CMA JavaScript client — all API calls to Contentful |
-| `contentful-export` / `contentful-import` | Space migration utilities (lazy-loaded) |
-| `zod` | Runtime schema validation for all tool inputs |
-| `fast-xml-parser` | XML parsing for asset upload responses |
-| `nx` | Monorepo orchestration — build caching, task dependencies, release management |
-| `tsup` | TypeScript bundler — produces ESM output for both packages |
-| `vitest` | Unit test framework |
+| Dependency                                | Why it's here                                                                 |
+| ----------------------------------------- | ----------------------------------------------------------------------------- |
+| `@modelcontextprotocol/sdk`               | MCP protocol implementation — server, transport, tool registration            |
+| `contentful-management`                   | Official CMA JavaScript client — all API calls to Contentful                  |
+| `contentful-export` / `contentful-import` | Space migration utilities (lazy-loaded)                                       |
+| `zod`                                     | Runtime schema validation for all tool inputs                                 |
+| `fast-xml-parser`                         | XML parsing for asset upload responses                                        |
+| `nx`                                      | Monorepo orchestration — build caching, task dependencies, release management |
+| `tsup`                                    | TypeScript bundler — produces ESM output for both packages                    |
+| `vitest`                                  | Unit test framework                                                           |
 
 ## Configuration
 
-| Variable | Purpose | Default |
-|---|---|---|
-| `CONTENTFUL_MANAGEMENT_ACCESS_TOKEN` | CMA personal access token (required) | — |
-| `SPACE_ID` | Target Contentful space | — |
-| `ENVIRONMENT_ID` | Target environment within the space | `master` |
-| `CONTENTFUL_HOST` | CMA API hostname | `api.contentful.com` |
-| `ORGANIZATION_ID` | Org ID (for org-level operations) | — |
-| `APP_ID` | Contentful App ID (for app context) | — |
-| `NODE_ENV` | Runtime mode (`development` enables logging) | `production` |
+| Variable                             | Purpose                                      | Default              |
+| ------------------------------------ | -------------------------------------------- | -------------------- |
+| `CONTENTFUL_MANAGEMENT_ACCESS_TOKEN` | CMA personal access token (required)         | —                    |
+| `SPACE_ID`                           | Target Contentful space                      | —                    |
+| `ENVIRONMENT_ID`                     | Target environment within the space          | `master`             |
+| `CONTENTFUL_HOST`                    | CMA API hostname                             | `api.contentful.com` |
+| `ORGANIZATION_ID`                    | Org ID (for org-level operations)            | —                    |
+| `APP_ID`                             | Contentful App ID (for app context)          | —                    |
+| `NODE_ENV`                           | Runtime mode (`development` enables logging) | `production`         |
 
 ## Operational Knowledge
 
