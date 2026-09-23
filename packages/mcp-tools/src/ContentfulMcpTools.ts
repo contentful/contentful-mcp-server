@@ -20,6 +20,7 @@ import { createExperienceTemplateTools } from './tools/exo/experience-templates/
 import { createExperienceTools } from './tools/exo/experiences/register.js';
 import { createDataAssemblyTools } from './tools/exo/data-assemblies/register.js';
 import { createDesignTokenTools } from './tools/exo/design-tokens/register.js';
+import { createReleaseTools } from './tools/releases/register.js';
 
 /**
  * Main class for Contentful MCP Tools
@@ -145,6 +146,13 @@ export class ContentfulMcpTools {
    */
   getSpaceTools() {
     return createSpaceTools(this.config);
+  }
+
+  /**
+   * Get release tools
+   */
+  getReleaseTools() {
+    return createReleaseTools(this.config);
   }
 
   /**
