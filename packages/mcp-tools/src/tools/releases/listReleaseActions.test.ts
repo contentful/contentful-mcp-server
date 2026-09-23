@@ -30,7 +30,7 @@ describe('listReleaseActions', () => {
     expect(mockReleaseActionGetMany).toHaveBeenCalledWith({
       spaceId: baseArgs.spaceId,
       environmentId: baseArgs.environmentId,
-      query: {},
+      query: { limit: 10 },
     });
     expect(result.content[0].text).toContain(
       'Release actions retrieved successfully',
@@ -53,6 +53,7 @@ describe('listReleaseActions', () => {
       spaceId: baseArgs.spaceId,
       environmentId: baseArgs.environmentId,
       query: {
+        limit: 10,
         'sys.release.sys.id[in]': 'release-1,release-2',
         action: 'publish',
         'sys.status[in]': 'succeeded',
@@ -61,7 +62,7 @@ describe('listReleaseActions', () => {
     });
   });
 
-  it('forwards limit', async () => {
+  it('clamps limit to 10', async () => {
     mockReleaseActionGetMany.mockResolvedValue(mockReleaseActionsResponse);
 
     const tool = listReleaseActionsTool(mockConfig);
@@ -70,7 +71,20 @@ describe('listReleaseActions', () => {
     expect(mockReleaseActionGetMany).toHaveBeenCalledWith({
       spaceId: baseArgs.spaceId,
       environmentId: baseArgs.environmentId,
-      query: { limit: 25 },
+      query: { limit: 10 },
+    });
+  });
+
+  it('clamps non-positive limits to one item', async () => {
+    mockReleaseActionGetMany.mockResolvedValue(mockReleaseActionsResponse);
+
+    const tool = listReleaseActionsTool(mockConfig);
+    await tool({ ...baseArgs, limit: -5 });
+
+    expect(mockReleaseActionGetMany).toHaveBeenCalledWith({
+      spaceId: baseArgs.spaceId,
+      environmentId: baseArgs.environmentId,
+      query: { limit: 1 },
     });
   });
 

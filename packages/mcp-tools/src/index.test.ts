@@ -97,6 +97,8 @@ describe('ContentfulMcpTools', () => {
     expect(typeof tools.getOrgTools).toBe('function');
     expect(tools.getSpaceTools).toBeDefined();
     expect(typeof tools.getSpaceTools).toBe('function');
+    expect(tools.getReleaseTools).toBeDefined();
+    expect(typeof tools.getReleaseTools).toBe('function');
     expect(tools.getTagTools).toBeDefined();
     expect(typeof tools.getTagTools).toBe('function');
     expect(tools.getTaxonomyTools).toBeDefined();

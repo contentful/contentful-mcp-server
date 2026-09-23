@@ -7,6 +7,8 @@ import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
 import { summarizeData } from '../../utils/summarizer.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
+const MAX_ITEMS = 10;
+
 export const ListReleaseActionsToolParams = BaseToolSchema.extend({
   releaseId: z
     .string()
@@ -44,16 +46,16 @@ export function listReleaseActionsTool(config: ContentfulConfig) {
       spaceId: args.spaceId,
       environmentId: args.environmentId,
       query: {
+        limit: Math.max(1, Math.min(args.limit ?? MAX_ITEMS, MAX_ITEMS)),
         ...(args.releaseId && { 'sys.release.sys.id[in]': args.releaseId }),
         ...(args.action && { action: args.action }),
         ...(args.statusIn && { 'sys.status[in]': args.statusIn }),
         ...(args.statusNin && { 'sys.status[nin]': args.statusNin }),
-        ...(args.limit && { limit: args.limit }),
       },
     });
 
     const summarized = summarizeData(releaseActions, {
-      maxItems: 10,
+      maxItems: MAX_ITEMS,
       remainingMessage:
         'To see more release actions, narrow your filters or ask for a smaller limit.',
     });

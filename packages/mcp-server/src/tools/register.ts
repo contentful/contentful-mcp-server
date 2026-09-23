@@ -71,6 +71,7 @@ export async function registerAllTools(server: McpServer): Promise<void> {
   const localeTools = tools.getLocaleTools();
   const orgTools = tools.getOrgTools();
   const spaceTools = tools.getSpaceTools();
+  const releaseTools = tools.getReleaseTools();
   const tagTools = tools.getTagTools();
   const taxonomyTools = tools.getTaxonomyTools();
   const usageTools = tools.getUsageTools();
@@ -88,6 +89,7 @@ export async function registerAllTools(server: McpServer): Promise<void> {
     localeTools,
     orgTools,
     spaceTools,
+    releaseTools,
     tagTools,
     taxonomyTools,
     usageTools,

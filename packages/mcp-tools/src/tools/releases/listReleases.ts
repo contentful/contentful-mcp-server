@@ -7,6 +7,8 @@ import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
 import { summarizeData } from '../../utils/summarizer.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
+const MAX_ITEMS = 10;
+
 export const ListReleasesToolParams = BaseToolSchema.extend({
   limit: z
     .number()
@@ -33,7 +35,7 @@ export const ListReleasesToolParams = BaseToolSchema.extend({
     .optional()
     .describe('Full text phrase/term match on release title'),
   entitiesLinkType: z
-    .string()
+    .enum(['Entry', 'Asset'])
     .optional()
     .describe('Filter releases by the linked entity type (Entry or Asset)'),
   entitiesSysIdIn: z
@@ -48,13 +50,19 @@ type Params = z.infer<typeof ListReleasesToolParams>;
 
 export function listReleasesTool(config: ContentfulConfig) {
   async function tool(args: Params) {
+    if (args.entitiesSysIdIn && !args.entitiesLinkType) {
+      throw new Error(
+        'entitiesLinkType is required when entitiesSysIdIn is provided',
+      );
+    }
+
     const contentfulClient = createToolClient(config, args);
 
     const releases = await contentfulClient.release.query({
       spaceId: args.spaceId,
       environmentId: args.environmentId,
       query: {
-        limit: Math.min(args.limit || 10, 10),
+        limit: Math.max(1, Math.min(args.limit ?? MAX_ITEMS, MAX_ITEMS)),
         ...(args.pageNext && { pageNext: args.pageNext }),
         ...(args.pagePrev && { pagePrev: args.pagePrev }),
         ...(args.statusIn && { 'sys.status[in]': args.statusIn }),
@@ -72,7 +80,7 @@ export function listReleasesTool(config: ContentfulConfig) {
     });
 
     const summarized = summarizeData(releases, {
-      maxItems: 10,
+      maxItems: MAX_ITEMS,
       remainingMessage:
         'To see more releases, ask me to retrieve the next page using the pageNext cursor.',
     });

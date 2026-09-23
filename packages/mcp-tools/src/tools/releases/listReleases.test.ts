@@ -98,6 +98,37 @@ describe('listReleases', () => {
     });
   });
 
+  it('clamps non-positive limits to one item', async () => {
+    mockReleaseQuery.mockResolvedValue(mockReleasesResponse);
+
+    const tool = listReleasesTool(mockConfig);
+    await tool({ ...baseArgs, limit: -5 });
+
+    expect(mockReleaseQuery).toHaveBeenCalledWith({
+      spaceId: baseArgs.spaceId,
+      environmentId: baseArgs.environmentId,
+      query: { limit: 1 },
+    });
+  });
+
+  it('requires an entity link type when filtering by entity IDs', async () => {
+    mockReleaseQuery.mockResolvedValue(mockReleasesResponse);
+
+    const tool = listReleasesTool(mockConfig);
+    const result = await tool({ ...baseArgs, entitiesSysIdIn: 'entry-1' });
+
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: 'Error listing releases: entitiesLinkType is required when entitiesSysIdIn is provided',
+        },
+      ],
+    });
+    expect(mockReleaseQuery).not.toHaveBeenCalled();
+  });
+
   it('handles errors', async () => {
     mockReleaseQuery.mockRejectedValue(new Error('boom'));
 

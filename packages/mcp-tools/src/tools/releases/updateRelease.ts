@@ -9,13 +9,10 @@ import {
   assertEnvironmentNotProtected,
 } from '../../utils/tools.js';
 import type { ContentfulConfig } from '../../config/types.js';
-
-const ReleaseEntityLinkSchema = z.object({
-  id: z.string().describe('The ID of the Entry or Asset'),
-  linkType: z
-    .enum(['Entry', 'Asset'])
-    .describe('The type of entity being linked'),
-});
+import {
+  createReleaseEntities,
+  ReleaseEntityLinkSchema,
+} from './releaseEntities.js';
 
 export const UpdateReleaseToolParams = BaseToolSchema.extend({
   releaseId: z.string().describe('The ID of the release to update'),
@@ -51,16 +48,7 @@ export function updateReleaseTool(config: ContentfulConfig) {
     const existingRelease = await contentfulClient.release.get(params);
 
     const entities = args.entities
-      ? {
-          sys: { type: 'Array' as const },
-          items: args.entities.map((entity) => ({
-            sys: {
-              type: 'Link' as const,
-              linkType: entity.linkType,
-              id: entity.id,
-            },
-          })),
-        }
+      ? createReleaseEntities(args.entities)
       : existingRelease.entities;
 
     const updatedRelease = await contentfulClient.release.update(

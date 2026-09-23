@@ -154,7 +154,7 @@ export function createReleaseTools(config: ContentfulConfig) {
     listReleaseActions: {
       title: 'list_release_actions',
       description:
-        'List release actions, optionally filtered by release ID, action type (publish/unpublish/validate), or status.',
+        'List release actions in a space/environment. Returns a maximum of 10 items per request. Optionally filter by release ID, action type (publish/unpublish/validate), or status.',
       inputParams: ListReleaseActionsToolParams.shape,
       annotations: {
         readOnlyHint: true,
