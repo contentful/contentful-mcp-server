@@ -135,15 +135,10 @@ export function listAssetsTool(config: ContentfulConfig) {
 
       const summarizedAssets = summarizeAssetItems(assets.items, locale);
 
-      const summarized = summarizeCursorData(
-        {
-          ...assets,
-          items: summarizedAssets,
-        },
-        {
-          maxItems: 3,
-        },
-      );
+      const summarized = summarizeCursorData({
+        ...assets,
+        items: summarizedAssets,
+      });
 
       return createSuccessResponse('Assets retrieved successfully', {
         assets: summarized,

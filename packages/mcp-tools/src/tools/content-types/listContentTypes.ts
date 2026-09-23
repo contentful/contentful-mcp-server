@@ -96,15 +96,10 @@ export function listContentTypesTool(config: ContentfulConfig) {
         },
       );
 
-      const summarized = summarizeCursorData(
-        {
-          ...contentTypes,
-          items: summarizeContentTypeItems(contentTypes.items),
-        },
-        {
-          maxItems: 10,
-        },
-      );
+      const summarized = summarizeCursorData({
+        ...contentTypes,
+        items: summarizeContentTypeItems(contentTypes.items),
+      });
 
       return createSuccessResponse('Content types retrieved successfully', {
         contentTypes: summarized,

@@ -18,10 +18,6 @@ export function offsetRemainingMessage(itemLabel: string): string {
   return `To see more ${itemLabel}, please ask me to retrieve the next page. If you need the entire collection, ask me to use cursor pagination (cursor: true) instead of repeatedly increasing skip.`;
 }
 
-/** Guidance shown when a cursor-paginated response is truncated. */
-export const CURSOR_REMAINING_MESSAGE =
-  'To retrieve the full collection, ask me to continue with cursor pagination (cursor: true) using the pageNext token, rather than repeatedly increasing skip.';
-
 export const DEFAULT_MAX_ITEMS = 3;
 
 const DEFAULT_REMAINING_MESSAGE = offsetRemainingMessage('items');
@@ -71,6 +67,7 @@ export const summarizeData = (
     return {
       ...truncateItems(items, maxItems, remainingMessage),
       total,
+      remaining: total - maxItems, // total spans the full collection, not just this page's items
       skip: maxItems, // Add skip value for next page
     };
   }
@@ -93,25 +90,11 @@ export const summarizeData = (
 };
 
 /**
- * Truncates a cursor-paginated response (no total/skip) for display, preserving
- * `pages` so callers can keep following pageNext/pagePrev instead of the skip
- * field summarizeData() attaches for offset-paginated responses.
+ * Passes a cursor-paginated response through unchanged. Cursor responses
+ * have no `total`, so unlike summarizeData() there's nothing to truncate:
+ * the API already caps `items` at the requested `limit`, and continuation
+ * is driven by `pages.next`/`pages.prev`, not by hiding items here.
  */
 export const summarizeCursorData = (
   data: CursorPaginatedLike,
-  options: Pick<SummarizeOptions, 'maxItems' | 'remainingMessage'> = {},
-): Record<string, unknown> => {
-  const {
-    maxItems = DEFAULT_MAX_ITEMS,
-    remainingMessage = CURSOR_REMAINING_MESSAGE,
-  } = options;
-
-  if (data.items.length <= maxItems) {
-    return data as unknown as Record<string, unknown>;
-  }
-
-  return {
-    ...data,
-    ...truncateItems(data.items, maxItems, remainingMessage),
-  };
-};
+): Record<string, unknown> => data as unknown as Record<string, unknown>;

@@ -168,9 +168,7 @@ export function searchEntriesTool(config: ContentfulConfig) {
         >[0]['query'],
       });
 
-      const summarized = summarizeCursorData(entries, {
-        maxItems: searchLimit(limit),
-      });
+      const summarized = summarizeCursorData(entries);
 
       return createSuccessResponse('Entries retrieved successfully', {
         entries: summarized,
