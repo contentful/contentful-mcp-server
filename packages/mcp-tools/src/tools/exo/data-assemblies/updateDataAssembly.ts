@@ -14,6 +14,7 @@ import {
   DataAssemblyReturnMappingConfigSchema,
   DataAssemblyDataTypeFieldSchema,
   DataAssemblyMetadataSchema,
+  toCmaDataAssemblyParameterConfig,
 } from '../../../types/dataAssemblySchemas.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
@@ -28,9 +29,12 @@ export const UpdateDataAssemblyToolParams = BaseToolSchema.extend({
         'the data assembly changed since you read it.',
     ),
   name: z.string().optional().describe('The name of the data assembly'),
-  description: z.string().optional().describe('Description of the data assembly'),
+  description: z
+    .string()
+    .optional()
+    .describe('Description of the data assembly'),
   parameters: DataAssemblyParameterConfigSchema.optional().describe(
-    'Parameter definitions; replaces existing if provided',
+    'Parameter definitions as an ID-keyed record or ordered array; replaces existing if provided',
   ),
   resolvers: DataAssemblyResolverConfigSchema.optional().describe(
     'Resolver definitions; replaces existing if provided',
@@ -89,12 +93,15 @@ export function updateDataAssemblyTool(config: ContentfulConfig) {
         ...(args.variant !== undefined
           ? { variant: args.variant }
           : current.sys.variant !== undefined
-          ? { variant: current.sys.variant }
-          : {}),
+            ? { variant: current.sys.variant }
+            : {}),
       },
       name: args.name ?? current.name,
       description: args.description ?? current.description,
-      parameters: args.parameters ?? current.parameters,
+      parameters:
+        args.parameters === undefined
+          ? current.parameters
+          : toCmaDataAssemblyParameterConfig(args.parameters),
       resolvers: args.resolvers ?? current.resolvers,
       return: args.return ?? current.return,
       metadata: args.metadata ?? current.metadata,
