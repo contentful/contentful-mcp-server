@@ -152,6 +152,10 @@ Below is a sample configuration:
 |                           | `validate_release`                 | Validate a release, optionally against publish/unpublish                                  |
 |                           | `get_release_action`               | Check the status of a queued release action                                               |
 |                           | `list_release_actions`             | List release actions (max 10 per request)                                                 |
+|                           | `schedule_publish_release`         | Schedule a release to publish at a future datetime (or reschedule)                        |
+|                           | `schedule_unpublish_release`       | Schedule a release to unpublish at a future datetime (or reschedule)                      |
+|                           | `cancel_scheduled_release`         | Cancel a scheduled release action (two-phase confirm)                                     |
+|                           | `list_scheduled_actions`           | List scheduled actions (max 10 per request)                                               |
 | **AI Actions**            | `create_ai_action`                 | Create custom AI-powered workflows                                                        |
 |                           | `invoke_ai_action`                 | Invoke AI action with variables (bulk support)                                            |
 |                           | `get_ai_action_invocation`         | Get AI action invocation details                                                          |

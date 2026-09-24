@@ -23,6 +23,22 @@ import {
   listReleaseActionsTool,
   ListReleaseActionsToolParams,
 } from './listReleaseActions.js';
+import {
+  schedulePublishReleaseTool,
+  SchedulePublishReleaseToolParams,
+} from './scheduleReleasePublish.js';
+import {
+  scheduleUnpublishReleaseTool,
+  ScheduleUnpublishReleaseToolParams,
+} from './scheduleReleaseUnpublish.js';
+import {
+  cancelScheduledReleaseTool,
+  CancelScheduledReleaseToolParams,
+} from './cancelScheduledRelease.js';
+import {
+  listScheduledActionsTool,
+  ListScheduledActionsToolParams,
+} from './listScheduledActions.js';
 import type { ContentfulConfig } from '../../config/types.js';
 
 export function createReleaseTools(config: ContentfulConfig) {
@@ -36,6 +52,10 @@ export function createReleaseTools(config: ContentfulConfig) {
   const validateRelease = validateReleaseTool(config);
   const getReleaseAction = getReleaseActionTool(config);
   const listReleaseActions = listReleaseActionsTool(config);
+  const schedulePublishRelease = schedulePublishReleaseTool(config);
+  const scheduleUnpublishRelease = scheduleUnpublishReleaseTool(config);
+  const cancelScheduledRelease = cancelScheduledReleaseTool(config);
+  const listScheduledActions = listScheduledActionsTool(config);
 
   return {
     listReleases: {
@@ -162,6 +182,57 @@ export function createReleaseTools(config: ContentfulConfig) {
         openWorldHint: false,
       },
       tool: listReleaseActions,
+    },
+    schedulePublishRelease: {
+      title: 'schedule_publish_release',
+      description:
+        'Schedule a release to publish at a future datetime, or reschedule an existing scheduled publish action by providing scheduledActionId.',
+      inputParams: SchedulePublishReleaseToolParams.shape,
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
+      tool: schedulePublishRelease,
+    },
+    scheduleUnpublishRelease: {
+      title: 'schedule_unpublish_release',
+      description:
+        'Schedule a release to unpublish at a future datetime, or reschedule an existing scheduled unpublish action by providing scheduledActionId.',
+      inputParams: ScheduleUnpublishReleaseToolParams.shape,
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
+      tool: scheduleUnpublishRelease,
+    },
+    cancelScheduledRelease: {
+      title: 'cancel_scheduled_release',
+      description:
+        'Cancel a scheduled release action. This is a two-phase operation: the first call (without confirm/confirmToken) returns a preview of the scheduled action and a confirmToken. To complete the cancellation, call this tool again with the same scheduledActionId, confirm: true, and the confirmToken from the preview response.',
+      inputParams: CancelScheduledReleaseToolParams.shape,
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: true,
+        idempotentHint: false,
+        openWorldHint: false,
+      },
+      tool: cancelScheduledRelease,
+    },
+    listScheduledActions: {
+      title: 'list_scheduled_actions',
+      description:
+        'List scheduled actions in a space/environment. Returns a maximum of 10 items per request. Optionally filter by release ID or status.',
+      inputParams: ListScheduledActionsToolParams.shape,
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        openWorldHint: false,
+      },
+      tool: listScheduledActions,
     },
   };
 }
