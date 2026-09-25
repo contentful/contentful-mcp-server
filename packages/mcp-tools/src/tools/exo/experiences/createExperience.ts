@@ -11,6 +11,7 @@ import {
 import {
   ViewportSchema,
   ExperienceMetadataSchema,
+  DesignPropertyValueSchema,
   DimensionedDesignPropertyValueSchema,
   ExperienceContentBindingsSchema,
   ExperienceSlotNodeSchema,
@@ -26,9 +27,16 @@ export const CreateExperienceToolParams = BaseToolSchema.extend({
   ),
   viewports: z
     .array(ViewportSchema)
+    .optional()
     .describe('Viewport definitions for the experience (may be empty)'),
   designProperties: z
-    .record(z.string(), DimensionedDesignPropertyValueSchema)
+    .record(
+      z.string(),
+      z.union([
+        DesignPropertyValueSchema,
+        DimensionedDesignPropertyValueSchema,
+      ]),
+    )
     .describe(
       'Design property values keyed by property ID. Each value is a dimensioned map ' +
         '(viewport ID → design value). May be an empty object.',
@@ -64,7 +72,7 @@ export function createExperienceTool(config: ContentfulConfig) {
         name: args.name,
         description: args.description,
         experienceTemplate: args.experienceTemplate,
-        viewports: args.viewports,
+        ...(args.viewports !== undefined && { viewports: args.viewports }),
         designProperties: args.designProperties,
         ...(args.contentBindings && { contentBindings: args.contentBindings }),
         ...(args.slots && { slots: args.slots }),

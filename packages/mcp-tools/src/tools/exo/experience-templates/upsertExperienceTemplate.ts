@@ -101,7 +101,9 @@ export function upsertExperienceTemplateTool(config: ContentfulConfig) {
         },
         name: args.name ?? current.name,
         description: args.description ?? current.description,
-        viewports: args.viewports ?? current.viewports,
+        ...((args.viewports ?? current.viewports) !== undefined && {
+          viewports: args.viewports ?? current.viewports,
+        }),
         contentProperties: args.contentProperties ?? current.contentProperties,
         designProperties: args.designProperties ?? current.designProperties,
         ...((args.componentTree ?? current.componentTree)

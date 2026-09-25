@@ -29,6 +29,7 @@ export const CreateComponentToolParams = BaseToolSchema.extend({
   description: z.string().describe('Description of the component'),
   viewports: z
     .array(ViewportSchema)
+    .optional()
     .describe('Viewport definitions for the component (may be empty)'),
   contentProperties: z
     .array(ContentPropertySchema)
@@ -63,7 +64,7 @@ export function createComponentTool(config: ContentfulConfig) {
     const componentData = {
       name: args.name,
       description: args.description,
-      viewports: args.viewports,
+      ...(args.viewports !== undefined && { viewports: args.viewports }),
       contentProperties: args.contentProperties,
       designProperties: args.designProperties,
       ...(args.componentTree && { componentTree: args.componentTree }),

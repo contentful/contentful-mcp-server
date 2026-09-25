@@ -89,6 +89,17 @@ describe('createComponent', () => {
     });
   });
 
+  it('omits viewports when creating a viewport-free component', async () => {
+    const { viewports: _, ...viewportFreeArgs } = args;
+    mockComponentCreate.mockResolvedValue(mockComponent);
+
+    await createComponentTool(mockConfig)(viewportFreeArgs);
+
+    expect(mockComponentCreate.mock.calls[0][1]).not.toHaveProperty(
+      'viewports',
+    );
+  });
+
   it('rejects writes to a protected environment', async () => {
     const protectedConfig = createMockConfig({
       protectedEnvironments: ['test-environment'],

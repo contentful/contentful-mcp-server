@@ -78,6 +78,20 @@ describe('upsertExperienceTemplate', () => {
     expect(body.dataAssemblies).toEqual(dataAssemblies);
   });
 
+  it('does not reintroduce viewports from a viewport-free experience template', async () => {
+    mockExperienceTemplateGet.mockResolvedValue({
+      ...mockExperienceTemplate,
+      viewports: undefined,
+    });
+    mockExperienceTemplateUpsert.mockResolvedValue(mockExperienceTemplate);
+
+    await upsertExperienceTemplateTool(mockConfig)({ ...mockArgs, version: 1 });
+
+    expect(mockExperienceTemplateUpsert.mock.calls[0][1]).not.toHaveProperty(
+      'viewports',
+    );
+  });
+
   it('rejects a stale version', async () => {
     mockExperienceTemplateGet.mockResolvedValue(mockExperienceTemplate); // sys.version === 1
 

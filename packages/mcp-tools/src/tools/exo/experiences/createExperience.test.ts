@@ -39,6 +39,27 @@ describe('createExperience', () => {
     expect(result.content[0].text).toContain('Experience created successfully');
   });
 
+  it('creates a viewport-free experience with flattened design properties', async () => {
+    const { viewports: _, ...viewportFreeArgs } = createArgs;
+    mockExperienceCreate.mockResolvedValue(mockExperience);
+
+    await createExperienceTool(mockConfig)({
+      ...viewportFreeArgs,
+      designProperties: {
+        color: { type: 'ManualDesignValue', value: 'red' },
+      },
+    });
+
+    expect(mockExperienceCreate.mock.calls[0][1]).toMatchObject({
+      designProperties: {
+        color: { type: 'ManualDesignValue', value: 'red' },
+      },
+    });
+    expect(mockExperienceCreate.mock.calls[0][1]).not.toHaveProperty(
+      'viewports',
+    );
+  });
+
   it('rejects writes to a protected environment', async () => {
     const tool = createExperienceTool(
       createMockConfig({ protectedEnvironments: ['test-environment'] }),

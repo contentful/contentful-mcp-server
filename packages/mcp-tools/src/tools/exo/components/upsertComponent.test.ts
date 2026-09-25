@@ -79,6 +79,20 @@ describe('upsertComponent', () => {
     expect(body.dataAssemblies).toEqual(dataAssemblies);
   });
 
+  it('does not reintroduce viewports from a viewport-free component', async () => {
+    mockComponentGet.mockResolvedValue({
+      ...mockComponent,
+      viewports: undefined,
+    });
+    mockComponentUpsert.mockResolvedValue(mockComponent);
+
+    await upsertComponentTool(mockConfig)({ ...mockArgs, version: 1 });
+
+    expect(mockComponentUpsert.mock.calls[0][1]).not.toHaveProperty(
+      'viewports',
+    );
+  });
+
   it('rejects a stale version', async () => {
     mockComponentGet.mockResolvedValue(mockComponent); // sys.version === 1
 

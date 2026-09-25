@@ -23,6 +23,7 @@ export const CreateExperienceTemplateToolParams = BaseToolSchema.extend({
   description: z.string().describe('Description of the experience template'),
   viewports: z
     .array(ViewportSchema)
+    .optional()
     .describe(
       'Viewport definitions for the experience template (may be empty)',
     ),
@@ -61,7 +62,7 @@ export function createExperienceTemplateTool(config: ContentfulConfig) {
       {
         name: args.name,
         description: args.description,
-        viewports: args.viewports,
+        ...(args.viewports !== undefined && { viewports: args.viewports }),
         contentProperties: args.contentProperties,
         designProperties: args.designProperties,
         ...(args.componentTree && { componentTree: args.componentTree }),

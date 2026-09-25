@@ -11,6 +11,7 @@ import {
 import {
   ViewportSchema,
   ExperienceMetadataSchema,
+  DesignPropertyValueSchema,
   DimensionedDesignPropertyValueSchema,
   ExperienceContentBindingsSchema,
   ExperienceSlotNodeSchema,
@@ -39,7 +40,13 @@ export const UpdateExperienceFragmentToolParams = BaseToolSchema.extend({
     .optional()
     .describe('Viewport definitions; replaces existing viewports if provided'),
   designProperties: z
-    .record(z.string(), DimensionedDesignPropertyValueSchema)
+    .record(
+      z.string(),
+      z.union([
+        DesignPropertyValueSchema,
+        DimensionedDesignPropertyValueSchema,
+      ]),
+    )
     .optional()
     .describe('Design property values; replaces existing if provided'),
   contentBindings: ExperienceContentBindingsSchema.optional().describe(
@@ -97,7 +104,9 @@ export function updateExperienceFragmentTool(config: ContentfulConfig) {
         },
         name: args.name ?? current.name,
         description: args.description ?? current.description,
-        viewports: args.viewports ?? current.viewports,
+        ...((args.viewports ?? current.viewports) !== undefined && {
+          viewports: args.viewports ?? current.viewports,
+        }),
         designProperties: args.designProperties ?? current.designProperties,
         ...((args.contentBindings ?? current.contentBindings)
           ? { contentBindings: args.contentBindings ?? current.contentBindings }

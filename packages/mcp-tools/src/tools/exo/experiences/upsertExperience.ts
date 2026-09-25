@@ -11,6 +11,7 @@ import {
 import {
   ViewportSchema,
   ExperienceMetadataSchema,
+  DesignPropertyValueSchema,
   DimensionedDesignPropertyValueSchema,
   ExperienceContentBindingsSchema,
   ExperienceSlotNodeSchema,
@@ -34,7 +35,13 @@ export const UpsertExperienceToolParams = BaseToolSchema.extend({
     .optional()
     .describe('Viewport definitions; replaces existing viewports if provided'),
   designProperties: z
-    .record(z.string(), DimensionedDesignPropertyValueSchema)
+    .record(
+      z.string(),
+      z.union([
+        DesignPropertyValueSchema,
+        DimensionedDesignPropertyValueSchema,
+      ]),
+    )
     .optional()
     .describe(
       'Design property values keyed by property ID; replaces existing if provided',
@@ -90,7 +97,9 @@ export function upsertExperienceTool(config: ContentfulConfig) {
       },
       name: args.name ?? current.name,
       description: args.description ?? current.description,
-      viewports: args.viewports ?? current.viewports,
+      ...((args.viewports ?? current.viewports) !== undefined && {
+        viewports: args.viewports ?? current.viewports,
+      }),
       designProperties: args.designProperties ?? current.designProperties,
       ...((args.contentBindings ?? current.contentBindings)
         ? { contentBindings: args.contentBindings ?? current.contentBindings }

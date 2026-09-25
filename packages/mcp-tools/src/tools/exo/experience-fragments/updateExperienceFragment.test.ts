@@ -48,6 +48,25 @@ describe('updateExperienceFragment', () => {
     );
   });
 
+  it('preserves flattened design properties without reintroducing viewports', async () => {
+    mockExperienceFragmentGet.mockResolvedValue({
+      ...mockExperienceFragment,
+      viewports: undefined,
+      designProperties: {
+        color: { type: 'ManualDesignValue', value: 'red' },
+      },
+    });
+    mockExperienceFragmentUpsert.mockResolvedValue(mockExperienceFragment);
+
+    await updateExperienceFragmentTool(mockConfig)({ ...mockArgs, version: 1 });
+
+    const [, body] = mockExperienceFragmentUpsert.mock.calls[0];
+    expect(body).not.toHaveProperty('viewports');
+    expect(body.designProperties).toEqual({
+      color: { type: 'ManualDesignValue', value: 'red' },
+    });
+  });
+
   it('rejects a stale version', async () => {
     mockExperienceFragmentGet.mockResolvedValue(mockExperienceFragment); // sys.version === 1
 
