@@ -34,7 +34,9 @@ export const CreateComponentToolParams = BaseToolSchema.extend({
   viewports: z
     .array(ViewportSchema)
     .optional()
-    .describe('Viewport definitions for the component (may be empty)'),
+    .describe(
+      'Optional viewport definitions for the component. Omit for viewport-free components.',
+    ),
   contentProperties: z
     .array(ContentPropertySchema)
     .describe('Content property definitions (may be empty)'),

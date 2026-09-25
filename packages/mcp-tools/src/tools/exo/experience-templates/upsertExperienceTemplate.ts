@@ -95,6 +95,8 @@ export function upsertExperienceTemplateTool(config: ContentfulConfig) {
       );
     }
 
+    const viewports = args.viewports ?? current.viewports;
+
     const experienceTemplateData = {
       sys: {
         id: current.sys.id,
@@ -103,9 +105,7 @@ export function upsertExperienceTemplateTool(config: ContentfulConfig) {
       },
       name: args.name ?? current.name,
       description: args.description ?? current.description,
-      ...((args.viewports ?? current.viewports) !== undefined && {
-        viewports: args.viewports ?? current.viewports,
-      }),
+      ...(viewports !== undefined && { viewports }),
       contentProperties: args.contentProperties ?? current.contentProperties,
       designProperties: args.designProperties ?? current.designProperties,
       ...((args.componentTree ?? current.componentTree)

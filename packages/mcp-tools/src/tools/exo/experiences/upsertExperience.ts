@@ -93,6 +93,8 @@ export function upsertExperienceTool(config: ContentfulConfig) {
       );
     }
 
+    const viewports = args.viewports ?? current.viewports;
+
     const experienceData = {
       sys: {
         id: current.sys.id,
@@ -101,9 +103,7 @@ export function upsertExperienceTool(config: ContentfulConfig) {
       },
       name: args.name ?? current.name,
       description: args.description ?? current.description,
-      ...((args.viewports ?? current.viewports) !== undefined && {
-        viewports: args.viewports ?? current.viewports,
-      }),
+      ...(viewports !== undefined && { viewports }),
       designProperties: args.designProperties ?? current.designProperties,
       ...((args.contentBindings ?? current.contentBindings)
         ? { contentBindings: args.contentBindings ?? current.contentBindings }

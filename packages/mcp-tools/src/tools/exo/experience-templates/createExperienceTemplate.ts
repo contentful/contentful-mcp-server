@@ -29,7 +29,7 @@ export const CreateExperienceTemplateToolParams = BaseToolSchema.extend({
     .array(ViewportSchema)
     .optional()
     .describe(
-      'Viewport definitions for the experience template (may be empty)',
+      'Optional viewport definitions for the experience template. Omit for viewport-free experience templates.',
     ),
   contentProperties: z
     .array(ContentPropertySchema)

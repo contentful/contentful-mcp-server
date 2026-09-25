@@ -98,6 +98,8 @@ export function updateExperienceFragmentTool(config: ContentfulConfig) {
     // call is upsert(): the read-before-write guard above means this only ever updates
     // an existing fragment, and `update` is the verb the tool surface exposes for that.
     // Do not "fix" the tool name to match the SDK method.
+    const viewports = args.viewports ?? current.viewports;
+
     const experienceFragmentData = {
       sys: {
         id: current.sys.id,
@@ -106,9 +108,7 @@ export function updateExperienceFragmentTool(config: ContentfulConfig) {
       },
       name: args.name ?? current.name,
       description: args.description ?? current.description,
-      ...((args.viewports ?? current.viewports) !== undefined && {
-        viewports: args.viewports ?? current.viewports,
-      }),
+      ...(viewports !== undefined && { viewports }),
       designProperties: args.designProperties ?? current.designProperties,
       ...((args.contentBindings ?? current.contentBindings)
         ? { contentBindings: args.contentBindings ?? current.contentBindings }

@@ -32,7 +32,9 @@ export const CreateExperienceToolParams = BaseToolSchema.extend({
   viewports: z
     .array(ViewportSchema)
     .optional()
-    .describe('Viewport definitions for the experience (may be empty)'),
+    .describe(
+      'Optional viewport definitions for the experience. Omit for viewport-free experiences.',
+    ),
   designProperties: z
     .record(
       z.string(),

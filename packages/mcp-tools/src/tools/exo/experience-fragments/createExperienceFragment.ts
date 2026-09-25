@@ -32,7 +32,9 @@ export const CreateExperienceFragmentToolParams = BaseToolSchema.extend({
   viewports: z
     .array(ViewportSchema)
     .optional()
-    .describe('Viewport definitions (may be empty)'),
+    .describe(
+      'Optional viewport definitions for the experience fragment. Omit for viewport-free experience fragments.',
+    ),
   designProperties: z
     .record(
       z.string(),
