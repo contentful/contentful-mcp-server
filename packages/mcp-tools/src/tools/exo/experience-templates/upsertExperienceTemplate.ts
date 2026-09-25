@@ -16,6 +16,10 @@ import {
   TreeNodeSchema,
   ExoMetadataSchema,
 } from '../../../types/exoSchemas.js';
+import {
+  asViewportOptionalCmaPayload,
+  type ViewportOptionalPayload,
+} from '../../../types/cmaViewportCompatibility.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
 export const UpsertExperienceTemplateToolParams = BaseToolSchema.extend({
@@ -91,34 +95,38 @@ export function upsertExperienceTemplateTool(config: ContentfulConfig) {
       );
     }
 
+    const experienceTemplateData = {
+      sys: {
+        id: current.sys.id,
+        type: 'ExperienceTemplate',
+        version: current.sys.version,
+      },
+      name: args.name ?? current.name,
+      description: args.description ?? current.description,
+      ...((args.viewports ?? current.viewports) !== undefined && {
+        viewports: args.viewports ?? current.viewports,
+      }),
+      contentProperties: args.contentProperties ?? current.contentProperties,
+      designProperties: args.designProperties ?? current.designProperties,
+      ...((args.componentTree ?? current.componentTree)
+        ? { componentTree: args.componentTree ?? current.componentTree }
+        : {}),
+      ...((args.slots ?? current.slots)
+        ? { slots: args.slots ?? current.slots }
+        : {}),
+      ...((args.metadata ?? current.metadata)
+        ? { metadata: args.metadata ?? current.metadata }
+        : {}),
+      ...(current.dataAssemblies
+        ? { dataAssemblies: current.dataAssemblies }
+        : {}),
+    } satisfies ViewportOptionalPayload<
+      Parameters<typeof contentfulClient.experienceTemplate.upsert>[1]
+    >;
+
     const experienceTemplate = await contentfulClient.experienceTemplate.upsert(
       params,
-      {
-        sys: {
-          id: current.sys.id,
-          type: 'ExperienceTemplate',
-          version: current.sys.version,
-        },
-        name: args.name ?? current.name,
-        description: args.description ?? current.description,
-        ...((args.viewports ?? current.viewports) !== undefined && {
-          viewports: args.viewports ?? current.viewports,
-        }),
-        contentProperties: args.contentProperties ?? current.contentProperties,
-        designProperties: args.designProperties ?? current.designProperties,
-        ...((args.componentTree ?? current.componentTree)
-          ? { componentTree: args.componentTree ?? current.componentTree }
-          : {}),
-        ...((args.slots ?? current.slots)
-          ? { slots: args.slots ?? current.slots }
-          : {}),
-        ...((args.metadata ?? current.metadata)
-          ? { metadata: args.metadata ?? current.metadata }
-          : {}),
-        ...(current.dataAssemblies
-          ? { dataAssemblies: current.dataAssemblies }
-          : {}),
-      },
+      asViewportOptionalCmaPayload(experienceTemplateData),
     );
 
     return createSuccessResponse('Experience template updated successfully', {

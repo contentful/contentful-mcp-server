@@ -16,6 +16,10 @@ import {
   TreeNodeSchema,
   ExoMetadataSchema,
 } from '../../../types/exoSchemas.js';
+import {
+  asViewportOptionalCmaPayload,
+  type ViewportOptionalPayload,
+} from '../../../types/cmaViewportCompatibility.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
 export const UpsertComponentToolParams = BaseToolSchema.extend({
@@ -86,7 +90,7 @@ export function upsertComponentTool(config: ContentfulConfig) {
       );
     }
 
-    const component = await contentfulClient.component.upsert(params, {
+    const componentData = {
       sys: {
         id: current.sys.id,
         type: 'Component',
@@ -111,7 +115,14 @@ export function upsertComponentTool(config: ContentfulConfig) {
       ...(current.dataAssemblies
         ? { dataAssemblies: current.dataAssemblies }
         : {}),
-    });
+    } satisfies ViewportOptionalPayload<
+      Parameters<typeof contentfulClient.component.upsert>[1]
+    >;
+
+    const component = await contentfulClient.component.upsert(
+      params,
+      asViewportOptionalCmaPayload(componentData),
+    );
 
     return createSuccessResponse('Component updated successfully', {
       component,

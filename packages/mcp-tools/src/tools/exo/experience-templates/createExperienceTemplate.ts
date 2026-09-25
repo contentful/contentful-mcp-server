@@ -16,6 +16,10 @@ import {
   TreeNodeSchema,
   ExoMetadataSchema,
 } from '../../../types/exoSchemas.js';
+import {
+  asViewportOptionalCmaPayload,
+  type ViewportOptionalPayload,
+} from '../../../types/cmaViewportCompatibility.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
 export const CreateExperienceTemplateToolParams = BaseToolSchema.extend({
@@ -57,18 +61,22 @@ export function createExperienceTemplateTool(config: ContentfulConfig) {
 
     const contentfulClient = createExoToolClient(config, args);
 
+    const experienceTemplateData = {
+      name: args.name,
+      description: args.description,
+      ...(args.viewports !== undefined && { viewports: args.viewports }),
+      contentProperties: args.contentProperties,
+      designProperties: args.designProperties,
+      ...(args.componentTree && { componentTree: args.componentTree }),
+      ...(args.slots && { slots: args.slots }),
+      ...(args.metadata && { metadata: args.metadata }),
+    } satisfies ViewportOptionalPayload<
+      Parameters<typeof contentfulClient.experienceTemplate.create>[1]
+    >;
+
     const experienceTemplate = await contentfulClient.experienceTemplate.create(
       { spaceId: args.spaceId, environmentId: args.environmentId },
-      {
-        name: args.name,
-        description: args.description,
-        ...(args.viewports !== undefined && { viewports: args.viewports }),
-        contentProperties: args.contentProperties,
-        designProperties: args.designProperties,
-        ...(args.componentTree && { componentTree: args.componentTree }),
-        ...(args.slots && { slots: args.slots }),
-        ...(args.metadata && { metadata: args.metadata }),
-      },
+      asViewportOptionalCmaPayload(experienceTemplateData),
     );
 
     return createSuccessResponse('Experience template created successfully', {

@@ -36,7 +36,7 @@ describe('createExperienceTemplate', () => {
   });
 
   it('omits viewports when creating a viewport-free experience template', async () => {
-    const { viewports: _, ...viewportFreeArgs } = createArgs;
+    const viewportFreeArgs = { ...createArgs, viewports: undefined };
     mockExperienceTemplateCreate.mockResolvedValue(mockExperienceTemplate);
 
     await createExperienceTemplateTool(mockConfig)(viewportFreeArgs);

@@ -17,6 +17,10 @@ import {
   ExperienceSlotNodeSchema,
   ExperienceTemplateResourceLinkSchema,
 } from '../../../types/exoSchemas.js';
+import {
+  asViewportOptionalCmaPayloadWithFlattenedDesignProperties,
+  type ViewportOptionalPayloadWithFlattenedDesignProperties,
+} from '../../../types/cmaViewportCompatibility.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
 export const CreateExperienceToolParams = BaseToolSchema.extend({
@@ -38,8 +42,8 @@ export const CreateExperienceToolParams = BaseToolSchema.extend({
       ]),
     )
     .describe(
-      'Design property values keyed by property ID. Each value is a dimensioned map ' +
-        '(viewport ID → design value). May be an empty object.',
+      'Design property values keyed by property ID. When viewports are provided, each value is a dimensioned map ' +
+        '(viewport ID → design value); without viewports, use a direct design value. May be an empty object.',
     ),
   contentBindings: ExperienceContentBindingsSchema.optional().describe(
     'Optional content bindings linking this experience to a data assembly',
@@ -66,18 +70,22 @@ export function createExperienceTool(config: ContentfulConfig) {
 
     const contentfulClient = createExoToolClient(config, args);
 
+    const experienceData = {
+      name: args.name,
+      description: args.description,
+      experienceTemplate: args.experienceTemplate,
+      ...(args.viewports !== undefined && { viewports: args.viewports }),
+      designProperties: args.designProperties,
+      ...(args.contentBindings && { contentBindings: args.contentBindings }),
+      ...(args.slots && { slots: args.slots }),
+      ...(args.metadata && { metadata: args.metadata }),
+    } satisfies ViewportOptionalPayloadWithFlattenedDesignProperties<
+      Parameters<typeof contentfulClient.experience.create>[1]
+    >;
+
     const experience = await contentfulClient.experience.create(
       { spaceId: args.spaceId, environmentId: args.environmentId },
-      {
-        name: args.name,
-        description: args.description,
-        experienceTemplate: args.experienceTemplate,
-        ...(args.viewports !== undefined && { viewports: args.viewports }),
-        designProperties: args.designProperties,
-        ...(args.contentBindings && { contentBindings: args.contentBindings }),
-        ...(args.slots && { slots: args.slots }),
-        ...(args.metadata && { metadata: args.metadata }),
-      },
+      asViewportOptionalCmaPayloadWithFlattenedDesignProperties(experienceData),
     );
 
     return createSuccessResponse('Experience created successfully', {

@@ -90,7 +90,7 @@ describe('createComponent', () => {
   });
 
   it('omits viewports when creating a viewport-free component', async () => {
-    const { viewports: _, ...viewportFreeArgs } = args;
+    const viewportFreeArgs = { ...args, viewports: undefined };
     mockComponentCreate.mockResolvedValue(mockComponent);
 
     await createComponentTool(mockConfig)(viewportFreeArgs);

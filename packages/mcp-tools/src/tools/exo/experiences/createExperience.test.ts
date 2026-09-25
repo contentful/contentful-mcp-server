@@ -40,7 +40,7 @@ describe('createExperience', () => {
   });
 
   it('creates a viewport-free experience with flattened design properties', async () => {
-    const { viewports: _, ...viewportFreeArgs } = createArgs;
+    const viewportFreeArgs = { ...createArgs, viewports: undefined };
     mockExperienceCreate.mockResolvedValue(mockExperience);
 
     await createExperienceTool(mockConfig)({

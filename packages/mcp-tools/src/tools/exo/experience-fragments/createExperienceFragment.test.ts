@@ -48,7 +48,7 @@ describe('createExperienceFragment', () => {
   });
 
   it('creates a viewport-free experience fragment with flattened design properties', async () => {
-    const { viewports: _, ...viewportFreeArgs } = baseArgs;
+    const viewportFreeArgs = { ...baseArgs, viewports: undefined };
     mockExperienceFragmentCreate.mockResolvedValue(mockExperienceFragment);
 
     await createExperienceFragmentTool(mockConfig)({

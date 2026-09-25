@@ -16,6 +16,10 @@ import {
   ExperienceContentBindingsSchema,
   ExperienceSlotNodeSchema,
 } from '../../../types/exoSchemas.js';
+import {
+  asViewportOptionalCmaPayloadWithFlattenedDesignProperties,
+  type ViewportOptionalPayloadWithFlattenedDesignProperties,
+} from '../../../types/cmaViewportCompatibility.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
 export const UpdateExperienceFragmentToolParams = BaseToolSchema.extend({
@@ -94,30 +98,36 @@ export function updateExperienceFragmentTool(config: ContentfulConfig) {
     // call is upsert(): the read-before-write guard above means this only ever updates
     // an existing fragment, and `update` is the verb the tool surface exposes for that.
     // Do not "fix" the tool name to match the SDK method.
+    const experienceFragmentData = {
+      sys: {
+        id: current.sys.id,
+        type: 'ExperienceFragment',
+        version: current.sys.version,
+      },
+      name: args.name ?? current.name,
+      description: args.description ?? current.description,
+      ...((args.viewports ?? current.viewports) !== undefined && {
+        viewports: args.viewports ?? current.viewports,
+      }),
+      designProperties: args.designProperties ?? current.designProperties,
+      ...((args.contentBindings ?? current.contentBindings)
+        ? { contentBindings: args.contentBindings ?? current.contentBindings }
+        : {}),
+      ...((args.slots ?? current.slots)
+        ? { slots: args.slots ?? current.slots }
+        : {}),
+      ...((args.metadata ?? current.metadata)
+        ? { metadata: args.metadata ?? current.metadata }
+        : {}),
+    } satisfies ViewportOptionalPayloadWithFlattenedDesignProperties<
+      Parameters<typeof contentfulClient.experienceFragment.upsert>[1]
+    >;
+
     const experienceFragment = await contentfulClient.experienceFragment.upsert(
       params,
-      {
-        sys: {
-          id: current.sys.id,
-          type: 'ExperienceFragment',
-          version: current.sys.version,
-        },
-        name: args.name ?? current.name,
-        description: args.description ?? current.description,
-        ...((args.viewports ?? current.viewports) !== undefined && {
-          viewports: args.viewports ?? current.viewports,
-        }),
-        designProperties: args.designProperties ?? current.designProperties,
-        ...((args.contentBindings ?? current.contentBindings)
-          ? { contentBindings: args.contentBindings ?? current.contentBindings }
-          : {}),
-        ...((args.slots ?? current.slots)
-          ? { slots: args.slots ?? current.slots }
-          : {}),
-        ...((args.metadata ?? current.metadata)
-          ? { metadata: args.metadata ?? current.metadata }
-          : {}),
-      },
+      asViewportOptionalCmaPayloadWithFlattenedDesignProperties(
+        experienceFragmentData,
+      ),
     );
 
     return createSuccessResponse('Experience fragment updated successfully', {
