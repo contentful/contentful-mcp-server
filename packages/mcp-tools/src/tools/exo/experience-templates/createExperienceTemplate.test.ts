@@ -35,6 +35,17 @@ describe('createExperienceTemplate', () => {
     );
   });
 
+  it('omits viewports when creating a viewport-free experience template', async () => {
+    const viewportFreeArgs = { ...createArgs, viewports: undefined };
+    mockExperienceTemplateCreate.mockResolvedValue(mockExperienceTemplate);
+
+    await createExperienceTemplateTool(mockConfig)(viewportFreeArgs);
+
+    expect(mockExperienceTemplateCreate.mock.calls[0][1]).not.toHaveProperty(
+      'viewports',
+    );
+  });
+
   it('rejects writes to a protected environment', async () => {
     const tool = createExperienceTemplateTool(
       createMockConfig({ protectedEnvironments: ['test-environment'] }),

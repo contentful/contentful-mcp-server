@@ -11,10 +11,15 @@ import {
 import {
   ViewportSchema,
   ExperienceMetadataSchema,
+  DesignPropertyValueSchema,
   DimensionedDesignPropertyValueSchema,
   ExperienceContentBindingsSchema,
   ExperienceSlotNodeSchema,
 } from '../../../types/exoSchemas.js';
+import {
+  asViewportOptionalCmaPayloadWithFlattenedDesignProperties,
+  type ViewportOptionalPayloadWithFlattenedDesignProperties,
+} from '../../../types/cmaViewportCompatibility.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
 export const UpsertExperienceToolParams = BaseToolSchema.extend({
@@ -34,7 +39,13 @@ export const UpsertExperienceToolParams = BaseToolSchema.extend({
     .optional()
     .describe('Viewport definitions; replaces existing viewports if provided'),
   designProperties: z
-    .record(z.string(), DimensionedDesignPropertyValueSchema)
+    .record(
+      z.string(),
+      z.union([
+        DesignPropertyValueSchema,
+        DimensionedDesignPropertyValueSchema,
+      ]),
+    )
     .optional()
     .describe(
       'Design property values keyed by property ID; replaces existing if provided',
@@ -82,7 +93,9 @@ export function upsertExperienceTool(config: ContentfulConfig) {
       );
     }
 
-    const experience = await contentfulClient.experience.upsert(params, {
+    const viewports = args.viewports ?? current.viewports;
+
+    const experienceData = {
       sys: {
         id: current.sys.id,
         type: 'Experience',
@@ -90,7 +103,7 @@ export function upsertExperienceTool(config: ContentfulConfig) {
       },
       name: args.name ?? current.name,
       description: args.description ?? current.description,
-      viewports: args.viewports ?? current.viewports,
+      ...(viewports !== undefined && { viewports }),
       designProperties: args.designProperties ?? current.designProperties,
       ...((args.contentBindings ?? current.contentBindings)
         ? { contentBindings: args.contentBindings ?? current.contentBindings }
@@ -101,7 +114,14 @@ export function upsertExperienceTool(config: ContentfulConfig) {
       ...((args.metadata ?? current.metadata)
         ? { metadata: args.metadata ?? current.metadata }
         : {}),
-    });
+    } satisfies ViewportOptionalPayloadWithFlattenedDesignProperties<
+      Parameters<typeof contentfulClient.experience.upsert>[1]
+    >;
+
+    const experience = await contentfulClient.experience.upsert(
+      params,
+      asViewportOptionalCmaPayloadWithFlattenedDesignProperties(experienceData),
+    );
 
     return createSuccessResponse('Experience updated successfully', {
       experience,

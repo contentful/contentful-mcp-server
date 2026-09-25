@@ -1,3 +1,11 @@
+## 0.12.14 (2026-09-25)
+
+### 🩹 Fixes
+
+- **exo:** clarify viewport omission [SPA-5371] ([7e31dd1](https://github.com/contentful/contentful-mcp-server/commit/7e31dd1))
+- **exo:** type viewport-free tool payloads [SPA-5371] ([5020d7d](https://github.com/contentful/contentful-mcp-server/commit/5020d7d))
+- **exo:** allow viewport-free tool payloads [SPA-5371] ([6e92617](https://github.com/contentful/contentful-mcp-server/commit/6e92617))
+
 ## 0.12.13 (2026-09-23)
 
 ### 🚀 Features

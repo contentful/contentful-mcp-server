@@ -47,6 +47,27 @@ describe('createExperienceFragment', () => {
     );
   });
 
+  it('creates a viewport-free experience fragment with flattened design properties', async () => {
+    const viewportFreeArgs = { ...baseArgs, viewports: undefined };
+    mockExperienceFragmentCreate.mockResolvedValue(mockExperienceFragment);
+
+    await createExperienceFragmentTool(mockConfig)({
+      ...viewportFreeArgs,
+      designProperties: {
+        color: { type: 'ManualDesignValue', value: 'red' },
+      },
+    });
+
+    expect(mockExperienceFragmentCreate.mock.calls[0][1]).toMatchObject({
+      designProperties: {
+        color: { type: 'ManualDesignValue', value: 'red' },
+      },
+    });
+    expect(mockExperienceFragmentCreate.mock.calls[0][1]).not.toHaveProperty(
+      'viewports',
+    );
+  });
+
   it('rejects creates in a protected environment', async () => {
     const tool = createExperienceFragmentTool(
       createMockConfig({ protectedEnvironments: ['test-environment'] }),
