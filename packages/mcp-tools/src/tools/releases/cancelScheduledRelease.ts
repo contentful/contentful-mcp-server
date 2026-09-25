@@ -52,6 +52,12 @@ export function cancelScheduledReleaseTool(config: ContentfulConfig) {
       scheduledActionId: args.scheduledActionId,
     });
 
+    if (scheduledAction.entity.sys.id !== args.releaseId) {
+      throw new Error(
+        `Scheduled action '${args.scheduledActionId}' targets release '${scheduledAction.entity.sys.id}', not '${args.releaseId}'.`,
+      );
+    }
+
     const expectedToken = buildConfirmToken(
       'scheduledAction',
       args.scheduledActionId,

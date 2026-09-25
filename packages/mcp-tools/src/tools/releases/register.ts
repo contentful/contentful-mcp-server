@@ -191,7 +191,7 @@ export function createReleaseTools(config: ContentfulConfig) {
       annotations: {
         readOnlyHint: false,
         destructiveHint: true,
-        idempotentHint: true,
+        idempotentHint: false,
         openWorldHint: false,
       },
       tool: schedulePublishRelease,
@@ -204,7 +204,7 @@ export function createReleaseTools(config: ContentfulConfig) {
       annotations: {
         readOnlyHint: false,
         destructiveHint: true,
-        idempotentHint: true,
+        idempotentHint: false,
         openWorldHint: false,
       },
       tool: scheduleUnpublishRelease,
