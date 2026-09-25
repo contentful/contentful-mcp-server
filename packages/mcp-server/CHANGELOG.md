@@ -1,3 +1,13 @@
+## 1.22.0 (2026-09-25)
+
+### 🚀 Features
+
+- add release scheduling tools [AIS-654] ([#479](https://github.com/contentful/contentful-mcp-server/pull/479))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.15
+
 ## 1.21.1 (2026-09-25)
 
 ### 🧱 Updated Dependencies
