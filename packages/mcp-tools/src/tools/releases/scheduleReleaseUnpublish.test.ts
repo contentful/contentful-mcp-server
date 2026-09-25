@@ -50,6 +50,40 @@ describe('scheduleUnpublishRelease', () => {
     ).toBe(true);
   });
 
+  it('rejects a datetime whose UTC offset conflicts with timezone', async () => {
+    const tool = scheduleUnpublishReleaseTool(mockConfig);
+    const result = await tool({
+      ...mockArgs,
+      datetime: '2027-01-15T10:00:00Z',
+      timezone: 'America/New_York',
+    });
+
+    expect(mockScheduledActionCreate).not.toHaveBeenCalled();
+    expect(result).toEqual({
+      isError: true,
+      content: [
+        {
+          type: 'text',
+          text: "Error scheduling release unpublish: datetime '2027-01-15T10:00:00Z' has a UTC offset that does not match timezone 'America/New_York' at that instant. Either omit timezone, or provide a datetime whose offset agrees with it.",
+        },
+      ],
+    });
+  });
+
+  it('accepts a datetime whose UTC offset agrees with timezone', async () => {
+    mockScheduledActionCreate.mockResolvedValue(mockUnpublishAction);
+
+    const tool = scheduleUnpublishReleaseTool(mockConfig);
+    const result = await tool({
+      ...mockArgs,
+      datetime: '2027-03-01T10:00:00-07:00',
+      timezone: 'America/Denver',
+    });
+
+    expect(mockScheduledActionCreate).toHaveBeenCalled();
+    expect(result).not.toHaveProperty('isError');
+  });
+
   it('creates a new scheduled unpublish action', async () => {
     mockScheduledActionCreate.mockResolvedValue(mockUnpublishAction);
 

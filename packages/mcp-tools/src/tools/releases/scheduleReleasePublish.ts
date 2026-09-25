@@ -9,6 +9,7 @@ import {
   assertEnvironmentNotProtected,
 } from '../../utils/tools.js';
 import type { ContentfulConfig } from '../../config/types.js';
+import { assertDatetimeMatchesTimezone } from './scheduledFor.js';
 
 export const SchedulePublishReleaseToolParams = BaseToolSchema.extend({
   releaseId: z
@@ -46,6 +47,7 @@ export function schedulePublishReleaseTool(config: ContentfulConfig) {
       args.environmentId,
       config.protectedEnvironments,
     );
+    assertDatetimeMatchesTimezone(args.datetime, args.timezone);
 
     const contentfulClient = createToolClient(config, args);
 
