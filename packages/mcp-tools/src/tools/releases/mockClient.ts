@@ -18,6 +18,12 @@ export const mockReleaseValidate = vi.fn();
 export const mockReleaseActionGet = vi.fn();
 export const mockReleaseActionGetMany = vi.fn();
 
+export const mockScheduledActionGet = vi.fn();
+export const mockScheduledActionGetMany = vi.fn();
+export const mockScheduledActionCreate = vi.fn();
+export const mockScheduledActionUpdate = vi.fn();
+export const mockScheduledActionDelete = vi.fn();
+
 /**
  * Standard mock Contentful client with all release operations
  */
@@ -35,6 +41,13 @@ export const mockClient = {
   releaseAction: {
     get: mockReleaseActionGet,
     getMany: mockReleaseActionGetMany,
+  },
+  scheduledActions: {
+    get: mockScheduledActionGet,
+    getMany: mockScheduledActionGetMany,
+    create: mockScheduledActionCreate,
+    update: mockScheduledActionUpdate,
+    delete: mockScheduledActionDelete,
   },
 };
 
@@ -193,4 +206,68 @@ export const mockReleaseActionsResponse = {
       action: 'validate' as const,
     },
   ],
+};
+
+export const mockScheduledAction = {
+  sys: {
+    id: 'test-scheduled-action-id',
+    type: 'ScheduledAction' as const,
+    version: 1,
+    status: 'scheduled' as const,
+    space: {
+      sys: {
+        type: 'Link' as const,
+        linkType: 'Space' as const,
+        id: 'test-space-id',
+      },
+    },
+    createdBy: {
+      sys: {
+        type: 'Link' as const,
+        linkType: 'User' as const,
+        id: 'test-user-id',
+      },
+    },
+    updatedBy: {
+      sys: {
+        type: 'Link' as const,
+        linkType: 'User' as const,
+        id: 'test-user-id',
+      },
+    },
+    createdAt: '2023-01-01T00:00:00Z',
+    updatedAt: '2023-01-01T00:00:00Z',
+  },
+  action: 'publish' as const,
+  entity: {
+    sys: {
+      type: 'Link' as const,
+      linkType: 'Release' as const,
+      id: mockArgs.releaseId,
+    },
+  },
+  environment: {
+    sys: {
+      type: 'Link' as const,
+      linkType: 'Environment' as const,
+      id: mockArgs.environmentId,
+    },
+  },
+  scheduledFor: {
+    datetime: '2026-01-01T00:00:00Z',
+    timezone: 'UTC',
+  },
+};
+
+export const mockScheduledActionsResponse = {
+  sys: { type: 'Array' as const },
+  items: [
+    mockScheduledAction,
+    {
+      ...mockScheduledAction,
+      sys: { ...mockScheduledAction.sys, id: 'another-scheduled-action-id' },
+      action: 'unpublish' as const,
+    },
+  ],
+  pages: {},
 };

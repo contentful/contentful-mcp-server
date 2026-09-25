@@ -26,25 +26,25 @@ graph TD
 
 ### mcp-tools Internal Layout
 
-| Directory                                  | Purpose                                                              |
-| ------------------------------------------ | -------------------------------------------------------------------- |
-| `src/tools/entries/`                       | CRUD + publish/unpublish/archive for content entries                 |
-| `src/tools/content-types/`                 | Content type management (list, get, create, update, publish)         |
-| `src/tools/assets/`                        | Asset upload, metadata management, publish/unpublish                 |
-| `src/tools/ai-actions/`                    | AI Action creation, invocation, and lifecycle management             |
-| `src/tools/taxonomies/`                    | Concept and concept scheme management (taxonomy system)              |
-| `src/tools/jobs/space-to-space-migration/` | Multi-step space migration workflow                                  |
-| `src/tools/context/`                       | Initial context tool + MCP instructions prompt                       |
-| `src/tools/environments/`                  | Environment CRUD                                                     |
-| `src/tools/locales/`                       | Locale management                                                    |
-| `src/tools/spaces/`                        | Space listing and details                                            |
-| `src/tools/orgs/`                          | Organization listing and details                                     |
-| `src/tools/tags/`                          | Tag management                                                       |
-| `src/tools/releases/`                      | Release CRUD, publish/unpublish/validate, ReleaseAction reads        |
-| `src/tools/editor-interfaces/`             | Editor interface configuration                                       |
-| `src/config/`                              | `ContentfulConfig` type definition                                   |
-| `src/types/`                               | Zod schemas for fields, entries, rich text, taxonomies               |
-| `src/utils/`                               | CMA client factory, response formatting, bulk operations, summarizer |
+| Directory                                  | Purpose                                                                    |
+| ------------------------------------------ | -------------------------------------------------------------------------- |
+| `src/tools/entries/`                       | CRUD + publish/unpublish/archive for content entries                       |
+| `src/tools/content-types/`                 | Content type management (list, get, create, update, publish)               |
+| `src/tools/assets/`                        | Asset upload, metadata management, publish/unpublish                       |
+| `src/tools/ai-actions/`                    | AI Action creation, invocation, and lifecycle management                   |
+| `src/tools/taxonomies/`                    | Concept and concept scheme management (taxonomy system)                    |
+| `src/tools/jobs/space-to-space-migration/` | Multi-step space migration workflow                                        |
+| `src/tools/context/`                       | Initial context tool + MCP instructions prompt                             |
+| `src/tools/environments/`                  | Environment CRUD                                                           |
+| `src/tools/locales/`                       | Locale management                                                          |
+| `src/tools/spaces/`                        | Space listing and details                                                  |
+| `src/tools/orgs/`                          | Organization listing and details                                           |
+| `src/tools/tags/`                          | Tag management                                                             |
+| `src/tools/releases/`                      | Release CRUD, publish/unpublish/validate, scheduling, ReleaseAction reads  |
+| `src/tools/editor-interfaces/`             | Editor interface configuration                                             |
+| `src/config/`                              | `ContentfulConfig` type definition                                         |
+| `src/types/`                               | Zod schemas for fields, entries, rich text, taxonomies                     |
+| `src/utils/`                               | CMA client factory, response formatting, bulk operations, summarizer       |
 
 ## Data Flow
 

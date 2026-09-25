@@ -3,10 +3,10 @@ import { createReleaseTools } from './register.js';
 import { createMockConfig } from '../../test-helpers/mockConfig.js';
 
 describe('createReleaseTools', () => {
-  it('registers all 10 release tools with the expected titles', () => {
+  it('registers all 14 release tools with the expected titles', () => {
     const tools = createReleaseTools(createMockConfig());
 
-    expect(Object.keys(tools)).toHaveLength(10);
+    expect(Object.keys(tools)).toHaveLength(14);
     expect(tools.listReleases.title).toBe('list_releases');
     expect(tools.getRelease.title).toBe('get_release');
     expect(tools.createRelease.title).toBe('create_release');
@@ -17,5 +17,13 @@ describe('createReleaseTools', () => {
     expect(tools.validateRelease.title).toBe('validate_release');
     expect(tools.getReleaseAction.title).toBe('get_release_action');
     expect(tools.listReleaseActions.title).toBe('list_release_actions');
+    expect(tools.schedulePublishRelease.title).toBe(
+      'schedule_publish_release',
+    );
+    expect(tools.scheduleUnpublishRelease.title).toBe(
+      'schedule_unpublish_release',
+    );
+    expect(tools.cancelScheduledRelease.title).toBe('cancel_scheduled_release');
+    expect(tools.listScheduledActions.title).toBe('list_scheduled_actions');
   });
 });
