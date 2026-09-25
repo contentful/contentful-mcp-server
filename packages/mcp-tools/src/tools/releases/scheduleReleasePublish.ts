@@ -16,7 +16,7 @@ export const SchedulePublishReleaseToolParams = BaseToolSchema.extend({
     .describe('The ID of the release to schedule for publish'),
   datetime: z
     .string()
-    .datetime({ offset: true, local: true })
+    .datetime({ offset: true })
     .describe('The ISO 8601 datetime at which the release should publish'),
   timezone: z
     .string()

@@ -1,5 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { scheduleUnpublishReleaseTool } from './scheduleReleaseUnpublish.js';
+import {
+  ScheduleUnpublishReleaseToolParams,
+  scheduleUnpublishReleaseTool,
+} from './scheduleReleaseUnpublish.js';
 import { formatResponse } from '../../utils/formatters.js';
 import {
   setupMockClient,
@@ -30,6 +33,21 @@ describe('scheduleUnpublishRelease', () => {
   beforeEach(() => {
     setupMockClient();
     vi.clearAllMocks();
+  });
+
+  it('rejects a datetime without a UTC offset', () => {
+    expect(
+      ScheduleUnpublishReleaseToolParams.safeParse({
+        ...mockArgs,
+        datetime: '2026-01-01T00:00:00',
+      }).success,
+    ).toBe(false);
+    expect(
+      ScheduleUnpublishReleaseToolParams.safeParse({
+        ...mockArgs,
+        datetime: '2026-01-01T00:00:00+02:00',
+      }).success,
+    ).toBe(true);
   });
 
   it('creates a new scheduled unpublish action', async () => {
