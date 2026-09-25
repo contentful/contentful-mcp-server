@@ -35,7 +35,7 @@ export function createJobTools(config: ContentfulConfig) {
       description: 'Export a space to a file',
       inputParams: ExportParamsSchema.shape,
       annotations: {
-        readOnlyHint: false,
+        readOnlyHint: true,
         destructiveHint: false,
         openWorldHint: false,
       },
@@ -48,7 +48,7 @@ export function createJobTools(config: ContentfulConfig) {
       inputParams: ImportParamsSchema.shape,
       annotations: {
         readOnlyHint: false,
-        destructiveHint: true,
+        destructiveHint: false,
         idempotentHint: false,
         openWorldHint: false,
       },
