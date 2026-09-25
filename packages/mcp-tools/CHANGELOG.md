@@ -1,3 +1,9 @@
+## 0.12.16 (2026-09-25)
+
+### 🩹 Fixes
+
+- **deps:** update dependency lodash-es to ^4.18.1 [security] ([#450](https://github.com/contentful/contentful-mcp-server/pull/450))
+
 ## 0.12.15 (2026-09-25)
 
 ### 🚀 Features
