@@ -21,7 +21,11 @@ describe('updateDataAssembly', () => {
     });
 
     const tool = updateDataAssemblyTool(mockConfig);
-    const result = await tool({ ...mockArgs, version: 1, name: 'Updated Data Assembly' });
+    const result = await tool({
+      ...mockArgs,
+      version: 1,
+      name: 'Updated Data Assembly',
+    });
 
     expect(mockDataAssemblyGet).toHaveBeenCalledWith({
       spaceId: mockArgs.spaceId,
@@ -39,7 +43,81 @@ describe('updateDataAssembly', () => {
         description: mockDataAssembly.description,
       }),
     );
-    expect(result.content[0].text).toContain('Data assembly updated successfully');
+    expect(result.content[0].text).toContain(
+      'Data assembly updated successfully',
+    );
+  });
+
+  it('forwards an ordered parameter update without changing its order or metadata', async () => {
+    mockDataAssemblyGet.mockResolvedValue(mockDataAssembly);
+    mockDataAssemblyUpdate.mockResolvedValue(mockDataAssembly);
+    const parameters = [
+      {
+        id: 'second',
+        type: 'ResourceLink' as const,
+        linkType: 'Contentful:Entry' as const,
+        required: false,
+        allowedResources: [
+          {
+            type: 'Contentful:Entry' as const,
+            source:
+              'crn:contentful:::content:spaces/$self/environments/$self' as const,
+            allowedTypes: ['blogPost'],
+          },
+        ],
+      },
+      {
+        id: 'first',
+        type: 'ResourceLink' as const,
+        linkType: 'Contentful:Entry' as const,
+        required: true,
+        allowedResources: [
+          {
+            type: 'Contentful:Entry' as const,
+            source:
+              'crn:contentful:::content:spaces/$self/environments/$self' as const,
+            allowedTypes: ['author'],
+          },
+        ],
+      },
+    ];
+
+    const tool = updateDataAssemblyTool(mockConfig);
+    await tool({ ...mockArgs, version: 1, parameters });
+
+    expect(mockDataAssemblyUpdate).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ parameters }),
+    );
+  });
+
+  it('retains an ordered parameter array read from the API when updating another field', async () => {
+    const parameters = [
+      {
+        id: 'post',
+        type: 'ResourceLink' as const,
+        linkType: 'Contentful:Entry' as const,
+        required: false,
+        allowedResources: [
+          {
+            type: 'Contentful:Entry' as const,
+            source:
+              'crn:contentful:::content:spaces/$self/environments/$self' as const,
+            allowedTypes: ['blogPost'],
+          },
+        ],
+      },
+    ];
+    mockDataAssemblyGet.mockResolvedValue({ ...mockDataAssembly, parameters });
+    mockDataAssemblyUpdate.mockResolvedValue(mockDataAssembly);
+
+    const tool = updateDataAssemblyTool(mockConfig);
+    await tool({ ...mockArgs, version: 1, name: 'Updated Data Assembly' });
+
+    expect(mockDataAssemblyUpdate).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ parameters }),
+    );
   });
 
   it('rejects a stale version', async () => {

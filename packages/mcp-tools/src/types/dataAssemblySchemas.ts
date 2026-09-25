@@ -42,12 +42,23 @@ export type LegacyDataAssemblyDataTypeField = Exclude<
   CanonicalDataAssemblyDataTypeField
 >;
 
-export type DataAssemblyParameterConfig = Distribute<
+type CmaDataAssemblyParameterConfig = Distribute<
   DataAssemblyEntity['parameters']
 >;
 export type DataAssemblyResourceLinkParameter = Distribute<
-  DataAssemblyParameterConfig[string]
+  CmaDataAssemblyParameterConfig[string]
+> & { required?: boolean };
+export type LegacyDataAssemblyParameterConfig = Record<
+  string,
+  DataAssemblyResourceLinkParameter
 >;
+export type OrderedDataAssemblyResourceLinkParameter =
+  DataAssemblyResourceLinkParameter & { id: string; required: boolean };
+export type OrderedDataAssemblyParameterConfig =
+  OrderedDataAssemblyResourceLinkParameter[];
+export type DataAssemblyParameterConfig =
+  | LegacyDataAssemblyParameterConfig
+  | OrderedDataAssemblyParameterConfig;
 
 export type DataAssemblyResolverConfig = Distribute<
   DataAssemblyEntity['resolvers']
@@ -144,6 +155,7 @@ export const SAME_SPACE_CONTENT_SOURCE =
 export const DataAssemblyResourceLinkParameterSchema = z.object({
   name: z.string().optional(),
   description: z.string().optional(),
+  required: z.boolean().optional(),
   type: z.literal('ResourceLink'),
   linkType: z.literal('Contentful:Entry'),
   allowedResources: z.array(
@@ -155,10 +167,46 @@ export const DataAssemblyResourceLinkParameterSchema = z.object({
   ),
 }) satisfies z.ZodType<DataAssemblyResourceLinkParameter>;
 
-export const DataAssemblyParameterConfigSchema = z.record(
+export const LegacyDataAssemblyParameterConfigSchema = z.record(
   z.string(),
   DataAssemblyResourceLinkParameterSchema,
-) satisfies z.ZodType<DataAssemblyParameterConfig>;
+) satisfies z.ZodType<LegacyDataAssemblyParameterConfig>;
+
+export const OrderedDataAssemblyResourceLinkParameterSchema =
+  DataAssemblyResourceLinkParameterSchema.extend({
+    id: z.string(),
+    required: z.boolean(),
+  }) satisfies z.ZodType<OrderedDataAssemblyResourceLinkParameter>;
+
+export const OrderedDataAssemblyParameterConfigSchema = z
+  .array(OrderedDataAssemblyResourceLinkParameterSchema)
+  .superRefine((parameters, context) => {
+    const firstIndexById = new Map<string, number>();
+
+    parameters.forEach((parameter, index) => {
+      if (firstIndexById.has(parameter.id)) {
+        context.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: [index, 'id'],
+          message: `A parameter with id "${parameter.id}" is already declared.`,
+        });
+        return;
+      }
+
+      firstIndexById.set(parameter.id, index);
+    });
+  }) satisfies z.ZodType<OrderedDataAssemblyParameterConfig>;
+
+export const DataAssemblyParameterConfigSchema = z.union([
+  LegacyDataAssemblyParameterConfigSchema,
+  OrderedDataAssemblyParameterConfigSchema,
+]) satisfies z.ZodType<DataAssemblyParameterConfig>;
+
+export function toCmaDataAssemblyParameterConfig(
+  parameters: DataAssemblyParameterConfig,
+): CmaDataAssemblyParameterConfig {
+  return parameters as CmaDataAssemblyParameterConfig;
+}
 
 // ── Resolvers ──────────────────────────────────────────────────────────────────
 // Matches CMA.js DataAssemblyResolverDefinition = GraphQL | NestedDataAssembly resolver
