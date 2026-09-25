@@ -14,7 +14,10 @@ describe('upsertExperience', () => {
 
   it('reads the current experience before updating (read-before-write)', async () => {
     mockExperienceGet.mockResolvedValue(mockExperience);
-    mockExperienceUpsert.mockResolvedValue({ ...mockExperience, name: 'Renamed' });
+    mockExperienceUpsert.mockResolvedValue({
+      ...mockExperience,
+      name: 'Renamed',
+    });
 
     const tool = upsertExperienceTool(mockConfig);
     const result = await tool({ ...mockArgs, version: 1, name: 'Renamed' });
@@ -43,7 +46,9 @@ describe('upsertExperience', () => {
   it('preserves unspecified fields from the existing experience', async () => {
     mockExperienceGet.mockResolvedValue({
       ...mockExperience,
-      designProperties: { color: { _: { type: 'ManualDesignValue', value: 'red' } } },
+      designProperties: {
+        color: { _: { type: 'ManualDesignValue', value: 'red' } },
+      },
     });
     mockExperienceUpsert.mockResolvedValue(mockExperience);
 
@@ -53,6 +58,25 @@ describe('upsertExperience', () => {
     const [, body] = mockExperienceUpsert.mock.calls[0];
     expect(body.designProperties).toEqual({
       color: { _: { type: 'ManualDesignValue', value: 'red' } },
+    });
+  });
+
+  it('preserves flattened design properties without reintroducing viewports', async () => {
+    mockExperienceGet.mockResolvedValue({
+      ...mockExperience,
+      viewports: undefined,
+      designProperties: {
+        color: { type: 'ManualDesignValue', value: 'red' },
+      },
+    });
+    mockExperienceUpsert.mockResolvedValue(mockExperience);
+
+    await upsertExperienceTool(mockConfig)({ ...mockArgs, version: 1 });
+
+    const [, body] = mockExperienceUpsert.mock.calls[0];
+    expect(body).not.toHaveProperty('viewports');
+    expect(body.designProperties).toEqual({
+      color: { type: 'ManualDesignValue', value: 'red' },
     });
   });
 

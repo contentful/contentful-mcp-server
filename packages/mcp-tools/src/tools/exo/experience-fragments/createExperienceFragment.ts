@@ -11,11 +11,16 @@ import {
 import {
   ViewportSchema,
   ExperienceMetadataSchema,
+  DesignPropertyValueSchema,
   DimensionedDesignPropertyValueSchema,
   ExperienceContentBindingsSchema,
   ExperienceSlotNodeSchema,
   ComponentResourceLinkSchema,
 } from '../../../types/exoSchemas.js';
+import {
+  asViewportOptionalCmaPayloadWithFlattenedDesignProperties,
+  type ViewportOptionalPayloadWithFlattenedDesignProperties,
+} from '../../../types/cmaViewportCompatibility.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
 export const CreateExperienceFragmentToolParams = BaseToolSchema.extend({
@@ -26,9 +31,18 @@ export const CreateExperienceFragmentToolParams = BaseToolSchema.extend({
   ),
   viewports: z
     .array(ViewportSchema)
-    .describe('Viewport definitions (may be empty)'),
+    .optional()
+    .describe(
+      'Optional viewport definitions for the experience fragment. Omit for viewport-free experience fragments.',
+    ),
   designProperties: z
-    .record(z.string(), DimensionedDesignPropertyValueSchema)
+    .record(
+      z.string(),
+      z.union([
+        DesignPropertyValueSchema,
+        DimensionedDesignPropertyValueSchema,
+      ]),
+    )
     .describe(
       'Design property values keyed by property ID (may be empty object)',
     ),
@@ -55,18 +69,24 @@ export function createExperienceFragmentTool(config: ContentfulConfig) {
 
     const contentfulClient = createExoToolClient(config, args);
 
+    const experienceFragmentData = {
+      name: args.name,
+      description: args.description,
+      component: args.component,
+      ...(args.viewports !== undefined && { viewports: args.viewports }),
+      designProperties: args.designProperties,
+      ...(args.contentBindings && { contentBindings: args.contentBindings }),
+      ...(args.slots && { slots: args.slots }),
+      ...(args.metadata && { metadata: args.metadata }),
+    } satisfies ViewportOptionalPayloadWithFlattenedDesignProperties<
+      Parameters<typeof contentfulClient.experienceFragment.create>[1]
+    >;
+
     const experienceFragment = await contentfulClient.experienceFragment.create(
       { spaceId: args.spaceId, environmentId: args.environmentId },
-      {
-        name: args.name,
-        description: args.description,
-        component: args.component,
-        viewports: args.viewports,
-        designProperties: args.designProperties,
-        ...(args.contentBindings && { contentBindings: args.contentBindings }),
-        ...(args.slots && { slots: args.slots }),
-        ...(args.metadata && { metadata: args.metadata }),
-      },
+      asViewportOptionalCmaPayloadWithFlattenedDesignProperties(
+        experienceFragmentData,
+      ),
     );
 
     return createSuccessResponse('Experience fragment created successfully', {

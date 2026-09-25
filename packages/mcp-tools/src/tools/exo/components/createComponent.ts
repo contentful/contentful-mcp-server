@@ -16,6 +16,10 @@ import {
   TreeNodeSchema,
   ExoMetadataSchema,
 } from '../../../types/exoSchemas.js';
+import {
+  asViewportOptionalCmaPayload,
+  type ViewportOptionalPayload,
+} from '../../../types/cmaViewportCompatibility.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
 export const CreateComponentToolParams = BaseToolSchema.extend({
@@ -29,7 +33,10 @@ export const CreateComponentToolParams = BaseToolSchema.extend({
   description: z.string().describe('Description of the component'),
   viewports: z
     .array(ViewportSchema)
-    .describe('Viewport definitions for the component (may be empty)'),
+    .optional()
+    .describe(
+      'Optional viewport definitions for the component. Omit for viewport-free components.',
+    ),
   contentProperties: z
     .array(ContentPropertySchema)
     .describe('Content property definitions (may be empty)'),
@@ -63,13 +70,15 @@ export function createComponentTool(config: ContentfulConfig) {
     const componentData = {
       name: args.name,
       description: args.description,
-      viewports: args.viewports,
+      ...(args.viewports !== undefined && { viewports: args.viewports }),
       contentProperties: args.contentProperties,
       designProperties: args.designProperties,
       ...(args.componentTree && { componentTree: args.componentTree }),
       ...(args.slots && { slots: args.slots }),
       ...(args.metadata && { metadata: args.metadata }),
-    };
+    } satisfies ViewportOptionalPayload<
+      Parameters<typeof contentfulClient.component.create>[1]
+    >;
 
     // Create the component with or without an explicit ID. Providing an ID
     // uses upsert (PUT) with no sys.version, which the CMA treats as a create.
@@ -80,14 +89,16 @@ export function createComponentTool(config: ContentfulConfig) {
             environmentId: args.environmentId,
             componentId: args.componentId,
           },
-          {
+          asViewportOptionalCmaPayload<
+            Parameters<typeof contentfulClient.component.upsert>[1]
+          >({
             sys: { id: args.componentId, type: 'Component' },
             ...componentData,
-          },
+          }),
         )
       : await contentfulClient.component.create(
           { spaceId: args.spaceId, environmentId: args.environmentId },
-          componentData,
+          asViewportOptionalCmaPayload(componentData),
         );
 
     return createSuccessResponse('Component created successfully', {
