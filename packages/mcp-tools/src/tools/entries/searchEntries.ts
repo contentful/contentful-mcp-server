@@ -4,7 +4,11 @@ import {
   withErrorHandling,
 } from '../../utils/response.js';
 import { BaseToolSchema, createToolClient } from '../../utils/tools.js';
-import { summarizeData } from '../../utils/summarizer.js';
+import {
+  summarizeData,
+  summarizeCursorData,
+  offsetRemainingMessage,
+} from '../../utils/summarizer.js';
 import { searchLimit } from '../../utils/limits.js';
 import { normalizeArrayFilters } from '../../utils/queryParams.js';
 import type { ContentfulConfig } from '../../config/types.js';
@@ -35,8 +39,33 @@ export const SearchEntriesToolParams = BaseToolSchema.extend({
       skip: z
         .number()
         .optional()
-        .describe('Skip this many entries for pagination'),
+        .describe(
+          'Skip this many entries for pagination. Use this only for random access to a bounded page (e.g. "show me page 3"). ' +
+            "Don't use skip to iterate through an entire collection — performance degrades as the offset grows. " +
+            'For exhaustive traversal (exports, analytics, migrations), set cursor: true and follow pageNext instead.',
+        ),
       order: z.string().optional().describe('Order entries by this field'),
+      cursor: z
+        .boolean()
+        .optional()
+        .describe(
+          'Set to true to use cursor-based pagination instead of skip/limit. This is the correct way to fetch or ' +
+            'process an entire collection of entries (exports, analytics, migrations), since it has no performance ' +
+            'degradation as you page deeper. When set, pass the pageNext token from the previous response to fetch ' +
+            'the next page (skip/total are not used in this mode).',
+        ),
+      pageNext: z
+        .string()
+        .optional()
+        .describe(
+          'Cursor token (from a previous cursor: true response) to fetch the next page of entries. Only used when cursor: true.',
+        ),
+      pagePrev: z
+        .string()
+        .optional()
+        .describe(
+          'Cursor token (from a previous cursor: true response) to fetch the previous page of entries. Only used when cursor: true.',
+        ),
 
       // Full-text search
       query: z
@@ -121,19 +150,46 @@ export function searchEntriesTool(config: ContentfulConfig) {
 
     const contentfulClient = createToolClient(config, args);
 
+    const { cursor, pageNext, pagePrev, skip, limit, ...restQuery } =
+      args.query;
+
+    if (cursor) {
+      // Cursor-based traversal: exhaustive/large-collection path. skip/total
+      // don't apply here — pages.next/pages.prev drive continued iteration.
+      const entries = await contentfulClient.entry.getManyWithCursor({
+        ...params,
+        query: normalizeArrayFilters({
+          ...restQuery,
+          limit: searchLimit(limit),
+          ...(pageNext && { pageNext }),
+          ...(pagePrev && { pagePrev }),
+        }) as unknown as Parameters<
+          typeof contentfulClient.entry.getManyWithCursor
+        >[0]['query'],
+      });
+
+      const summarized = summarizeCursorData(entries);
+
+      return createSuccessResponse('Entries retrieved successfully', {
+        entries: summarized,
+        limit: entries.limit,
+        pages: entries.pages,
+      });
+    }
+
+    // Existing offset-based path (unchanged behavior).
     const entries = await contentfulClient.entry.getMany({
       ...params,
       query: normalizeArrayFilters({
-        ...args.query,
-        limit: searchLimit(args.query.limit),
-        skip: args.query.skip || 0,
+        ...restQuery,
+        limit: searchLimit(limit),
+        skip: skip || 0,
       }),
     });
 
     const summarized = summarizeData(entries, {
-      maxItems: searchLimit(args.query.limit),
-      remainingMessage:
-        'To see more entries, please ask me to retrieve the next page.',
+      maxItems: searchLimit(limit),
+      remainingMessage: offsetRemainingMessage('entries'),
     });
 
     return createSuccessResponse('Entries retrieved successfully', {

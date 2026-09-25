@@ -8,6 +8,9 @@ import { createClientConfig } from '../../../utils/tools.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 import { summarizeData } from '../../../utils/summarizer.js';
 
+const CONCEPTS_REMAINING_MESSAGE =
+  'This tool has no next-page parameter. To see more concepts, ask me to retry with a higher limit.';
+
 export const ListConceptsToolParams = z.object({
   organizationId: z.string().describe('The ID of the Contentful organization'),
   conceptId: z
@@ -84,10 +87,13 @@ export function listConceptsTool(config: ContentfulConfig) {
         related: concept.related,
       }));
 
-      const responseData = summarizeData({
-        ...descendants,
-        items: summarizedDescendants,
-      });
+      const responseData = summarizeData(
+        {
+          ...descendants,
+          items: summarizedDescendants,
+        },
+        { remainingMessage: CONCEPTS_REMAINING_MESSAGE },
+      );
 
       return createSuccessResponse(
         'Concept descendants retrieved successfully',
@@ -114,10 +120,13 @@ export function listConceptsTool(config: ContentfulConfig) {
         related: concept.related,
       }));
 
-      const responseData = summarizeData({
-        ...ancestors,
-        items: summarizedAncestors,
-      });
+      const responseData = summarizeData(
+        {
+          ...ancestors,
+          items: summarizedAncestors,
+        },
+        { remainingMessage: CONCEPTS_REMAINING_MESSAGE },
+      );
 
       return createSuccessResponse(
         'Concept ancestors retrieved successfully',
@@ -144,10 +153,13 @@ export function listConceptsTool(config: ContentfulConfig) {
       related: concept.related,
     }));
 
-    const responseData = summarizeData({
-      ...concepts,
-      items: summarizedConcepts,
-    });
+    const responseData = summarizeData(
+      {
+        ...concepts,
+        items: summarizedConcepts,
+      },
+      { remainingMessage: CONCEPTS_REMAINING_MESSAGE },
+    );
 
     return createSuccessResponse(
       'Concepts retrieved successfully',
