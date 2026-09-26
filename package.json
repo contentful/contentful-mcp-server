@@ -70,7 +70,7 @@
     "ts-node": "^10.9.2",
     "tslib": "^2.8.1",
     "tsup": "^8.5.1",
-    "typescript": "^5.8.2",
+    "typescript": "^5.9.3",
     "typescript-eslint": "^8.44.1",
     "vite": "^7.3.6",
     "vitest": "^3.2.4"
