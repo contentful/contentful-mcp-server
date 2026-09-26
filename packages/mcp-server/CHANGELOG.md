@@ -1,3 +1,13 @@
+## 1.22.3 (2026-09-26)
+
+### 🩹 Fixes
+
+- **deps:** update dependency tsup to ^8.5.1 ([#458](https://github.com/contentful/contentful-mcp-server/pull/458))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.18
+
 ## 1.22.2 (2026-09-26)
 
 ### 🧱 Updated Dependencies
