@@ -1,3 +1,9 @@
+## 0.12.21 (2026-09-26)
+
+### 🩹 Fixes
+
+- **deps:** update dependency contentful-management to v12.18.2 ([#493](https://github.com/contentful/contentful-mcp-server/pull/493))
+
 ## 0.12.20 (2026-09-26)
 
 ### 🩹 Fixes
