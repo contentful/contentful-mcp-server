@@ -1,3 +1,9 @@
+## 0.12.20 (2026-09-26)
+
+### 🩹 Fixes
+
+- **deps:** update dependency contentful-export to ^7.22.5 ([#492](https://github.com/contentful/contentful-mcp-server/pull/492))
+
 ## 0.12.19 (2026-09-26)
 
 ### 🩹 Fixes
