@@ -1,3 +1,9 @@
+## 0.12.26 (2026-09-27)
+
+### 🩹 Fixes
+
+- **deps:** update dependency contentful-import to v10 ([#513](https://github.com/contentful/contentful-mcp-server/pull/513))
+
 ## 0.12.25 (2026-09-27)
 
 ### 🩹 Fixes
