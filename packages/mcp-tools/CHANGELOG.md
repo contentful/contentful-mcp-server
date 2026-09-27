@@ -1,3 +1,9 @@
+## 0.12.24 (2026-09-27)
+
+### 🩹 Fixes
+
+- **deps:** update dependency @contentful/rich-text-types to v17 ([#511](https://github.com/contentful/contentful-mcp-server/pull/511))
+
 ## 0.12.23 (2026-09-27)
 
 ### 🩹 Fixes
