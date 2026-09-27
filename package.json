@@ -34,8 +34,8 @@
   },
   "devDependencies": {
     "@anthropic-ai/dxt": "^0.2.6",
-    "@commitlint/cli": "^19.8.1",
-    "@commitlint/config-conventional": "^19.8.1",
+    "@commitlint/cli": "^21.2.3",
+    "@commitlint/config-conventional": "^21.2.3",
     "@modelcontextprotocol/inspector": "0.22.0",
     "@nx/eslint": "23.2.1",
     "@nx/eslint-plugin": "23.2.1",
