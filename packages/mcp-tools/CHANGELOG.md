@@ -1,3 +1,9 @@
+## 0.12.25 (2026-09-27)
+
+### 🩹 Fixes
+
+- **deps:** update dependency contentful-export to v8 ([#512](https://github.com/contentful/contentful-mcp-server/pull/512))
+
 ## 0.12.24 (2026-09-27)
 
 ### 🩹 Fixes
