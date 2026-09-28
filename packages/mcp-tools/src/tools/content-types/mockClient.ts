@@ -13,6 +13,7 @@ const {
   mockContentTypePublish,
   mockContentTypeUnpublish,
   mockContentTypeGetMany,
+  mockContentTypeGetManyWithCursor,
   mockCreateToolClient,
 } = vi.hoisted(() => {
   return {
@@ -24,6 +25,7 @@ const {
     mockContentTypePublish: vi.fn(),
     mockContentTypeUnpublish: vi.fn(),
     mockContentTypeGetMany: vi.fn(),
+    mockContentTypeGetManyWithCursor: vi.fn(),
     mockCreateToolClient: vi.fn(() => {
       return {
         contentType: {
@@ -35,6 +37,7 @@ const {
           publish: mockContentTypePublish,
           unpublish: mockContentTypeUnpublish,
           getMany: mockContentTypeGetMany,
+          getManyWithCursor: mockContentTypeGetManyWithCursor,
         },
       };
     }),
@@ -58,6 +61,7 @@ export {
   mockContentTypePublish,
   mockContentTypeUnpublish,
   mockContentTypeGetMany,
+  mockContentTypeGetManyWithCursor,
   mockCreateToolClient,
 };
 

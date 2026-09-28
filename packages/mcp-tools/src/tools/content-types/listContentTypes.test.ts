@@ -1,12 +1,23 @@
 import { describe, it, expect } from 'vitest';
 import {
   mockContentTypeGetMany,
+  mockContentTypeGetManyWithCursor,
   mockContentTypesResponse,
   mockArgs,
 } from './mockClient.js';
 import { listContentTypesTool } from './listContentTypes.js';
 import { formatResponse } from '../../utils/formatters.js';
 import { createMockConfig } from '../../test-helpers/mockConfig.js';
+
+function toExpectedContentTypeItems(
+  items: typeof mockContentTypesResponse.items,
+) {
+  return items.map((contentType) => ({
+    ...contentType,
+    id: contentType.sys.id,
+    fieldsCount: contentType.fields.length,
+  }));
+}
 
 describe('listContentTypes', () => {
   const mockConfig = createMockConfig();
@@ -16,11 +27,9 @@ describe('listContentTypes', () => {
     const tool = listContentTypesTool(mockConfig);
     const result = await tool(mockArgs);
 
-    const expectedItems = mockContentTypesResponse.items.map((contentType) => ({
-      ...contentType,
-      id: contentType.sys.id,
-      fieldsCount: contentType.fields.length,
-    }));
+    const expectedItems = toExpectedContentTypeItems(
+      mockContentTypesResponse.items,
+    );
 
     const expectedResponse = formatResponse(
       'Content types retrieved successfully',
@@ -63,11 +72,7 @@ describe('listContentTypes', () => {
     const tool = listContentTypesTool(mockConfig);
     const result = await tool(testArgs);
 
-    const expectedItems = customResponse.items.map((contentType) => ({
-      ...contentType,
-      id: contentType.sys.id,
-      fieldsCount: contentType.fields.length,
-    }));
+    const expectedItems = toExpectedContentTypeItems(customResponse.items);
 
     const expectedResponse = formatResponse(
       'Content types retrieved successfully',
@@ -133,6 +138,60 @@ describe('listContentTypes', () => {
         total: 0,
         limit: 10,
         skip: 0,
+      },
+    );
+
+    expect(result).toEqual({
+      content: [
+        {
+          type: 'text',
+          text: expectedResponse,
+        },
+      ],
+    });
+  });
+
+  it('should use cursor-based pagination when cursor: true is set', async () => {
+    const testArgs = {
+      ...mockArgs,
+      cursor: true,
+      pageNext: 'next-cursor-token',
+      limit: 5,
+    };
+
+    mockContentTypeGetManyWithCursor.mockResolvedValue({
+      ...mockContentTypesResponse,
+      limit: 5,
+      pages: { next: 'another-cursor-token' },
+    });
+
+    const tool = listContentTypesTool(mockConfig);
+    const result = await tool(testArgs);
+
+    expect(mockContentTypeGetManyWithCursor).toHaveBeenCalledWith({
+      spaceId: testArgs.spaceId,
+      environmentId: testArgs.environmentId,
+      query: {
+        limit: 5,
+        pageNext: 'next-cursor-token',
+      },
+    });
+
+    const expectedItems = toExpectedContentTypeItems(
+      mockContentTypesResponse.items,
+    );
+
+    const expectedResponse = formatResponse(
+      'Content types retrieved successfully',
+      {
+        contentTypes: {
+          ...mockContentTypesResponse,
+          limit: 5,
+          pages: { next: 'another-cursor-token' },
+          items: expectedItems,
+        },
+        limit: 5,
+        pages: { next: 'another-cursor-token' },
       },
     );
 

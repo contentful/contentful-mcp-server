@@ -16,6 +16,7 @@ export const mockAssetUnpublish = vi.fn();
 export const mockAssetArchive = vi.fn();
 export const mockAssetUnarchive = vi.fn();
 export const mockAssetGetMany = vi.fn();
+export const mockAssetGetManyWithCursor = vi.fn();
 export const mockAssetProcessForAllLocales = vi.fn();
 export const mockUploadCreate = vi.fn();
 
@@ -38,6 +39,7 @@ export const mockClient = {
     archive: mockAssetArchive,
     unarchive: mockAssetUnarchive,
     getMany: mockAssetGetMany,
+    getManyWithCursor: mockAssetGetManyWithCursor,
     processForAllLocales: mockAssetProcessForAllLocales,
   },
   upload: {

@@ -1,10 +1,11 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { searchEntriesTool } from './searchEntries.js';
 import { formatResponse } from '../../utils/formatters.js';
-import { summarizeData } from '../../utils/summarizer.js';
+import { summarizeData, summarizeCursorData } from '../../utils/summarizer.js';
 import {
   setupMockClient,
   mockEntryGetMany,
+  mockEntryGetManyWithCursor,
   mockEntry,
   mockArgs,
 } from './mockClient.js';
@@ -192,6 +193,60 @@ describe('searchEntries', () => {
         skip: 0,
       },
     });
+  });
+
+  it('should use cursor-based pagination when cursor: true is set', async () => {
+    const testArgs = {
+      ...mockArgs,
+      query: {
+        content_type: 'test-content-type',
+        limit: 2,
+        cursor: true,
+        pageNext: 'next-cursor-token',
+      },
+    };
+
+    const mockEntries = {
+      items: [{ mockEntry }],
+      limit: 2,
+      pages: { next: 'another-cursor-token' },
+    };
+
+    const mockSummarized = {
+      items: mockEntries.items,
+      pages: mockEntries.pages,
+    };
+
+    mockEntryGetManyWithCursor.mockResolvedValue(mockEntries);
+    vi.mocked(summarizeCursorData).mockReturnValue(mockSummarized);
+
+    const tool = searchEntriesTool(mockConfig);
+    const result = await tool(testArgs);
+
+    expect(mockEntryGetManyWithCursor).toHaveBeenCalledWith({
+      spaceId: testArgs.spaceId,
+      environmentId: testArgs.environmentId,
+      query: {
+        content_type: 'test-content-type',
+        limit: 2,
+        pageNext: 'next-cursor-token',
+      },
+    });
+
+    const expectedResponse = formatResponse('Entries retrieved successfully', {
+      entries: mockSummarized,
+      limit: mockEntries.limit,
+      pages: mockEntries.pages,
+    });
+    expect(result).toEqual({
+      content: [
+        {
+          type: 'text',
+          text: expectedResponse,
+        },
+      ],
+    });
+    expect(result.content[0].text).toContain('another-cursor-token');
   });
 
   it('should handle errors when search fails', async () => {
