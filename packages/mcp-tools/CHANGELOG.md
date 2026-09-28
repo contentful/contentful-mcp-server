@@ -1,3 +1,14 @@
+## 0.12.28 (2026-09-28)
+
+### 🚀 Features
+
+- add optional cursor pagination to entries, assets, content-types tools ([185a827](https://github.com/contentful/contentful-mcp-server/commit/185a827))
+
+### 🩹 Fixes
+
+- correct offset remaining count and simplify cursor summarization ([8c8fbf3](https://github.com/contentful/contentful-mcp-server/commit/8c8fbf3))
+- preserve pagination tokens in cursor-truncated responses ([72000f2](https://github.com/contentful/contentful-mcp-server/commit/72000f2))
+
 ## 0.12.27 (2026-09-27)
 
 This was a version bump only for mcp-tools to align it with other projects, there were no code changes.
