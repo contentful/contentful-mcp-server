@@ -1,3 +1,9 @@
+## 0.12.29 (2026-09-29)
+
+### 🩹 Fixes
+
+- **mcp-tools:** drop duplicate limit/pages from cursor responses [] ([ce6b843](https://github.com/contentful/contentful-mcp-server/commit/ce6b843))
+
 ## 0.12.28 (2026-09-28)
 
 ### 🚀 Features
