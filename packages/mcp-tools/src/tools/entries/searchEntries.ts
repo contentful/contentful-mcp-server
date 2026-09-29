@@ -172,8 +172,6 @@ export function searchEntriesTool(config: ContentfulConfig) {
 
       return createSuccessResponse('Entries retrieved successfully', {
         entries: summarized,
-        limit: entries.limit,
-        pages: entries.pages,
       });
     }
 

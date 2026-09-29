@@ -190,8 +190,6 @@ describe('listContentTypes', () => {
           pages: { next: 'another-cursor-token' },
           items: expectedItems,
         },
-        limit: 5,
-        pages: { next: 'another-cursor-token' },
       },
     );
 

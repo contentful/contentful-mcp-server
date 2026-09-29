@@ -103,8 +103,6 @@ export function listContentTypesTool(config: ContentfulConfig) {
 
       return createSuccessResponse('Content types retrieved successfully', {
         contentTypes: summarized,
-        limit: contentTypes.limit,
-        pages: contentTypes.pages,
       });
     }
 
