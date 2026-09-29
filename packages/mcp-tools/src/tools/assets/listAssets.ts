@@ -142,8 +142,6 @@ export function listAssetsTool(config: ContentfulConfig) {
 
       return createSuccessResponse('Assets retrieved successfully', {
         assets: summarized,
-        limit: assets.limit,
-        pages: assets.pages,
       });
     }
 

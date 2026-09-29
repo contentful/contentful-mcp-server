@@ -235,8 +235,6 @@ describe('searchEntries', () => {
 
     const expectedResponse = formatResponse('Entries retrieved successfully', {
       entries: mockSummarized,
-      limit: mockEntries.limit,
-      pages: mockEntries.pages,
     });
     expect(result).toEqual({
       content: [
