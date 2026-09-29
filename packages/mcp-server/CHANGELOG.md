@@ -1,3 +1,9 @@
+## 1.23.2 (2026-09-29)
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.30
+
 ## 1.23.1 (2026-09-29)
 
 ### 🧱 Updated Dependencies
