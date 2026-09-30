@@ -1,3 +1,9 @@
+## 0.12.31 (2026-09-30)
+
+### 🩹 Fixes
+
+- **mcp-tools:** correct release tool annotation hints ([#518](https://github.com/contentful/contentful-mcp-server/pull/518))
+
 ## 0.12.30 (2026-09-29)
 
 This was a version bump only for mcp-tools to align it with other projects, there were no code changes.
