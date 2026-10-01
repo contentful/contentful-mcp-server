@@ -1,3 +1,9 @@
+## 0.12.32 (2026-10-01)
+
+### 🩹 Fixes
+
+- **deps:** update dependency @modelcontextprotocol/sdk to ^1.31.0 ([#520](https://github.com/contentful/contentful-mcp-server/pull/520))
+
 ## 0.12.31 (2026-09-30)
 
 ### 🩹 Fixes
