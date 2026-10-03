@@ -21,7 +21,7 @@ export const CreateDataAssemblyToolParams = BaseToolSchema.extend({
   name: z.string().describe('The name of the data assembly'),
   description: z.string().describe('Description of the data assembly'),
   parameters: DataAssemblyParameterConfigSchema.describe(
-    'Parameter definitions keyed by parameter name (may be empty object)',
+    'Ordered parameter definitions with stable id and explicit boolean required (may be empty array)',
   ),
   resolvers: DataAssemblyResolverConfigSchema.describe(
     'Resolver definitions keyed by resolver name (may be empty object)',
@@ -31,12 +31,16 @@ export const CreateDataAssemblyToolParams = BaseToolSchema.extend({
   ),
   dataType: z
     .array(DataAssemblyDataTypeFieldSchema)
-    .describe('Data type field definitions for this data assembly (may be empty array)'),
+    .describe(
+      'Data type field definitions for this data assembly (may be empty array)',
+    ),
   variant: z
     .string()
     .optional()
     .describe('Optional variant identifier for this data assembly'),
-  metadata: DataAssemblyMetadataSchema.optional().describe('Optional metadata (tags)'),
+  metadata: DataAssemblyMetadataSchema.optional().describe(
+    'Optional metadata (tags)',
+  ),
 });
 
 type Params = z.infer<typeof CreateDataAssemblyToolParams>;
