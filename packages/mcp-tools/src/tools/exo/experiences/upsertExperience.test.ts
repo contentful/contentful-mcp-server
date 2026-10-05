@@ -112,4 +112,35 @@ describe('upsertExperience', () => {
       content: [{ type: 'text', text: 'Error updating experience: not found' }],
     });
   });
+
+  it('normalizes bare content binding ResourceLinks to $literal', async () => {
+    mockExperienceGet.mockResolvedValue(mockExperience);
+    mockExperienceUpsert.mockResolvedValue(mockExperience);
+    const link = {
+      sys: {
+        type: 'ResourceLink' as const,
+        linkType: 'Contentful:Entry',
+        urn: 'crn:contentful:::content:spaces/s/environments/e/entries/1',
+      },
+    };
+    const bindings = {
+      sys: {
+        type: 'ResourceLink' as const,
+        linkType: 'Contentful:DataAssembly' as const,
+        urn: 'crn:contentful:::experience:spaces/s/environments/e/dataAssemblies/d',
+      },
+      parameters: { title: link },
+    };
+
+    await upsertExperienceTool(mockConfig)({
+      ...mockArgs,
+      version: 1,
+      contentBindings: bindings,
+    });
+
+    const [, body] = mockExperienceUpsert.mock.calls[0];
+    expect(body.contentBindings.parameters).toEqual({
+      title: { $literal: link },
+    });
+  });
 });

@@ -115,7 +115,9 @@ export function updateExperienceFragmentTool(config: ContentfulConfig) {
       description: args.description ?? current.description,
       ...(viewports !== undefined && { viewports }),
       designProperties: args.designProperties ?? current.designProperties,
-      ...(normalizedContentBindings && { contentBindings: normalizedContentBindings }),
+      ...(normalizedContentBindings && {
+        contentBindings: normalizedContentBindings,
+      }),
       ...((args.slots ?? current.slots)
         ? { slots: args.slots ?? current.slots }
         : {}),
