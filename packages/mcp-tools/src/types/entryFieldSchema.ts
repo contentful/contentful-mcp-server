@@ -39,6 +39,26 @@ export const jsonValueSchema: z.ZodType<JsonValue> = z.lazy(() =>
     .describe('Freeform JSON value (not for Rich Text)'),
 );
 
+export function looksLikeRichTextDocument(value: unknown): boolean {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    !Array.isArray(value) &&
+    'nodeType' in value &&
+    (value as { nodeType: unknown }).nodeType === 'document'
+  );
+}
+
+const jsonFieldValueSchema = jsonValueSchema.refine(
+  (value) => !looksLikeRichTextDocument(value),
+  {
+    message:
+      'Value looks like a Rich Text document (nodeType: "document") but is missing required properties. ' +
+      'Document and block nodes need data: {}, and text nodes need data: {} and marks: []. ' +
+      'See https://www.contentful.com/developers/docs/concepts/rich-text/',
+  },
+);
+
 const fieldValueSchema = z.union([
   z.string().describe('Symbol, Text, or Date field'),
   z.number().describe('Integer or Number field'),
@@ -50,7 +70,7 @@ const fieldValueSchema = z.union([
   z.array(z.string()).describe('Array field of Symbols'),
   z.array(linkSchema).describe('Array field of Links'),
   z.array(resourceLinkSchema).describe('Array field of ResourceLinks'),
-  jsonValueSchema,
+  jsonFieldValueSchema,
 ]);
 
 // Every field value is keyed by locale, e.g. { "en-US": "hello" }
