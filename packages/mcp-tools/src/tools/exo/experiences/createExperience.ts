@@ -48,7 +48,8 @@ export const CreateExperienceToolParams = BaseToolSchema.extend({
         '(viewport ID → design value); without viewports, use a direct design value. May be an empty object.',
     ),
   contentBindings: ExperienceContentBindingsSchema.optional().describe(
-    'Optional content bindings linking this experience to a data assembly',
+    'Optional content bindings linking this experience to a data assembly. ' +
+      'Bare ResourceLinks are accepted and sent as $literal values.',
   ),
   slots: z
     .record(z.string(), z.array(ExperienceSlotNodeSchema))

@@ -474,21 +474,50 @@ export const DataAssemblyResourceLinkSchema = resourceLinkSchema(
   'Contentful:DataAssembly',
 );
 
-export const ExperienceContentBindingsSchema = z.object({
+const ContentBindingResourceLinkSchema = z.object({
+  sys: z.object({
+    type: z.literal('ResourceLink'),
+    linkType: z.string(),
+    urn: z.string(),
+  }),
+});
+
+const ContentBindingParameterSchema = z
+  .union([
+    ContentBindingResourceLinkSchema.describe(
+      'Legacy bare ResourceLink parameter binding',
+    ),
+    z.object({ $literal: ContentBindingResourceLinkSchema }).describe(
+      'Literal-wrapped ResourceLink parameter binding',
+    ),
+  ])
+  .describe(
+    'Accepts either a bare ResourceLink or a $literal-wrapped ResourceLink',
+  );
+
+const ExperienceContentBindingsInputSchema = z.object({
   sys: DataAssemblyResourceLinkSchema.shape.sys,
   parameters: z
-    .record(
-      z.string(),
-      z.object({
-        sys: z.object({
-          type: z.literal('ResourceLink'),
-          linkType: z.string(),
-          urn: z.string(),
-        }),
-      }),
-    )
+    .record(z.string(), ContentBindingParameterSchema)
     .describe('Parameter bindings keyed by parameter ID'),
-}) satisfies z.ZodType<ExperienceContentBindings>;
+});
+
+// contentful-management currently types this as the legacy bare ResourceLink,
+// while the API also accepts its $literal wrapper. The input schema validates
+// both forms and the transform writes the current literal notation. The final
+// schema step exposes the SDK's current output type to the API call sites.
+export const ExperienceContentBindingsSchema =
+  ExperienceContentBindingsInputSchema
+    .transform((bindings) => ({
+      ...bindings,
+      parameters: Object.fromEntries(
+        Object.entries(bindings.parameters).map(([id, parameter]) => [
+          id,
+          'sys' in parameter ? { $literal: parameter } : parameter,
+        ]),
+      ),
+    }))
+    .pipe(z.custom<ExperienceContentBindings>());
 
 export const InlineExperienceFragmentNodeSchema: z.ZodType<InlineExperienceFragmentNode> =
   z.lazy(() =>

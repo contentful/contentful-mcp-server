@@ -54,7 +54,8 @@ export const UpdateExperienceFragmentToolParams = BaseToolSchema.extend({
     .optional()
     .describe('Design property values; replaces existing if provided'),
   contentBindings: ExperienceContentBindingsSchema.optional().describe(
-    'Content bindings; replaces existing if provided',
+    'Content bindings; replaces existing if provided. ' +
+      'Bare ResourceLinks are accepted and sent as $literal values.',
   ),
   slots: z
     .record(z.string(), z.array(ExperienceSlotNodeSchema))
@@ -99,6 +100,10 @@ export function updateExperienceFragmentTool(config: ContentfulConfig) {
     // an existing fragment, and `update` is the verb the tool surface exposes for that.
     // Do not "fix" the tool name to match the SDK method.
     const viewports = args.viewports ?? current.viewports;
+    const contentBindings = args.contentBindings ?? current.contentBindings;
+    const normalizedContentBindings = contentBindings
+      ? ExperienceContentBindingsSchema.parse(contentBindings)
+      : undefined;
 
     const experienceFragmentData = {
       sys: {
@@ -110,9 +115,7 @@ export function updateExperienceFragmentTool(config: ContentfulConfig) {
       description: args.description ?? current.description,
       ...(viewports !== undefined && { viewports }),
       designProperties: args.designProperties ?? current.designProperties,
-      ...((args.contentBindings ?? current.contentBindings)
-        ? { contentBindings: args.contentBindings ?? current.contentBindings }
-        : {}),
+      ...(normalizedContentBindings && { contentBindings: normalizedContentBindings }),
       ...((args.slots ?? current.slots)
         ? { slots: args.slots ?? current.slots }
         : {}),

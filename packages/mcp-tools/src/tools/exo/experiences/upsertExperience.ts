@@ -51,7 +51,8 @@ export const UpsertExperienceToolParams = BaseToolSchema.extend({
       'Design property values keyed by property ID; replaces existing if provided',
     ),
   contentBindings: ExperienceContentBindingsSchema.optional().describe(
-    'Content bindings linking this experience to a data assembly; replaces existing if provided',
+    'Content bindings link this experience to a data assembly and replace the existing value. ' +
+      'Bare ResourceLinks are accepted and sent as $literal values.',
   ),
   slots: z
     .record(z.string(), z.array(ExperienceSlotNodeSchema))
@@ -94,6 +95,10 @@ export function upsertExperienceTool(config: ContentfulConfig) {
     }
 
     const viewports = args.viewports ?? current.viewports;
+    const contentBindings = args.contentBindings ?? current.contentBindings;
+    const normalizedContentBindings = contentBindings
+      ? ExperienceContentBindingsSchema.parse(contentBindings)
+      : undefined;
 
     const experienceData = {
       sys: {
@@ -105,9 +110,7 @@ export function upsertExperienceTool(config: ContentfulConfig) {
       description: args.description ?? current.description,
       ...(viewports !== undefined && { viewports }),
       designProperties: args.designProperties ?? current.designProperties,
-      ...((args.contentBindings ?? current.contentBindings)
-        ? { contentBindings: args.contentBindings ?? current.contentBindings }
-        : {}),
+      ...(normalizedContentBindings && { contentBindings: normalizedContentBindings }),
       ...((args.slots ?? current.slots)
         ? { slots: args.slots ?? current.slots }
         : {}),
