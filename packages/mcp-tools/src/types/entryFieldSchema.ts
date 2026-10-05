@@ -1,3 +1,4 @@
+import { BLOCKS } from '@contentful/rich-text-types';
 import { z } from 'zod';
 import { richTextDocumentSchema } from './richTextSchema.js';
 
@@ -45,7 +46,7 @@ export function looksLikeRichTextDocument(value: unknown): boolean {
     value !== null &&
     !Array.isArray(value) &&
     'nodeType' in value &&
-    (value as { nodeType: unknown }).nodeType === 'document'
+    (value as { nodeType: unknown }).nodeType === BLOCKS.DOCUMENT
   );
 }
 

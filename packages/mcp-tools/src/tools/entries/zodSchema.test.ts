@@ -1,3 +1,4 @@
+import { BLOCKS } from '@contentful/rich-text-types';
 import { describe, it, expect } from 'vitest';
 
 import {
@@ -33,6 +34,16 @@ describe('entry zod schema ', () => {
     });
 
     describe('Rich Text fields', () => {
+      const incompleteRichText = {
+        nodeType: BLOCKS.DOCUMENT,
+        content: [
+          {
+            nodeType: 'paragraph',
+            content: [{ nodeType: 'text', value: 'hello' }],
+          },
+        ],
+      };
+
       it('should validate a complex Rich Text document', () => {
         expect(() =>
           richTextDocumentSchema.parse(complexRichTextExample['en-US']),
@@ -40,16 +51,6 @@ describe('entry zod schema ', () => {
       });
 
       it('should reject incomplete Rich Text documents at the entry fields layer', () => {
-        const incompleteRichText = {
-          nodeType: 'document',
-          content: [
-            {
-              nodeType: 'paragraph',
-              content: [{ nodeType: 'text', value: 'hello' }],
-            },
-          ],
-        };
-
         expect(
           richTextDocumentSchema.safeParse(incompleteRichText).success,
         ).toBe(false);
@@ -61,16 +62,6 @@ describe('entry zod schema ', () => {
       });
 
       it('should reject incomplete Rich Text for create_entry tool params', () => {
-        const incompleteRichText = {
-          nodeType: 'document',
-          content: [
-            {
-              nodeType: 'paragraph',
-              content: [{ nodeType: 'text', value: 'hello' }],
-            },
-          ],
-        };
-
         expect(
           CreateEntryToolParams.safeParse({
             spaceId: 'space',
@@ -81,6 +72,26 @@ describe('entry zod schema ', () => {
             },
           }).success,
         ).toBe(false);
+      });
+
+      it('should allow generic JSON objects that nest document-shaped values', () => {
+        const jsonWithNestedDocument = {
+          metadata: {
+            preview: {
+              nodeType: BLOCKS.DOCUMENT,
+              content: [],
+            },
+          },
+        };
+
+        expect(jsonValueSchema.safeParse(jsonWithNestedDocument).success).toBe(
+          true,
+        );
+        expect(
+          entryFieldsSchema.safeParse({
+            config: { 'en-US': jsonWithNestedDocument },
+          }).success,
+        ).toBe(true);
       });
     });
   });
