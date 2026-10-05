@@ -1,3 +1,9 @@
+## 0.12.37 (2026-10-05)
+
+### 🩹 Fixes
+
+- reject incomplete Rich Text shapes in entry field schema [AIS-669] ([#534](https://github.com/contentful/contentful-mcp-server/pull/534))
+
 ## 0.12.36 (2026-10-04)
 
 ### 🩹 Fixes
