@@ -517,6 +517,17 @@ export const ExperienceContentBindingsSchema =
     ),
   })).pipe(z.custom<ExperienceContentBindings>());
 
+/**
+ * Normalizes the merged (supplied or already stored) content bindings of an
+ * update so bare ResourceLinks are always written as `$literal` values.
+ */
+export const normalizeContentBindings = (
+  contentBindings: unknown,
+): ExperienceContentBindings | undefined =>
+  contentBindings
+    ? ExperienceContentBindingsSchema.parse(contentBindings)
+    : undefined;
+
 export const InlineExperienceFragmentNodeSchema: z.ZodType<
   InlineExperienceFragmentNode,
   z.ZodTypeDef,

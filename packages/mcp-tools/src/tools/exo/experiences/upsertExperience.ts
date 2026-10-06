@@ -14,6 +14,7 @@ import {
   DesignPropertyValueSchema,
   DimensionedDesignPropertyValueSchema,
   ExperienceContentBindingsSchema,
+  normalizeContentBindings,
   ExperienceSlotNodeSchema,
 } from '../../../types/exoSchemas.js';
 import {
@@ -51,7 +52,7 @@ export const UpsertExperienceToolParams = BaseToolSchema.extend({
       'Design property values keyed by property ID; replaces existing if provided',
     ),
   contentBindings: ExperienceContentBindingsSchema.optional().describe(
-    'Content bindings link this experience to a data assembly and replace the existing value. ' +
+    'Content bindings linking this experience to a data assembly; replaces existing if provided. ' +
       'Bare ResourceLinks are accepted and sent as $literal values.',
   ),
   slots: z
@@ -95,10 +96,9 @@ export function upsertExperienceTool(config: ContentfulConfig) {
     }
 
     const viewports = args.viewports ?? current.viewports;
-    const contentBindings = args.contentBindings ?? current.contentBindings;
-    const normalizedContentBindings = contentBindings
-      ? ExperienceContentBindingsSchema.parse(contentBindings)
-      : undefined;
+    const normalizedContentBindings = normalizeContentBindings(
+      args.contentBindings ?? current.contentBindings,
+    );
 
     const experienceData = {
       sys: {

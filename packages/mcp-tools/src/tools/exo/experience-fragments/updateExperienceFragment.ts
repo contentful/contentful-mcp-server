@@ -14,6 +14,7 @@ import {
   DesignPropertyValueSchema,
   DimensionedDesignPropertyValueSchema,
   ExperienceContentBindingsSchema,
+  normalizeContentBindings,
   ExperienceSlotNodeSchema,
 } from '../../../types/exoSchemas.js';
 import {
@@ -100,10 +101,9 @@ export function updateExperienceFragmentTool(config: ContentfulConfig) {
     // an existing fragment, and `update` is the verb the tool surface exposes for that.
     // Do not "fix" the tool name to match the SDK method.
     const viewports = args.viewports ?? current.viewports;
-    const contentBindings = args.contentBindings ?? current.contentBindings;
-    const normalizedContentBindings = contentBindings
-      ? ExperienceContentBindingsSchema.parse(contentBindings)
-      : undefined;
+    const normalizedContentBindings = normalizeContentBindings(
+      args.contentBindings ?? current.contentBindings,
+    );
 
     const experienceFragmentData = {
       sys: {
