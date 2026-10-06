@@ -9,7 +9,6 @@ import {
   assertEnvironmentNotProtected,
 } from '../../../utils/tools.js';
 import {
-  ViewportSchema,
   ExperienceMetadataSchema,
   DesignPropertyValueSchema,
   DimensionedDesignPropertyValueSchema,
@@ -35,10 +34,6 @@ export const UpsertExperienceToolParams = BaseToolSchema.extend({
     ),
   name: z.string().optional().describe('The name of the experience'),
   description: z.string().optional().describe('Description of the experience'),
-  viewports: z
-    .array(ViewportSchema)
-    .optional()
-    .describe('Viewport definitions; replaces existing viewports if provided'),
   designProperties: z
     .record(
       z.string(),
@@ -95,7 +90,6 @@ export function upsertExperienceTool(config: ContentfulConfig) {
       );
     }
 
-    const viewports = args.viewports ?? current.viewports;
     const normalizedContentBindings = normalizeContentBindings(
       args.contentBindings ?? current.contentBindings,
     );
@@ -108,7 +102,6 @@ export function upsertExperienceTool(config: ContentfulConfig) {
       },
       name: args.name ?? current.name,
       description: args.description ?? current.description,
-      ...(viewports !== undefined && { viewports }),
       designProperties: args.designProperties ?? current.designProperties,
       ...(normalizedContentBindings && {
         contentBindings: normalizedContentBindings,

@@ -9,7 +9,6 @@ import {
   assertEnvironmentNotProtected,
 } from '../../../utils/tools.js';
 import {
-  ViewportSchema,
   ExperienceMetadataSchema,
   DesignPropertyValueSchema,
   DimensionedDesignPropertyValueSchema,
@@ -29,12 +28,6 @@ export const CreateExperienceFragmentToolParams = BaseToolSchema.extend({
   component: ComponentResourceLinkSchema.describe(
     'Resource link to the component this experience fragment is based on',
   ),
-  viewports: z
-    .array(ViewportSchema)
-    .optional()
-    .describe(
-      'Optional viewport definitions for the experience fragment. Omit for viewport-free experience fragments.',
-    ),
   designProperties: z
     .record(
       z.string(),
@@ -74,7 +67,6 @@ export function createExperienceFragmentTool(config: ContentfulConfig) {
       name: args.name,
       description: args.description,
       component: args.component,
-      ...(args.viewports !== undefined && { viewports: args.viewports }),
       designProperties: args.designProperties,
       ...(args.contentBindings && { contentBindings: args.contentBindings }),
       ...(args.slots && { slots: args.slots }),

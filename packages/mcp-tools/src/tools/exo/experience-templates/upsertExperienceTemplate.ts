@@ -9,7 +9,6 @@ import {
   assertEnvironmentNotProtected,
 } from '../../../utils/tools.js';
 import {
-  ViewportSchema,
   ContentPropertySchema,
   DesignPropertySchema,
   SlotDefinitionSchema,
@@ -39,10 +38,6 @@ export const UpsertExperienceTemplateToolParams = BaseToolSchema.extend({
     .string()
     .optional()
     .describe('Description of the experience template'),
-  viewports: z
-    .array(ViewportSchema)
-    .optional()
-    .describe('Viewport definitions; replaces existing viewports if provided'),
   contentProperties: z
     .array(ContentPropertySchema)
     .optional()
@@ -95,8 +90,6 @@ export function upsertExperienceTemplateTool(config: ContentfulConfig) {
       );
     }
 
-    const viewports = args.viewports ?? current.viewports;
-
     const experienceTemplateData = {
       sys: {
         id: current.sys.id,
@@ -105,7 +98,6 @@ export function upsertExperienceTemplateTool(config: ContentfulConfig) {
       },
       name: args.name ?? current.name,
       description: args.description ?? current.description,
-      ...(viewports !== undefined && { viewports }),
       contentProperties: args.contentProperties ?? current.contentProperties,
       designProperties: args.designProperties ?? current.designProperties,
       ...((args.componentTree ?? current.componentTree)
