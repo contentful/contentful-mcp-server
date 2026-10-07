@@ -48,8 +48,8 @@
     "@swc/core": "~1.16.13",
     "@swc/helpers": "~0.5.23",
     "@types/node": "^22.16.5",
-    "@typescript-eslint/eslint-plugin": "^8.71.0",
-    "@typescript-eslint/parser": "^8.71.0",
+    "@typescript-eslint/eslint-plugin": "^8.71.1",
+    "@typescript-eslint/parser": "^8.71.1",
     "@vitest/coverage-v8": "^5.0.3",
     "@vitest/ui": "^5.0.3",
     "eslint": "^9.39.5",
@@ -71,7 +71,7 @@
     "tslib": "^2.8.1",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
-    "typescript-eslint": "^8.71.0",
+    "typescript-eslint": "^8.71.1",
     "vite": "^8.3.2",
     "vitest": "^3.2.4"
   }
