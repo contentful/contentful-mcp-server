@@ -1,3 +1,10 @@
+## 0.12.38 (2026-10-07)
+
+### 🩹 Fixes
+
+- **exo:** fix content binding literal typing and add tests [ARC-2527] ([c1f7e95](https://github.com/contentful/contentful-mcp-server/commit/c1f7e95))
+- **exo:** support literal content bindings [ARC-2527] ([2e3328f](https://github.com/contentful/contentful-mcp-server/commit/2e3328f))
+
 ## 0.12.37 (2026-10-05)
 
 ### 🩹 Fixes
