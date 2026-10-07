@@ -474,46 +474,90 @@ export const DataAssemblyResourceLinkSchema = resourceLinkSchema(
   'Contentful:DataAssembly',
 );
 
-export const ExperienceContentBindingsSchema = z.object({
-  sys: DataAssemblyResourceLinkSchema.shape.sys,
-  parameters: z
-    .record(
-      z.string(),
-      z.object({
-        sys: z.object({
-          type: z.literal('ResourceLink'),
-          linkType: z.string(),
-          urn: z.string(),
-        }),
-      }),
-    )
-    .describe('Parameter bindings keyed by parameter ID'),
-}) satisfies z.ZodType<ExperienceContentBindings>;
+const ContentBindingResourceLinkSchema = z.object({
+  sys: z.object({
+    type: z.literal('ResourceLink'),
+    linkType: z.string(),
+    urn: z.string(),
+  }),
+});
 
-export const InlineExperienceFragmentNodeSchema: z.ZodType<InlineExperienceFragmentNode> =
-  z.lazy(() =>
-    z.object({
-      id: z.string().describe('Node identifier'),
-      nodeType: z
-        .literal('InlineExperienceFragment')
-        .describe('Must be "InlineExperienceFragment"'),
-      component: ComponentResourceLinkSchema.describe(
-        'Resource link to the component this inline experience fragment renders',
-      ),
-      designProperties: z
-        .record(z.string(), DimensionedDesignPropertyValueSchema)
-        .describe('Design property values for this inline experience fragment'),
-      contentBindings: ExperienceContentBindingsSchema.optional().describe(
-        'Optional content bindings linking this inline experience fragment to a data assembly',
-      ),
-      slots: z
-        .record(z.string(), z.array(ExperienceSlotNodeSchema))
-        .optional()
-        .describe('Child slot contents keyed by slot ID'),
-    }),
+const ContentBindingParameterSchema = z
+  .union([
+    ContentBindingResourceLinkSchema.describe(
+      'Legacy bare ResourceLink parameter binding',
+    ),
+    z
+      .object({ $literal: ContentBindingResourceLinkSchema })
+      .describe('Literal-wrapped ResourceLink parameter binding'),
+  ])
+  .describe(
+    'Accepts either a bare ResourceLink or a $literal-wrapped ResourceLink',
   );
 
-export const ExperienceSlotNodeSchema: z.ZodType<ExperienceSlotNode> = z.lazy(
-  () =>
-    z.union([ExperienceFragmentNodeSchema, InlineExperienceFragmentNodeSchema]),
+const ExperienceContentBindingsInputSchema = z.object({
+  sys: DataAssemblyResourceLinkSchema.shape.sys,
+  parameters: z
+    .record(z.string(), ContentBindingParameterSchema)
+    .describe('Parameter bindings keyed by parameter ID'),
+});
+
+// contentful-management currently types this as the legacy bare ResourceLink,
+// while the API also accepts its $literal wrapper. The input schema validates
+// both forms and the transform writes the current literal notation. The final
+// schema step exposes the SDK's current output type to the API call sites.
+export const ExperienceContentBindingsSchema =
+  ExperienceContentBindingsInputSchema.transform((bindings) => ({
+    ...bindings,
+    parameters: Object.fromEntries(
+      Object.entries(bindings.parameters).map(([id, parameter]) => [
+        id,
+        'sys' in parameter ? { $literal: parameter } : parameter,
+      ]),
+    ),
+  })).pipe(z.custom<ExperienceContentBindings>());
+
+/**
+ * Normalizes the merged (supplied or already stored) content bindings of an
+ * update so bare ResourceLinks are always written as `$literal` values.
+ */
+export const normalizeContentBindings = (
+  contentBindings: unknown,
+): ExperienceContentBindings | undefined =>
+  contentBindings
+    ? ExperienceContentBindingsSchema.parse(contentBindings)
+    : undefined;
+
+export const InlineExperienceFragmentNodeSchema: z.ZodType<
+  InlineExperienceFragmentNode,
+  z.ZodTypeDef,
+  unknown
+> = z.lazy(() =>
+  z.object({
+    id: z.string().describe('Node identifier'),
+    nodeType: z
+      .literal('InlineExperienceFragment')
+      .describe('Must be "InlineExperienceFragment"'),
+    component: ComponentResourceLinkSchema.describe(
+      'Resource link to the component this inline experience fragment renders',
+    ),
+    designProperties: z
+      .record(z.string(), DimensionedDesignPropertyValueSchema)
+      .describe('Design property values for this inline experience fragment'),
+    contentBindings: ExperienceContentBindingsSchema.optional().describe(
+      'Optional content bindings linking this inline experience fragment to a data assembly',
+    ),
+    slots: z
+      .record(z.string(), z.array(ExperienceSlotNodeSchema))
+      .optional()
+      .describe('Child slot contents keyed by slot ID'),
+  }),
+);
+
+export const ExperienceSlotNodeSchema: z.ZodType<
+  ExperienceSlotNode,
+  z.ZodTypeDef,
+  unknown
+> = z.lazy(() =>
+  z.union([ExperienceFragmentNodeSchema, InlineExperienceFragmentNodeSchema]),
 );

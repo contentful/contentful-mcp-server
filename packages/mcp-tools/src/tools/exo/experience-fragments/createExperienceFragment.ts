@@ -47,7 +47,8 @@ export const CreateExperienceFragmentToolParams = BaseToolSchema.extend({
       'Design property values keyed by property ID (may be empty object)',
     ),
   contentBindings: ExperienceContentBindingsSchema.optional().describe(
-    'Optional content bindings for the experience fragment',
+    'Optional content bindings for the experience fragment. ' +
+      'Bare ResourceLinks are accepted and sent as $literal values.',
   ),
   slots: z
     .record(z.string(), z.array(ExperienceSlotNodeSchema))
