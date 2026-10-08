@@ -141,7 +141,7 @@ Below is a sample configuration:
 |                           | `publish_entry`            | Publish entries (single or bulk)                                                          |
 |                           | `unpublish_entry`          | Unpublish entries (single or bulk)                                                        |
 |                           | `delete_entry`             | Remove entries                                                                            |
-| **Assets**                | `upload_asset`             | Upload new assets                                                                         |
+| **Assets**                | `upload_asset`             | Upload new assets, or a per-locale file for an existing asset                             |
 |                           | `list_assets`              | List and browse assets                                                                    |
 |                           | `get_asset`                | Retrieve specific assets                                                                  |
 |                           | `update_asset`             | Modify asset metadata                                                                     |
