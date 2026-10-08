@@ -9,7 +9,6 @@ import {
   assertEnvironmentNotProtected,
 } from '../../../utils/tools.js';
 import {
-  ViewportSchema,
   ExperienceMetadataSchema,
   DesignPropertyValueSchema,
   DimensionedDesignPropertyValueSchema,
@@ -40,10 +39,6 @@ export const UpdateExperienceFragmentToolParams = BaseToolSchema.extend({
     .string()
     .optional()
     .describe('Description of the experience fragment'),
-  viewports: z
-    .array(ViewportSchema)
-    .optional()
-    .describe('Viewport definitions; replaces existing viewports if provided'),
   designProperties: z
     .record(
       z.string(),
@@ -100,7 +95,6 @@ export function updateExperienceFragmentTool(config: ContentfulConfig) {
     // call is upsert(): the read-before-write guard above means this only ever updates
     // an existing fragment, and `update` is the verb the tool surface exposes for that.
     // Do not "fix" the tool name to match the SDK method.
-    const viewports = args.viewports ?? current.viewports;
     const normalizedContentBindings = normalizeContentBindings(
       args.contentBindings ?? current.contentBindings,
     );
@@ -113,7 +107,6 @@ export function updateExperienceFragmentTool(config: ContentfulConfig) {
       },
       name: args.name ?? current.name,
       description: args.description ?? current.description,
-      ...(viewports !== undefined && { viewports }),
       designProperties: args.designProperties ?? current.designProperties,
       ...(normalizedContentBindings && {
         contentBindings: normalizedContentBindings,

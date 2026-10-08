@@ -39,12 +39,11 @@ describe('createExperience', () => {
     expect(result.content[0].text).toContain('Experience created successfully');
   });
 
-  it('creates a viewport-free experience with flattened design properties', async () => {
-    const viewportFreeArgs = { ...createArgs, viewports: undefined };
+  it('omits supplied viewport definitions and preserves flattened design properties', async () => {
     mockExperienceCreate.mockResolvedValue(mockExperience);
 
     await createExperienceTool(mockConfig)({
-      ...viewportFreeArgs,
+      ...createArgs,
       designProperties: {
         color: { type: 'ManualDesignValue', value: 'red' },
       },

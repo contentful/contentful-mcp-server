@@ -1,3 +1,9 @@
+## 0.12.41 (2026-10-08)
+
+### 🩹 Fixes
+
+- **exo:** omit viewport fields from tool writes [SPA-5276] ([83dc159](https://github.com/contentful/contentful-mcp-server/commit/83dc159))
+
 ## 0.12.40 (2026-10-08)
 
 ### 🩹 Fixes

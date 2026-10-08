@@ -9,7 +9,6 @@ import {
   assertEnvironmentNotProtected,
 } from '../../../utils/tools.js';
 import {
-  ViewportSchema,
   ContentPropertySchema,
   DesignPropertySchema,
   SlotDefinitionSchema,
@@ -25,12 +24,6 @@ import type { ContentfulConfig } from '../../../config/types.js';
 export const CreateExperienceTemplateToolParams = BaseToolSchema.extend({
   name: z.string().describe('The name of the experience template'),
   description: z.string().describe('Description of the experience template'),
-  viewports: z
-    .array(ViewportSchema)
-    .optional()
-    .describe(
-      'Optional viewport definitions for the experience template. Omit for viewport-free experience templates.',
-    ),
   contentProperties: z
     .array(ContentPropertySchema)
     .describe('Content property definitions (may be empty)'),
@@ -64,7 +57,6 @@ export function createExperienceTemplateTool(config: ContentfulConfig) {
     const experienceTemplateData = {
       name: args.name,
       description: args.description,
-      ...(args.viewports !== undefined && { viewports: args.viewports }),
       contentProperties: args.contentProperties,
       designProperties: args.designProperties,
       ...(args.componentTree && { componentTree: args.componentTree }),

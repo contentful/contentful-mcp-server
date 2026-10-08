@@ -61,17 +61,17 @@ describe('upsertExperience', () => {
     });
   });
 
-  it('preserves flattened design properties without reintroducing viewports', async () => {
+  it('preserves flattened design properties without copying supplied or stored viewports', async () => {
     mockExperienceGet.mockResolvedValue({
       ...mockExperience,
-      viewports: undefined,
       designProperties: {
         color: { type: 'ManualDesignValue', value: 'red' },
       },
     });
     mockExperienceUpsert.mockResolvedValue(mockExperience);
+    const legacyArgs = { ...mockArgs, version: 1, viewports: [] };
 
-    await upsertExperienceTool(mockConfig)({ ...mockArgs, version: 1 });
+    await upsertExperienceTool(mockConfig)(legacyArgs);
 
     const [, body] = mockExperienceUpsert.mock.calls[0];
     expect(body).not.toHaveProperty('viewports');
