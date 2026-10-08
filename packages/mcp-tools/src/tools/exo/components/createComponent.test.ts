@@ -33,7 +33,6 @@ describe('createComponent', () => {
       {
         name: 'Hero',
         description: 'A hero section',
-        viewports: [],
         contentProperties: [],
         designProperties: [],
       },
@@ -71,7 +70,6 @@ describe('createComponent', () => {
         sys: { id: testArgs.componentId, type: 'Component' },
         name: 'Hero',
         description: 'A hero section',
-        viewports: [],
         contentProperties: [],
         designProperties: [],
       },
@@ -89,11 +87,10 @@ describe('createComponent', () => {
     });
   });
 
-  it('omits viewports when creating a viewport-free component', async () => {
-    const viewportFreeArgs = { ...args, viewports: undefined };
+  it('omits supplied viewport definitions when creating a component', async () => {
     mockComponentCreate.mockResolvedValue(mockComponent);
 
-    await createComponentTool(mockConfig)(viewportFreeArgs);
+    await createComponentTool(mockConfig)(args);
 
     expect(mockComponentCreate.mock.calls[0][1]).not.toHaveProperty(
       'viewports',

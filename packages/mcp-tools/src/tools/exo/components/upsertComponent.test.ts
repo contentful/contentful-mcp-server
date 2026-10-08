@@ -79,14 +79,12 @@ describe('upsertComponent', () => {
     expect(body.dataAssemblies).toEqual(dataAssemblies);
   });
 
-  it('does not reintroduce viewports from a viewport-free component', async () => {
-    mockComponentGet.mockResolvedValue({
-      ...mockComponent,
-      viewports: undefined,
-    });
+  it('does not copy supplied or stored viewport definitions', async () => {
+    mockComponentGet.mockResolvedValue(mockComponent);
     mockComponentUpsert.mockResolvedValue(mockComponent);
+    const legacyArgs = { ...mockArgs, version: 1, viewports: [] };
 
-    await upsertComponentTool(mockConfig)({ ...mockArgs, version: 1 });
+    await upsertComponentTool(mockConfig)(legacyArgs);
 
     expect(mockComponentUpsert.mock.calls[0][1]).not.toHaveProperty(
       'viewports',

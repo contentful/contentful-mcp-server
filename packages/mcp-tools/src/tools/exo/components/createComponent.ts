@@ -9,7 +9,6 @@ import {
   assertEnvironmentNotProtected,
 } from '../../../utils/tools.js';
 import {
-  ViewportSchema,
   ContentPropertySchema,
   DesignPropertySchema,
   SlotDefinitionSchema,
@@ -31,12 +30,6 @@ export const CreateComponentToolParams = BaseToolSchema.extend({
     ),
   name: z.string().describe('The name of the component'),
   description: z.string().describe('Description of the component'),
-  viewports: z
-    .array(ViewportSchema)
-    .optional()
-    .describe(
-      'Optional viewport definitions for the component. Omit for viewport-free components.',
-    ),
   contentProperties: z
     .array(ContentPropertySchema)
     .describe('Content property definitions (may be empty)'),
@@ -70,7 +63,6 @@ export function createComponentTool(config: ContentfulConfig) {
     const componentData = {
       name: args.name,
       description: args.description,
-      ...(args.viewports !== undefined && { viewports: args.viewports }),
       contentProperties: args.contentProperties,
       designProperties: args.designProperties,
       ...(args.componentTree && { componentTree: args.componentTree }),

@@ -38,7 +38,6 @@ describe('createExperienceFragment', () => {
         name: baseArgs.name,
         description: baseArgs.description,
         component: baseArgs.component,
-        viewports: [],
         designProperties: {},
       }),
     );
@@ -47,12 +46,11 @@ describe('createExperienceFragment', () => {
     );
   });
 
-  it('creates a viewport-free experience fragment with flattened design properties', async () => {
-    const viewportFreeArgs = { ...baseArgs, viewports: undefined };
+  it('omits supplied viewport definitions and preserves flattened design properties', async () => {
     mockExperienceFragmentCreate.mockResolvedValue(mockExperienceFragment);
 
     await createExperienceFragmentTool(mockConfig)({
-      ...viewportFreeArgs,
+      ...baseArgs,
       designProperties: {
         color: { type: 'ManualDesignValue', value: 'red' },
       },

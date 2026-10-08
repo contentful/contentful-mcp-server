@@ -9,7 +9,6 @@ import {
   assertEnvironmentNotProtected,
 } from '../../../utils/tools.js';
 import {
-  ViewportSchema,
   ExperienceMetadataSchema,
   DesignPropertyValueSchema,
   DimensionedDesignPropertyValueSchema,
@@ -29,12 +28,6 @@ export const CreateExperienceToolParams = BaseToolSchema.extend({
   experienceTemplate: ExperienceTemplateResourceLinkSchema.describe(
     'Resource link to the ExperienceTemplate this experience is backed by',
   ),
-  viewports: z
-    .array(ViewportSchema)
-    .optional()
-    .describe(
-      'Optional viewport definitions for the experience. Omit for viewport-free experiences.',
-    ),
   designProperties: z
     .record(
       z.string(),
@@ -44,8 +37,7 @@ export const CreateExperienceToolParams = BaseToolSchema.extend({
       ]),
     )
     .describe(
-      'Design property values keyed by property ID. When viewports are provided, each value is a dimensioned map ' +
-        '(viewport ID → design value); without viewports, use a direct design value. May be an empty object.',
+      'Design property values keyed by property ID. Use direct design values for viewport-free writes. May be an empty object.',
     ),
   contentBindings: ExperienceContentBindingsSchema.optional().describe(
     'Optional content bindings linking this experience to a data assembly. ' +
@@ -77,7 +69,6 @@ export function createExperienceTool(config: ContentfulConfig) {
       name: args.name,
       description: args.description,
       experienceTemplate: args.experienceTemplate,
-      ...(args.viewports !== undefined && { viewports: args.viewports }),
       designProperties: args.designProperties,
       ...(args.contentBindings && { contentBindings: args.contentBindings }),
       ...(args.slots && { slots: args.slots }),
