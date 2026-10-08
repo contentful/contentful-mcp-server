@@ -44,7 +44,7 @@
     "@contentful/rich-text-types": "^17.2.7",
     "@modelcontextprotocol/sdk": "^1.32.1",
     "contentful-export": "^8.5.0",
-    "contentful-import": "^10.5.3",
+    "contentful-import": "^10.5.4",
     "contentful-management": "12.19.0",
     "fast-xml-parser": "^5.11.2",
     "lodash-es": "^4.18.1",
