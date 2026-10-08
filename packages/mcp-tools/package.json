@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@contentful/rich-text-types": "^17.2.7",
-    "@modelcontextprotocol/sdk": "^1.32.0",
+    "@modelcontextprotocol/sdk": "^1.32.1",
     "contentful-export": "^8.5.0",
     "contentful-import": "^10.5.3",
     "contentful-management": "12.19.0",
