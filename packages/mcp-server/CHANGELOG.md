@@ -1,3 +1,13 @@
+## 1.23.14 (2026-10-09)
+
+### 🩹 Fixes
+
+- **deps:** update dependency dotenv to ^18.0.6 ([#542](https://github.com/contentful/contentful-mcp-server/pull/542))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.42
+
 ## 1.23.13 (2026-10-08)
 
 ### 🧱 Updated Dependencies
