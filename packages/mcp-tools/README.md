@@ -103,7 +103,7 @@ Each tool includes semantic annotations to help MCP clients understand tool beha
 | **Editor Interfaces**     | `list_editor_interfaces`           | List all editor interfaces in a space                                                     |
 |                           | `get_editor_interface`             | Get editor interface for a content type                                                   |
 |                           | `update_editor_interface`          | Update field controls, sidebars, and layouts                                              |
-| **Assets**                | `upload_asset`                     | Upload new assets                                                                         |
+| **Assets**                | `upload_asset`                     | Upload new assets, or a per-locale file for an existing asset                             |
 |                           | `list_assets`                      | List and browse assets (max 3 per request)                                                |
 |                           | `get_asset`                        | Retrieve specific assets                                                                  |
 |                           | `update_asset`                     | Modify asset metadata                                                                     |
