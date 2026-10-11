@@ -1,3 +1,9 @@
+## 0.12.43 (2026-10-11)
+
+### 🩹 Fixes
+
+- **deps:** update dependency contentful-management to v12.19.1 ([#548](https://github.com/contentful/contentful-mcp-server/pull/548))
+
 ## 0.12.42 (2026-10-09)
 
 This was a version bump only for mcp-tools to align it with other projects, there were no code changes.
