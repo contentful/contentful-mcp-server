@@ -1,6 +1,12 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { mockDataAssemblyCreate, mockDataAssembly } from './mockClient.js';
+import { z } from 'zod';
+import {
+  mockDataAssemblyCreate,
+  mockDataAssembly,
+  mockParameters,
+} from './mockClient.js';
 import { createDataAssemblyTool } from './createDataAssembly.js';
+import { createDataAssemblyTools } from './register.js';
 import { createMockConfig } from '../../../test-helpers/mockConfig.js';
 
 describe('createDataAssembly', () => {
@@ -10,7 +16,7 @@ describe('createDataAssembly', () => {
     environmentId: 'test-environment',
     name: 'Test Data Assembly',
     description: 'A test data assembly',
-    parameters: {},
+    parameters: [],
     resolvers: {},
     return: {},
     dataType: [],
@@ -30,13 +36,46 @@ describe('createDataAssembly', () => {
         sys: expect.objectContaining({ type: 'DataAssembly', dataType: [] }),
         name: baseArgs.name,
         description: baseArgs.description,
-        parameters: {},
+        parameters: [],
         resolvers: {},
         return: {},
       }),
     );
-    expect(result.content[0].text).toContain('Data assembly created successfully');
+    expect(result.content[0].text).toContain(
+      'Data assembly created successfully',
+    );
   });
+
+  it('forwards registered canonical input without changing declaration metadata or order', async () => {
+    mockDataAssemblyCreate.mockResolvedValue(mockDataAssembly);
+    const registered = createDataAssemblyTools(mockConfig).createDataAssembly;
+    const args = z
+      .object(registered.inputParams)
+      .parse({ ...baseArgs, parameters: mockParameters });
+
+    const result = await registered.tool(args);
+
+    expect(result.isError).not.toBe(true);
+    expect(mockDataAssemblyCreate).toHaveBeenCalledWith(
+      { spaceId: baseArgs.spaceId, environmentId: baseArgs.environmentId },
+      expect.objectContaining({ parameters: mockParameters }),
+    );
+  });
+
+  it.each([
+    { title: { type: 'String', required: true } },
+    [{ id: 'title', type: 'String' }],
+    [{ id: 'title', type: 'String', required: 'false' }],
+  ])(
+    'rejects invalid registered parameter input before creating: %j',
+    (parameters) => {
+      const registered = createDataAssemblyTools(mockConfig).createDataAssembly;
+      expect(() =>
+        z.object(registered.inputParams).parse({ ...baseArgs, parameters }),
+      ).toThrow();
+      expect(mockDataAssemblyCreate).not.toHaveBeenCalled();
+    },
+  );
 
   it('rejects creates in a protected environment', async () => {
     const tool = createDataAssemblyTool(

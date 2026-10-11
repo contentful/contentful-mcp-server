@@ -1,5 +1,7 @@
 import { z } from 'zod';
 import type {
+  DataAssemblyParameterDefinitionWithId,
+  DataAssemblyResourceLinkParameter,
   JsonValue,
   PlainClientAPI,
   PointerExpressionValue,
@@ -42,12 +44,9 @@ export type LegacyDataAssemblyDataTypeField = Exclude<
   CanonicalDataAssemblyDataTypeField
 >;
 
-export type DataAssemblyParameterConfig = Distribute<
-  DataAssemblyEntity['parameters']
->;
-export type DataAssemblyResourceLinkParameter = Distribute<
-  DataAssemblyParameterConfig[string]
->;
+export type DataAssemblyParameterConfig =
+  DataAssemblyParameterDefinitionWithId[];
+export type { DataAssemblyResourceLinkParameter };
 
 export type DataAssemblyResolverConfig = Distribute<
   DataAssemblyEntity['resolvers']
@@ -135,30 +134,136 @@ export const DataAssemblyDataTypeFieldSchema = z.union([
 ]) satisfies z.ZodType<DataAssemblyDataTypeField>;
 
 // ── Parameters ─────────────────────────────────────────────────────────────────
-// Matches CMA.js DataAssemblyResourceLinkParameter — the only parameter shape
-// CMA currently models (a ResourceLink-typed input constrained to same-space entries).
+// Parameter definitions share the management SDK contract. Tool declarations use
+// ordered arrays; Record fields keep their own optional requiredness.
 
 export const SAME_SPACE_CONTENT_SOURCE =
   'crn:contentful:::content:spaces/$self/environments/$self' as const;
 
-export const DataAssemblyResourceLinkParameterSchema = z.object({
+const ParameterMetadataFields = {
   name: z.string().optional(),
   description: z.string().optional(),
-  type: z.literal('ResourceLink'),
-  linkType: z.literal('Contentful:Entry'),
-  allowedResources: z.array(
-    z.object({
-      type: z.literal('Contentful:Entry'),
-      source: z.literal(SAME_SPACE_CONTENT_SOURCE),
-      allowedTypes: z.array(z.string()),
-    }),
-  ),
-}) satisfies z.ZodType<DataAssemblyResourceLinkParameter>;
+  required: z.boolean().optional(),
+};
 
-export const DataAssemblyParameterConfigSchema = z.record(
-  z.string(),
-  DataAssemblyResourceLinkParameterSchema,
-) satisfies z.ZodType<DataAssemblyParameterConfig>;
+export const DataAssemblyResourceLinkParameterSchema = z
+  .object({
+    ...ParameterMetadataFields,
+    type: z.literal('ResourceLink'),
+    linkType: z.enum(['Contentful:Entry', 'Contentful:Asset']).optional(),
+    allowedResources: z.array(
+      z.discriminatedUnion('type', [
+        z
+          .object({
+            type: z.literal('Contentful:Entry'),
+            source: z.literal(SAME_SPACE_CONTENT_SOURCE),
+            allowedTypes: z.array(z.string()),
+          })
+          .strict(),
+        z
+          .object({
+            type: z.literal('Contentful:Asset'),
+            source: z.literal(SAME_SPACE_CONTENT_SOURCE),
+          })
+          .strict(),
+      ]),
+    ),
+  })
+  .strict() satisfies z.ZodType<DataAssemblyResourceLinkParameter>;
+
+const StringParameterSchema = z
+  .object({
+    ...ParameterMetadataFields,
+    type: z.literal('String'),
+    fallbackValue: z.string().optional(),
+    locked: z.boolean().optional(),
+    validation: z
+      .object({ allowedValues: z.array(z.string()).optional() })
+      .strict()
+      .optional(),
+  })
+  .strict();
+
+const NumberParameterSchema = z
+  .object({
+    ...ParameterMetadataFields,
+    type: z.literal('Number'),
+    fallbackValue: z.number().optional(),
+    locked: z.boolean().optional(),
+    validation: z
+      .object({ min: z.number().optional(), max: z.number().optional() })
+      .strict()
+      .optional(),
+  })
+  .strict();
+
+const OrderExpressionParameterSchema = z
+  .object({
+    ...ParameterMetadataFields,
+    type: z.literal('OrderExpression'),
+    fallbackValue: z
+      .array(
+        z
+          .object({
+            path: z.string(),
+            direction: z.enum(['asc', 'desc']),
+          })
+          .strict(),
+      )
+      .refine(
+        (terms) =>
+          new Set(terms.map((term) => term.path)).size === terms.length,
+        'An ordering must not repeat a path.',
+      )
+      .optional(),
+    locked: z.boolean().optional(),
+    target: z.object({ resourceLink: z.string() }).strict(),
+  })
+  .strict();
+
+const RecordParameterSchema = z
+  .object({
+    ...ParameterMetadataFields,
+    type: z.literal('Record'),
+    fields: z.array(
+      z.discriminatedUnion('type', [
+        StringParameterSchema.extend({ id: z.string() }),
+        NumberParameterSchema.extend({ id: z.string() }),
+        OrderExpressionParameterSchema.extend({ id: z.string() }),
+      ]),
+    ),
+    locked: z.boolean().optional(),
+  })
+  .strict();
+
+const DeclarationFields = {
+  id: z.string().min(1).describe('Stable parameter identifier'),
+  required: z.boolean().describe('Whether the parameter needs a value'),
+};
+
+export const DataAssemblyParameterConfigSchema = z
+  .array(
+    z.discriminatedUnion('type', [
+      DataAssemblyResourceLinkParameterSchema.extend(DeclarationFields),
+      StringParameterSchema.extend(DeclarationFields),
+      NumberParameterSchema.extend(DeclarationFields),
+      RecordParameterSchema.extend(DeclarationFields),
+      OrderExpressionParameterSchema.extend(DeclarationFields),
+    ]),
+  )
+  .superRefine((parameters, ctx) => {
+    const ids = new Set<string>();
+    parameters.forEach((parameter, index) => {
+      if (ids.has(parameter.id)) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: [index, 'id'],
+          message: `A parameter with id "${parameter.id}" is already declared.`,
+        });
+      }
+      ids.add(parameter.id);
+    });
+  }) satisfies z.ZodType<DataAssemblyParameterConfig>;
 
 // ── Resolvers ──────────────────────────────────────────────────────────────────
 // Matches CMA.js DataAssemblyResolverDefinition = GraphQL | NestedDataAssembly resolver

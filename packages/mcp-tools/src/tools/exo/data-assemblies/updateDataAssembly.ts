@@ -28,9 +28,12 @@ export const UpdateDataAssemblyToolParams = BaseToolSchema.extend({
         'the data assembly changed since you read it.',
     ),
   name: z.string().optional().describe('The name of the data assembly'),
-  description: z.string().optional().describe('Description of the data assembly'),
+  description: z
+    .string()
+    .optional()
+    .describe('Description of the data assembly'),
   parameters: DataAssemblyParameterConfigSchema.optional().describe(
-    'Parameter definitions; replaces existing if provided',
+    'Ordered parameter definitions with stable id and explicit boolean required; replaces existing if provided',
   ),
   resolvers: DataAssemblyResolverConfigSchema.optional().describe(
     'Resolver definitions; replaces existing if provided',
@@ -80,6 +83,10 @@ export function updateDataAssemblyTool(config: ContentfulConfig) {
       );
     }
 
+    const parameters =
+      args.parameters ??
+      DataAssemblyParameterConfigSchema.parse(current.parameters);
+
     const dataAssembly = await contentfulClient.dataAssembly.update(params, {
       sys: {
         id: current.sys.id,
@@ -89,12 +96,12 @@ export function updateDataAssemblyTool(config: ContentfulConfig) {
         ...(args.variant !== undefined
           ? { variant: args.variant }
           : current.sys.variant !== undefined
-          ? { variant: current.sys.variant }
-          : {}),
+            ? { variant: current.sys.variant }
+            : {}),
       },
       name: args.name ?? current.name,
       description: args.description ?? current.description,
-      parameters: args.parameters ?? current.parameters,
+      parameters,
       resolvers: args.resolvers ?? current.resolvers,
       return: args.return ?? current.return,
       metadata: args.metadata ?? current.metadata,
