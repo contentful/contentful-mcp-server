@@ -5,7 +5,10 @@ import {
   mockExperience,
   mockArgs,
 } from './mockClient.js';
-import { upsertExperienceTool } from './upsertExperience.js';
+import {
+  upsertExperienceTool,
+  UpsertExperienceToolParams,
+} from './upsertExperience.js';
 import { createMockConfig } from '../../../test-helpers/mockConfig.js';
 
 describe('upsertExperience', () => {
@@ -113,7 +116,7 @@ describe('upsertExperience', () => {
     });
   });
 
-  it('normalizes bare content binding ResourceLinks to $literal', async () => {
+  it('passes $literal content binding parameters through unchanged', async () => {
     mockExperienceGet.mockResolvedValue(mockExperience);
     mockExperienceUpsert.mockResolvedValue(mockExperience);
     const link = {
@@ -129,18 +132,43 @@ describe('upsertExperience', () => {
         linkType: 'Contentful:DataAssembly' as const,
         urn: 'crn:contentful:::experience:spaces/s/environments/e/dataAssemblies/d',
       },
-      parameters: { title: link },
+      parameters: { title: { $literal: link } },
     };
 
-    await upsertExperienceTool(mockConfig)({
+    // Parse through the tool schema, as the MCP layer does before invoking the tool.
+    const args = UpsertExperienceToolParams.parse({
       ...mockArgs,
       version: 1,
       contentBindings: bindings,
     });
+    await upsertExperienceTool(mockConfig)(args);
 
     const [, body] = mockExperienceUpsert.mock.calls[0];
-    expect(body.contentBindings.parameters).toEqual({
-      title: { $literal: link },
+    expect(body.contentBindings).toEqual(bindings);
+  });
+
+  it('rejects bare content binding ResourceLink parameters', () => {
+    const result = UpsertExperienceToolParams.safeParse({
+      ...mockArgs,
+      version: 1,
+      contentBindings: {
+        sys: {
+          type: 'ResourceLink',
+          linkType: 'Contentful:DataAssembly',
+          urn: 'crn:contentful:::experience:spaces/s/environments/e/dataAssemblies/d',
+        },
+        parameters: {
+          title: {
+            sys: {
+              type: 'ResourceLink',
+              linkType: 'Contentful:Entry',
+              urn: 'crn:contentful:::content:spaces/s/environments/e/entries/1',
+            },
+          },
+        },
+      },
     });
+
+    expect(result.success).toBe(false);
   });
 });

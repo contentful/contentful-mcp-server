@@ -41,7 +41,9 @@ export const CreateExperienceToolParams = BaseToolSchema.extend({
     ),
   contentBindings: ExperienceContentBindingsSchema.optional().describe(
     'Optional content bindings linking this experience to a data assembly. ' +
-      'Bare ResourceLinks are accepted and sent as $literal values.',
+      'Each parameter value must be wrapped in $literal, e.g. ' +
+      '{ "title": { "$literal": { "sys": { "type": "ResourceLink", "linkType": "Contentful:Entry", "urn": "crn:..." } } } }; ' +
+      'bare ResourceLinks are rejected.',
   ),
   slots: z
     .record(z.string(), z.array(ExperienceSlotNodeSchema))
