@@ -13,7 +13,6 @@ import {
   DesignPropertyValueSchema,
   DimensionedDesignPropertyValueSchema,
   ExperienceContentBindingsSchema,
-  normalizeContentBindings,
   ExperienceSlotNodeSchema,
 } from '../../../types/exoSchemas.js';
 import {
@@ -48,7 +47,9 @@ export const UpsertExperienceToolParams = BaseToolSchema.extend({
     ),
   contentBindings: ExperienceContentBindingsSchema.optional().describe(
     'Content bindings linking this experience to a data assembly; replaces existing if provided. ' +
-      'Bare ResourceLinks are accepted and sent as $literal values.',
+      'Each parameter value must be wrapped in $literal, e.g. ' +
+      '{ "title": { "$literal": { "sys": { "type": "ResourceLink", "linkType": "Contentful:Entry", "urn": "crn:..." } } } }; ' +
+      'bare ResourceLinks are rejected.',
   ),
   slots: z
     .record(z.string(), z.array(ExperienceSlotNodeSchema))
@@ -90,10 +91,6 @@ export function upsertExperienceTool(config: ContentfulConfig) {
       );
     }
 
-    const normalizedContentBindings = normalizeContentBindings(
-      args.contentBindings ?? current.contentBindings,
-    );
-
     const experienceData = {
       sys: {
         id: current.sys.id,
@@ -103,9 +100,9 @@ export function upsertExperienceTool(config: ContentfulConfig) {
       name: args.name ?? current.name,
       description: args.description ?? current.description,
       designProperties: args.designProperties ?? current.designProperties,
-      ...(normalizedContentBindings && {
-        contentBindings: normalizedContentBindings,
-      }),
+      ...((args.contentBindings ?? current.contentBindings)
+        ? { contentBindings: args.contentBindings ?? current.contentBindings }
+        : {}),
       ...((args.slots ?? current.slots)
         ? { slots: args.slots ?? current.slots }
         : {}),
