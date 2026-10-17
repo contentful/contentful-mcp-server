@@ -1,3 +1,9 @@
+## 0.12.48 (2026-10-17)
+
+### 🩹 Fixes
+
+- **deps:** update dependency tsup to v9 ([#562](https://github.com/contentful/contentful-mcp-server/pull/562))
+
 ## 0.12.47 (2026-10-16)
 
 This was a version bump only for mcp-tools to align it with other projects, there were no code changes.
