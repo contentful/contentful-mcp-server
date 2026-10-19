@@ -15,28 +15,22 @@ const sys = {
 };
 
 describe('ExperienceContentBindingsSchema', () => {
-  it('wraps bare ResourceLinks in $literal', () => {
-    const result = ExperienceContentBindingsSchema.parse({
+  it('accepts $literal-wrapped ResourceLinks unchanged', () => {
+    const input = { sys, parameters: { title: { $literal: link } } };
+    expect(ExperienceContentBindingsSchema.parse(input)).toEqual(input);
+  });
+
+  it('rejects bare ResourceLink parameters', () => {
+    const result = ExperienceContentBindingsSchema.safeParse({
       sys,
       parameters: { title: link },
     });
-    expect(result.parameters).toEqual({ title: { $literal: link } });
-  });
-
-  it('keeps already-wrapped $literal values unchanged', () => {
-    const result = ExperienceContentBindingsSchema.parse({
-      sys,
-      parameters: { title: { $literal: link } },
-    });
-    expect(result.parameters).toEqual({ title: { $literal: link } });
-  });
-
-  it('is idempotent when re-parsed', () => {
-    const once = ExperienceContentBindingsSchema.parse({
-      sys,
-      parameters: { a: link },
-    });
-    expect(ExperienceContentBindingsSchema.parse(once)).toEqual(once);
+    expect(result.success).toBe(false);
+    expect(result.error?.issues[0].path).toEqual([
+      'parameters',
+      'title',
+      '$literal',
+    ]);
   });
 
   it('rejects malformed parameters', () => {
