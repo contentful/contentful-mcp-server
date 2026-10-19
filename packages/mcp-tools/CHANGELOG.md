@@ -1,3 +1,9 @@
+## 0.12.49 (2026-10-19)
+
+### 🩹 Fixes
+
+- **exo:** accept only $literal content binding parameters [ARC-1910] ([74d7c94](https://github.com/contentful/contentful-mcp-server/commit/74d7c94))
+
 ## 0.12.48 (2026-10-17)
 
 ### 🩹 Fixes
