@@ -1,3 +1,35 @@
+## 0.12.48 (2026-10-17)
+
+### 🩹 Fixes
+
+- **deps:** update dependency tsup to v9 ([#562](https://github.com/contentful/contentful-mcp-server/pull/562))
+
+## 0.12.47 (2026-10-16)
+
+This was a version bump only for mcp-tools to align it with other projects, there were no code changes.
+
+## 0.12.46 (2026-10-11)
+
+This was a version bump only for mcp-tools to align it with other projects, there were no code changes.
+
+## 0.12.45 (2026-10-11)
+
+### 🩹 Fixes
+
+- **deps:** update dependency contentful-import to ^10.5.5 ([#550](https://github.com/contentful/contentful-mcp-server/pull/550))
+
+## 0.12.44 (2026-10-11)
+
+### 🩹 Fixes
+
+- **deps:** update dependency contentful-export to ^8.5.1 ([#549](https://github.com/contentful/contentful-mcp-server/pull/549))
+
+## 0.12.43 (2026-10-11)
+
+### 🩹 Fixes
+
+- **deps:** update dependency contentful-management to v12.19.1 ([#548](https://github.com/contentful/contentful-mcp-server/pull/548))
+
 ## 0.12.42 (2026-10-09)
 
 This was a version bump only for mcp-tools to align it with other projects, there were no code changes.
