@@ -1,3 +1,23 @@
+## 1.23.20 (2026-10-17)
+
+### 🩹 Fixes
+
+- **deps:** update dependency tsup to v9 ([#562](https://github.com/contentful/contentful-mcp-server/pull/562))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.48
+
+## 1.23.19 (2026-10-16)
+
+### 🩹 Fixes
+
+- **deps:** update dependency dotenv to ^18.0.8 ([#560](https://github.com/contentful/contentful-mcp-server/pull/560))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.47
+
 ## 1.23.18 (2026-10-11)
 
 ### 🩹 Fixes
