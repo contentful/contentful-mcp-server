@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import type * as ctfl from 'contentful-management';
 import {
   createSuccessResponse,
   withErrorHandling,
@@ -54,8 +55,9 @@ export function createDataAssemblyTool(config: ContentfulConfig) {
 
     const contentfulClient = createExoToolClient(config, args);
 
-    const dataAssembly = await contentfulClient.dataAssembly.create(
-      { spaceId: args.spaceId, environmentId: args.environmentId },
+    // Use the SDK's raw transport until its DataAssembly types support arrays.
+    const dataAssembly = await contentfulClient.raw.post<unknown>(
+      `/spaces/${args.spaceId}/environments/${args.environmentId}/data_assemblies`,
       {
         sys: {
           type: 'DataAssembly',
@@ -68,6 +70,8 @@ export function createDataAssemblyTool(config: ContentfulConfig) {
         resolvers: args.resolvers,
         return: args.return,
         metadata: args.metadata ?? { tags: [] },
+      } satisfies Omit<ctfl.CreateDataAssemblyProps, 'parameters'> & {
+        parameters: z.infer<typeof DataAssemblyParameterConfigSchema>;
       },
     );
 

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import type * as ctfl from 'contentful-management';
 import {
   createSuccessResponse,
   withErrorHandling,
@@ -87,25 +88,32 @@ export function updateDataAssemblyTool(config: ContentfulConfig) {
       args.parameters ??
       DataAssemblyParameterConfigSchema.parse(current.parameters);
 
-    const dataAssembly = await contentfulClient.dataAssembly.update(params, {
-      sys: {
-        id: current.sys.id,
-        type: 'DataAssembly',
-        version: current.sys.version,
-        dataType: args.dataType ?? current.sys.dataType,
-        ...(args.variant !== undefined
-          ? { variant: args.variant }
-          : current.sys.variant !== undefined
-            ? { variant: current.sys.variant }
-            : {}),
+    // Mirror the SDK update's version header while sending canonical arrays.
+    const dataAssembly = await contentfulClient.raw.put<unknown>(
+      `/spaces/${args.spaceId}/environments/${args.environmentId}/data_assemblies/${args.dataAssemblyId}`,
+      {
+        sys: {
+          id: current.sys.id,
+          type: 'DataAssembly',
+          version: current.sys.version,
+          dataType: args.dataType ?? current.sys.dataType,
+          ...(args.variant !== undefined
+            ? { variant: args.variant }
+            : current.sys.variant !== undefined
+              ? { variant: current.sys.variant }
+              : {}),
+        },
+        name: args.name ?? current.name,
+        description: args.description ?? current.description,
+        parameters,
+        resolvers: args.resolvers ?? current.resolvers,
+        return: args.return ?? current.return,
+        metadata: args.metadata ?? current.metadata,
+      } satisfies Omit<ctfl.UpdateDataAssemblyProps, 'parameters'> & {
+        parameters: z.infer<typeof DataAssemblyParameterConfigSchema>;
       },
-      name: args.name ?? current.name,
-      description: args.description ?? current.description,
-      parameters,
-      resolvers: args.resolvers ?? current.resolvers,
-      return: args.return ?? current.return,
-      metadata: args.metadata ?? current.metadata,
-    });
+      { headers: { 'X-Contentful-Version': current.sys.version } },
+    );
 
     return createSuccessResponse('Data assembly updated successfully', {
       dataAssembly,

@@ -1,7 +1,5 @@
 import { z } from 'zod';
 import type {
-  DataAssemblyParameterDefinitionWithId,
-  DataAssemblyResourceLinkParameter,
   JsonValue,
   PlainClientAPI,
   PointerExpressionValue,
@@ -43,10 +41,6 @@ export type LegacyDataAssemblyDataTypeField = Exclude<
   DataAssemblyDataTypeField,
   CanonicalDataAssemblyDataTypeField
 >;
-
-export type DataAssemblyParameterConfig =
-  DataAssemblyParameterDefinitionWithId[];
-export type { DataAssemblyResourceLinkParameter };
 
 export type DataAssemblyResolverConfig = Distribute<
   DataAssemblyEntity['resolvers']
@@ -134,8 +128,8 @@ export const DataAssemblyDataTypeFieldSchema = z.union([
 ]) satisfies z.ZodType<DataAssemblyDataTypeField>;
 
 // ── Parameters ─────────────────────────────────────────────────────────────────
-// Parameter definitions share the management SDK contract. Tool declarations use
-// ordered arrays; Record fields keep their own optional requiredness.
+// The tool schemas own the canonical parameter contract while the published SDK
+// still types declarations as records. Record fields keep optional requiredness.
 
 export const SAME_SPACE_CONTENT_SOURCE =
   'crn:contentful:::content:spaces/$self/environments/$self' as const;
@@ -169,7 +163,11 @@ export const DataAssemblyResourceLinkParameterSchema = z
       ]),
     ),
   })
-  .strict() satisfies z.ZodType<DataAssemblyResourceLinkParameter>;
+  .strict();
+
+export type DataAssemblyResourceLinkParameter = z.infer<
+  typeof DataAssemblyResourceLinkParameterSchema
+>;
 
 const StringParameterSchema = z
   .object({
@@ -263,7 +261,11 @@ export const DataAssemblyParameterConfigSchema = z
       }
       ids.add(parameter.id);
     });
-  }) satisfies z.ZodType<DataAssemblyParameterConfig>;
+  });
+
+export type DataAssemblyParameterConfig = z.infer<
+  typeof DataAssemblyParameterConfigSchema
+>;
 
 // ── Resolvers ──────────────────────────────────────────────────────────────────
 // Matches CMA.js DataAssemblyResolverDefinition = GraphQL | NestedDataAssembly resolver

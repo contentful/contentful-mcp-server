@@ -37,16 +37,13 @@ describe('updateDataAssembly', () => {
       dataAssemblyId: mockArgs.dataAssemblyId,
     });
     expect(mockDataAssemblyUpdate).toHaveBeenCalledWith(
-      {
-        spaceId: mockArgs.spaceId,
-        environmentId: mockArgs.environmentId,
-        dataAssemblyId: mockArgs.dataAssemblyId,
-      },
+      `/spaces/${mockArgs.spaceId}/environments/${mockArgs.environmentId}/data_assemblies/${mockArgs.dataAssemblyId}`,
       expect.objectContaining({
         name: 'Updated Data Assembly',
         description: mockDataAssembly.description,
         parameters: mockParameters,
       }),
+      { headers: { 'X-Contentful-Version': 1 } },
     );
     expect(result.content[0].text).toContain(
       'Data assembly updated successfully',
@@ -66,8 +63,9 @@ describe('updateDataAssembly', () => {
 
     expect(result.isError).not.toBe(true);
     expect(mockDataAssemblyUpdate).toHaveBeenCalledWith(
-      mockArgs,
+      `/spaces/${mockArgs.spaceId}/environments/${mockArgs.environmentId}/data_assemblies/${mockArgs.dataAssemblyId}`,
       expect.objectContaining({ parameters }),
+      { headers: { 'X-Contentful-Version': 1 } },
     );
   });
 
@@ -82,8 +80,9 @@ describe('updateDataAssembly', () => {
     await registered.tool(args);
 
     expect(mockDataAssemblyUpdate).toHaveBeenCalledWith(
-      mockArgs,
+      `/spaces/${mockArgs.spaceId}/environments/${mockArgs.environmentId}/data_assemblies/${mockArgs.dataAssemblyId}`,
       expect.objectContaining({ parameters: [] }),
+      { headers: { 'X-Contentful-Version': 1 } },
     );
   });
 

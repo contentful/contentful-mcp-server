@@ -30,11 +30,13 @@ const {
           getMany: mockDataAssemblyGetMany,
           getPublished: mockDataAssemblyGetPublished,
           getManyPublished: mockDataAssemblyGetManyPublished,
-          create: mockDataAssemblyCreate,
-          update: mockDataAssemblyUpdate,
           delete: mockDataAssemblyDelete,
           publish: mockDataAssemblyPublish,
           unpublish: mockDataAssemblyUnpublish,
+        },
+        raw: {
+          post: mockDataAssemblyCreate,
+          put: mockDataAssemblyUpdate,
         },
       };
     }),

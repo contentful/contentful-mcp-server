@@ -31,7 +31,7 @@ describe('createDataAssembly', () => {
     const result = await tool(baseArgs);
 
     expect(mockDataAssemblyCreate).toHaveBeenCalledWith(
-      { spaceId: baseArgs.spaceId, environmentId: baseArgs.environmentId },
+      `/spaces/${baseArgs.spaceId}/environments/${baseArgs.environmentId}/data_assemblies`,
       expect.objectContaining({
         sys: expect.objectContaining({ type: 'DataAssembly', dataType: [] }),
         name: baseArgs.name,
@@ -57,7 +57,7 @@ describe('createDataAssembly', () => {
 
     expect(result.isError).not.toBe(true);
     expect(mockDataAssemblyCreate).toHaveBeenCalledWith(
-      { spaceId: baseArgs.spaceId, environmentId: baseArgs.environmentId },
+      `/spaces/${baseArgs.spaceId}/environments/${baseArgs.environmentId}/data_assemblies`,
       expect.objectContaining({ parameters: mockParameters }),
     );
   });
