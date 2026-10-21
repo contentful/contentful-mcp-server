@@ -219,25 +219,25 @@ const OrderExpressionParameterSchema = z
   })
   .strict();
 
+const DeclarationFields = {
+  id: z.string().min(1).describe('Stable parameter identifier'),
+  required: z.boolean().describe('Whether the parameter needs a value'),
+};
+
 const RecordParameterSchema = z
   .object({
     ...ParameterMetadataFields,
     type: z.literal('Record'),
     fields: z.array(
       z.discriminatedUnion('type', [
-        StringParameterSchema.extend({ id: z.string() }),
-        NumberParameterSchema.extend({ id: z.string() }),
-        OrderExpressionParameterSchema.extend({ id: z.string() }),
+        StringParameterSchema.extend({ id: DeclarationFields.id }),
+        NumberParameterSchema.extend({ id: DeclarationFields.id }),
+        OrderExpressionParameterSchema.extend({ id: DeclarationFields.id }),
       ]),
     ),
     locked: z.boolean().optional(),
   })
   .strict();
-
-const DeclarationFields = {
-  id: z.string().min(1).describe('Stable parameter identifier'),
-  required: z.boolean().describe('Whether the parameter needs a value'),
-};
 
 export const DataAssemblyParameterConfigSchema = z
   .array(

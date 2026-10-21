@@ -76,6 +76,30 @@ describe('DataAssembly parameter declarations', () => {
   });
 
   it.each([
+    { type: 'String' },
+    { type: 'Number' },
+    { type: 'OrderExpression', target: { resourceLink: 'content' } },
+  ])('rejects an empty nested Record field ID: %j', (field) => {
+    const result = DataAssemblyParameterConfigSchema.safeParse([
+      {
+        id: 'options',
+        type: 'Record',
+        required: false,
+        fields: [{ ...field, id: '' }],
+      },
+    ]);
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({ path: [0, 'fields', 0, 'id'] }),
+        ]),
+      );
+    }
+  });
+
+  it.each([
     {},
     { title: { type: 'String', required: true } },
     [{ type: 'String', required: true }],
