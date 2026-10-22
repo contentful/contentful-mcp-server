@@ -99,17 +99,19 @@ describe('DataAssembly parameter declarations', () => {
     }
   });
 
-  it.each([
-    {},
-    { title: { type: 'String', required: true } },
-    [{ type: 'String', required: true }],
-    [{ id: '', type: 'String', required: true }],
-    [{ id: 2, type: 'String', required: true }],
-    [{ id: 'title', type: 'String' }],
-    [{ id: 'title', type: 'String', required: null }],
-    [{ id: 'title', type: 'String', required: 'false' }],
-    [{ id: 'title', type: 'String', required: 0 }],
-  ])('rejects invalid declarations: %j', (parameters) => {
+  it.each(
+    [
+      {},
+      { title: { type: 'String', required: true } },
+      [{ type: 'String', required: true }],
+      [{ id: '', type: 'String', required: true }],
+      [{ id: 2, type: 'String', required: true }],
+      [{ id: 'title', type: 'String' }],
+      [{ id: 'title', type: 'String', required: null }],
+      [{ id: 'title', type: 'String', required: 'false' }],
+      [{ id: 'title', type: 'String', required: 0 }],
+    ].map((parameters) => ({ parameters })),
+  )('rejects invalid declarations: %j', ({ parameters }) => {
     expect(
       DataAssemblyParameterConfigSchema.safeParse(parameters).success,
     ).toBe(false);
@@ -127,5 +129,73 @@ describe('DataAssembly parameter declarations', () => {
         expect.arrayContaining([expect.objectContaining({ path: [1, 'id'] })]),
       );
     }
+  });
+
+  it.each([
+    { type: 'String' },
+    { type: 'Number' },
+    { type: 'OrderExpression', target: { resourceLink: 'content' } },
+  ])('reports a duplicate nested field ID: %j', (field) => {
+    const result = DataAssemblyParameterConfigSchema.safeParse([
+      { id: 'title', type: 'String', required: false },
+      {
+        id: 'options',
+        type: 'Record',
+        required: false,
+        fields: [
+          { id: 'value', type: 'String' },
+          { ...field, id: 'value' },
+        ],
+      },
+    ]);
+
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      expect(result.error.issues).toEqual([
+        expect.objectContaining({ path: [1, 'fields', 1, 'id'] }),
+      ]);
+    }
+  });
+
+  it('allows field IDs to repeat across separate Records and the top-level scope', () => {
+    const parameters = [
+      { id: 'value', type: 'String', required: false },
+      ...['first', 'second'].map((id) => ({
+        id,
+        type: 'Record',
+        required: false,
+        fields: [{ id: 'value', type: 'Number' }],
+      })),
+    ];
+
+    expect(DataAssemblyParameterConfigSchema.parse(parameters)).toEqual(
+      parameters,
+    );
+  });
+
+  it.each(
+    [
+      [{ id: 'title', type: 'String', required: false, futureMetadata: {} }],
+      [
+        {
+          id: 'limit',
+          type: 'Number',
+          required: false,
+          validation: { unit: 'px' },
+        },
+      ],
+      [
+        {
+          id: 'options',
+          type: 'Record',
+          required: false,
+          fields: [{ id: 'title', type: 'String', futureMetadata: {} }],
+        },
+      ],
+    ].map((parameters) => ({ parameters })),
+  )('keeps caller parameter inputs strict: %j', ({ parameters }) => {
+    expect(
+      DataAssemblyParameterConfigSchema.safeParse(parameters).success,
+    ).toBe(false);
   });
 });

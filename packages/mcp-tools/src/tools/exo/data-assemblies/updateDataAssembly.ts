@@ -15,6 +15,7 @@ import {
   DataAssemblyReturnMappingConfigSchema,
   DataAssemblyDataTypeFieldSchema,
   DataAssemblyMetadataSchema,
+  parseDataAssemblyParameterResponse,
 } from '../../../types/dataAssemblySchemas.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
@@ -85,8 +86,7 @@ export function updateDataAssemblyTool(config: ContentfulConfig) {
     }
 
     const parameters =
-      args.parameters ??
-      DataAssemblyParameterConfigSchema.parse(current.parameters);
+      args.parameters ?? parseDataAssemblyParameterResponse(current.parameters);
 
     // Mirror the SDK update's version header while sending canonical arrays.
     const dataAssembly = await contentfulClient.raw.put<unknown>(

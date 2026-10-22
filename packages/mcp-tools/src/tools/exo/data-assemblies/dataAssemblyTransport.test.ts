@@ -6,6 +6,7 @@ import {
   CreateDataAssemblyToolParams,
 } from './createDataAssembly.js';
 import { updateDataAssemblyTool } from './updateDataAssembly.js';
+import { SAME_SPACE_CONTENT_SOURCE } from '../../../types/dataAssemblySchemas.js';
 
 type HttpAdapter = Extract<
   ctfl.RestAdapterParams['adapter'],
@@ -121,5 +122,90 @@ describe('DataAssembly SDK transport', () => {
 
     expect(result.isError).toBe(true);
     expect(result.content[0].text).toContain('Error updating data assembly');
+  });
+
+  it('retains unknown server fields at every parameter level on a name-only update', async () => {
+    const serverParameters = [
+      {
+        ...parameters[0],
+        futureMetadata: { label: 'Title' },
+        validation: { allowedValues: ['Title'], format: 'text' },
+      },
+      {
+        id: 'limit',
+        type: 'Number',
+        required: false,
+        validation: { min: 0, unit: 'items' },
+      },
+      {
+        id: 'content',
+        type: 'ResourceLink',
+        required: true,
+        allowedResources: [
+          {
+            type: 'Contentful:Entry',
+            source: SAME_SPACE_CONTENT_SOURCE,
+            allowedTypes: ['post'],
+            futurePolicy: {},
+          },
+        ],
+      },
+      {
+        id: 'options',
+        type: 'Record',
+        required: false,
+        futureMetadata: {},
+        fields: [
+          {
+            id: 'search',
+            type: 'String',
+            futureMetadata: {},
+            validation: { format: 'text' },
+          },
+          {
+            id: 'limit',
+            type: 'Number',
+            validation: { max: 10, unit: 'items' },
+          },
+          {
+            id: 'sort',
+            type: 'OrderExpression',
+            target: { resourceLink: 'content', futureTarget: {} },
+            fallbackValue: [
+              { path: 'title', direction: 'asc', futureTerm: {} },
+            ],
+          },
+        ],
+      },
+      {
+        id: 'sort',
+        type: 'OrderExpression',
+        required: false,
+        target: { resourceLink: 'content', futureTarget: {} },
+        fallbackValue: [{ path: 'title', direction: 'desc', futureTerm: {} }],
+      },
+    ];
+    const serverAssembly = { ...current, parameters: serverParameters };
+    mockHttp
+      .mockResolvedValueOnce(serverAssembly)
+      .mockResolvedValueOnce(serverAssembly);
+
+    const result = await updateDataAssemblyTool(config)({
+      ...scope,
+      dataAssemblyId: 'assembly',
+      version: 7,
+      name: 'Renamed',
+    });
+
+    expect(result.isError).not.toBe(true);
+    expect(mockHttp).toHaveBeenNthCalledWith(2, {
+      method: 'put',
+      url: `${path}/assembly`,
+      headers: expect.objectContaining({
+        ...identifyingHeaders,
+        'X-Contentful-Version': '7',
+      }),
+      data: { ...serverAssembly, name: 'Renamed' },
+    });
   });
 });

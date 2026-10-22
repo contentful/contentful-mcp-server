@@ -224,17 +224,36 @@ const DeclarationFields = {
   required: z.boolean().describe('Whether the parameter needs a value'),
 };
 
+function validateUniqueDeclarationIds(
+  declarations: { id: string }[],
+  ctx: z.RefinementCtx,
+) {
+  const ids = new Set<string>();
+  declarations.forEach((declaration, index) => {
+    if (ids.has(declaration.id)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: [index, 'id'],
+        message: `A parameter with id "${declaration.id}" is already declared.`,
+      });
+    }
+    ids.add(declaration.id);
+  });
+}
+
 const RecordParameterSchema = z
   .object({
     ...ParameterMetadataFields,
     type: z.literal('Record'),
-    fields: z.array(
-      z.discriminatedUnion('type', [
-        StringParameterSchema.extend({ id: DeclarationFields.id }),
-        NumberParameterSchema.extend({ id: DeclarationFields.id }),
-        OrderExpressionParameterSchema.extend({ id: DeclarationFields.id }),
-      ]),
-    ),
+    fields: z
+      .array(
+        z.discriminatedUnion('type', [
+          StringParameterSchema.extend({ id: DeclarationFields.id }),
+          NumberParameterSchema.extend({ id: DeclarationFields.id }),
+          OrderExpressionParameterSchema.extend({ id: DeclarationFields.id }),
+        ]),
+      )
+      .superRefine(validateUniqueDeclarationIds),
     locked: z.boolean().optional(),
   })
   .strict();
@@ -249,23 +268,30 @@ export const DataAssemblyParameterConfigSchema = z
       OrderExpressionParameterSchema.extend(DeclarationFields),
     ]),
   )
-  .superRefine((parameters, ctx) => {
-    const ids = new Set<string>();
-    parameters.forEach((parameter, index) => {
-      if (ids.has(parameter.id)) {
-        ctx.addIssue({
-          code: z.ZodIssueCode.custom,
-          path: [index, 'id'],
-          message: `A parameter with id "${parameter.id}" is already declared.`,
-        });
-      }
-      ids.add(parameter.id);
-    });
-  });
+  .superRefine(validateUniqueDeclarationIds);
 
 export type DataAssemblyParameterConfig = z.infer<
   typeof DataAssemblyParameterConfigSchema
 >;
+
+export function parseDataAssemblyParameterResponse(
+  parameters: unknown,
+): DataAssemblyParameterConfig {
+  const result = DataAssemblyParameterConfigSchema.safeParse(parameters);
+  if (!result.success) {
+    // Keep the input contract strict, but allow extra fields on server output.
+    // Known fields and refinements must still pass before we retain the response.
+    const issues = result.error.issues.filter(
+      (issue) => issue.code !== z.ZodIssueCode.unrecognized_keys,
+    );
+    if (issues.length > 0) {
+      throw new z.ZodError(issues);
+    }
+  }
+
+  // Return the validated original so partial updates do not strip server metadata.
+  return parameters as DataAssemblyParameterConfig;
+}
 
 // ── Resolvers ──────────────────────────────────────────────────────────────────
 // Matches CMA.js DataAssemblyResolverDefinition = GraphQL | NestedDataAssembly resolver

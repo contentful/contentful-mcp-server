@@ -111,6 +111,64 @@ describe('updateDataAssembly', () => {
     expect(mockDataAssemblyUpdate).not.toHaveBeenCalled();
   });
 
+  it.each(
+    [
+      [{ id: 'title', type: 'String', futureMetadata: {} }],
+      [{ id: '', type: 'String', required: false, futureMetadata: {} }],
+      [{ id: 'title', type: 'String', required: 'false', futureMetadata: {} }],
+      [
+        {
+          id: 'limit',
+          type: 'Number',
+          required: false,
+          validation: { min: 'zero', unit: 'px' },
+        },
+      ],
+      [{ id: 'title', type: 'NewType', required: false, futureMetadata: {} }],
+      [
+        { id: 'title', type: 'String', required: false, futureMetadata: {} },
+        { id: 'title', type: 'Number', required: false },
+      ],
+      [
+        {
+          id: 'options',
+          type: 'Record',
+          required: false,
+          futureMetadata: {},
+          fields: [
+            { id: 'value', type: 'String', futureMetadata: {} },
+            { id: 'value', type: 'Number' },
+          ],
+        },
+      ],
+      [
+        {
+          id: 'options',
+          type: 'Record',
+          required: false,
+          fields: [{ id: '', type: 'String', futureMetadata: {} }],
+        },
+      ],
+    ].map((parameters) => ({ parameters })),
+  )(
+    'rejects invalid fetched declarations even with unknown fields: %j',
+    async ({ parameters }) => {
+      mockDataAssemblyGet.mockResolvedValue({
+        ...mockDataAssembly,
+        parameters,
+      });
+
+      const result = await updateDataAssemblyTool(mockConfig)({
+        ...mockArgs,
+        version: 1,
+        name: 'New name',
+      });
+
+      expect(result.isError).toBe(true);
+      expect(mockDataAssemblyUpdate).not.toHaveBeenCalled();
+    },
+  );
+
   it('rejects a stale version', async () => {
     mockDataAssemblyGet.mockResolvedValue(mockDataAssembly); // sys.version === 1
 
