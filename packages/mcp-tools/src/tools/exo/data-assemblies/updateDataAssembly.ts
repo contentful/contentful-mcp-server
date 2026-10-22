@@ -18,6 +18,7 @@ import {
   parseDataAssemblyParameterResponse,
 } from '../../../types/dataAssemblySchemas.js';
 import type { ContentfulConfig } from '../../../config/types.js';
+import { dataAssembliesPath } from './client.js';
 
 export const UpdateDataAssemblyToolParams = BaseToolSchema.extend({
   dataAssemblyId: z.string().describe('The ID of the data assembly to update'),
@@ -90,7 +91,7 @@ export function updateDataAssemblyTool(config: ContentfulConfig) {
 
     // Mirror the SDK update's version header while sending canonical arrays.
     const dataAssembly = await contentfulClient.raw.put<unknown>(
-      `/spaces/${args.spaceId}/environments/${args.environmentId}/data_assemblies/${args.dataAssemblyId}`,
+      `${dataAssembliesPath(args.spaceId, args.environmentId)}/${args.dataAssemblyId}`,
       {
         sys: {
           id: current.sys.id,

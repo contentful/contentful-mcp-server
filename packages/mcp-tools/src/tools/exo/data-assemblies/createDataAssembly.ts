@@ -17,6 +17,7 @@ import {
   DataAssemblyMetadataSchema,
 } from '../../../types/dataAssemblySchemas.js';
 import type { ContentfulConfig } from '../../../config/types.js';
+import { dataAssembliesPath } from './client.js';
 
 export const CreateDataAssemblyToolParams = BaseToolSchema.extend({
   name: z.string().describe('The name of the data assembly'),
@@ -57,7 +58,7 @@ export function createDataAssemblyTool(config: ContentfulConfig) {
 
     // Use the SDK's raw transport until its DataAssembly types support arrays.
     const dataAssembly = await contentfulClient.raw.post<unknown>(
-      `/spaces/${args.spaceId}/environments/${args.environmentId}/data_assemblies`,
+      dataAssembliesPath(args.spaceId, args.environmentId),
       {
         sys: {
           type: 'DataAssembly',
