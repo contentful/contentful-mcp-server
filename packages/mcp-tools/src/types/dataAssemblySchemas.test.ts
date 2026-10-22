@@ -1,6 +1,7 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, expectTypeOf, it } from 'vitest';
 import {
   DataAssemblyParameterConfigSchema,
+  parseDataAssemblyParameterResponse,
   SAME_SPACE_CONTENT_SOURCE,
 } from './dataAssemblySchemas.js';
 
@@ -74,6 +75,48 @@ describe('DataAssembly parameter declarations', () => {
   it('accepts an empty declaration array', () => {
     expect(DataAssemblyParameterConfigSchema.parse([])).toEqual([]);
   });
+
+  it('returns validated responses with explicitly unknown server metadata', () => {
+    const parameters = [
+      {
+        id: 'title',
+        type: 'String',
+        required: false,
+        futureMetadata: { label: 'Title' },
+      },
+    ];
+
+    const response = parseDataAssemblyParameterResponse(parameters);
+
+    expect(response).toEqual(parameters);
+    expectTypeOf(response[0].required).toEqualTypeOf<boolean>();
+    expectTypeOf(response[0]['futureMetadata']).toEqualTypeOf<unknown>();
+  });
+
+  it.each(
+    [
+      [{ path: 'title', direction: 'up', futureTerm: {} }],
+      [
+        { path: 'title', direction: 'asc', futureTerm: {} },
+        { path: 'title', direction: 'desc', futureTerm: {} },
+      ],
+    ].map((fallbackValue) => ({ fallbackValue })),
+  )(
+    'rejects invalid ordering even alongside response metadata: %j',
+    ({ fallbackValue }) => {
+      expect(() =>
+        parseDataAssemblyParameterResponse([
+          {
+            id: 'sort',
+            type: 'OrderExpression',
+            required: false,
+            target: { resourceLink: 'content', futureTarget: {} },
+            fallbackValue,
+          },
+        ]),
+      ).toThrow();
+    },
+  );
 
   it.each([
     { type: 'String' },

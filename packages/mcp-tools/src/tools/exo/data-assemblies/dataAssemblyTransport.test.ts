@@ -148,6 +148,11 @@ describe('DataAssembly SDK transport', () => {
             allowedTypes: ['post'],
             futurePolicy: {},
           },
+          {
+            type: 'Contentful:Asset',
+            source: SAME_SPACE_CONTENT_SOURCE,
+            futurePolicy: {},
+          },
         ],
       },
       {
@@ -186,6 +191,7 @@ describe('DataAssembly SDK transport', () => {
       },
     ];
     const serverAssembly = { ...current, parameters: serverParameters };
+    const originalServerAssembly = structuredClone(serverAssembly);
     mockHttp
       .mockResolvedValueOnce(serverAssembly)
       .mockResolvedValueOnce(serverAssembly);
@@ -198,6 +204,7 @@ describe('DataAssembly SDK transport', () => {
     });
 
     expect(result.isError).not.toBe(true);
+    expect(serverAssembly).toEqual(originalServerAssembly);
     expect(mockHttp).toHaveBeenNthCalledWith(2, {
       method: 'put',
       url: `${path}/assembly`,

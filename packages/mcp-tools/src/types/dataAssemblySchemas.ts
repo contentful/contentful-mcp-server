@@ -140,85 +140,6 @@ const ParameterMetadataFields = {
   required: z.boolean().optional(),
 };
 
-export const DataAssemblyResourceLinkParameterSchema = z
-  .object({
-    ...ParameterMetadataFields,
-    type: z.literal('ResourceLink'),
-    linkType: z.enum(['Contentful:Entry', 'Contentful:Asset']).optional(),
-    allowedResources: z.array(
-      z.discriminatedUnion('type', [
-        z
-          .object({
-            type: z.literal('Contentful:Entry'),
-            source: z.literal(SAME_SPACE_CONTENT_SOURCE),
-            allowedTypes: z.array(z.string()),
-          })
-          .strict(),
-        z
-          .object({
-            type: z.literal('Contentful:Asset'),
-            source: z.literal(SAME_SPACE_CONTENT_SOURCE),
-          })
-          .strict(),
-      ]),
-    ),
-  })
-  .strict();
-
-export type DataAssemblyResourceLinkParameter = z.infer<
-  typeof DataAssemblyResourceLinkParameterSchema
->;
-
-const StringParameterSchema = z
-  .object({
-    ...ParameterMetadataFields,
-    type: z.literal('String'),
-    fallbackValue: z.string().optional(),
-    locked: z.boolean().optional(),
-    validation: z
-      .object({ allowedValues: z.array(z.string()).optional() })
-      .strict()
-      .optional(),
-  })
-  .strict();
-
-const NumberParameterSchema = z
-  .object({
-    ...ParameterMetadataFields,
-    type: z.literal('Number'),
-    fallbackValue: z.number().optional(),
-    locked: z.boolean().optional(),
-    validation: z
-      .object({ min: z.number().optional(), max: z.number().optional() })
-      .strict()
-      .optional(),
-  })
-  .strict();
-
-const OrderExpressionParameterSchema = z
-  .object({
-    ...ParameterMetadataFields,
-    type: z.literal('OrderExpression'),
-    fallbackValue: z
-      .array(
-        z
-          .object({
-            path: z.string(),
-            direction: z.enum(['asc', 'desc']),
-          })
-          .strict(),
-      )
-      .refine(
-        (terms) =>
-          new Set(terms.map((term) => term.path)).size === terms.length,
-        'An ordering must not repeat a path.',
-      )
-      .optional(),
-    locked: z.boolean().optional(),
-    target: z.object({ resourceLink: z.string() }).strict(),
-  })
-  .strict();
-
 const DeclarationFields = {
   id: z.string().min(1).describe('Stable parameter identifier'),
   required: z.boolean().describe('Whether the parameter needs a value'),
@@ -241,8 +162,75 @@ function validateUniqueDeclarationIds(
   });
 }
 
-const RecordParameterSchema = z
-  .object({
+// Share all known-field validation; only the handling of extra object keys differs.
+function createDataAssemblyParameterSchemas<
+  UnknownKeys extends z.UnknownKeysParam,
+>(
+  object: <Shape extends z.ZodRawShape>(
+    shape: Shape,
+  ) => z.ZodObject<Shape, UnknownKeys>,
+) {
+  const DataAssemblyResourceLinkParameterSchema = object({
+    ...ParameterMetadataFields,
+    type: z.literal('ResourceLink'),
+    linkType: z.enum(['Contentful:Entry', 'Contentful:Asset']).optional(),
+    allowedResources: z.array(
+      z.discriminatedUnion('type', [
+        object({
+          type: z.literal('Contentful:Entry'),
+          source: z.literal(SAME_SPACE_CONTENT_SOURCE),
+          allowedTypes: z.array(z.string()),
+        }),
+        object({
+          type: z.literal('Contentful:Asset'),
+          source: z.literal(SAME_SPACE_CONTENT_SOURCE),
+        }),
+      ]),
+    ),
+  });
+
+  const StringParameterSchema = object({
+    ...ParameterMetadataFields,
+    type: z.literal('String'),
+    fallbackValue: z.string().optional(),
+    locked: z.boolean().optional(),
+    validation: object({
+      allowedValues: z.array(z.string()).optional(),
+    }).optional(),
+  });
+
+  const NumberParameterSchema = object({
+    ...ParameterMetadataFields,
+    type: z.literal('Number'),
+    fallbackValue: z.number().optional(),
+    locked: z.boolean().optional(),
+    validation: object({
+      min: z.number().optional(),
+      max: z.number().optional(),
+    }).optional(),
+  });
+
+  const OrderExpressionParameterSchema = object({
+    ...ParameterMetadataFields,
+    type: z.literal('OrderExpression'),
+    fallbackValue: z
+      .array(
+        object({
+          path: z.string(),
+          direction: z.enum(['asc', 'desc']),
+        }),
+      )
+      .refine(
+        (terms) =>
+          new Set(terms.map((term) => term.path)).size === terms.length,
+        'An ordering must not repeat a path.',
+      )
+      .optional(),
+    locked: z.boolean().optional(),
+    target: object({ resourceLink: z.string() }),
+  });
+
+  const RecordParameterSchema = object({
     ...ParameterMetadataFields,
     type: z.literal('Record'),
     fields: z
@@ -255,42 +243,57 @@ const RecordParameterSchema = z
       )
       .superRefine(validateUniqueDeclarationIds),
     locked: z.boolean().optional(),
-  })
-  .strict();
+  });
 
-export const DataAssemblyParameterConfigSchema = z
-  .array(
-    z.discriminatedUnion('type', [
-      DataAssemblyResourceLinkParameterSchema.extend(DeclarationFields),
-      StringParameterSchema.extend(DeclarationFields),
-      NumberParameterSchema.extend(DeclarationFields),
-      RecordParameterSchema.extend(DeclarationFields),
-      OrderExpressionParameterSchema.extend(DeclarationFields),
-    ]),
-  )
-  .superRefine(validateUniqueDeclarationIds);
+  const DataAssemblyParameterConfigSchema = z
+    .array(
+      z.discriminatedUnion('type', [
+        DataAssemblyResourceLinkParameterSchema.extend(DeclarationFields),
+        StringParameterSchema.extend(DeclarationFields),
+        NumberParameterSchema.extend(DeclarationFields),
+        RecordParameterSchema.extend(DeclarationFields),
+        OrderExpressionParameterSchema.extend(DeclarationFields),
+      ]),
+    )
+    .superRefine(validateUniqueDeclarationIds);
 
+  return {
+    resourceLink: DataAssemblyResourceLinkParameterSchema,
+    config: DataAssemblyParameterConfigSchema,
+  };
+}
+
+const InputParameterSchemas = createDataAssemblyParameterSchemas((shape) =>
+  z.object(shape).strict(),
+);
+const ResponseParameterSchemas = createDataAssemblyParameterSchemas((shape) =>
+  z.object(shape).passthrough(),
+);
+
+export const DataAssemblyResourceLinkParameterSchema =
+  InputParameterSchemas.resourceLink;
+export type DataAssemblyResourceLinkParameter = z.infer<
+  typeof DataAssemblyResourceLinkParameterSchema
+>;
+
+export const DataAssemblyParameterConfigSchema = InputParameterSchemas.config;
 export type DataAssemblyParameterConfig = z.infer<
   typeof DataAssemblyParameterConfigSchema
 >;
 
+const DataAssemblyParameterResponseSchema = ResponseParameterSchemas.config;
+export type DataAssemblyParameterResponse = z.infer<
+  typeof DataAssemblyParameterResponseSchema
+>;
+
+/**
+ * Validate known declarations while retaining unknown server metadata at every
+ * object level. Extra keys have unknown values; caller inputs remain strict.
+ */
 export function parseDataAssemblyParameterResponse(
   parameters: unknown,
-): DataAssemblyParameterConfig {
-  const result = DataAssemblyParameterConfigSchema.safeParse(parameters);
-  if (!result.success) {
-    // Keep the input contract strict, but allow extra fields on server output.
-    // Known fields and refinements must still pass before we retain the response.
-    const issues = result.error.issues.filter(
-      (issue) => issue.code !== z.ZodIssueCode.unrecognized_keys,
-    );
-    if (issues.length > 0) {
-      throw new z.ZodError(issues);
-    }
-  }
-
-  // Return the validated original so partial updates do not strip server metadata.
-  return parameters as DataAssemblyParameterConfig;
+): DataAssemblyParameterResponse {
+  return DataAssemblyParameterResponseSchema.parse(parameters);
 }
 
 // ── Resolvers ──────────────────────────────────────────────────────────────────

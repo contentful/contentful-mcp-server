@@ -16,6 +16,8 @@ import {
   DataAssemblyDataTypeFieldSchema,
   DataAssemblyMetadataSchema,
   parseDataAssemblyParameterResponse,
+  type DataAssemblyParameterConfig,
+  type DataAssemblyParameterResponse,
 } from '../../../types/dataAssemblySchemas.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 import { dataAssembliesPath } from './client.js';
@@ -111,7 +113,7 @@ export function updateDataAssemblyTool(config: ContentfulConfig) {
         return: args.return ?? current.return,
         metadata: args.metadata ?? current.metadata,
       } satisfies Omit<ctfl.UpdateDataAssemblyProps, 'parameters'> & {
-        parameters: z.infer<typeof DataAssemblyParameterConfigSchema>;
+        parameters: DataAssemblyParameterConfig | DataAssemblyParameterResponse;
       },
       { headers: { 'X-Contentful-Version': current.sys.version } },
     );
