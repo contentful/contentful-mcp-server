@@ -52,6 +52,37 @@ Object.values(assetTools).forEach((toolConfig) => {
 });
 ```
 
+### Data Assembly write inputs
+
+`create_data_assembly` takes editable configuration without `sys`, `dataType`, or
+`variant`. The API generates `sys.id` and infers `sys.dataType` from `return`.
+`parameters` remains a map keyed by parameter name.
+
+```json
+{
+  "spaceId": "my-space",
+  "environmentId": "master",
+  "name": "Page title",
+  "description": "A static page title",
+  "parameters": {},
+  "resolvers": {},
+  "return": { "$object": { "title": { "$literal": "Hello" } } }
+}
+```
+
+`update_data_assembly` takes the assembly ID and the current `sys.version` from
+`get_data_assembly`. Omitted editable fields retain their current values.
+
+```json
+{
+  "spaceId": "my-space",
+  "environmentId": "master",
+  "dataAssemblyId": "the-created-sys-id",
+  "version": 3,
+  "name": "Updated page title"
+}
+```
+
 ### Available Tool Collections
 
 ```typescript

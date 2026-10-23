@@ -5,6 +5,8 @@ import { createExperienceTemplateTools } from './experience-templates/register.j
 import { createExperienceFragmentTools } from './experience-fragments/register.js';
 import { createExperienceTools } from './experiences/register.js';
 import { createDataAssemblyTools } from './data-assemblies/register.js';
+import { CreateDataAssemblyToolParams } from './data-assemblies/createDataAssembly.js';
+import { UpdateDataAssemblyToolParams } from './data-assemblies/updateDataAssembly.js';
 import { createDesignTokenTools } from './design-tokens/register.js';
 
 /**
@@ -82,5 +84,15 @@ describe('ExO tool registration', () => {
     // Exact set equality, so this also fails on any surviving pre-rename name
     // (`*_component_type`, bare `*_template`, bare `*_fragment`).
     expect(allTitles).toEqual(EXPECTED_TITLES);
+  });
+
+  it('registers strict Data Assembly write schemas, not their permissive shapes', () => {
+    const tools = createDataAssemblyTools(config);
+    expect(tools.createDataAssembly.inputParams).toBe(
+      CreateDataAssemblyToolParams,
+    );
+    expect(tools.updateDataAssembly.inputParams).toBe(
+      UpdateDataAssemblyToolParams,
+    );
   });
 });

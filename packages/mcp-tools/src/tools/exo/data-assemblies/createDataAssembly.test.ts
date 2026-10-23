@@ -1,6 +1,9 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { mockDataAssemblyCreate, mockDataAssembly } from './mockClient.js';
-import { createDataAssemblyTool } from './createDataAssembly.js';
+import {
+  createDataAssemblyTool,
+  CreateDataAssemblyToolParams,
+} from './createDataAssembly.js';
 import { createMockConfig } from '../../../test-helpers/mockConfig.js';
 
 describe('createDataAssembly', () => {
@@ -11,31 +14,56 @@ describe('createDataAssembly', () => {
     name: 'Test Data Assembly',
     description: 'A test data assembly',
     parameters: {},
-    resolvers: {},
-    return: {},
-    dataType: [],
+    resolvers: {
+      article: {
+        source: 'Contentful:GraphQL' as const,
+        query: 'query { article { title } }',
+      },
+    },
+    return: { title: { $from: 'article.title' } },
   };
 
   beforeEach(() => vi.clearAllMocks());
 
+  it('accepts sys-free configuration', () => {
+    expect(CreateDataAssemblyToolParams.safeParse(baseArgs).success).toBe(true);
+  });
+
   it('creates a data assembly successfully', async () => {
-    mockDataAssemblyCreate.mockResolvedValue(mockDataAssembly);
+    mockDataAssemblyCreate.mockResolvedValue({
+      ...mockDataAssembly,
+      sys: { ...mockDataAssembly.sys, id: 'generated-id' },
+    });
 
     const tool = createDataAssemblyTool(mockConfig);
     const result = await tool(baseArgs);
 
     expect(mockDataAssemblyCreate).toHaveBeenCalledWith(
       { spaceId: baseArgs.spaceId, environmentId: baseArgs.environmentId },
-      expect.objectContaining({
-        sys: expect.objectContaining({ type: 'DataAssembly', dataType: [] }),
+      {
         name: baseArgs.name,
         description: baseArgs.description,
         parameters: {},
-        resolvers: {},
-        return: {},
-      }),
+        resolvers: baseArgs.resolvers,
+        return: baseArgs.return,
+        metadata: { tags: [] },
+      },
     );
-    expect(result.content[0].text).toContain('Data assembly created successfully');
+    expect(result.content[0].text).toContain(
+      'Data assembly created successfully',
+    );
+    expect(result.content[0].text).toContain('generated-id');
+  });
+
+  it.each([
+    ['dataType', []],
+    ['variant', 'legacy-variant'],
+    ['sys', { type: 'DataAssembly', dataType: [] }],
+  ])('rejects the obsolete %s argument', (field, value) => {
+    expect(
+      CreateDataAssemblyToolParams.safeParse({ ...baseArgs, [field]: value })
+        .success,
+    ).toBe(false);
   });
 
   it('rejects creates in a protected environment', async () => {
