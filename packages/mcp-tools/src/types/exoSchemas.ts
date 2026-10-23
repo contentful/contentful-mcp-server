@@ -4,7 +4,6 @@ import type {
   ExperienceProps,
   ExoMetadataProps,
   ExperienceMetadataProps,
-  ComponentTypeViewport,
   ComponentTypeContentProperty,
   ComponentTypeDesignProperty,
   ComponentSlotDefinition,
@@ -20,7 +19,6 @@ import type {
 // from the package root, so we import them directly rather than re-deriving them from
 // ComponentProps/ExperienceProps via indexed-access aliases.
 export type {
-  ComponentTypeViewport,
   ComponentTypeContentProperty,
   ComponentTypeDesignProperty,
   ComponentSlotDefinition,
@@ -141,16 +139,6 @@ export const ExperienceFragmentResourceLinkSchema = resourceLinkSchema(
 export const ExperienceTemplateResourceLinkSchema = resourceLinkSchema(
   'Contentful:ExperienceTemplate',
 );
-
-// ── Viewport ──────────────────────────────────────────────────────────────────
-// Matches CMA.js ComponentTypeViewport
-
-export const ViewportSchema = z.object({
-  id: z.string().describe('Viewport identifier'),
-  query: z.string().describe('CSS media query string'),
-  displayName: z.string().describe('Human-readable viewport name'),
-  previewSize: z.string().describe('Preview size (e.g. "1024px")'),
-}) satisfies z.ZodType<ComponentTypeViewport>;
 
 // ── Data type definition ──────────────────────────────────────────────────────
 // Matches CMA.js DataTypeDefinition — a discriminated union keyed on `type`.
