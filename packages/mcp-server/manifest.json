@@ -98,7 +98,7 @@
     },
     {
       "name": "upload_asset",
-      "description": "Upload new assets"
+      "description": "Upload new assets, or a per-locale file for an existing asset"
     },
     {
       "name": "list_assets",
