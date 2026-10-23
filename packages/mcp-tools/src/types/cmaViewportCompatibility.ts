@@ -9,9 +9,6 @@ type DimensionedDesignPropertyValue = z.infer<
   typeof DimensionedDesignPropertyValueSchema
 >;
 
-// The SDK now models viewport-free component and template payloads directly.
-export type ViewportOptionalPayload<Payload> = Payload;
-
 /**
  * Viewport-free Experiences and Experience Fragments use flattened design
  * property values. The currently consumed CMA SDK only models their legacy,
@@ -24,12 +21,6 @@ export type ViewportOptionalPayloadWithFlattenedDesignProperties<Payload> =
       DesignPropertyValue | DimensionedDesignPropertyValue
     >;
   };
-
-export function asViewportOptionalCmaPayload<Payload>(
-  payload: Payload,
-): Payload {
-  return payload;
-}
 
 export function asViewportOptionalCmaPayloadWithFlattenedDesignProperties<
   Payload extends {
