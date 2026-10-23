@@ -139,6 +139,39 @@ describe('registerAllTools', () => {
     });
   });
 
+  it('registers Data Assembly writes with strict input schemas', async () => {
+    await registerAllTools(mockServer);
+
+    const createSchema = registerToolSpy.mock.calls.find(
+      (call) => call[0] === 'create_data_assembly',
+    )?.[1].inputSchema;
+    const updateSchema = registerToolSpy.mock.calls.find(
+      (call) => call[0] === 'update_data_assembly',
+    )?.[1].inputSchema;
+
+    expect(
+      createSchema.safeParse({
+        spaceId: 'test-space-id',
+        environmentId: 'master',
+        name: 'Test',
+        description: 'Test',
+        parameters: {},
+        resolvers: {},
+        return: {},
+        dataType: [],
+      }).success,
+    ).toBe(false);
+    expect(
+      updateSchema.safeParse({
+        spaceId: 'test-space-id',
+        environmentId: 'master',
+        dataAssemblyId: 'test-id',
+        version: 1,
+        variant: 'legacy-variant',
+      }).success,
+    ).toBe(false);
+  });
+
   it('should register workflow tools with disable called', async () => {
     await registerAllTools(mockServer);
 

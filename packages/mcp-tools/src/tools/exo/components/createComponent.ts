@@ -15,10 +15,6 @@ import {
   TreeNodeSchema,
   ExoMetadataSchema,
 } from '../../../types/exoSchemas.js';
-import {
-  asViewportOptionalCmaPayload,
-  type ViewportOptionalPayload,
-} from '../../../types/cmaViewportCompatibility.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
 export const CreateComponentToolParams = BaseToolSchema.extend({
@@ -68,9 +64,7 @@ export function createComponentTool(config: ContentfulConfig) {
       ...(args.componentTree && { componentTree: args.componentTree }),
       ...(args.slots && { slots: args.slots }),
       ...(args.metadata && { metadata: args.metadata }),
-    } satisfies ViewportOptionalPayload<
-      Parameters<typeof contentfulClient.component.create>[1]
-    >;
+    } satisfies Parameters<typeof contentfulClient.component.create>[1];
 
     // Create the component with or without an explicit ID. Providing an ID
     // uses upsert (PUT) with no sys.version, which the CMA treats as a create.
@@ -81,16 +75,14 @@ export function createComponentTool(config: ContentfulConfig) {
             environmentId: args.environmentId,
             componentId: args.componentId,
           },
-          asViewportOptionalCmaPayload<
-            Parameters<typeof contentfulClient.component.upsert>[1]
-          >({
+          {
             sys: { id: args.componentId, type: 'Component' },
             ...componentData,
-          }),
+          },
         )
       : await contentfulClient.component.create(
           { spaceId: args.spaceId, environmentId: args.environmentId },
-          asViewportOptionalCmaPayload(componentData),
+          componentData,
         );
 
     return createSuccessResponse('Component created successfully', {

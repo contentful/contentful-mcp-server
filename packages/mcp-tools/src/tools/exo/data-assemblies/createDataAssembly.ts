@@ -12,7 +12,6 @@ import {
   DataAssemblyParameterConfigSchema,
   DataAssemblyResolverConfigSchema,
   DataAssemblyReturnMappingConfigSchema,
-  DataAssemblyDataTypeFieldSchema,
   DataAssemblyMetadataSchema,
 } from '../../../types/dataAssemblySchemas.js';
 import type { ContentfulConfig } from '../../../config/types.js';
@@ -29,15 +28,10 @@ export const CreateDataAssemblyToolParams = BaseToolSchema.extend({
   return: DataAssemblyReturnMappingConfigSchema.describe(
     'Return mapping configuration specifying how to map resolved data',
   ),
-  dataType: z
-    .array(DataAssemblyDataTypeFieldSchema)
-    .describe('Data type field definitions for this data assembly (may be empty array)'),
-  variant: z
-    .string()
-    .optional()
-    .describe('Optional variant identifier for this data assembly'),
-  metadata: DataAssemblyMetadataSchema.optional().describe('Optional metadata (tags)'),
-});
+  metadata: DataAssemblyMetadataSchema.optional().describe(
+    'Optional metadata (tags)',
+  ),
+}).strict();
 
 type Params = z.infer<typeof CreateDataAssemblyToolParams>;
 
@@ -53,11 +47,6 @@ export function createDataAssemblyTool(config: ContentfulConfig) {
     const dataAssembly = await contentfulClient.dataAssembly.create(
       { spaceId: args.spaceId, environmentId: args.environmentId },
       {
-        sys: {
-          type: 'DataAssembly',
-          dataType: args.dataType,
-          ...(args.variant && { variant: args.variant }),
-        },
         name: args.name,
         description: args.description,
         parameters: args.parameters,

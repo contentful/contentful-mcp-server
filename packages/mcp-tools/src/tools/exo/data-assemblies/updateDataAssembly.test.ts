@@ -5,15 +5,56 @@ import {
   mockDataAssembly,
   mockArgs,
 } from './mockClient.js';
-import { updateDataAssemblyTool } from './updateDataAssembly.js';
+import {
+  updateDataAssemblyTool,
+  UpdateDataAssemblyToolParams,
+} from './updateDataAssembly.js';
 import { createMockConfig } from '../../../test-helpers/mockConfig.js';
 
 describe('updateDataAssembly', () => {
   const mockConfig = createMockConfig();
   beforeEach(() => vi.clearAllMocks());
 
+  it('accepts a partial sys-free update', () => {
+    expect(
+      UpdateDataAssemblyToolParams.safeParse({
+        ...mockArgs,
+        version: 1,
+        name: 'Updated Data Assembly',
+      }).success,
+    ).toBe(true);
+  });
+
   it('reads before writing and merges fields', async () => {
-    mockDataAssemblyGet.mockResolvedValue(mockDataAssembly);
+    const current = {
+      ...mockDataAssembly,
+      sys: {
+        ...mockDataAssembly.sys,
+        variant: 'legacy-variant',
+        dataType: [{ id: 'title', name: 'Title', type: 'String' }],
+      },
+      parameters: {
+        article: {
+          type: 'ResourceLink',
+          linkType: 'Contentful:Entry',
+          allowedResources: [],
+        },
+      },
+      resolvers: {
+        nested: {
+          source: 'Contentful:DataAssembly',
+          dataAssembly: {
+            sys: {
+              type: 'ResourceLink',
+              linkType: 'Contentful:DataAssembly',
+              urn: 'crn:contentful:content:spaces/test/environments/master/data_assemblies/nested',
+            },
+          },
+        },
+      },
+      return: { title: { $from: 'nested.title' } },
+    };
+    mockDataAssemblyGet.mockResolvedValue(current);
     mockDataAssemblyUpdate.mockResolvedValue({
       ...mockDataAssembly,
       name: 'Updated Data Assembly',
@@ -21,7 +62,11 @@ describe('updateDataAssembly', () => {
     });
 
     const tool = updateDataAssemblyTool(mockConfig);
-    const result = await tool({ ...mockArgs, version: 1, name: 'Updated Data Assembly' });
+    const result = await tool({
+      ...mockArgs,
+      version: 1,
+      name: 'Updated Data Assembly',
+    });
 
     expect(mockDataAssemblyGet).toHaveBeenCalledWith({
       spaceId: mockArgs.spaceId,
@@ -33,13 +78,34 @@ describe('updateDataAssembly', () => {
         spaceId: mockArgs.spaceId,
         environmentId: mockArgs.environmentId,
         dataAssemblyId: mockArgs.dataAssemblyId,
+        version: 1,
       },
-      expect.objectContaining({
+      {
         name: 'Updated Data Assembly',
-        description: mockDataAssembly.description,
-      }),
+        description: current.description,
+        parameters: current.parameters,
+        resolvers: current.resolvers,
+        return: current.return,
+        metadata: current.metadata,
+      },
     );
-    expect(result.content[0].text).toContain('Data assembly updated successfully');
+    expect(result.content[0].text).toContain(
+      'Data assembly updated successfully',
+    );
+  });
+
+  it.each([
+    ['dataType', []],
+    ['variant', 'legacy-variant'],
+    ['sys', { id: 'test-data-assembly-id', version: 1 }],
+  ])('rejects the obsolete %s argument', (field, value) => {
+    expect(
+      UpdateDataAssemblyToolParams.safeParse({
+        ...mockArgs,
+        version: 1,
+        [field]: value,
+      }).success,
+    ).toBe(false);
   });
 
   it('rejects a stale version', async () => {

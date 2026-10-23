@@ -4,7 +4,7 @@ these rules in any PR.
 ## Tool Registration
 
 - Every tool MUST have a Zod schema defining its input parameters.
-- The `.shape` property of the Zod schema is passed to `registerTool` as `inputSchema`.
+- Most tools pass the Zod schema's `.shape` to `registerTool` as `inputSchema`. Strict schemas pass the full Zod object; using `.shape` would discard unknown-key rejection.
 - Tool `title` values are the MCP-visible tool names — changing them is a breaking change.
 - Tool `annotations` (readOnlyHint, destructiveHint, etc.) must accurately reflect behavior.
 
