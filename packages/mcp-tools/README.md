@@ -16,18 +16,22 @@ The package exports tool collections organized by category. Each tool in a colle
 
 - `title`: The tool name
 - `description`: What the tool does
-- `inputParams`: Zod schema for input validation
+- `inputParams`: Zod schema or raw shape for input validation
 - `annotations`: Semantic hints about tool behavior (readOnly, destructive, idempotent, openWorld)
 - `tool`: The actual tool implementation function
 
 ```typescript
-import { entryTools, assetTools, contextTools } from '@contentful/mcp-tools';
-import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { ContentfulMcpTools } from '@contentful/mcp-tools';
+import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 
-const server = new McpServer();
+const server = new McpServer({ name: 'my-contentful-mcp', version: '1.0.0' });
+const tools = new ContentfulMcpTools({
+  accessToken: '<management-token>',
+  mcpVersion: '1.0.0',
+});
 
 // Register a specific tool
-const { searchEntries } = entryTools;
+const { searchEntries } = tools.getEntryTools();
 server.registerTool(
   searchEntries.title,
   {
@@ -39,7 +43,7 @@ server.registerTool(
 );
 
 // Register all tools from a collection
-Object.values(assetTools).forEach((toolConfig) => {
+Object.values(tools.getAssetTools()).forEach((toolConfig) => {
   server.registerTool(
     toolConfig.title,
     {
@@ -57,6 +61,14 @@ Object.values(assetTools).forEach((toolConfig) => {
 `create_data_assembly` takes editable configuration without `sys`, `dataType`, or
 `variant`. The API generates `sys.id` and infers `sys.dataType` from `return`.
 `parameters` remains a map keyed by parameter name.
+This is a breaking input change: callers still passing top-level `sys`, `dataType`,
+or `variant` receive a validation error. Remove those arguments when upgrading.
+Nested ResourceLink `sys` objects remain part of the configuration.
+
+`ContentfulMcpTools.getDataAssemblyTools()` exposes these tools to MCP hosts.
+The local server registers ExO tools only when `ENABLE_EXO_TOOLS` is enabled and
+the organization has the `exoM1` entitlement. The remote server also requires
+the `exoM1` entitlement.
 
 ```json
 {
@@ -85,23 +97,10 @@ Object.values(assetTools).forEach((toolConfig) => {
 
 ### Available Tool Collections
 
-```typescript
-import {
-  aiActionTools, // AI action management
-  assetTools, // Asset operations
-  contentTypeTools, // Content type management
-  contextTools, // Initial context setup
-  entryTools, // Entry operations
-  environmentTools, // Environment management
-  jobTools, // Long-running jobs
-  localeTools, // Locale management
-  orgTools, // Organization operations
-  releaseTools, // Release management
-  spaceTools, // Space operations
-  tagTools, // Tag management
-  taxonomyTools, // Taxonomy/concept scheme operations
-} from '@contentful/mcp-tools';
-```
+Collections come from `ContentfulMcpTools` getters such as `getEntryTools()`,
+`getAssetTools()`, `getContentTypeTools()`, `getReleaseTools()`, and
+`getDataAssemblyTools()`. ExO collections are registered by each server only
+when its access gates pass.
 
 ### Tool Annotations
 
@@ -169,6 +168,15 @@ Each tool includes semantic annotations to help MCP clients understand tool beha
 |                           | `schedule_unpublish_release`       | Schedule a release to unpublish at a future datetime (or reschedule)                      |
 |                           | `cancel_scheduled_release`         | Cancel a scheduled release action (two-phase confirm)                                     |
 |                           | `list_scheduled_actions`           | List scheduled actions (max 10 per request)                                               |
+| **Data Assemblies (ExO)** | `get_data_assembly`                | Get an assembly and its current version                                                   |
+|                           | `get_published_data_assembly`      | Get the published assembly                                                                |
+|                           | `list_data_assemblies`             | List assemblies                                                                           |
+|                           | `list_published_data_assemblies`   | List published assemblies                                                                 |
+|                           | `create_data_assembly`             | Create with a sys-free body and API-generated ID                                          |
+|                           | `update_data_assembly`             | Update with a sys-free body and current version                                           |
+|                           | `delete_data_assembly`             | Delete an assembly                                                                        |
+|                           | `publish_data_assembly`            | Publish an assembly                                                                       |
+|                           | `unpublish_data_assembly`          | Unpublish an assembly                                                                     |
 | **AI Actions**            | `create_ai_action`                 | Create custom AI-powered workflows                                                        |
 |                           | `invoke_ai_action`                 | Invoke AI action with variables (bulk support)                                            |
 |                           | `get_ai_action_invocation`         | Get AI action invocation details                                                          |
