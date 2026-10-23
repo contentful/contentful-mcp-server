@@ -15,10 +15,6 @@ import {
   TreeNodeSchema,
   ExoMetadataSchema,
 } from '../../../types/exoSchemas.js';
-import {
-  asViewportOptionalCmaPayload,
-  type ViewportOptionalPayload,
-} from '../../../types/cmaViewportCompatibility.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
 export const UpsertExperienceTemplateToolParams = BaseToolSchema.extend({
@@ -112,13 +108,13 @@ export function upsertExperienceTemplateTool(config: ContentfulConfig) {
       ...(current.dataAssemblies
         ? { dataAssemblies: current.dataAssemblies }
         : {}),
-    } satisfies ViewportOptionalPayload<
-      Parameters<typeof contentfulClient.experienceTemplate.upsert>[1]
-    >;
+    } satisfies Parameters<
+      typeof contentfulClient.experienceTemplate.upsert
+    >[1];
 
     const experienceTemplate = await contentfulClient.experienceTemplate.upsert(
       params,
-      asViewportOptionalCmaPayload(experienceTemplateData),
+      experienceTemplateData,
     );
 
     return createSuccessResponse('Experience template updated successfully', {
