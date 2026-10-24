@@ -1,3 +1,7 @@
+## 0.12.51 (2026-10-24)
+
+This was a version bump only for mcp-tools to align it with other projects, there were no code changes.
+
 ## 0.12.50 (2026-10-22)
 
 ### 🩹 Fixes
