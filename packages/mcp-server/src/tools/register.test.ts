@@ -149,24 +149,33 @@ describe('registerAllTools', () => {
       (call) => call[0] === 'update_data_assembly',
     )?.[1].inputSchema;
 
+    const createArgs = {
+      spaceId: 'test-space-id',
+      environmentId: 'master',
+      name: 'Test',
+      description: 'Test',
+      parameters: {},
+      resolvers: {},
+      return: {},
+    };
+    const updateArgs = {
+      spaceId: 'test-space-id',
+      environmentId: 'master',
+      dataAssemblyId: 'test-id',
+      version: 1,
+    };
+
+    expect(createSchema.safeParse(createArgs).success).toBe(true);
+    expect(updateSchema.safeParse(updateArgs).success).toBe(true);
     expect(
       createSchema.safeParse({
-        spaceId: 'test-space-id',
-        environmentId: 'master',
-        name: 'Test',
-        description: 'Test',
-        parameters: {},
-        resolvers: {},
-        return: {},
+        ...createArgs,
         dataType: [],
       }).success,
     ).toBe(false);
     expect(
       updateSchema.safeParse({
-        spaceId: 'test-space-id',
-        environmentId: 'master',
-        dataAssemblyId: 'test-id',
-        version: 1,
+        ...updateArgs,
         variant: 'legacy-variant',
       }).success,
     ).toBe(false);
