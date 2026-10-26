@@ -1,5 +1,4 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
-import { z } from 'zod';
 import {
   mockDataAssemblyGet,
   mockDataAssemblyUpdate,
@@ -7,7 +6,10 @@ import {
   mockArgs,
   mockParameters,
 } from './mockClient.js';
-import { updateDataAssemblyTool } from './updateDataAssembly.js';
+import {
+  updateDataAssemblyTool,
+  UpdateDataAssemblyToolParams,
+} from './updateDataAssembly.js';
 import { createDataAssemblyTools } from './register.js';
 import { createMockConfig } from '../../../test-helpers/mockConfig.js';
 
@@ -15,8 +17,39 @@ describe('updateDataAssembly', () => {
   const mockConfig = createMockConfig();
   beforeEach(() => vi.clearAllMocks());
 
+  it('accepts a partial sys-free update', () => {
+    expect(
+      UpdateDataAssemblyToolParams.safeParse({
+        ...mockArgs,
+        version: 1,
+        name: 'Updated Data Assembly',
+      }).success,
+    ).toBe(true);
+  });
+
   it('reads before writing and merges fields', async () => {
-    mockDataAssemblyGet.mockResolvedValue(mockDataAssembly);
+    const current = {
+      ...mockDataAssembly,
+      sys: {
+        ...mockDataAssembly.sys,
+        variant: 'legacy-variant',
+        dataType: [{ id: 'title', name: 'Title', type: 'String' }],
+      },
+      resolvers: {
+        nested: {
+          source: 'Contentful:DataAssembly',
+          dataAssembly: {
+            sys: {
+              type: 'ResourceLink',
+              linkType: 'Contentful:DataAssembly',
+              urn: 'crn:contentful:content:spaces/test/environments/master/data_assemblies/nested',
+            },
+          },
+        },
+      },
+      return: { title: { $from: 'nested.title' } },
+    };
+    mockDataAssemblyGet.mockResolvedValue(current);
     mockDataAssemblyUpdate.mockResolvedValue({
       ...mockDataAssembly,
       name: 'Updated Data Assembly',
@@ -24,7 +57,7 @@ describe('updateDataAssembly', () => {
     });
 
     const registered = createDataAssemblyTools(mockConfig).updateDataAssembly;
-    const args = z.object(registered.inputParams).parse({
+    const args = registered.inputParams.parse({
       ...mockArgs,
       version: 1,
       name: 'Updated Data Assembly',
@@ -38,11 +71,14 @@ describe('updateDataAssembly', () => {
     });
     expect(mockDataAssemblyUpdate).toHaveBeenCalledWith(
       `/spaces/${mockArgs.spaceId}/environments/${mockArgs.environmentId}/data_assemblies/${mockArgs.dataAssemblyId}`,
-      expect.objectContaining({
+      {
         name: 'Updated Data Assembly',
-        description: mockDataAssembly.description,
-        parameters: mockParameters,
-      }),
+        description: current.description,
+        parameters: current.parameters,
+        resolvers: current.resolvers,
+        return: current.return,
+        metadata: current.metadata,
+      },
       { headers: { 'X-Contentful-Version': 1 } },
     );
     expect(result.content[0].text).toContain(
@@ -50,14 +86,31 @@ describe('updateDataAssembly', () => {
     );
   });
 
+  it.each([
+    ['dataType', []],
+    ['variant', 'legacy-variant'],
+    ['sys', { id: 'test-data-assembly-id', version: 1 }],
+  ])('rejects the obsolete %s argument', (field, value) => {
+    const registered = createDataAssemblyTools(mockConfig).updateDataAssembly;
+    expect(
+      registered.inputParams.safeParse({
+        ...mockArgs,
+        version: 1,
+        [field]: value,
+      }).success,
+    ).toBe(false);
+  });
+
   it('forwards a replacement array through the registered input schema', async () => {
     mockDataAssemblyGet.mockResolvedValue(mockDataAssembly);
     mockDataAssemblyUpdate.mockResolvedValue(mockDataAssembly);
     const parameters = [...mockParameters].reverse();
     const registered = createDataAssemblyTools(mockConfig).updateDataAssembly;
-    const args = z
-      .object(registered.inputParams)
-      .parse({ ...mockArgs, version: 1, parameters });
+    const args = registered.inputParams.parse({
+      ...mockArgs,
+      version: 1,
+      parameters,
+    });
 
     const result = await registered.tool(args);
 
@@ -73,9 +126,11 @@ describe('updateDataAssembly', () => {
     mockDataAssemblyGet.mockResolvedValue(mockDataAssembly);
     mockDataAssemblyUpdate.mockResolvedValue(mockDataAssembly);
     const registered = createDataAssemblyTools(mockConfig).updateDataAssembly;
-    const args = z
-      .object(registered.inputParams)
-      .parse({ ...mockArgs, version: 1, parameters: [] });
+    const args = registered.inputParams.parse({
+      ...mockArgs,
+      version: 1,
+      parameters: [],
+    });
 
     await registered.tool(args);
 
@@ -89,7 +144,7 @@ describe('updateDataAssembly', () => {
   it('rejects legacy record input through the registered schema', () => {
     const registered = createDataAssemblyTools(mockConfig).updateDataAssembly;
     expect(() =>
-      z.object(registered.inputParams).parse({
+      registered.inputParams.parse({
         ...mockArgs,
         version: 1,
         parameters: { title: { type: 'String', required: true } },

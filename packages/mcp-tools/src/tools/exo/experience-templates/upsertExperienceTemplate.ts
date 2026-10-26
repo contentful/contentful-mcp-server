@@ -9,17 +9,12 @@ import {
   assertEnvironmentNotProtected,
 } from '../../../utils/tools.js';
 import {
-  ViewportSchema,
   ContentPropertySchema,
   DesignPropertySchema,
   SlotDefinitionSchema,
   TreeNodeSchema,
   ExoMetadataSchema,
 } from '../../../types/exoSchemas.js';
-import {
-  asViewportOptionalCmaPayload,
-  type ViewportOptionalPayload,
-} from '../../../types/cmaViewportCompatibility.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
 export const UpsertExperienceTemplateToolParams = BaseToolSchema.extend({
@@ -39,10 +34,6 @@ export const UpsertExperienceTemplateToolParams = BaseToolSchema.extend({
     .string()
     .optional()
     .describe('Description of the experience template'),
-  viewports: z
-    .array(ViewportSchema)
-    .optional()
-    .describe('Viewport definitions; replaces existing viewports if provided'),
   contentProperties: z
     .array(ContentPropertySchema)
     .optional()
@@ -95,8 +86,6 @@ export function upsertExperienceTemplateTool(config: ContentfulConfig) {
       );
     }
 
-    const viewports = args.viewports ?? current.viewports;
-
     const experienceTemplateData = {
       sys: {
         id: current.sys.id,
@@ -105,7 +94,6 @@ export function upsertExperienceTemplateTool(config: ContentfulConfig) {
       },
       name: args.name ?? current.name,
       description: args.description ?? current.description,
-      ...(viewports !== undefined && { viewports }),
       contentProperties: args.contentProperties ?? current.contentProperties,
       designProperties: args.designProperties ?? current.designProperties,
       ...((args.componentTree ?? current.componentTree)
@@ -120,13 +108,13 @@ export function upsertExperienceTemplateTool(config: ContentfulConfig) {
       ...(current.dataAssemblies
         ? { dataAssemblies: current.dataAssemblies }
         : {}),
-    } satisfies ViewportOptionalPayload<
-      Parameters<typeof contentfulClient.experienceTemplate.upsert>[1]
-    >;
+    } satisfies Parameters<
+      typeof contentfulClient.experienceTemplate.upsert
+    >[1];
 
     const experienceTemplate = await contentfulClient.experienceTemplate.upsert(
       params,
-      asViewportOptionalCmaPayload(experienceTemplateData),
+      experienceTemplateData,
     );
 
     return createSuccessResponse('Experience template updated successfully', {

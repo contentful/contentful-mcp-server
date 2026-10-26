@@ -1,3 +1,4 @@
+import { BLOCKS } from '@contentful/rich-text-types';
 import { z } from 'zod';
 import { richTextDocumentSchema } from './richTextSchema.js';
 
@@ -25,18 +26,33 @@ const locationSchema = z.object({
 const jsonPrimitive = z.union([z.string(), z.number(), z.boolean(), z.null()]);
 
 export type JsonValue =
-  | string
-  | number
-  | boolean
-  | null
-  | JsonValue[]
-  | { [key: string]: JsonValue };
+  string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
 
 // JSON schema for freeform JSON fields (supports any valid JSON structure)
 export const jsonValueSchema: z.ZodType<JsonValue> = z.lazy(() =>
   z
     .union([jsonPrimitive, z.array(jsonValueSchema), z.record(jsonValueSchema)])
     .describe('Freeform JSON value (not for Rich Text)'),
+);
+
+export function looksLikeRichTextDocument(value: unknown): boolean {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    !Array.isArray(value) &&
+    'nodeType' in value &&
+    (value as { nodeType: unknown }).nodeType === BLOCKS.DOCUMENT
+  );
+}
+
+const jsonFieldValueSchema = jsonValueSchema.refine(
+  (value) => !looksLikeRichTextDocument(value),
+  {
+    message:
+      'Value looks like a Rich Text document (nodeType: "document") but is missing required properties. ' +
+      'Document and block nodes need data: {}, and text nodes need data: {} and marks: []. ' +
+      'See https://www.contentful.com/developers/docs/concepts/rich-text/',
+  },
 );
 
 const fieldValueSchema = z.union([
@@ -50,7 +66,7 @@ const fieldValueSchema = z.union([
   z.array(z.string()).describe('Array field of Symbols'),
   z.array(linkSchema).describe('Array field of Links'),
   z.array(resourceLinkSchema).describe('Array field of ResourceLinks'),
-  jsonValueSchema,
+  jsonFieldValueSchema,
 ]);
 
 // Every field value is keyed by locale, e.g. { "en-US": "hello" }

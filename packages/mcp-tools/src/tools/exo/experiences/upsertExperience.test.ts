@@ -5,7 +5,10 @@ import {
   mockExperience,
   mockArgs,
 } from './mockClient.js';
-import { upsertExperienceTool } from './upsertExperience.js';
+import {
+  upsertExperienceTool,
+  UpsertExperienceToolParams,
+} from './upsertExperience.js';
 import { createMockConfig } from '../../../test-helpers/mockConfig.js';
 
 describe('upsertExperience', () => {
@@ -61,17 +64,17 @@ describe('upsertExperience', () => {
     });
   });
 
-  it('preserves flattened design properties without reintroducing viewports', async () => {
+  it('preserves flattened design properties without copying supplied or stored viewports', async () => {
     mockExperienceGet.mockResolvedValue({
       ...mockExperience,
-      viewports: undefined,
       designProperties: {
         color: { type: 'ManualDesignValue', value: 'red' },
       },
     });
     mockExperienceUpsert.mockResolvedValue(mockExperience);
+    const legacyArgs = { ...mockArgs, version: 1, viewports: [] };
 
-    await upsertExperienceTool(mockConfig)({ ...mockArgs, version: 1 });
+    await upsertExperienceTool(mockConfig)(legacyArgs);
 
     const [, body] = mockExperienceUpsert.mock.calls[0];
     expect(body).not.toHaveProperty('viewports');
@@ -111,5 +114,61 @@ describe('upsertExperience', () => {
       isError: true,
       content: [{ type: 'text', text: 'Error updating experience: not found' }],
     });
+  });
+
+  it('passes $literal content binding parameters through unchanged', async () => {
+    mockExperienceGet.mockResolvedValue(mockExperience);
+    mockExperienceUpsert.mockResolvedValue(mockExperience);
+    const link = {
+      sys: {
+        type: 'ResourceLink' as const,
+        linkType: 'Contentful:Entry',
+        urn: 'crn:contentful:::content:spaces/s/environments/e/entries/1',
+      },
+    };
+    const bindings = {
+      sys: {
+        type: 'ResourceLink' as const,
+        linkType: 'Contentful:DataAssembly' as const,
+        urn: 'crn:contentful:::experience:spaces/s/environments/e/dataAssemblies/d',
+      },
+      parameters: { title: { $literal: link } },
+    };
+
+    // Parse through the tool schema, as the MCP layer does before invoking the tool.
+    const args = UpsertExperienceToolParams.parse({
+      ...mockArgs,
+      version: 1,
+      contentBindings: bindings,
+    });
+    await upsertExperienceTool(mockConfig)(args);
+
+    const [, body] = mockExperienceUpsert.mock.calls[0];
+    expect(body.contentBindings).toEqual(bindings);
+  });
+
+  it('rejects bare content binding ResourceLink parameters', () => {
+    const result = UpsertExperienceToolParams.safeParse({
+      ...mockArgs,
+      version: 1,
+      contentBindings: {
+        sys: {
+          type: 'ResourceLink',
+          linkType: 'Contentful:DataAssembly',
+          urn: 'crn:contentful:::experience:spaces/s/environments/e/dataAssemblies/d',
+        },
+        parameters: {
+          title: {
+            sys: {
+              type: 'ResourceLink',
+              linkType: 'Contentful:Entry',
+              urn: 'crn:contentful:::content:spaces/s/environments/e/entries/1',
+            },
+          },
+        },
+      },
+    });
+
+    expect(result.success).toBe(false);
   });
 });

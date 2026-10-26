@@ -4,7 +4,6 @@ import type {
   ExperienceProps,
   ExoMetadataProps,
   ExperienceMetadataProps,
-  ComponentTypeViewport,
   ComponentTypeContentProperty,
   ComponentTypeDesignProperty,
   ComponentSlotDefinition,
@@ -20,7 +19,6 @@ import type {
 // from the package root, so we import them directly rather than re-deriving them from
 // ComponentProps/ExperienceProps via indexed-access aliases.
 export type {
-  ComponentTypeViewport,
   ComponentTypeContentProperty,
   ComponentTypeDesignProperty,
   ComponentSlotDefinition,
@@ -141,16 +139,6 @@ export const ExperienceFragmentResourceLinkSchema = resourceLinkSchema(
 export const ExperienceTemplateResourceLinkSchema = resourceLinkSchema(
   'Contentful:ExperienceTemplate',
 );
-
-// ── Viewport ──────────────────────────────────────────────────────────────────
-// Matches CMA.js ComponentTypeViewport
-
-export const ViewportSchema = z.object({
-  id: z.string().describe('Viewport identifier'),
-  query: z.string().describe('CSS media query string'),
-  displayName: z.string().describe('Human-readable viewport name'),
-  previewSize: z.string().describe('Preview size (e.g. "1024px")'),
-}) satisfies z.ZodType<ComponentTypeViewport>;
 
 // ── Data type definition ──────────────────────────────────────────────────────
 // Matches CMA.js DataTypeDefinition — a discriminated union keyed on `type`.
@@ -474,46 +462,72 @@ export const DataAssemblyResourceLinkSchema = resourceLinkSchema(
   'Contentful:DataAssembly',
 );
 
-export const ExperienceContentBindingsSchema = z.object({
-  sys: DataAssemblyResourceLinkSchema.shape.sys,
-  parameters: z
-    .record(
-      z.string(),
-      z.object({
-        sys: z.object({
-          type: z.literal('ResourceLink'),
-          linkType: z.string(),
-          urn: z.string(),
-        }),
-      }),
-    )
-    .describe('Parameter bindings keyed by parameter ID'),
-}) satisfies z.ZodType<ExperienceContentBindings>;
+const ContentBindingResourceLinkSchema = z.object({
+  sys: z.object({
+    type: z.literal('ResourceLink'),
+    linkType: z.string(),
+    urn: z.string(),
+  }),
+});
 
-export const InlineExperienceFragmentNodeSchema: z.ZodType<InlineExperienceFragmentNode> =
-  z.lazy(() =>
-    z.object({
-      id: z.string().describe('Node identifier'),
-      nodeType: z
-        .literal('InlineExperienceFragment')
-        .describe('Must be "InlineExperienceFragment"'),
-      component: ComponentResourceLinkSchema.describe(
-        'Resource link to the component this inline experience fragment renders',
-      ),
-      designProperties: z
-        .record(z.string(), DimensionedDesignPropertyValueSchema)
-        .describe('Design property values for this inline experience fragment'),
-      contentBindings: ExperienceContentBindingsSchema.optional().describe(
-        'Optional content bindings linking this inline experience fragment to a data assembly',
-      ),
-      slots: z
-        .record(z.string(), z.array(ExperienceSlotNodeSchema))
-        .optional()
-        .describe('Child slot contents keyed by slot ID'),
-    }),
+// Parameters must use the `$literal` wrapper. Existing data has been migrated and
+// the Experience Management API rejects bare ResourceLink parameters.
+const ContentBindingParameterSchema = z
+  .object({ $literal: ContentBindingResourceLinkSchema })
+  .describe(
+    'Literal-wrapped ResourceLink parameter binding: { $literal: ResourceLink }',
   );
 
-export const ExperienceSlotNodeSchema: z.ZodType<ExperienceSlotNode> = z.lazy(
-  () =>
-    z.union([ExperienceFragmentNodeSchema, InlineExperienceFragmentNodeSchema]),
+const LiteralExperienceContentBindingsSchema = z.object({
+  sys: DataAssemblyResourceLinkSchema.shape.sys,
+  parameters: z
+    .record(z.string(), ContentBindingParameterSchema)
+    .describe(
+      'Parameter bindings keyed by parameter ID; each value must be wrapped in $literal',
+    ),
+});
+
+// The pinned contentful-management (12.19.1) still types every parameter as a bare
+// ResourceLink, so a `$literal`-only output is not assignable to
+// ExperienceContentBindings. The pipe keeps the honest `$literal`-only input type and
+// runtime validation while exposing the SDK type to the API call sites. Drop the pipe
+// (and the `z.ZodTypeDef, unknown` generics on the node schemas below) once the SDK
+// types `$literal` parameters (contentful-management >= 12.19.2).
+export const ExperienceContentBindingsSchema =
+  LiteralExperienceContentBindingsSchema.pipe(
+    z.custom<ExperienceContentBindings>(),
+  );
+
+export const InlineExperienceFragmentNodeSchema: z.ZodType<
+  InlineExperienceFragmentNode,
+  z.ZodTypeDef,
+  unknown
+> = z.lazy(() =>
+  z.object({
+    id: z.string().describe('Node identifier'),
+    nodeType: z
+      .literal('InlineExperienceFragment')
+      .describe('Must be "InlineExperienceFragment"'),
+    component: ComponentResourceLinkSchema.describe(
+      'Resource link to the component this inline experience fragment renders',
+    ),
+    designProperties: z
+      .record(z.string(), DimensionedDesignPropertyValueSchema)
+      .describe('Design property values for this inline experience fragment'),
+    contentBindings: ExperienceContentBindingsSchema.optional().describe(
+      'Optional content bindings linking this inline experience fragment to a data assembly',
+    ),
+    slots: z
+      .record(z.string(), z.array(ExperienceSlotNodeSchema))
+      .optional()
+      .describe('Child slot contents keyed by slot ID'),
+  }),
+);
+
+export const ExperienceSlotNodeSchema: z.ZodType<
+  ExperienceSlotNode,
+  z.ZodTypeDef,
+  unknown
+> = z.lazy(() =>
+  z.union([ExperienceFragmentNodeSchema, InlineExperienceFragmentNodeSchema]),
 );

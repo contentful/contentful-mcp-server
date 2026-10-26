@@ -1,3 +1,115 @@
+## 0.12.54 (2026-10-26)
+
+### 🩹 Fixes
+
+- **mcp-tools:** warn that legacy Data Assembly inputs fail [ARC-2698] ([66c706f](https://github.com/contentful/contentful-mcp-server/commit/66c706f))
+- **mcp-tools:** send sys-free Data Assembly writes [ARC-2698] ([d8e790d](https://github.com/contentful/contentful-mcp-server/commit/d8e790d))
+
+## 0.12.53 (2026-10-25)
+
+### 🩹 Fixes
+
+- **deps:** update dependency @modelcontextprotocol/sdk to ^1.32.2 ([#583](https://github.com/contentful/contentful-mcp-server/pull/583))
+
+## 0.12.52 (2026-10-25)
+
+### 🩹 Fixes
+
+- **deps:** update dependency contentful-import to ^10.5.7 ([#581](https://github.com/contentful/contentful-mcp-server/pull/581))
+
+## 0.12.51 (2026-10-24)
+
+This was a version bump only for mcp-tools to align it with other projects, there were no code changes.
+
+## 0.12.50 (2026-10-22)
+
+### 🩹 Fixes
+
+- **deps:** update dependency contentful-import to ^10.5.6 ([#568](https://github.com/contentful/contentful-mcp-server/pull/568))
+
+## 0.12.49 (2026-10-19)
+
+### 🩹 Fixes
+
+- **exo:** accept only $literal content binding parameters [ARC-1910] ([74d7c94](https://github.com/contentful/contentful-mcp-server/commit/74d7c94))
+
+## 0.12.48 (2026-10-17)
+
+### 🩹 Fixes
+
+- **deps:** update dependency tsup to v9 ([#562](https://github.com/contentful/contentful-mcp-server/pull/562))
+
+## 0.12.47 (2026-10-16)
+
+This was a version bump only for mcp-tools to align it with other projects, there were no code changes.
+
+## 0.12.46 (2026-10-11)
+
+This was a version bump only for mcp-tools to align it with other projects, there were no code changes.
+
+## 0.12.45 (2026-10-11)
+
+### 🩹 Fixes
+
+- **deps:** update dependency contentful-import to ^10.5.5 ([#550](https://github.com/contentful/contentful-mcp-server/pull/550))
+
+## 0.12.44 (2026-10-11)
+
+### 🩹 Fixes
+
+- **deps:** update dependency contentful-export to ^8.5.1 ([#549](https://github.com/contentful/contentful-mcp-server/pull/549))
+
+## 0.12.43 (2026-10-11)
+
+### 🩹 Fixes
+
+- **deps:** update dependency contentful-management to v12.19.1 ([#548](https://github.com/contentful/contentful-mcp-server/pull/548))
+
+## 0.12.42 (2026-10-09)
+
+This was a version bump only for mcp-tools to align it with other projects, there were no code changes.
+
+## 0.12.41 (2026-10-08)
+
+### 🩹 Fixes
+
+- **exo:** omit viewport fields from tool writes [SPA-5276] ([83dc159](https://github.com/contentful/contentful-mcp-server/commit/83dc159))
+
+## 0.12.40 (2026-10-08)
+
+### 🩹 Fixes
+
+- **deps:** update dependency contentful-import to ^10.5.4 ([#539](https://github.com/contentful/contentful-mcp-server/pull/539))
+
+## 0.12.39 (2026-10-08)
+
+### 🩹 Fixes
+
+- **deps:** update dependency @modelcontextprotocol/sdk to ^1.32.1 ([#538](https://github.com/contentful/contentful-mcp-server/pull/538))
+
+## 0.12.38 (2026-10-07)
+
+### 🩹 Fixes
+
+- **exo:** fix content binding literal typing and add tests [ARC-2527] ([c1f7e95](https://github.com/contentful/contentful-mcp-server/commit/c1f7e95))
+- **exo:** support literal content bindings [ARC-2527] ([2e3328f](https://github.com/contentful/contentful-mcp-server/commit/2e3328f))
+
+## 0.12.37 (2026-10-05)
+
+### 🩹 Fixes
+
+- reject incomplete Rich Text shapes in entry field schema [AIS-669] ([#534](https://github.com/contentful/contentful-mcp-server/pull/534))
+
+## 0.12.36 (2026-10-04)
+
+### 🩹 Fixes
+
+- **deps:** update dependency @modelcontextprotocol/sdk to ^1.32.0 ([#533](https://github.com/contentful/contentful-mcp-server/pull/533))
+
+## 0.12.35 (2026-10-03)
+
+This was a version bump only for mcp-tools to align it with other projects, there were no code changes.
+
 ## 0.12.34 (2026-10-02)
 
 ### 🩹 Fixes

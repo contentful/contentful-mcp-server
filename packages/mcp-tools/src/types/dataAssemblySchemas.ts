@@ -15,33 +15,6 @@ type DataAssemblyEntity = Awaited<
   ReturnType<PlainClientAPI['dataAssembly']['get']>
 >;
 
-export type DataAssemblyDataTypeField = Distribute<
-  DataAssemblyEntity['sys']['dataType'][number]
->;
-// Discriminate by the specific type literals from DataTypeDefinition — the canonical arm
-// has a narrow type literal for `type`, the legacy arm has `type: string` (wide). Using
-// optional-field filters (source?, ref?) would match both arms and collapse to never.
-export type CanonicalDataAssemblyDataTypeField = Extract<
-  DataAssemblyDataTypeField,
-  {
-    type:
-      | 'String'
-      | 'Number'
-      | 'Integer'
-      | 'Boolean'
-      | 'RichText'
-      | 'Array'
-      | 'Record'
-      | 'TypeRef'
-      | 'Literal'
-      | 'DiscriminatedUnion';
-  }
->;
-export type LegacyDataAssemblyDataTypeField = Exclude<
-  DataAssemblyDataTypeField,
-  CanonicalDataAssemblyDataTypeField
->;
-
 export type DataAssemblyResolverConfig = Distribute<
   DataAssemblyEntity['resolvers']
 >;
@@ -87,45 +60,6 @@ export const PointerExpressionValueSchema: z.ZodType<PointerExpressionValue> =
       z.record(z.string(), PointerExpressionValueSchema),
     ]),
   );
-
-// ── Data type field ────────────────────────────────────────────────────────────
-// Matches CMA.js DataAssemblyDataTypeField = CanonicalDataAssemblyDataTypeField
-// (DataTypeDefinition & {id, name}) | LegacyDataAssemblyDataTypeField (permissive
-// pre-cutover shape, kept for backward compatibility with existing records).
-
-const CanonicalDataTypeArmSchema = z
-  .object({
-    type: z.enum([
-      'String',
-      'Number',
-      'Integer',
-      'Boolean',
-      'RichText',
-      'Array',
-      'Record',
-      'TypeRef',
-      'Literal',
-      'DiscriminatedUnion',
-    ]),
-    id: z.string().describe('Data type field identifier'),
-    name: z.string().describe('Human-readable name'),
-    required: z.boolean().optional(),
-  })
-  .catchall(z.unknown());
-
-const LegacyDataTypeArmSchema = z.object({
-  id: z.string().describe('Data type field identifier'),
-  name: z.string().describe('Human-readable name'),
-  type: z.string(),
-  required: z.boolean().optional(),
-  source: z.string().optional(),
-  ref: z.unknown().optional(),
-}) satisfies z.ZodType<LegacyDataAssemblyDataTypeField>;
-
-export const DataAssemblyDataTypeFieldSchema = z.union([
-  CanonicalDataTypeArmSchema,
-  LegacyDataTypeArmSchema,
-]) satisfies z.ZodType<DataAssemblyDataTypeField>;
 
 // ── Parameters ─────────────────────────────────────────────────────────────────
 // The tool schemas own the canonical parameter contract while the published SDK

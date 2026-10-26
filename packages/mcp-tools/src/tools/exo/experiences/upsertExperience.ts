@@ -9,7 +9,6 @@ import {
   assertEnvironmentNotProtected,
 } from '../../../utils/tools.js';
 import {
-  ViewportSchema,
   ExperienceMetadataSchema,
   DesignPropertyValueSchema,
   DimensionedDesignPropertyValueSchema,
@@ -17,9 +16,9 @@ import {
   ExperienceSlotNodeSchema,
 } from '../../../types/exoSchemas.js';
 import {
-  asViewportOptionalCmaPayloadWithFlattenedDesignProperties,
-  type ViewportOptionalPayloadWithFlattenedDesignProperties,
-} from '../../../types/cmaViewportCompatibility.js';
+  asCmaPayloadWithFlattenedDesignProperties,
+  type PayloadWithFlattenedDesignProperties,
+} from '../../../types/cmaDesignPropertiesCompatibility.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
 export const UpsertExperienceToolParams = BaseToolSchema.extend({
@@ -34,10 +33,6 @@ export const UpsertExperienceToolParams = BaseToolSchema.extend({
     ),
   name: z.string().optional().describe('The name of the experience'),
   description: z.string().optional().describe('Description of the experience'),
-  viewports: z
-    .array(ViewportSchema)
-    .optional()
-    .describe('Viewport definitions; replaces existing viewports if provided'),
   designProperties: z
     .record(
       z.string(),
@@ -51,7 +46,10 @@ export const UpsertExperienceToolParams = BaseToolSchema.extend({
       'Design property values keyed by property ID; replaces existing if provided',
     ),
   contentBindings: ExperienceContentBindingsSchema.optional().describe(
-    'Content bindings linking this experience to a data assembly; replaces existing if provided',
+    'Content bindings linking this experience to a data assembly; replaces existing if provided. ' +
+      'Each parameter value must be wrapped in $literal, e.g. ' +
+      '{ "title": { "$literal": { "sys": { "type": "ResourceLink", "linkType": "Contentful:Entry", "urn": "crn:..." } } } }; ' +
+      'bare ResourceLinks are rejected.',
   ),
   slots: z
     .record(z.string(), z.array(ExperienceSlotNodeSchema))
@@ -93,8 +91,6 @@ export function upsertExperienceTool(config: ContentfulConfig) {
       );
     }
 
-    const viewports = args.viewports ?? current.viewports;
-
     const experienceData = {
       sys: {
         id: current.sys.id,
@@ -103,7 +99,6 @@ export function upsertExperienceTool(config: ContentfulConfig) {
       },
       name: args.name ?? current.name,
       description: args.description ?? current.description,
-      ...(viewports !== undefined && { viewports }),
       designProperties: args.designProperties ?? current.designProperties,
       ...((args.contentBindings ?? current.contentBindings)
         ? { contentBindings: args.contentBindings ?? current.contentBindings }
@@ -114,13 +109,13 @@ export function upsertExperienceTool(config: ContentfulConfig) {
       ...((args.metadata ?? current.metadata)
         ? { metadata: args.metadata ?? current.metadata }
         : {}),
-    } satisfies ViewportOptionalPayloadWithFlattenedDesignProperties<
+    } satisfies PayloadWithFlattenedDesignProperties<
       Parameters<typeof contentfulClient.experience.upsert>[1]
     >;
 
     const experience = await contentfulClient.experience.upsert(
       params,
-      asViewportOptionalCmaPayloadWithFlattenedDesignProperties(experienceData),
+      asCmaPayloadWithFlattenedDesignProperties(experienceData),
     );
 
     return createSuccessResponse('Experience updated successfully', {

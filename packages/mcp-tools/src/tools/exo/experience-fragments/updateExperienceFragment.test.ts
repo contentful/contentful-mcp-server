@@ -48,17 +48,17 @@ describe('updateExperienceFragment', () => {
     );
   });
 
-  it('preserves flattened design properties without reintroducing viewports', async () => {
+  it('preserves flattened design properties without copying supplied or stored viewports', async () => {
     mockExperienceFragmentGet.mockResolvedValue({
       ...mockExperienceFragment,
-      viewports: undefined,
       designProperties: {
         color: { type: 'ManualDesignValue', value: 'red' },
       },
     });
     mockExperienceFragmentUpsert.mockResolvedValue(mockExperienceFragment);
+    const legacyArgs = { ...mockArgs, version: 1, viewports: [] };
 
-    await updateExperienceFragmentTool(mockConfig)({ ...mockArgs, version: 1 });
+    await updateExperienceFragmentTool(mockConfig)(legacyArgs);
 
     const [, body] = mockExperienceFragmentUpsert.mock.calls[0];
     expect(body).not.toHaveProperty('viewports');

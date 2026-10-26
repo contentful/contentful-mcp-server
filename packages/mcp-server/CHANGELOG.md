@@ -1,3 +1,163 @@
+## 1.23.26 (2026-10-26)
+
+### 🩹 Fixes
+
+- **mcp-tools:** send sys-free Data Assembly writes [ARC-2698] ([d8e790d](https://github.com/contentful/contentful-mcp-server/commit/d8e790d))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.54
+
+## 1.23.25 (2026-10-25)
+
+### 🩹 Fixes
+
+- **deps:** update dependency @modelcontextprotocol/sdk to ^1.32.2 ([#583](https://github.com/contentful/contentful-mcp-server/pull/583))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.53
+
+## 1.23.24 (2026-10-25)
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.52
+
+## 1.23.23 (2026-10-24)
+
+### 🩹 Fixes
+
+- **deps:** update dependency dotenv to ^18.0.9 ([#580](https://github.com/contentful/contentful-mcp-server/pull/580))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.51
+
+## 1.23.22 (2026-10-22)
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.50
+
+## 1.23.21 (2026-10-19)
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.49
+
+## 1.23.20 (2026-10-17)
+
+### 🩹 Fixes
+
+- **deps:** update dependency tsup to v9 ([#562](https://github.com/contentful/contentful-mcp-server/pull/562))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.48
+
+## 1.23.19 (2026-10-16)
+
+### 🩹 Fixes
+
+- **deps:** update dependency dotenv to ^18.0.8 ([#560](https://github.com/contentful/contentful-mcp-server/pull/560))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.47
+
+## 1.23.18 (2026-10-11)
+
+### 🩹 Fixes
+
+- **deps:** update dependency dotenv to ^18.0.7 ([#551](https://github.com/contentful/contentful-mcp-server/pull/551))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.46
+
+## 1.23.17 (2026-10-11)
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.45
+
+## 1.23.16 (2026-10-11)
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.44
+
+## 1.23.15 (2026-10-11)
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.43
+
+## 1.23.14 (2026-10-09)
+
+### 🩹 Fixes
+
+- **deps:** update dependency dotenv to ^18.0.6 ([#542](https://github.com/contentful/contentful-mcp-server/pull/542))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.42
+
+## 1.23.13 (2026-10-08)
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.41
+
+## 1.23.12 (2026-10-08)
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.40
+
+## 1.23.11 (2026-10-08)
+
+### 🩹 Fixes
+
+- **deps:** update dependency @modelcontextprotocol/sdk to ^1.32.1 ([#538](https://github.com/contentful/contentful-mcp-server/pull/538))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.39
+
+## 1.23.10 (2026-10-07)
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.38
+
+## 1.23.9 (2026-10-05)
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.37
+
+## 1.23.8 (2026-10-04)
+
+### 🩹 Fixes
+
+- **deps:** update dependency @modelcontextprotocol/sdk to ^1.32.0 ([#533](https://github.com/contentful/contentful-mcp-server/pull/533))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.36
+
+## 1.23.7 (2026-10-03)
+
+### 🩹 Fixes
+
+- **deps:** update dependency dotenv to ^18.0.5 ([#527](https://github.com/contentful/contentful-mcp-server/pull/527))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.35
+
 ## 1.23.6 (2026-10-02)
 
 ### 🧱 Updated Dependencies

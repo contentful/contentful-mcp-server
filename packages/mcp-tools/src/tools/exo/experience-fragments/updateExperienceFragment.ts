@@ -9,7 +9,6 @@ import {
   assertEnvironmentNotProtected,
 } from '../../../utils/tools.js';
 import {
-  ViewportSchema,
   ExperienceMetadataSchema,
   DesignPropertyValueSchema,
   DimensionedDesignPropertyValueSchema,
@@ -17,9 +16,9 @@ import {
   ExperienceSlotNodeSchema,
 } from '../../../types/exoSchemas.js';
 import {
-  asViewportOptionalCmaPayloadWithFlattenedDesignProperties,
-  type ViewportOptionalPayloadWithFlattenedDesignProperties,
-} from '../../../types/cmaViewportCompatibility.js';
+  asCmaPayloadWithFlattenedDesignProperties,
+  type PayloadWithFlattenedDesignProperties,
+} from '../../../types/cmaDesignPropertiesCompatibility.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
 export const UpdateExperienceFragmentToolParams = BaseToolSchema.extend({
@@ -39,10 +38,6 @@ export const UpdateExperienceFragmentToolParams = BaseToolSchema.extend({
     .string()
     .optional()
     .describe('Description of the experience fragment'),
-  viewports: z
-    .array(ViewportSchema)
-    .optional()
-    .describe('Viewport definitions; replaces existing viewports if provided'),
   designProperties: z
     .record(
       z.string(),
@@ -54,7 +49,10 @@ export const UpdateExperienceFragmentToolParams = BaseToolSchema.extend({
     .optional()
     .describe('Design property values; replaces existing if provided'),
   contentBindings: ExperienceContentBindingsSchema.optional().describe(
-    'Content bindings; replaces existing if provided',
+    'Content bindings; replaces existing if provided. ' +
+      'Each parameter value must be wrapped in $literal, e.g. ' +
+      '{ "title": { "$literal": { "sys": { "type": "ResourceLink", "linkType": "Contentful:Entry", "urn": "crn:..." } } } }; ' +
+      'bare ResourceLinks are rejected.',
   ),
   slots: z
     .record(z.string(), z.array(ExperienceSlotNodeSchema))
@@ -98,7 +96,6 @@ export function updateExperienceFragmentTool(config: ContentfulConfig) {
     // call is upsert(): the read-before-write guard above means this only ever updates
     // an existing fragment, and `update` is the verb the tool surface exposes for that.
     // Do not "fix" the tool name to match the SDK method.
-    const viewports = args.viewports ?? current.viewports;
 
     const experienceFragmentData = {
       sys: {
@@ -108,7 +105,6 @@ export function updateExperienceFragmentTool(config: ContentfulConfig) {
       },
       name: args.name ?? current.name,
       description: args.description ?? current.description,
-      ...(viewports !== undefined && { viewports }),
       designProperties: args.designProperties ?? current.designProperties,
       ...((args.contentBindings ?? current.contentBindings)
         ? { contentBindings: args.contentBindings ?? current.contentBindings }
@@ -119,15 +115,13 @@ export function updateExperienceFragmentTool(config: ContentfulConfig) {
       ...((args.metadata ?? current.metadata)
         ? { metadata: args.metadata ?? current.metadata }
         : {}),
-    } satisfies ViewportOptionalPayloadWithFlattenedDesignProperties<
+    } satisfies PayloadWithFlattenedDesignProperties<
       Parameters<typeof contentfulClient.experienceFragment.upsert>[1]
     >;
 
     const experienceFragment = await contentfulClient.experienceFragment.upsert(
       params,
-      asViewportOptionalCmaPayloadWithFlattenedDesignProperties(
-        experienceFragmentData,
-      ),
+      asCmaPayloadWithFlattenedDesignProperties(experienceFragmentData),
     );
 
     return createSuccessResponse('Experience fragment updated successfully', {

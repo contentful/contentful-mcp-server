@@ -9,17 +9,12 @@ import {
   assertEnvironmentNotProtected,
 } from '../../../utils/tools.js';
 import {
-  ViewportSchema,
   ContentPropertySchema,
   DesignPropertySchema,
   SlotDefinitionSchema,
   TreeNodeSchema,
   ExoMetadataSchema,
 } from '../../../types/exoSchemas.js';
-import {
-  asViewportOptionalCmaPayload,
-  type ViewportOptionalPayload,
-} from '../../../types/cmaViewportCompatibility.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
 export const UpsertComponentToolParams = BaseToolSchema.extend({
@@ -34,10 +29,6 @@ export const UpsertComponentToolParams = BaseToolSchema.extend({
     ),
   name: z.string().optional().describe('The name of the component'),
   description: z.string().optional().describe('Description of the component'),
-  viewports: z
-    .array(ViewportSchema)
-    .optional()
-    .describe('Viewport definitions; replaces existing viewports if provided'),
   contentProperties: z
     .array(ContentPropertySchema)
     .optional()
@@ -90,8 +81,6 @@ export function upsertComponentTool(config: ContentfulConfig) {
       );
     }
 
-    const viewports = args.viewports ?? current.viewports;
-
     const componentData = {
       sys: {
         id: current.sys.id,
@@ -100,7 +89,6 @@ export function upsertComponentTool(config: ContentfulConfig) {
       },
       name: args.name ?? current.name,
       description: args.description ?? current.description,
-      ...(viewports !== undefined && { viewports }),
       contentProperties: args.contentProperties ?? current.contentProperties,
       designProperties: args.designProperties ?? current.designProperties,
       ...((args.componentTree ?? current.componentTree)
@@ -115,13 +103,11 @@ export function upsertComponentTool(config: ContentfulConfig) {
       ...(current.dataAssemblies
         ? { dataAssemblies: current.dataAssemblies }
         : {}),
-    } satisfies ViewportOptionalPayload<
-      Parameters<typeof contentfulClient.component.upsert>[1]
-    >;
+    } satisfies Parameters<typeof contentfulClient.component.upsert>[1];
 
     const component = await contentfulClient.component.upsert(
       params,
-      asViewportOptionalCmaPayload(componentData),
+      componentData,
     );
 
     return createSuccessResponse('Component updated successfully', {

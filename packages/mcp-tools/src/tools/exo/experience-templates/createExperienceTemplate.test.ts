@@ -35,11 +35,10 @@ describe('createExperienceTemplate', () => {
     );
   });
 
-  it('omits viewports when creating a viewport-free experience template', async () => {
-    const viewportFreeArgs = { ...createArgs, viewports: undefined };
+  it('omits supplied viewport definitions when creating an experience template', async () => {
     mockExperienceTemplateCreate.mockResolvedValue(mockExperienceTemplate);
 
-    await createExperienceTemplateTool(mockConfig)(viewportFreeArgs);
+    await createExperienceTemplateTool(mockConfig)(createArgs);
 
     expect(mockExperienceTemplateCreate.mock.calls[0][1]).not.toHaveProperty(
       'viewports',

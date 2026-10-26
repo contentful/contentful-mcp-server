@@ -78,14 +78,12 @@ describe('upsertExperienceTemplate', () => {
     expect(body.dataAssemblies).toEqual(dataAssemblies);
   });
 
-  it('does not reintroduce viewports from a viewport-free experience template', async () => {
-    mockExperienceTemplateGet.mockResolvedValue({
-      ...mockExperienceTemplate,
-      viewports: undefined,
-    });
+  it('does not copy supplied or stored viewport definitions', async () => {
+    mockExperienceTemplateGet.mockResolvedValue(mockExperienceTemplate);
     mockExperienceTemplateUpsert.mockResolvedValue(mockExperienceTemplate);
+    const legacyArgs = { ...mockArgs, version: 1, viewports: [] };
 
-    await upsertExperienceTemplateTool(mockConfig)({ ...mockArgs, version: 1 });
+    await upsertExperienceTemplateTool(mockConfig)(legacyArgs);
 
     expect(mockExperienceTemplateUpsert.mock.calls[0][1]).not.toHaveProperty(
       'viewports',

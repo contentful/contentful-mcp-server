@@ -6,16 +6,16 @@ Read this file first. It tells you where to find context in this repo.
 
 ## Quick Reference
 
-| What you need | Where to look |
-|---|---|
-| How this repo is structured | [ARCHITECTURE.md](./ARCHITECTURE.md) |
-| How to build/test/run | [CONTRIBUTING.md](./CONTRIBUTING.md) |
-| Why decisions were made | [docs/ADRs/](./docs/ADRs/) |
-| What this repo does | [README.md](./README.md) |
-| PR review rules | [.bito/guidelines/](./.bito/guidelines/) |
-| Active specs/work | [docs/specs/](./docs/specs/) |
-| MCP tool implementations | [packages/mcp-tools/src/tools/](./packages/mcp-tools/src/tools/) |
-| Server entry point | [packages/mcp-server/src/index.ts](./packages/mcp-server/src/index.ts) |
+| What you need               | Where to look                                                          |
+| --------------------------- | ---------------------------------------------------------------------- |
+| How this repo is structured | [ARCHITECTURE.md](./ARCHITECTURE.md)                                   |
+| How to build/test/run       | [CONTRIBUTING.md](./CONTRIBUTING.md)                                   |
+| Why decisions were made     | [docs/ADRs/](./docs/ADRs/)                                             |
+| What this repo does         | [README.md](./README.md)                                               |
+| PR review rules             | [.bito/guidelines/](./.bito/guidelines/)                               |
+| Active specs/work           | [docs/specs/](./docs/specs/)                                           |
+| MCP tool implementations    | [packages/mcp-tools/src/tools/](./packages/mcp-tools/src/tools/)       |
+| Server entry point          | [packages/mcp-server/src/index.ts](./packages/mcp-server/src/index.ts) |
 
 ## Sharp Edges & Invariants
 
@@ -24,7 +24,7 @@ Read this file first. It tells you where to find context in this repo.
 - **ESM-only** — both packages output ESM. All internal imports must use `.js` extensions (even in `.ts` source files).
 - **Migration tools are disabled by default** — `export_space`, `import_space`, and `space_to_space_param_collection` are registered but disabled. Only `space_to_space_migration_handler` can enable them.
 - **`contentful-export` and `contentful-import` are lazy-loaded** — they are dynamically imported at runtime to avoid bundling their large dependency trees when not needed.
-- **Zod schemas define tool input contracts** — every tool uses Zod for input validation. The `.shape` property of the schema is passed to MCP SDK for client-side validation hints.
+- **Zod schemas define tool input contracts** — every tool uses Zod for input validation. Most tools pass `.shape` to the MCP SDK; strict schemas must pass the full Zod object so unknown arguments are rejected.
 - **`X-Contentful-User-Agent-Tool` header** — all CMA calls include this header with the MCP version. Do not remove or change the header name; it's used for observability.
 - **Never hardcode space/environment IDs in tool implementations** — always read from `ContentfulConfig` or tool input params.
 - **`contentful-management` uses namespace imports** — since CMA v12, use `import * as ctfl from 'contentful-management'` (not default import).
@@ -42,12 +42,14 @@ Read this file first. It tells you where to find context in this repo.
 ## Integration Points
 
 **Upstream (this repo consumes):**
+
 - Contentful CMA (`api.contentful.com`) — all content operations
 - `contentful-management` npm package — JavaScript client for CMA
 - `contentful-export` / `contentful-import` — migration utilities
 - `@modelcontextprotocol/sdk` — MCP protocol implementation
 
 **Downstream (consumes this repo):**
+
 - AI clients (Claude, Cursor, VS Code Copilot, Codex) — via stdio transport
 - Contentful Remote MCP Server (internal) — imports `@contentful/mcp-tools` for shared tool logic
 - End users — install via `npx @contentful/mcp-server`

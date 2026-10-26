@@ -13,7 +13,6 @@ import {
   DataAssemblyParameterConfigSchema,
   DataAssemblyResolverConfigSchema,
   DataAssemblyReturnMappingConfigSchema,
-  DataAssemblyDataTypeFieldSchema,
   DataAssemblyMetadataSchema,
   parseDataAssemblyParameterResponse,
   type DataAssemblyParameterConfig,
@@ -46,18 +45,10 @@ export const UpdateDataAssemblyToolParams = BaseToolSchema.extend({
   return: DataAssemblyReturnMappingConfigSchema.optional().describe(
     'Return mapping configuration; replaces existing if provided',
   ),
-  dataType: z
-    .array(DataAssemblyDataTypeFieldSchema)
-    .optional()
-    .describe('Data type field definitions; replaces existing if provided'),
-  variant: z
-    .string()
-    .optional()
-    .describe('Optional variant identifier; replaces existing if provided'),
   metadata: DataAssemblyMetadataSchema.optional().describe(
     'Metadata (tags); replaces existing if provided',
   ),
-});
+}).strict();
 
 type Params = z.infer<typeof UpdateDataAssemblyToolParams>;
 
@@ -95,17 +86,6 @@ export function updateDataAssemblyTool(config: ContentfulConfig) {
     const dataAssembly = await contentfulClient.raw.put<unknown>(
       `${dataAssembliesPath(args.spaceId, args.environmentId)}/${args.dataAssemblyId}`,
       {
-        sys: {
-          id: current.sys.id,
-          type: 'DataAssembly',
-          version: current.sys.version,
-          dataType: args.dataType ?? current.sys.dataType,
-          ...(args.variant !== undefined
-            ? { variant: args.variant }
-            : current.sys.variant !== undefined
-              ? { variant: current.sys.variant }
-              : {}),
-        },
         name: args.name ?? current.name,
         description: args.description ?? current.description,
         parameters,

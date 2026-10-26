@@ -9,7 +9,6 @@ import {
   assertEnvironmentNotProtected,
 } from '../../../utils/tools.js';
 import {
-  ViewportSchema,
   ExperienceMetadataSchema,
   DesignPropertyValueSchema,
   DimensionedDesignPropertyValueSchema,
@@ -18,9 +17,9 @@ import {
   ComponentResourceLinkSchema,
 } from '../../../types/exoSchemas.js';
 import {
-  asViewportOptionalCmaPayloadWithFlattenedDesignProperties,
-  type ViewportOptionalPayloadWithFlattenedDesignProperties,
-} from '../../../types/cmaViewportCompatibility.js';
+  asCmaPayloadWithFlattenedDesignProperties,
+  type PayloadWithFlattenedDesignProperties,
+} from '../../../types/cmaDesignPropertiesCompatibility.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
 export const CreateExperienceFragmentToolParams = BaseToolSchema.extend({
@@ -29,12 +28,6 @@ export const CreateExperienceFragmentToolParams = BaseToolSchema.extend({
   component: ComponentResourceLinkSchema.describe(
     'Resource link to the component this experience fragment is based on',
   ),
-  viewports: z
-    .array(ViewportSchema)
-    .optional()
-    .describe(
-      'Optional viewport definitions for the experience fragment. Omit for viewport-free experience fragments.',
-    ),
   designProperties: z
     .record(
       z.string(),
@@ -47,7 +40,10 @@ export const CreateExperienceFragmentToolParams = BaseToolSchema.extend({
       'Design property values keyed by property ID (may be empty object)',
     ),
   contentBindings: ExperienceContentBindingsSchema.optional().describe(
-    'Optional content bindings for the experience fragment',
+    'Optional content bindings for the experience fragment. ' +
+      'Each parameter value must be wrapped in $literal, e.g. ' +
+      '{ "title": { "$literal": { "sys": { "type": "ResourceLink", "linkType": "Contentful:Entry", "urn": "crn:..." } } } }; ' +
+      'bare ResourceLinks are rejected.',
   ),
   slots: z
     .record(z.string(), z.array(ExperienceSlotNodeSchema))
@@ -73,20 +69,17 @@ export function createExperienceFragmentTool(config: ContentfulConfig) {
       name: args.name,
       description: args.description,
       component: args.component,
-      ...(args.viewports !== undefined && { viewports: args.viewports }),
       designProperties: args.designProperties,
       ...(args.contentBindings && { contentBindings: args.contentBindings }),
       ...(args.slots && { slots: args.slots }),
       ...(args.metadata && { metadata: args.metadata }),
-    } satisfies ViewportOptionalPayloadWithFlattenedDesignProperties<
+    } satisfies PayloadWithFlattenedDesignProperties<
       Parameters<typeof contentfulClient.experienceFragment.create>[1]
     >;
 
     const experienceFragment = await contentfulClient.experienceFragment.create(
       { spaceId: args.spaceId, environmentId: args.environmentId },
-      asViewportOptionalCmaPayloadWithFlattenedDesignProperties(
-        experienceFragmentData,
-      ),
+      asCmaPayloadWithFlattenedDesignProperties(experienceFragmentData),
     );
 
     return createSuccessResponse('Experience fragment created successfully', {

@@ -46,14 +46,17 @@ describe('DataAssembly SDK transport', () => {
   const parameters = [
     { id: 'title', type: 'String', required: false, fallbackValue: '' },
   ];
-  const current = {
-    sys: { id: 'assembly', type: 'DataAssembly', version: 7, dataType: [] },
+  const editableCurrent = {
     name: 'Assembly',
     description: 'Description',
     parameters,
     resolvers: {},
     return: {},
     metadata: { tags: [] },
+  };
+  const current = {
+    sys: { id: 'assembly', type: 'DataAssembly', version: 7, dataType: [] },
+    ...editableCurrent,
   };
   const identifyingHeaders = {
     'X-Contentful-User-Agent-Tool': 'contentful-mcp-exo/remote-0.0.0',
@@ -66,8 +69,7 @@ describe('DataAssembly SDK transport', () => {
     mockHttp.mockResolvedValue(current);
     const args = CreateDataAssemblyToolParams.parse({
       ...scope,
-      ...current,
-      dataType: [],
+      ...editableCurrent,
     });
 
     const result = await createDataAssemblyTool(config)(args);
@@ -77,7 +79,7 @@ describe('DataAssembly SDK transport', () => {
       method: 'post',
       url: path,
       headers: expect.objectContaining(identifyingHeaders),
-      data: { ...current, sys: { type: 'DataAssembly', dataType: [] } },
+      data: editableCurrent,
     });
   });
 
@@ -105,7 +107,7 @@ describe('DataAssembly SDK transport', () => {
         ...identifyingHeaders,
         'X-Contentful-Version': '7',
       }),
-      data: { ...current, name: 'Renamed' },
+      data: { ...editableCurrent, name: 'Renamed' },
     });
   });
 
@@ -190,7 +192,11 @@ describe('DataAssembly SDK transport', () => {
         fallbackValue: [{ path: 'title', direction: 'desc', futureTerm: {} }],
       },
     ];
-    const serverAssembly = { ...current, parameters: serverParameters };
+    const editableServerAssembly = {
+      ...editableCurrent,
+      parameters: serverParameters,
+    };
+    const serverAssembly = { sys: current.sys, ...editableServerAssembly };
     const originalServerAssembly = structuredClone(serverAssembly);
     mockHttp
       .mockResolvedValueOnce(serverAssembly)
@@ -212,7 +218,7 @@ describe('DataAssembly SDK transport', () => {
         ...identifyingHeaders,
         'X-Contentful-Version': '7',
       }),
-      data: { ...serverAssembly, name: 'Renamed' },
+      data: { ...editableServerAssembly, name: 'Renamed' },
     });
   });
 });
