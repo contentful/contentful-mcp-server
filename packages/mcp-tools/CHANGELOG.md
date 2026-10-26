@@ -1,3 +1,10 @@
+## 0.12.54 (2026-10-26)
+
+### 🩹 Fixes
+
+- **mcp-tools:** warn that legacy Data Assembly inputs fail [ARC-2698] ([66c706f](https://github.com/contentful/contentful-mcp-server/commit/66c706f))
+- **mcp-tools:** send sys-free Data Assembly writes [ARC-2698] ([d8e790d](https://github.com/contentful/contentful-mcp-server/commit/d8e790d))
+
 ## 0.12.53 (2026-10-25)
 
 ### 🩹 Fixes

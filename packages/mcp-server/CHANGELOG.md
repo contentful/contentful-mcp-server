@@ -1,3 +1,13 @@
+## 1.23.26 (2026-10-26)
+
+### 🩹 Fixes
+
+- **mcp-tools:** send sys-free Data Assembly writes [ARC-2698] ([d8e790d](https://github.com/contentful/contentful-mcp-server/commit/d8e790d))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.54
+
 ## 1.23.25 (2026-10-25)
 
 ### 🩹 Fixes
