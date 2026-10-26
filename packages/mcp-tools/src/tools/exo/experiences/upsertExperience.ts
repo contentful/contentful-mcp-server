@@ -16,9 +16,9 @@ import {
   ExperienceSlotNodeSchema,
 } from '../../../types/exoSchemas.js';
 import {
-  asViewportOptionalCmaPayloadWithFlattenedDesignProperties,
-  type ViewportOptionalPayloadWithFlattenedDesignProperties,
-} from '../../../types/cmaViewportCompatibility.js';
+  asCmaPayloadWithFlattenedDesignProperties,
+  type PayloadWithFlattenedDesignProperties,
+} from '../../../types/cmaDesignPropertiesCompatibility.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
 export const UpsertExperienceToolParams = BaseToolSchema.extend({
@@ -109,13 +109,13 @@ export function upsertExperienceTool(config: ContentfulConfig) {
       ...((args.metadata ?? current.metadata)
         ? { metadata: args.metadata ?? current.metadata }
         : {}),
-    } satisfies ViewportOptionalPayloadWithFlattenedDesignProperties<
+    } satisfies PayloadWithFlattenedDesignProperties<
       Parameters<typeof contentfulClient.experience.upsert>[1]
     >;
 
     const experience = await contentfulClient.experience.upsert(
       params,
-      asViewportOptionalCmaPayloadWithFlattenedDesignProperties(experienceData),
+      asCmaPayloadWithFlattenedDesignProperties(experienceData),
     );
 
     return createSuccessResponse('Experience updated successfully', {

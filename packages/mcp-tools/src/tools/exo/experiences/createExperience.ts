@@ -17,9 +17,9 @@ import {
   ExperienceTemplateResourceLinkSchema,
 } from '../../../types/exoSchemas.js';
 import {
-  asViewportOptionalCmaPayloadWithFlattenedDesignProperties,
-  type ViewportOptionalPayloadWithFlattenedDesignProperties,
-} from '../../../types/cmaViewportCompatibility.js';
+  asCmaPayloadWithFlattenedDesignProperties,
+  type PayloadWithFlattenedDesignProperties,
+} from '../../../types/cmaDesignPropertiesCompatibility.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
 export const CreateExperienceToolParams = BaseToolSchema.extend({
@@ -75,13 +75,13 @@ export function createExperienceTool(config: ContentfulConfig) {
       ...(args.contentBindings && { contentBindings: args.contentBindings }),
       ...(args.slots && { slots: args.slots }),
       ...(args.metadata && { metadata: args.metadata }),
-    } satisfies ViewportOptionalPayloadWithFlattenedDesignProperties<
+    } satisfies PayloadWithFlattenedDesignProperties<
       Parameters<typeof contentfulClient.experience.create>[1]
     >;
 
     const experience = await contentfulClient.experience.create(
       { spaceId: args.spaceId, environmentId: args.environmentId },
-      asViewportOptionalCmaPayloadWithFlattenedDesignProperties(experienceData),
+      asCmaPayloadWithFlattenedDesignProperties(experienceData),
     );
 
     return createSuccessResponse('Experience created successfully', {
