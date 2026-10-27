@@ -6,6 +6,7 @@ import {
 import { createEntryTool, CreateEntryToolParams } from './createEntry.js';
 import { deleteEntryTool, DeleteEntryToolParams } from './deleteEntry.js';
 import { updateEntryTool, UpdateEntryToolParams } from './updateEntry.js';
+import { patchEntryTool, PatchEntryToolParams } from './patchEntry.js';
 import { getEntryTool, GetEntryToolParams } from './getEntry.js';
 import {
   resolveEntryReferencesTool,
@@ -37,6 +38,7 @@ export function createEntryTools(config: ContentfulConfig) {
   const createEntry = createEntryTool(config);
   const deleteEntry = deleteEntryTool(config);
   const updateEntry = updateEntryTool(config);
+  const patchEntry = patchEntryTool(config);
   const getEntry = getEntryTool(config);
   const resolveEntryReferences = resolveEntryReferencesTool(config);
   const getEntrySnapshot = getEntrySnapshotTool(config);
@@ -130,7 +132,8 @@ export function createEntryTools(config: ContentfulConfig) {
         'and you must re-fetch with get_entry. ' +
         'NOTE: for appending items to large array fields (e.g. reference arrays with many items), ' +
         'prefer append_entry_field — it performs the read-modify-append server-side and deduplicates, ' +
-        'so you never need to hold the full array.',
+        'so you never need to hold the full array. ' +
+        'To change individual locales without resending the others, prefer patch_entry.',
       inputParams: UpdateEntryToolParams.shape,
       annotations: {
         readOnlyHint: false,
@@ -139,6 +142,27 @@ export function createEntryTools(config: ContentfulConfig) {
         openWorldHint: false,
       },
       tool: updateEntry,
+    },
+    patchEntry: {
+      title: 'patch_entry',
+      description:
+        'Change specific field locales of an existing entry using JSON Patch, without ' +
+        'reading or resending any other locale. Each operation targets a path of the form ' +
+        '/fields/{fieldId}/{locale}, e.g. {"op":"replace","path":"/fields/title/de-DE","value":"Hallo"}. ' +
+        'Use "add" or "replace" to set a locale value, "remove" to delete one, and "test" to ' +
+        'assert a value before later operations apply. All other locales and fields are untouched. ' +
+        'PREFER this over update_entry for single-locale or partial edits on entries with many locales. ' +
+        'Optionally pass version (from get_entry) to reject the patch if the entry changed since ' +
+        'you read it; omit it to patch against the current version, which is safe when operations ' +
+        'only touch distinct field locales. Does not publish the entry.',
+      inputParams: PatchEntryToolParams.shape,
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: false,
+        openWorldHint: false,
+      },
+      tool: patchEntry,
     },
     deleteEntry: {
       title: 'delete_entry',
