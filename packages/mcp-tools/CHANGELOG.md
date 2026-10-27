@@ -1,3 +1,16 @@
+## 0.12.56 (2026-10-27)
+
+### 🚀 Features
+
+- use canonical data assembly parameters [ARC-2578] ([a92ef4f](https://github.com/contentful/contentful-mcp-server/commit/a92ef4f))
+
+### 🩹 Fixes
+
+- validate parameter responses without casts [ARC-2578] ([676fe6f](https://github.com/contentful/contentful-mcp-server/commit/676fe6f))
+- preserve and validate parameter declarations [ARC-2578] ([fc71969](https://github.com/contentful/contentful-mcp-server/commit/fc71969))
+- validate nested parameter identifiers [ARC-2578] ([eba3386](https://github.com/contentful/contentful-mcp-server/commit/eba3386))
+- send canonical parameters through SDK transport [ARC-2578] ([bdda21a](https://github.com/contentful/contentful-mcp-server/commit/bdda21a))
+
 ## 0.12.55 (2026-10-27)
 
 ### 🩹 Fixes
