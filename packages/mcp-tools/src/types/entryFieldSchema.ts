@@ -26,12 +26,7 @@ const locationSchema = z.object({
 const jsonPrimitive = z.union([z.string(), z.number(), z.boolean(), z.null()]);
 
 export type JsonValue =
-  | string
-  | number
-  | boolean
-  | null
-  | JsonValue[]
-  | { [key: string]: JsonValue };
+  string | number | boolean | null | JsonValue[] | { [key: string]: JsonValue };
 
 // JSON schema for freeform JSON fields (supports any valid JSON structure)
 export const jsonValueSchema: z.ZodType<JsonValue> = z.lazy(() =>

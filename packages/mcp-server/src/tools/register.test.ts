@@ -154,7 +154,7 @@ describe('registerAllTools', () => {
       environmentId: 'master',
       name: 'Test',
       description: 'Test',
-      parameters: {},
+      parameters: [],
       resolvers: {},
       return: {},
     };

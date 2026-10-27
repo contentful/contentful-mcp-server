@@ -60,7 +60,10 @@ Object.values(tools.getAssetTools()).forEach((toolConfig) => {
 
 `create_data_assembly` takes editable configuration without `sys`, `dataType`, or
 `variant`. The API generates `sys.id` and infers `sys.dataType` from `return`.
-`parameters` remains a map keyed by parameter name.
+`parameters` is an ordered array of declarations with stable `id` and explicit
+boolean `required`. Updates that omit parameters require a canonical array from
+the current GET response and retain server metadata. Coordinate canonical GET
+coverage and tool distribution before releasing this array-only contract.
 This is a breaking input change: callers still passing top-level `sys`, `dataType`,
 or `variant` receive a validation error. Remove those arguments when upgrading.
 Nested ResourceLink `sys` objects remain part of the configuration.
@@ -76,7 +79,7 @@ the `exoM1` entitlement.
   "environmentId": "master",
   "name": "Page title",
   "description": "A static page title",
-  "parameters": {},
+  "parameters": [{ "id": "title", "type": "String", "required": false }],
   "resolvers": {},
   "return": { "$object": { "title": { "$literal": "Hello" } } }
 }
