@@ -1,3 +1,9 @@
+## 0.12.57 (2026-10-27)
+
+### 🚀 Features
+
+- **mcp-tools:** add patch_entry tool for per-locale entry updates [AIS-791] ([3de6a23](https://github.com/contentful/contentful-mcp-server/commit/3de6a23))
+
 ## 0.12.56 (2026-10-27)
 
 ### 🚀 Features
