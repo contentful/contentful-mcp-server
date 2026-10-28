@@ -1,7 +1,11 @@
 import { describe, expect, it } from 'vitest';
 
 import { createSdkError } from '../test-helpers/sdkError.js';
-import { createSuccessResponse, withErrorHandling } from './response.js';
+import {
+  createSuccessResponse,
+  ToolInputError,
+  withErrorHandling,
+} from './response.js';
 
 const fail = (error: unknown) =>
   withErrorHandling(async () => {
@@ -71,5 +75,13 @@ describe('withErrorHandling', () => {
     expect((await fail(new Error(message))).content[0].text).toBe(
       'Error: Request failed.',
     );
+  });
+
+  it('reports a ToolInputError status in _meta and keeps the message', async () => {
+    expect(await fail(new ToolInputError('Version conflict', 409))).toEqual({
+      isError: true,
+      content: [{ type: 'text', text: 'Error: Version conflict' }],
+      _meta: { 'contentful.com/error': { status: 409 } },
+    });
   });
 });

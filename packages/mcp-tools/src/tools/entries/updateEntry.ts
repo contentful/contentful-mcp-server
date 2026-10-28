@@ -2,6 +2,7 @@ import { z } from 'zod';
 import {
   createSuccessResponse,
   withErrorHandling,
+  ToolInputError,
 } from '../../utils/response.js';
 import {
   BaseToolSchema,
@@ -51,10 +52,11 @@ export function updateEntryTool(config: ContentfulConfig) {
     // Enforce read-before-write: the caller must supply the version it read.
     // Reject stale writes so concurrent edits are not silently overwritten.
     if (args.version !== existingEntry.sys.version) {
-      throw new Error(
+      throw new ToolInputError(
         `Version conflict: the entry has changed since you read it ` +
           `(your version: ${args.version}, current version: ${existingEntry.sys.version}). ` +
           `Re-fetch the entry with get_entry and retry the update with the latest version.`,
+        409,
       );
     }
 

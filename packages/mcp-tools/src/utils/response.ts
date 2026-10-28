@@ -15,7 +15,26 @@ export type ToolResponse = {
     type: 'text';
     text: string;
   }>;
+  _meta?: Record<string, unknown>;
 };
+
+/** Tool definition `_meta` marking a tool that depends on an org or space feature. */
+export const FEATURE_GATED_META = { 'contentful.com/featureGated': true };
+
+/**
+ * An error caused by the caller's input or the target's state rather than a
+ * defect in the tool. Its HTTP-like status is reported in the error result's
+ * `_meta` so callers can classify the failure.
+ */
+export class ToolInputError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+  ) {
+    super(message);
+    this.name = 'ToolInputError';
+  }
+}
 
 /**
  * Creates a standardized success response
@@ -134,6 +153,9 @@ export function withErrorHandling<T extends Record<string, unknown>>(
             text: `${errorPrefix}: ${errorMessage}`,
           },
         ],
+        ...(error instanceof ToolInputError && {
+          _meta: { 'contentful.com/error': { status: error.status } },
+        }),
       };
     }
   };
