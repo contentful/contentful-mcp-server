@@ -1,3 +1,10 @@
+## 0.12.58 (2026-10-29)
+
+### 🩹 Fixes
+
+- **tools:** accept relative URIs in rich text hyperlinks ([#590](https://github.com/contentful/contentful-mcp-server/pull/590))
+- report tool input error status and feature gating in _meta ([#586](https://github.com/contentful/contentful-mcp-server/pull/586))
+
 ## 0.12.57 (2026-10-27)
 
 ### 🚀 Features
