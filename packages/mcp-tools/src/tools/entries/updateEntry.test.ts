@@ -637,6 +637,7 @@ describe('updateEntry', () => {
           text: 'Error updating entry: Version conflict: the entry has changed since you read it (your version: 1, current version: 3). Re-fetch the entry with get_entry and retry the update with the latest version.',
         },
       ],
+      _meta: { 'contentful.com/error': { status: 409 } },
     });
     // The entry must have been fetched with the correct params before the check
     expect(mockEntryGet).toHaveBeenCalledWith({
