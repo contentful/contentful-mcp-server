@@ -69,7 +69,8 @@ const embeddedAssetBlockNodeSchema = z.object({
 const hyperlinkInlineNodeSchema = z.object({
   nodeType: z.literal(INLINES.HYPERLINK),
   data: z.object({
-    uri: z.string().url(),
+    // Matches the rich text spec: any string, including relative paths
+    uri: z.string(),
   }),
   content: z.array(richTextTextNodeSchema),
 });
