@@ -13,13 +13,12 @@ import {
   DesignPropertyValueSchema,
   DimensionedDesignPropertyValueSchema,
   ExperienceContentBindingsSchema,
-  normalizeContentBindings,
   ExperienceSlotNodeSchema,
 } from '../../../types/exoSchemas.js';
 import {
-  asViewportOptionalCmaPayloadWithFlattenedDesignProperties,
-  type ViewportOptionalPayloadWithFlattenedDesignProperties,
-} from '../../../types/cmaViewportCompatibility.js';
+  asCmaPayloadWithFlattenedDesignProperties,
+  type PayloadWithFlattenedDesignProperties,
+} from '../../../types/cmaDesignPropertiesCompatibility.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
 export const UpdateExperienceFragmentToolParams = BaseToolSchema.extend({
@@ -51,7 +50,9 @@ export const UpdateExperienceFragmentToolParams = BaseToolSchema.extend({
     .describe('Design property values; replaces existing if provided'),
   contentBindings: ExperienceContentBindingsSchema.optional().describe(
     'Content bindings; replaces existing if provided. ' +
-      'Bare ResourceLinks are accepted and sent as $literal values.',
+      'Each parameter value must be wrapped in $literal, e.g. ' +
+      '{ "title": { "$literal": { "sys": { "type": "ResourceLink", "linkType": "Contentful:Entry", "urn": "crn:..." } } } }; ' +
+      'bare ResourceLinks are rejected.',
   ),
   slots: z
     .record(z.string(), z.array(ExperienceSlotNodeSchema))
@@ -95,9 +96,6 @@ export function updateExperienceFragmentTool(config: ContentfulConfig) {
     // call is upsert(): the read-before-write guard above means this only ever updates
     // an existing fragment, and `update` is the verb the tool surface exposes for that.
     // Do not "fix" the tool name to match the SDK method.
-    const normalizedContentBindings = normalizeContentBindings(
-      args.contentBindings ?? current.contentBindings,
-    );
 
     const experienceFragmentData = {
       sys: {
@@ -108,24 +106,22 @@ export function updateExperienceFragmentTool(config: ContentfulConfig) {
       name: args.name ?? current.name,
       description: args.description ?? current.description,
       designProperties: args.designProperties ?? current.designProperties,
-      ...(normalizedContentBindings && {
-        contentBindings: normalizedContentBindings,
-      }),
+      ...((args.contentBindings ?? current.contentBindings)
+        ? { contentBindings: args.contentBindings ?? current.contentBindings }
+        : {}),
       ...((args.slots ?? current.slots)
         ? { slots: args.slots ?? current.slots }
         : {}),
       ...((args.metadata ?? current.metadata)
         ? { metadata: args.metadata ?? current.metadata }
         : {}),
-    } satisfies ViewportOptionalPayloadWithFlattenedDesignProperties<
+    } satisfies PayloadWithFlattenedDesignProperties<
       Parameters<typeof contentfulClient.experienceFragment.upsert>[1]
     >;
 
     const experienceFragment = await contentfulClient.experienceFragment.upsert(
       params,
-      asViewportOptionalCmaPayloadWithFlattenedDesignProperties(
-        experienceFragmentData,
-      ),
+      asCmaPayloadWithFlattenedDesignProperties(experienceFragmentData),
     );
 
     return createSuccessResponse('Experience fragment updated successfully', {

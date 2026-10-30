@@ -1,4 +1,4 @@
-import { BLOCKS } from '@contentful/rich-text-types';
+import { BLOCKS, INLINES } from '@contentful/rich-text-types';
 import { describe, it, expect } from 'vitest';
 
 import {
@@ -72,6 +72,45 @@ describe('entry zod schema ', () => {
             },
           }).success,
         ).toBe(false);
+      });
+
+      it.each([
+        '/restricted/user/reassess',
+        '#section',
+        'mailto:hello@example.com',
+        'https://example.com/page',
+      ])('should accept hyperlink uri %s', (uri) => {
+        const richText = {
+          nodeType: BLOCKS.DOCUMENT,
+          data: {},
+          content: [
+            {
+              nodeType: BLOCKS.PARAGRAPH,
+              data: {},
+              content: [
+                {
+                  nodeType: INLINES.HYPERLINK,
+                  data: { uri },
+                  content: [
+                    { nodeType: 'text', value: 'link', marks: [], data: {} },
+                  ],
+                },
+              ],
+            },
+          ],
+        };
+
+        expect(richTextDocumentSchema.safeParse(richText).success).toBe(true);
+        expect(
+          CreateEntryToolParams.safeParse({
+            spaceId: 'space',
+            environmentId: 'master',
+            contentTypeId: 'blogPost',
+            fields: {
+              body: { 'en-US': richText },
+            },
+          }).success,
+        ).toBe(true);
       });
 
       it('should allow generic JSON objects that nest document-shaped values', () => {

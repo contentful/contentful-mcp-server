@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import type * as ctfl from 'contentful-management';
 import {
   createSuccessResponse,
   withErrorHandling,
@@ -12,10 +13,13 @@ import {
   DataAssemblyParameterConfigSchema,
   DataAssemblyResolverConfigSchema,
   DataAssemblyReturnMappingConfigSchema,
-  DataAssemblyDataTypeFieldSchema,
   DataAssemblyMetadataSchema,
+  parseDataAssemblyParameterResponse,
+  type DataAssemblyParameterConfig,
+  type DataAssemblyParameterResponse,
 } from '../../../types/dataAssemblySchemas.js';
 import type { ContentfulConfig } from '../../../config/types.js';
+import { dataAssembliesPath } from './client.js';
 
 export const UpdateDataAssemblyToolParams = BaseToolSchema.extend({
   dataAssemblyId: z.string().describe('The ID of the data assembly to update'),
@@ -28,9 +32,12 @@ export const UpdateDataAssemblyToolParams = BaseToolSchema.extend({
         'the data assembly changed since you read it.',
     ),
   name: z.string().optional().describe('The name of the data assembly'),
-  description: z.string().optional().describe('Description of the data assembly'),
+  description: z
+    .string()
+    .optional()
+    .describe('Description of the data assembly'),
   parameters: DataAssemblyParameterConfigSchema.optional().describe(
-    'Parameter definitions; replaces existing if provided',
+    'Ordered parameter definitions with stable id and explicit boolean required; replaces existing if provided',
   ),
   resolvers: DataAssemblyResolverConfigSchema.optional().describe(
     'Resolver definitions; replaces existing if provided',
@@ -38,18 +45,10 @@ export const UpdateDataAssemblyToolParams = BaseToolSchema.extend({
   return: DataAssemblyReturnMappingConfigSchema.optional().describe(
     'Return mapping configuration; replaces existing if provided',
   ),
-  dataType: z
-    .array(DataAssemblyDataTypeFieldSchema)
-    .optional()
-    .describe('Data type field definitions; replaces existing if provided'),
-  variant: z
-    .string()
-    .optional()
-    .describe('Optional variant identifier; replaces existing if provided'),
   metadata: DataAssemblyMetadataSchema.optional().describe(
     'Metadata (tags); replaces existing if provided',
   ),
-});
+}).strict();
 
 type Params = z.infer<typeof UpdateDataAssemblyToolParams>;
 
@@ -80,25 +79,24 @@ export function updateDataAssemblyTool(config: ContentfulConfig) {
       );
     }
 
-    const dataAssembly = await contentfulClient.dataAssembly.update(params, {
-      sys: {
-        id: current.sys.id,
-        type: 'DataAssembly',
-        version: current.sys.version,
-        dataType: args.dataType ?? current.sys.dataType,
-        ...(args.variant !== undefined
-          ? { variant: args.variant }
-          : current.sys.variant !== undefined
-          ? { variant: current.sys.variant }
-          : {}),
+    const parameters =
+      args.parameters ?? parseDataAssemblyParameterResponse(current.parameters);
+
+    // Mirror the SDK update's version header while sending canonical arrays.
+    const dataAssembly = await contentfulClient.raw.put<unknown>(
+      `${dataAssembliesPath(args.spaceId, args.environmentId)}/${args.dataAssemblyId}`,
+      {
+        name: args.name ?? current.name,
+        description: args.description ?? current.description,
+        parameters,
+        resolvers: args.resolvers ?? current.resolvers,
+        return: args.return ?? current.return,
+        metadata: args.metadata ?? current.metadata,
+      } satisfies Omit<ctfl.UpdateDataAssemblyProps, 'parameters'> & {
+        parameters: DataAssemblyParameterConfig | DataAssemblyParameterResponse;
       },
-      name: args.name ?? current.name,
-      description: args.description ?? current.description,
-      parameters: args.parameters ?? current.parameters,
-      resolvers: args.resolvers ?? current.resolvers,
-      return: args.return ?? current.return,
-      metadata: args.metadata ?? current.metadata,
-    });
+      { headers: { 'X-Contentful-Version': current.sys.version } },
+    );
 
     return createSuccessResponse('Data assembly updated successfully', {
       dataAssembly,

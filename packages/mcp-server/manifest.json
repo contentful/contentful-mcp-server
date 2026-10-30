@@ -77,6 +77,10 @@
       "description": "Modify existing entries"
     },
     {
+      "name": "patch_entry",
+      "description": "Change specific field locales of an entry"
+    },
+    {
       "name": "publish_entry",
       "description": "Publish entries (single or bulk)"
     },

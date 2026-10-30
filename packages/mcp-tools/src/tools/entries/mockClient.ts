@@ -10,6 +10,7 @@ import { createToolClient } from '../../utils/tools.js';
 export const mockEntryGet = vi.fn();
 export const mockEntryCreate = vi.fn();
 export const mockEntryUpdate = vi.fn();
+export const mockEntryPatch = vi.fn();
 export const mockEntryDelete = vi.fn();
 export const mockEntryPublish = vi.fn();
 export const mockEntryUnpublish = vi.fn();
@@ -32,6 +33,7 @@ export const mockClient = {
     get: mockEntryGet,
     create: mockEntryCreate,
     update: mockEntryUpdate,
+    patch: mockEntryPatch,
     delete: mockEntryDelete,
     publish: mockEntryPublish,
     unpublish: mockEntryUnpublish,

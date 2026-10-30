@@ -1,4 +1,5 @@
 import { vi } from 'vitest';
+import type { DataAssemblyParameterConfig } from '../../../types/dataAssemblySchemas.js';
 
 const {
   mockDataAssemblyGet,
@@ -29,11 +30,13 @@ const {
           getMany: mockDataAssemblyGetMany,
           getPublished: mockDataAssemblyGetPublished,
           getManyPublished: mockDataAssemblyGetManyPublished,
-          create: mockDataAssemblyCreate,
-          update: mockDataAssemblyUpdate,
           delete: mockDataAssemblyDelete,
           publish: mockDataAssemblyPublish,
           unpublish: mockDataAssemblyUnpublish,
+        },
+        raw: {
+          post: mockDataAssemblyCreate,
+          put: mockDataAssemblyUpdate,
         },
       };
     }),
@@ -61,6 +64,27 @@ export {
   mockCreateToolClient,
 };
 
+export const mockParameters = [
+  {
+    id: 'second',
+    type: 'String',
+    required: false,
+    fallbackValue: '',
+    locked: false,
+    validation: { allowedValues: ['', 'headline'] },
+  },
+  {
+    id: 'first',
+    type: 'Number',
+    required: true,
+    name: 'Limit',
+    description: 'Maximum results',
+    fallbackValue: 10,
+    locked: true,
+    validation: { min: 1, max: 20 },
+  },
+] satisfies DataAssemblyParameterConfig;
+
 /**
  * Standard mock DataAssembly object used across tests.
  */
@@ -85,13 +109,15 @@ export const mockDataAssembly = {
       },
     },
     createdAt: '2023-01-01T00:00:00Z',
-    createdBy: { sys: { type: 'Link' as const, linkType: 'User' as const, id: 'user-1' } },
+    createdBy: {
+      sys: { type: 'Link' as const, linkType: 'User' as const, id: 'user-1' },
+    },
     updatedAt: '2023-01-01T00:00:00Z',
   },
   name: 'Test Data Assembly',
   description: 'A test data assembly for unit tests',
   metadata: { tags: [] },
-  parameters: {},
+  parameters: mockParameters,
   resolvers: {},
   return: {},
 };

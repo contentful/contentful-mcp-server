@@ -17,9 +17,9 @@ import {
   ComponentResourceLinkSchema,
 } from '../../../types/exoSchemas.js';
 import {
-  asViewportOptionalCmaPayloadWithFlattenedDesignProperties,
-  type ViewportOptionalPayloadWithFlattenedDesignProperties,
-} from '../../../types/cmaViewportCompatibility.js';
+  asCmaPayloadWithFlattenedDesignProperties,
+  type PayloadWithFlattenedDesignProperties,
+} from '../../../types/cmaDesignPropertiesCompatibility.js';
 import type { ContentfulConfig } from '../../../config/types.js';
 
 export const CreateExperienceFragmentToolParams = BaseToolSchema.extend({
@@ -41,7 +41,9 @@ export const CreateExperienceFragmentToolParams = BaseToolSchema.extend({
     ),
   contentBindings: ExperienceContentBindingsSchema.optional().describe(
     'Optional content bindings for the experience fragment. ' +
-      'Bare ResourceLinks are accepted and sent as $literal values.',
+      'Each parameter value must be wrapped in $literal, e.g. ' +
+      '{ "title": { "$literal": { "sys": { "type": "ResourceLink", "linkType": "Contentful:Entry", "urn": "crn:..." } } } }; ' +
+      'bare ResourceLinks are rejected.',
   ),
   slots: z
     .record(z.string(), z.array(ExperienceSlotNodeSchema))
@@ -71,15 +73,13 @@ export function createExperienceFragmentTool(config: ContentfulConfig) {
       ...(args.contentBindings && { contentBindings: args.contentBindings }),
       ...(args.slots && { slots: args.slots }),
       ...(args.metadata && { metadata: args.metadata }),
-    } satisfies ViewportOptionalPayloadWithFlattenedDesignProperties<
+    } satisfies PayloadWithFlattenedDesignProperties<
       Parameters<typeof contentfulClient.experienceFragment.create>[1]
     >;
 
     const experienceFragment = await contentfulClient.experienceFragment.create(
       { spaceId: args.spaceId, environmentId: args.environmentId },
-      asViewportOptionalCmaPayloadWithFlattenedDesignProperties(
-        experienceFragmentData,
-      ),
+      asCmaPayloadWithFlattenedDesignProperties(experienceFragmentData),
     );
 
     return createSuccessResponse('Experience fragment created successfully', {

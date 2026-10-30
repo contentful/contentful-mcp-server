@@ -4,7 +4,6 @@ import type {
   ExperienceProps,
   ExoMetadataProps,
   ExperienceMetadataProps,
-  ComponentTypeViewport,
   ComponentTypeContentProperty,
   ComponentTypeDesignProperty,
   ComponentSlotDefinition,
@@ -20,7 +19,6 @@ import type {
 // from the package root, so we import them directly rather than re-deriving them from
 // ComponentProps/ExperienceProps via indexed-access aliases.
 export type {
-  ComponentTypeViewport,
   ComponentTypeContentProperty,
   ComponentTypeDesignProperty,
   ComponentSlotDefinition,
@@ -141,16 +139,6 @@ export const ExperienceFragmentResourceLinkSchema = resourceLinkSchema(
 export const ExperienceTemplateResourceLinkSchema = resourceLinkSchema(
   'Contentful:ExperienceTemplate',
 );
-
-// ── Viewport ──────────────────────────────────────────────────────────────────
-// Matches CMA.js ComponentTypeViewport
-
-export const ViewportSchema = z.object({
-  id: z.string().describe('Viewport identifier'),
-  query: z.string().describe('CSS media query string'),
-  displayName: z.string().describe('Human-readable viewport name'),
-  previewSize: z.string().describe('Preview size (e.g. "1024px")'),
-}) satisfies z.ZodType<ComponentTypeViewport>;
 
 // ── Data type definition ──────────────────────────────────────────────────────
 // Matches CMA.js DataTypeDefinition — a discriminated union keyed on `type`.
@@ -482,51 +470,33 @@ const ContentBindingResourceLinkSchema = z.object({
   }),
 });
 
+// Parameters must use the `$literal` wrapper. Existing data has been migrated and
+// the Experience Management API rejects bare ResourceLink parameters.
 const ContentBindingParameterSchema = z
-  .union([
-    ContentBindingResourceLinkSchema.describe(
-      'Legacy bare ResourceLink parameter binding',
-    ),
-    z
-      .object({ $literal: ContentBindingResourceLinkSchema })
-      .describe('Literal-wrapped ResourceLink parameter binding'),
-  ])
+  .object({ $literal: ContentBindingResourceLinkSchema })
   .describe(
-    'Accepts either a bare ResourceLink or a $literal-wrapped ResourceLink',
+    'Literal-wrapped ResourceLink parameter binding: { $literal: ResourceLink }',
   );
 
-const ExperienceContentBindingsInputSchema = z.object({
+const LiteralExperienceContentBindingsSchema = z.object({
   sys: DataAssemblyResourceLinkSchema.shape.sys,
   parameters: z
     .record(z.string(), ContentBindingParameterSchema)
-    .describe('Parameter bindings keyed by parameter ID'),
+    .describe(
+      'Parameter bindings keyed by parameter ID; each value must be wrapped in $literal',
+    ),
 });
 
-// contentful-management currently types this as the legacy bare ResourceLink,
-// while the API also accepts its $literal wrapper. The input schema validates
-// both forms and the transform writes the current literal notation. The final
-// schema step exposes the SDK's current output type to the API call sites.
+// The pinned contentful-management (12.19.1) still types every parameter as a bare
+// ResourceLink, so a `$literal`-only output is not assignable to
+// ExperienceContentBindings. The pipe keeps the honest `$literal`-only input type and
+// runtime validation while exposing the SDK type to the API call sites. Drop the pipe
+// (and the `z.ZodTypeDef, unknown` generics on the node schemas below) once the SDK
+// types `$literal` parameters (contentful-management >= 12.19.2).
 export const ExperienceContentBindingsSchema =
-  ExperienceContentBindingsInputSchema.transform((bindings) => ({
-    ...bindings,
-    parameters: Object.fromEntries(
-      Object.entries(bindings.parameters).map(([id, parameter]) => [
-        id,
-        'sys' in parameter ? { $literal: parameter } : parameter,
-      ]),
-    ),
-  })).pipe(z.custom<ExperienceContentBindings>());
-
-/**
- * Normalizes the merged (supplied or already stored) content bindings of an
- * update so bare ResourceLinks are always written as `$literal` values.
- */
-export const normalizeContentBindings = (
-  contentBindings: unknown,
-): ExperienceContentBindings | undefined =>
-  contentBindings
-    ? ExperienceContentBindingsSchema.parse(contentBindings)
-    : undefined;
+  LiteralExperienceContentBindingsSchema.pipe(
+    z.custom<ExperienceContentBindings>(),
+  );
 
 export const InlineExperienceFragmentNodeSchema: z.ZodType<
   InlineExperienceFragmentNode,

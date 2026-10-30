@@ -1,3 +1,70 @@
+## 0.12.58 (2026-10-29)
+
+### 🩹 Fixes
+
+- **tools:** accept relative URIs in rich text hyperlinks ([#590](https://github.com/contentful/contentful-mcp-server/pull/590))
+- report tool input error status and feature gating in _meta ([#586](https://github.com/contentful/contentful-mcp-server/pull/586))
+
+## 0.12.57 (2026-10-27)
+
+### 🚀 Features
+
+- **mcp-tools:** add patch_entry tool for per-locale entry updates [AIS-791] ([3de6a23](https://github.com/contentful/contentful-mcp-server/commit/3de6a23))
+
+## 0.12.56 (2026-10-27)
+
+### 🚀 Features
+
+- use canonical data assembly parameters [ARC-2578] ([a92ef4f](https://github.com/contentful/contentful-mcp-server/commit/a92ef4f))
+
+### 🩹 Fixes
+
+- validate parameter responses without casts [ARC-2578] ([676fe6f](https://github.com/contentful/contentful-mcp-server/commit/676fe6f))
+- preserve and validate parameter declarations [ARC-2578] ([fc71969](https://github.com/contentful/contentful-mcp-server/commit/fc71969))
+- validate nested parameter identifiers [ARC-2578] ([eba3386](https://github.com/contentful/contentful-mcp-server/commit/eba3386))
+- send canonical parameters through SDK transport [ARC-2578] ([bdda21a](https://github.com/contentful/contentful-mcp-server/commit/bdda21a))
+
+## 0.12.55 (2026-10-27)
+
+### 🩹 Fixes
+
+- **deps:** update dependency contentful-management to v12.19.4 ([#558](https://github.com/contentful/contentful-mcp-server/pull/558))
+
+## 0.12.54 (2026-10-26)
+
+### 🩹 Fixes
+
+- **mcp-tools:** warn that legacy Data Assembly inputs fail [ARC-2698] ([66c706f](https://github.com/contentful/contentful-mcp-server/commit/66c706f))
+- **mcp-tools:** send sys-free Data Assembly writes [ARC-2698] ([d8e790d](https://github.com/contentful/contentful-mcp-server/commit/d8e790d))
+
+## 0.12.53 (2026-10-25)
+
+### 🩹 Fixes
+
+- **deps:** update dependency @modelcontextprotocol/sdk to ^1.32.2 ([#583](https://github.com/contentful/contentful-mcp-server/pull/583))
+
+## 0.12.52 (2026-10-25)
+
+### 🩹 Fixes
+
+- **deps:** update dependency contentful-import to ^10.5.7 ([#581](https://github.com/contentful/contentful-mcp-server/pull/581))
+
+## 0.12.51 (2026-10-24)
+
+This was a version bump only for mcp-tools to align it with other projects, there were no code changes.
+
+## 0.12.50 (2026-10-22)
+
+### 🩹 Fixes
+
+- **deps:** update dependency contentful-import to ^10.5.6 ([#568](https://github.com/contentful/contentful-mcp-server/pull/568))
+
+## 0.12.49 (2026-10-19)
+
+### 🩹 Fixes
+
+- **exo:** accept only $literal content binding parameters [ARC-1910] ([74d7c94](https://github.com/contentful/contentful-mcp-server/commit/74d7c94))
+
 ## 0.12.48 (2026-10-17)
 
 ### 🩹 Fixes

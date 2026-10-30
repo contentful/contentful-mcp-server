@@ -1,3 +1,75 @@
+## 1.24.2 (2026-10-29)
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.58
+
+## 1.24.1 (2026-10-27)
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.57
+
+## 1.24.0 (2026-10-27)
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.56
+
+## 1.23.27 (2026-10-27)
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.55
+
+## 1.23.26 (2026-10-26)
+
+### 🩹 Fixes
+
+- **mcp-tools:** send sys-free Data Assembly writes [ARC-2698] ([d8e790d](https://github.com/contentful/contentful-mcp-server/commit/d8e790d))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.54
+
+## 1.23.25 (2026-10-25)
+
+### 🩹 Fixes
+
+- **deps:** update dependency @modelcontextprotocol/sdk to ^1.32.2 ([#583](https://github.com/contentful/contentful-mcp-server/pull/583))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.53
+
+## 1.23.24 (2026-10-25)
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.52
+
+## 1.23.23 (2026-10-24)
+
+### 🩹 Fixes
+
+- **deps:** update dependency dotenv to ^18.0.9 ([#580](https://github.com/contentful/contentful-mcp-server/pull/580))
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.51
+
+## 1.23.22 (2026-10-22)
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.50
+
+## 1.23.21 (2026-10-19)
+
+### 🧱 Updated Dependencies
+
+- Updated mcp-tools to 0.12.49
+
 ## 1.23.20 (2026-10-17)
 
 ### 🩹 Fixes

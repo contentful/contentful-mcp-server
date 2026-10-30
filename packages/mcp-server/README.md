@@ -114,6 +114,7 @@ Below is a sample configuration:
 |                           | `get_entry_snapshot`               | Retrieve entry version history (snapshots)                                                |
 |                           | `create_entry`                     | Create new content entries with locale support                                            |
 |                           | `update_entry`                     | Modify existing entries with locale support                                               |
+|                           | `patch_entry`                      | Change specific field locales without resending the others (JSON Patch)                   |
 |                           | `publish_entry`                    | Publish entries (single or bulk up to 100)                                                |
 |                           | `unpublish_entry`                  | Unpublish entries (single or bulk up to 100)                                              |
 |                           | `delete_entry`                     | Remove entries                                                                            |

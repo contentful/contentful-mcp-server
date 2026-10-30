@@ -98,8 +98,9 @@ export function createDataAssemblyTools(config: ContentfulConfig) {
     },
     createDataAssembly: {
       title: 'create_data_assembly',
-      description: 'Create a new ExO DataAssembly.',
-      inputParams: CreateDataAssemblyToolParams.shape,
+      description:
+        'Create a new ExO DataAssembly. Provide parameters, resolvers and return without sys, dataType or variant. The API generates the ID and infers sys.dataType from return.',
+      inputParams: CreateDataAssemblyToolParams,
       annotations: {
         readOnlyHint: false,
         destructiveHint: false,
@@ -111,8 +112,8 @@ export function createDataAssemblyTools(config: ContentfulConfig) {
     updateDataAssembly: {
       title: 'update_data_assembly',
       description:
-        'Update an existing ExO DataAssembly. You MUST call get_data_assembly first to read the current state, then pass the sys.version you received as the version parameter. The handler merges your updates with the existing data assembly fields, so you only need to provide the fields you want to change. If the version is stale (the data assembly changed since you read it), the update is rejected and you must re-fetch with get_data_assembly.',
-      inputParams: UpdateDataAssemblyToolParams.shape,
+        'Update an existing ExO DataAssembly. You MUST call get_data_assembly first to read the current state, then pass the sys.version you received as the version parameter. Provide only editable fields; omit sys, dataType and variant. The API infers sys.dataType from return. The handler retains omitted editable fields. If the version is stale (the data assembly changed since you read it), the update is rejected and you must re-fetch with get_data_assembly.',
+      inputParams: UpdateDataAssemblyToolParams,
       annotations: {
         readOnlyHint: false,
         destructiveHint: false,
