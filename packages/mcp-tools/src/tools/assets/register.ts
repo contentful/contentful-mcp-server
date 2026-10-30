@@ -30,7 +30,7 @@ export function createAssetTools(config: ContentfulConfig) {
     uploadAsset: {
       title: 'upload_asset',
       description:
-        'Upload a new asset. When uploading local binary files as base64, always re-encode from the source file immediately before the tool call — never re-use base64 from a previous tool output or from context.',
+        'Upload a new asset, or upload a file for one locale of an existing asset by passing assetId and locale (the file is attached to that locale and processed so the asset can be published; other locales are left untouched). When uploading local binary files as base64, always re-encode from the source file immediately before the tool call — never re-use base64 from a previous tool output or from context.',
       inputParams: UploadAssetToolParams.shape,
       annotations: {
         readOnlyHint: false,
@@ -65,7 +65,8 @@ export function createAssetTools(config: ContentfulConfig) {
     },
     updateAsset: {
       title: 'update_asset',
-      description: 'Update an asset',
+      description:
+        "Update an asset's fields and metadata. To add or replace the file for a locale, use upload_asset with assetId and locale instead: a file set here is not processed, and a file URL copied from another asset cannot be published.",
       inputParams: UpdateAssetToolParams.shape,
       annotations: {
         readOnlyHint: false,
