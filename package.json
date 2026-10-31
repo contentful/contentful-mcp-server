@@ -44,7 +44,7 @@
     "@nx/vite": "23.3.1",
     "@nx/web": "23.3.1",
     "@swc-node/register": "~1.12.1",
-    "@swc/cli": "~0.8.1",
+    "@swc/cli": "~0.8.2",
     "@swc/core": "~1.16.20",
     "@swc/helpers": "~0.5.23",
     "@types/node": "^22.16.5",
