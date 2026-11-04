@@ -1,6 +1,9 @@
 {
   "name": "contentful-mcp-tools",
   "version": "0.0.0",
+  "bugs": {
+    "url": "https://github.com/contentful/contentful-mcp-server/issues"
+  },
   "private": true,
   "repository": {
     "type": "git",
