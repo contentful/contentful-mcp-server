@@ -51,6 +51,10 @@ _Note: This requires [Cursor](https://cursor.com/) to be installed. If the link 
 
 Download the .dxt configuration file [here](https://github.com/contentful/contentful-mcp-server/releases) from the latest release and import it into Claude Desktop to automatically configure the MCP server with your environment variables.
 
+**Gamut:**
+
+In your [Gamut](https://www.gamut.so/mcp/documents-content/contentful) agent, go to **Connections** > **Add Connection**, search for **Contentful**, and click **+** to add it. Authenticate with your Contentful account when prompted.
+
 **Codex:**
 
 ```bash
