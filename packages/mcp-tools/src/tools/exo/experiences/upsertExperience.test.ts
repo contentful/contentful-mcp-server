@@ -83,6 +83,54 @@ describe('upsertExperience', () => {
     });
   });
 
+  it('accepts flat design properties on slot nodes and passes them to the API unchanged', async () => {
+    const slots = {
+      slot: [
+        {
+          id: 'section-1',
+          nodeType: 'InlineExperienceFragment' as const,
+          component: {
+            sys: {
+              type: 'ResourceLink' as const,
+              linkType: 'Contentful:Component' as const,
+              urn: 'crn:contentful:::experience:spaces/s/environments/e/components/section',
+            },
+          },
+          designProperties: {},
+          slots: {
+            children: [
+              {
+                id: 'heading-1',
+                nodeType: 'InlineExperienceFragment' as const,
+                component: {
+                  sys: {
+                    type: 'ResourceLink' as const,
+                    linkType: 'Contentful:Component' as const,
+                    urn: 'crn:contentful:::experience:spaces/s/environments/e/components/heading',
+                  },
+                },
+                designProperties: {
+                  size: { type: 'ManualDesignValue' as const, value: 'xlarge' },
+                },
+              },
+            ],
+          },
+        },
+      ],
+    };
+    const args = { ...mockArgs, version: 1, slots };
+    const parsed = UpsertExperienceToolParams.safeParse(args);
+    expect(parsed.success).toBe(true);
+
+    mockExperienceGet.mockResolvedValue(mockExperience);
+    mockExperienceUpsert.mockResolvedValue(mockExperience);
+
+    await upsertExperienceTool(mockConfig)(args);
+
+    const [, body] = mockExperienceUpsert.mock.calls[0];
+    expect(body.slots).toEqual(slots);
+  });
+
   it('rejects a stale version', async () => {
     mockExperienceGet.mockResolvedValue(mockExperience); // sys.version === 1
 
