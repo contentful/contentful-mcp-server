@@ -328,6 +328,15 @@ export const DimensionedDesignPropertyValueSchema = z.record(
   DesignPropertyValueSchema,
 );
 
+// Design property value on an Experience, Experience Fragment, or a node nested in
+// their `slots`. The Experiences Management API stores flat `{ type, value }`
+// values (viewports were removed), and the dimensioned map is still accepted for
+// compatibility. Matches CMA.js EntityDesignProperties values.
+export const EntityDesignPropertyValueSchema = z.union([
+  DesignPropertyValueSchema,
+  DimensionedDesignPropertyValueSchema,
+]);
+
 export const ComponentTreeDesignPropertyValueSchema = z.union([
   DesignPropertyValueSchema,
   DesignPropertyPointerValueSchema,
@@ -512,7 +521,7 @@ export const InlineExperienceFragmentNodeSchema: z.ZodType<
       'Resource link to the component this inline experience fragment renders',
     ),
     designProperties: z
-      .record(z.string(), DimensionedDesignPropertyValueSchema)
+      .record(z.string(), EntityDesignPropertyValueSchema)
       .describe('Design property values for this inline experience fragment'),
     contentBindings: ExperienceContentBindingsSchema.optional().describe(
       'Optional content bindings linking this inline experience fragment to a data assembly',
