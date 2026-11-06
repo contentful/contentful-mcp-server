@@ -18,6 +18,7 @@ export const mockAssetUnarchive = vi.fn();
 export const mockAssetGetMany = vi.fn();
 export const mockAssetGetManyWithCursor = vi.fn();
 export const mockAssetProcessForAllLocales = vi.fn();
+export const mockAssetProcessForLocale = vi.fn();
 export const mockUploadCreate = vi.fn();
 
 // Mock bulk operations
@@ -41,6 +42,7 @@ export const mockClient = {
     getMany: mockAssetGetMany,
     getManyWithCursor: mockAssetGetManyWithCursor,
     processForAllLocales: mockAssetProcessForAllLocales,
+    processForLocale: mockAssetProcessForLocale,
   },
   upload: {
     create: mockUploadCreate,
