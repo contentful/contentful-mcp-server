@@ -10,7 +10,7 @@
   "type": "module",
   "engines": {
     "node": ">=22.0.0",
-    "npm": ">=12.2.1"
+    "npm": ">=12.2.2"
   },
   "workspaces": [
     "packages/*"
