@@ -1,3 +1,9 @@
+## 0.12.63 (2026-11-10)
+
+### 🩹 Fixes
+
+- handle stringified data assembly return on update [AIS-1177] ([#615](https://github.com/contentful/contentful-mcp-server/pull/615))
+
 ## 0.12.62 (2026-11-10)
 
 ### 🩹 Fixes
