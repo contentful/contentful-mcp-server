@@ -1,6 +1,7 @@
 import { describe, expect, expectTypeOf, it } from 'vitest';
 import {
   DataAssemblyParameterConfigSchema,
+  DataAssemblyReturnMappingConfigSchema,
   parseDataAssemblyParameterResponse,
   SAME_SPACE_CONTENT_SOURCE,
 } from './dataAssemblySchemas.js';
@@ -240,5 +241,32 @@ describe('DataAssembly parameter declarations', () => {
     expect(
       DataAssemblyParameterConfigSchema.safeParse(parameters).success,
     ).toBe(false);
+  });
+});
+
+describe('DataAssembly return mapping', () => {
+  it('preserves a plain-object mapping instead of stripping it to {}', () => {
+    const mapping = {
+      label: '$parameters/label',
+      nested: { a: '$parameters/a' },
+    };
+
+    expect(DataAssemblyReturnMappingConfigSchema.parse(mapping)).toEqual(
+      mapping,
+    );
+  });
+
+  it('still accepts the wrapped expression forms', () => {
+    const forms = [
+      '$parameters/label',
+      { $literal: { ok: true } },
+      { $literal: null },
+      { $from: '$resolvers/main/headline' },
+      { $object: { label: '$parameters/label' } },
+    ];
+
+    for (const form of forms) {
+      expect(DataAssemblyReturnMappingConfigSchema.parse(form)).toEqual(form);
+    }
   });
 });

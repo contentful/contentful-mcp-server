@@ -4,7 +4,10 @@ import {
   mockComponentUpsert,
   mockComponent,
 } from './mockClient.js';
-import { createComponentTool } from './createComponent.js';
+import {
+  createComponentTool,
+  CreateComponentToolParams,
+} from './createComponent.js';
 import { formatResponse } from '../../../utils/formatters.js';
 import { createMockConfig } from '../../../test-helpers/mockConfig.js';
 
@@ -108,5 +111,18 @@ describe('createComponent', () => {
     expect(mockComponentCreate).not.toHaveBeenCalled();
     expect(result.isError).toBe(true);
     expect(result.content[0].text).toContain('is protected');
+  });
+
+  it('defaults componentTree to an empty array when omitted', () => {
+    const parsed = CreateComponentToolParams.parse({
+      spaceId: 's',
+      environmentId: 'e',
+      name: 'n',
+      description: 'd',
+      contentProperties: [],
+      designProperties: [],
+    });
+
+    expect(parsed.componentTree).toEqual([]);
   });
 });

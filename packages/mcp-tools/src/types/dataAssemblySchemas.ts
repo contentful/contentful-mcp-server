@@ -49,7 +49,9 @@ export const PointerExpressionValueSchema: z.ZodType<PointerExpressionValue> =
           }),
         ]),
       }),
-      z.object({ $literal: z.custom<JsonValue>() }),
+      // The key must be present: with an optional key, a plain-object mapping such as
+      // { label: '$parameters/label' } matches this branch first and is stripped to {}.
+      z.object({ $literal: z.custom<JsonValue>((v) => v !== undefined) }),
       z.object({ $object: z.record(z.string(), PointerExpressionValueSchema) }),
       z.object({
         $on: z.object({

@@ -4,7 +4,10 @@ import {
   mockExperienceTemplate,
   mockArgs,
 } from './mockClient.js';
-import { createExperienceTemplateTool } from './createExperienceTemplate.js';
+import {
+  createExperienceTemplateTool,
+  CreateExperienceTemplateToolParams,
+} from './createExperienceTemplate.js';
 import { createMockConfig } from '../../../test-helpers/mockConfig.js';
 
 const createArgs = {
@@ -53,5 +56,18 @@ describe('createExperienceTemplate', () => {
     expect(mockExperienceTemplateCreate).not.toHaveBeenCalled();
     expect(result.isError).toBe(true);
     expect(result.content[0].text).toContain('is protected');
+  });
+
+  it('defaults componentTree to an empty array when omitted', () => {
+    const parsed = CreateExperienceTemplateToolParams.parse({
+      spaceId: 's',
+      environmentId: 'e',
+      name: 'n',
+      description: 'd',
+      contentProperties: [],
+      designProperties: [],
+    });
+
+    expect(parsed.componentTree).toEqual([]);
   });
 });

@@ -28,8 +28,10 @@ export const CreateExperienceTemplateToolParams = BaseToolSchema.extend({
     .describe('Design property definitions (may be empty)'),
   componentTree: z
     .array(TreeNodeSchema)
-    .optional()
-    .describe('Optional component tree node definitions'),
+    .default([])
+    .describe(
+      'Component tree node definitions. Defaults to an empty tree; the API rejects creates that omit it.',
+    ),
   slots: z
     .array(SlotDefinitionSchema)
     .optional()
