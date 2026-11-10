@@ -1,3 +1,9 @@
+## 0.12.62 (2026-11-10)
+
+### 🩹 Fixes
+
+- keep data assembly return and default componentTree [AIS-1177] ([#614](https://github.com/contentful/contentful-mcp-server/pull/614))
+
 ## 0.12.61 (2026-11-05)
 
 ### 🩹 Fixes
