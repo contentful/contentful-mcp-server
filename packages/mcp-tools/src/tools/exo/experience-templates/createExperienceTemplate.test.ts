@@ -17,6 +17,7 @@ const createArgs = {
   viewports: [],
   contentProperties: [],
   designProperties: [],
+  componentTree: [],
 };
 
 describe('createExperienceTemplate', () => {

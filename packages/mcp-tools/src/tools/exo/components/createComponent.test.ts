@@ -21,6 +21,7 @@ describe('createComponent', () => {
     viewports: [],
     contentProperties: [],
     designProperties: [],
+    componentTree: [],
   };
 
   beforeEach(() => vi.clearAllMocks());
@@ -38,6 +39,7 @@ describe('createComponent', () => {
         description: 'A hero section',
         contentProperties: [],
         designProperties: [],
+        componentTree: [],
       },
     );
     expect(result).toEqual({
@@ -75,6 +77,7 @@ describe('createComponent', () => {
         description: 'A hero section',
         contentProperties: [],
         designProperties: [],
+        componentTree: [],
       },
     );
     expect(mockComponentCreate).not.toHaveBeenCalled();
