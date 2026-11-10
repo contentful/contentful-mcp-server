@@ -269,4 +269,33 @@ describe('DataAssembly return mapping', () => {
       expect(DataAssemblyReturnMappingConfigSchema.parse(form)).toEqual(form);
     }
   });
+
+  it('parses a JSON-object string back into a mapping', () => {
+    const mapping = { label: '$parameters/label' };
+
+    expect(
+      DataAssemblyReturnMappingConfigSchema.parse(JSON.stringify(mapping)),
+    ).toEqual(mapping);
+    expect(
+      DataAssemblyReturnMappingConfigSchema.parse(
+        `  ${JSON.stringify({ $object: mapping })}`,
+      ),
+    ).toEqual({ $object: mapping });
+  });
+
+  it('leaves strings that are not JSON objects untouched', () => {
+    const values = ['$parameters/label', '{not json', '[1,2]', '{"a":1', '"x"'];
+
+    for (const value of values) {
+      expect(DataAssemblyReturnMappingConfigSchema.parse(value)).toBe(value);
+    }
+  });
+
+  it('still rejects an invalid mapping sent as a JSON string', () => {
+    expect(
+      DataAssemblyReturnMappingConfigSchema.safeParse(
+        JSON.stringify({ $from: 5 }),
+      ).success,
+    ).toBe(false);
+  });
 });

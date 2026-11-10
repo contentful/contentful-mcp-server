@@ -266,8 +266,32 @@ export const DataAssemblyResolverConfigSchema = z.record(
 // ── Return mapping ─────────────────────────────────────────────────────────────
 // Matches CMA.js DataAssemblyReturnMappingConfig = PointerExpressionValue
 
-export const DataAssemblyReturnMappingConfigSchema =
-  PointerExpressionValueSchema;
+// Some MCP clients cannot read a property whose JSON schema is a bare `$ref` and send an
+// object as its JSON text instead. A string that parses to a plain object can never be a
+// valid mapping on its own (plain strings are pointer expressions, not JSON), so it is
+// parsed back. Anything else is left for the union below to validate.
+function parseJsonObjectString(value: unknown): unknown {
+  if (typeof value !== 'string' || !value.trimStart().startsWith('{')) {
+    return value;
+  }
+  try {
+    const parsed: unknown = JSON.parse(value);
+    return parsed !== null &&
+      typeof parsed === 'object' &&
+      !Array.isArray(parsed)
+      ? parsed
+      : value;
+  } catch {
+    return value;
+  }
+}
+
+// `.describe()` clones the shared schema so the generated JSON schema inlines it instead of
+// emitting a bare `$ref` to the first place the shared schema appears.
+export const DataAssemblyReturnMappingConfigSchema = z.preprocess(
+  parseJsonObjectString,
+  PointerExpressionValueSchema.describe('Return mapping configuration'),
+);
 
 // ── Metadata ───────────────────────────────────────────────────────────────────
 // Matches CMA.js DataAssemblyCommonProps.metadata = Pick<MetadataProps, 'tags'>
