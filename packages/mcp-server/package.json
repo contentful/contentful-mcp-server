@@ -52,7 +52,7 @@
   "devDependencies": {
     "@types/node": "^22.16.5",
     "eslint": "^9.39.5",
-    "prettier": "^3.10.0",
+    "prettier": "^3.10.1",
     "rimraf": "^6.1.4",
     "tsup": "^9.0.0",
     "typescript": "^6.0.3",
