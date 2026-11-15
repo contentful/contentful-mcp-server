@@ -1,3 +1,9 @@
+## 0.12.65 (2026-11-15)
+
+### 🩹 Fixes
+
+- **deps:** update dependency fast-xml-parser to ^5.12.1 ([#627](https://github.com/contentful/contentful-mcp-server/pull/627))
+
 ## 0.12.64 (2026-11-11)
 
 This was a version bump only for mcp-tools to align it with other projects, there were no code changes.
