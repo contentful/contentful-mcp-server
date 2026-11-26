@@ -10,8 +10,7 @@ import {
 } from '../../../utils/tools.js';
 import {
   ExperienceMetadataSchema,
-  DesignPropertyValueSchema,
-  DimensionedDesignPropertyValueSchema,
+  EntityDesignPropertyValueSchema,
   ExperienceContentBindingsSchema,
   ExperienceSlotNodeSchema,
 } from '../../../types/exoSchemas.js';
@@ -39,13 +38,7 @@ export const UpdateExperienceFragmentToolParams = BaseToolSchema.extend({
     .optional()
     .describe('Description of the experience fragment'),
   designProperties: z
-    .record(
-      z.string(),
-      z.union([
-        DesignPropertyValueSchema,
-        DimensionedDesignPropertyValueSchema,
-      ]),
-    )
+    .record(z.string(), EntityDesignPropertyValueSchema)
     .optional()
     .describe('Design property values; replaces existing if provided'),
   contentBindings: ExperienceContentBindingsSchema.optional().describe(

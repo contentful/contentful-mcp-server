@@ -10,8 +10,7 @@ import {
 } from '../../../utils/tools.js';
 import {
   ExperienceMetadataSchema,
-  DesignPropertyValueSchema,
-  DimensionedDesignPropertyValueSchema,
+  EntityDesignPropertyValueSchema,
   ExperienceContentBindingsSchema,
   ExperienceSlotNodeSchema,
   ComponentResourceLinkSchema,
@@ -29,13 +28,7 @@ export const CreateExperienceFragmentToolParams = BaseToolSchema.extend({
     'Resource link to the component this experience fragment is based on',
   ),
   designProperties: z
-    .record(
-      z.string(),
-      z.union([
-        DesignPropertyValueSchema,
-        DimensionedDesignPropertyValueSchema,
-      ]),
-    )
+    .record(z.string(), EntityDesignPropertyValueSchema)
     .describe(
       'Design property values keyed by property ID (may be empty object)',
     ),

@@ -1,3 +1,43 @@
+## 0.12.65 (2026-11-15)
+
+### 🩹 Fixes
+
+- **deps:** update dependency fast-xml-parser to ^5.12.1 ([#627](https://github.com/contentful/contentful-mcp-server/pull/627))
+
+## 0.12.64 (2026-11-11)
+
+This was a version bump only for mcp-tools to align it with other projects, there were no code changes.
+
+## 0.12.63 (2026-11-10)
+
+### 🩹 Fixes
+
+- handle stringified data assembly return on update [AIS-1177] ([#615](https://github.com/contentful/contentful-mcp-server/pull/615))
+
+## 0.12.62 (2026-11-10)
+
+### 🩹 Fixes
+
+- keep data assembly return and default componentTree [AIS-1177] ([#614](https://github.com/contentful/contentful-mcp-server/pull/614))
+
+## 0.12.61 (2026-11-05)
+
+### 🩹 Fixes
+
+- **deps:** update dependency fast-xml-parser to ^5.12.0 ([#605](https://github.com/contentful/contentful-mcp-server/pull/605))
+
+## 0.12.60 (2026-11-05)
+
+### 🩹 Fixes
+
+- **deps:** update dependency contentful-import to ^10.6.0 ([#602](https://github.com/contentful/contentful-mcp-server/pull/602))
+
+## 0.12.59 (2026-11-02)
+
+### 🩹 Fixes
+
+- **deps:** update dependency contentful-import to ^10.5.8 ([#597](https://github.com/contentful/contentful-mcp-server/pull/597))
+
 ## 0.12.58 (2026-10-29)
 
 ### 🩹 Fixes

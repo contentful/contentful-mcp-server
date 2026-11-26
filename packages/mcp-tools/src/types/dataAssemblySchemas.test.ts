@@ -1,6 +1,7 @@
 import { describe, expect, expectTypeOf, it } from 'vitest';
 import {
   DataAssemblyParameterConfigSchema,
+  DataAssemblyReturnMappingConfigSchema,
   parseDataAssemblyParameterResponse,
   SAME_SPACE_CONTENT_SOURCE,
 } from './dataAssemblySchemas.js';
@@ -239,6 +240,62 @@ describe('DataAssembly parameter declarations', () => {
   )('keeps caller parameter inputs strict: %j', ({ parameters }) => {
     expect(
       DataAssemblyParameterConfigSchema.safeParse(parameters).success,
+    ).toBe(false);
+  });
+});
+
+describe('DataAssembly return mapping', () => {
+  it('preserves a plain-object mapping instead of stripping it to {}', () => {
+    const mapping = {
+      label: '$parameters/label',
+      nested: { a: '$parameters/a' },
+    };
+
+    expect(DataAssemblyReturnMappingConfigSchema.parse(mapping)).toEqual(
+      mapping,
+    );
+  });
+
+  it('still accepts the wrapped expression forms', () => {
+    const forms = [
+      '$parameters/label',
+      { $literal: { ok: true } },
+      { $literal: null },
+      { $from: '$resolvers/main/headline' },
+      { $object: { label: '$parameters/label' } },
+    ];
+
+    for (const form of forms) {
+      expect(DataAssemblyReturnMappingConfigSchema.parse(form)).toEqual(form);
+    }
+  });
+
+  it('parses a JSON-object string back into a mapping', () => {
+    const mapping = { label: '$parameters/label' };
+
+    expect(
+      DataAssemblyReturnMappingConfigSchema.parse(JSON.stringify(mapping)),
+    ).toEqual(mapping);
+    expect(
+      DataAssemblyReturnMappingConfigSchema.parse(
+        `  ${JSON.stringify({ $object: mapping })}`,
+      ),
+    ).toEqual({ $object: mapping });
+  });
+
+  it('leaves strings that are not JSON objects untouched', () => {
+    const values = ['$parameters/label', '{not json', '[1,2]', '{"a":1', '"x"'];
+
+    for (const value of values) {
+      expect(DataAssemblyReturnMappingConfigSchema.parse(value)).toBe(value);
+    }
+  });
+
+  it('still rejects an invalid mapping sent as a JSON string', () => {
+    expect(
+      DataAssemblyReturnMappingConfigSchema.safeParse(
+        JSON.stringify({ $from: 5 }),
+      ).success,
     ).toBe(false);
   });
 });

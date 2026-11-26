@@ -10,8 +10,7 @@ import {
 } from '../../../utils/tools.js';
 import {
   ExperienceMetadataSchema,
-  DesignPropertyValueSchema,
-  DimensionedDesignPropertyValueSchema,
+  EntityDesignPropertyValueSchema,
   ExperienceContentBindingsSchema,
   ExperienceSlotNodeSchema,
 } from '../../../types/exoSchemas.js';
@@ -34,13 +33,7 @@ export const UpsertExperienceToolParams = BaseToolSchema.extend({
   name: z.string().optional().describe('The name of the experience'),
   description: z.string().optional().describe('Description of the experience'),
   designProperties: z
-    .record(
-      z.string(),
-      z.union([
-        DesignPropertyValueSchema,
-        DimensionedDesignPropertyValueSchema,
-      ]),
-    )
+    .record(z.string(), EntityDesignPropertyValueSchema)
     .optional()
     .describe(
       'Design property values keyed by property ID; replaces existing if provided',

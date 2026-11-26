@@ -10,8 +10,7 @@ import {
 } from '../../../utils/tools.js';
 import {
   ExperienceMetadataSchema,
-  DesignPropertyValueSchema,
-  DimensionedDesignPropertyValueSchema,
+  EntityDesignPropertyValueSchema,
   ExperienceContentBindingsSchema,
   ExperienceSlotNodeSchema,
   ExperienceTemplateResourceLinkSchema,
@@ -29,13 +28,7 @@ export const CreateExperienceToolParams = BaseToolSchema.extend({
     'Resource link to the ExperienceTemplate this experience is backed by',
   ),
   designProperties: z
-    .record(
-      z.string(),
-      z.union([
-        DesignPropertyValueSchema,
-        DimensionedDesignPropertyValueSchema,
-      ]),
-    )
+    .record(z.string(), EntityDesignPropertyValueSchema)
     .describe(
       'Design property values keyed by property ID. Use direct design values for viewport-free writes. May be an empty object.',
     ),
